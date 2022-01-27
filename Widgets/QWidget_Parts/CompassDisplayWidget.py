@@ -1,0 +1,46 @@
+import os
+import cv2
+
+from PyQt5.QtWidgets import QLabel, QWidget
+
+from Widgets.Helpers import BasicImageDisplay
+from data_helpers import getRGBFromString
+
+
+class CompassDisplayWidget(QLabel):
+    def __init__(self, parentWidget: QWidget = None):
+        self.imageLoaded = False
+
+        super().__init__(parentWidget)
+
+        self.size = 200
+
+        dirName = os.path.dirname(__file__)
+        dirName = os.path.abspath(os.path.join(dirName, "../.."))
+        compass = cv2.imread("{}/Assets/compass.png".format(dirName), cv2.IMREAD_UNCHANGED)
+        arrowImg = cv2.resize(cv2.imread("{}/Assets/arrow.png".format(dirName), cv2.IMREAD_UNCHANGED)[900:2100, 900:2100], (self.size, int(self.size / 2)))
+
+        self.compassImage = BasicImageDisplay.BasicImageDisplay(self, compass, self.size)
+        self.arrowImage = BasicImageDisplay.BasicImageDisplay(self, arrowImg, self.size)
+
+        self.imageLoaded = True
+
+    def setYaw(self, yaw):
+        yaw = -(yaw + 90)
+
+        self.arrowImage.setRotation(yaw)
+
+    def setSize(self, size):
+        # TODO: Use the QWidget size functions instead of this sketchy one
+        self.size = size
+
+        self.setGeometry(0, 0, size, size)
+        self.setMinimumWidth(size)
+        self.setMinimumHeight(size)
+
+        self.compassImage.setGeometry(size * 1)
+        self.arrowImage.setGeometry(size * 1)
+
+    def setCompassColor(self, colorString):
+        [r, g, b] = getRGBFromString(colorString)
+        self.compassImage.setSingleColor(r, g, b)
