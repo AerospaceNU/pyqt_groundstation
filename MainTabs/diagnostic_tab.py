@@ -4,7 +4,7 @@ Code to define widget layout to drive warpauv
 
 from Widgets import TextBoxDropDownWidget
 
-from VehicleTabs.SubTabs.sub_tab_common import SubTab
+from MainTabs.SubTabs.sub_tab_common import SubTab
 
 
 class DiagnosticTab(SubTab):

@@ -4,8 +4,6 @@ Central GUI sequencer
 Has all the thread control for the GUI
 """
 
-import threading
-import time
 import copy
 
 from PyQt5.QtCore import QTimer
@@ -26,15 +24,14 @@ class DPFGUI():
         self.callbacks = []
         self.callbackFunctions = {}
 
-        self.vehicleTabsToAdd = []
+        self.tabsToAdd = []
 
         self.GUICore = GUICore()  # Need to define this inside the thread
 
     def run(self):
-        self.GUICore.addVehicleTabByName("settings", "Settings")
+        self.GUICore.addTabByTabType("settings", "Settings")
 
-        if self.multiRobot:
-            self.GUICore.createTab("Multi-robot")
+        self.addTab("Primary", "primary")
 
         # Need to do themes better at some point, but this is good for now
         self.GUICore.setTheme("rgb[13, 17, 23]", "rgb[13, 17, 23]", "rgb[139,148,158]", "rgb[88,166,255]", "rgb[139,148,158]")
@@ -51,14 +48,14 @@ class DPFGUI():
         self.isRunning = False
 
     def updateGUI(self):
-        """Runs in GUI thread"""
+        """Runs in GUI thread every 10ms"""
         if self.GUIStopCommanded:
             self.stop()
 
-        if len(self.vehicleTabsToAdd) > 0:  # Have to do the adding in this thread
-            for request in self.vehicleTabsToAdd:
-                self.GUICore.addVehicleTabByName(request[1], request[0])
-            self.vehicleTabsToAdd = []
+        if len(self.tabsToAdd) > 0:  # Have to do the adding in this thread
+            for request in self.tabsToAdd:
+                self.GUICore.addTabByTabType(request[1], request[0])
+            self.tabsToAdd = []
 
         self.callbacks += self.GUICore.update(self.vehicleData, self.ROSConsole)
 
@@ -98,5 +95,5 @@ class DPFGUI():
     def getActiveVehicle(self):
         return self.activeVehicle
 
-    def addVehicle(self, vehicleName, vehicleType):
-        self.vehicleTabsToAdd.append([vehicleName, vehicleType])
+    def addTab(self, tabName, tabType):
+        self.tabsToAdd.append([tabName, tabType])

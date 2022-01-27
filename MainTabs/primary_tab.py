@@ -13,12 +13,12 @@ from Widgets import ButtonPanel
 from Widgets import SimpleConsoleWidget
 from Widgets import MapWidget
 
-from VehicleTabs.SubTabs.sub_tab_common import SubTab
+from MainTabs.main_tab_common import TabCommon
 
 
-class PrimaryTab(SubTab):
-    def __init__(self):
-        super().__init__()
+class PrimaryTab(TabCommon):
+    def __init__(self, mainWidget, vehicleName):
+        super().__init__(mainWidget, vehicleName)
 
         self.FlightDisplay = self.addWidget(FlightDisplay.FlightDisplay())
         self.StatusBar = self.addWidget(VehicleStatusWidget.VehicleStatusWidget())
@@ -41,9 +41,9 @@ class PrimaryTab(SubTab):
 
         layout.setRowStretch(1, 0)
         layout.setColumnStretch(1, 0)
-        self.mainWidget.setLayout(layout)
+        self.tabMainWidget.setLayout(layout)
 
-    def update(self):
+    def customUpdate(self, data):
         self.ButtonPanel.setMaximumWidth(max(self.FlightDisplay.width() - self.Annunciator.width() - 6, 5))
 
         selectedVideo = self.ButtonPanel.getSelectedVideo()

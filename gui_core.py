@@ -10,9 +10,10 @@ import random
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget
 
 from Widgets import Placeholder
-from VehicleTabs.vehicle_tab_common import VehicleTabCommon
-from VehicleTabs.warpauv_tab import WarpAUVTab
-from VehicleTabs.settings_tab import SettingsTab
+from MainTabs.main_tab_common import TabCommon
+from MainTabs.warpauv_tab import WarpAUVTab
+from MainTabs.settings_tab import SettingsTab
+from MainTabs.primary_tab import PrimaryTab
 
 from Widgets import *
 
@@ -34,7 +35,7 @@ class GUICore(object):
         self.widgetList = []
         self.placeHolderList = []
 
-        self.vehicleTabs = []
+        self.tabObjects = []
         self.controlStationData = {}
 
         self.title = ""
@@ -77,7 +78,8 @@ class GUICore(object):
     def start(self):
         # Generate a random title from this list
         # I don't know why I did this
-        titles = ["this title intentionally left blank", "VvIP", "PLACEHOLDER TITLE", "PyQGroundControl", "", "Don't crash the robot", "WarpAUVIP", "Look Mom! No QGroundControl", "A snowman of buoyancy", "I'm going to go diving without my gear - Vv", "We're not a hardware lab - Yogi",
+        titles = ["this title intentionally left blank", "VvIP", "PLACEHOLDER TITLE", "PyQGroundControl", "", "Don't crash the robot", "WarpAUVIP", "Look Mom! No QGroundControl", "A snowman of buoyancy", "I'm going to go diving without my gear - Vv",
+                  "We're not a hardware lab - Yogi",
                   "Gooey Geoduck"]
         self.title = random.choice(titles)
 
@@ -107,7 +109,7 @@ class GUICore(object):
         for widget in self.placeHolderList:
             widget.update()
 
-        for tab in self.vehicleTabs:
+        for tab in self.tabObjects:
             callbacks += tab.update(data, self.controlStationData, rosConsole)
 
         return callbacks
@@ -136,32 +138,35 @@ class GUICore(object):
         if name in self.widgetClasses:
             activeTab = self.getActiveTabObject()
             if activeTab is not None:
-                activeTab.addWidgetToActiveSubTab(name)
+                pass
+                # activeTab.addWidgetToActiveSubTab(name)
         else:
             print("No widget named {}".format(name))
 
-    def getActiveTabObject(self) -> VehicleTabCommon:
+    def getActiveTabObject(self) -> TabCommon:
         tabIndex = self.tabHolderWidget.currentIndex()
         activeTab = self.tabHolderWidget.tabText(tabIndex)
 
         if activeTab in self.vehicleTabNames:
-            return self.vehicleTabs[self.vehicleTabNames.index(activeTab)]
+            return self.tabObjects[self.vehicleTabNames.index(activeTab)]
         else:
             return None
 
-    def addVehicleTabByName(self, vehicleType: str, vehicleName: str):
-        if vehicleType == "warpauv":
-            self.addVehicleTab(WarpAUVTab, vehicleName)
-        elif vehicleType == "settings":
-            self.addVehicleTab(SettingsTab, vehicleName)
+    def addTabByTabType(self, tabType: str, tabName: str):
+        if tabType == "warpauv":
+            self.addVehicleTab(WarpAUVTab, tabName)
+        elif tabType == "settings":
+            self.addVehicleTab(SettingsTab, tabName)
+        elif tabType == "primary":
+            self.addVehicleTab(PrimaryTab, tabName)
         else:
-            print("Don't have tab configuration for vehicle type {}".format(vehicleType))
+            print("Don't have tab configuration for vehicle type {}".format(tabType))
 
     def addVehicleTab(self, tab, vehicleName: str):
         self.createTab(vehicleName)
-        self.vehicleTabs.append(tab(self.tabs[vehicleName], vehicleName))
+        self.tabObjects.append(tab(self.tabs[vehicleName], vehicleName))
         self.vehicleTabNames.append(vehicleName)
-        self.vehicleTabs[-1].setTheme(self.backgroundColor, self.widgetBackgroundColor, self.textColor, self.headerTextColor, self.borderColor)
+        self.tabObjects[-1].setTheme(self.backgroundColor, self.widgetBackgroundColor, self.textColor, self.headerTextColor, self.borderColor)
         self.tabHolderWidget.setCurrentIndex(self.tabHolderWidget.count() - 1)
         self.tabHolderWidget.setCurrentIndex(1)
 
@@ -199,5 +204,5 @@ class GUICore(object):
         self.mainWindow.menuBar().setStyleSheet("QWidget#" + self.mainWindow.menuBar().objectName() + "{" + makeStylesheetString("background", slightlyDarkerColor) + makeStylesheetString("color", self.textColor) + "}")
         self.tabHolderWidget.tabBar().setStyleSheet("QWidget#" + self.tabHolderWidget.tabBar().objectName() + "{" + makeStylesheetString("background", slightlyDarkerColor) + makeStylesheetString("color", self.textColor) + "}")
 
-        for tab in self.vehicleTabs:
+        for tab in self.tabObjects:
             tab.setTheme(self.backgroundColor, self.widgetBackgroundColor, self.textColor, self.headerTextColor, self.borderColor)

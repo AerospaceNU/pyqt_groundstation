@@ -9,28 +9,11 @@ from PyQt5.QtWidgets import QWidget, QGridLayout, QTabWidget
 
 from data_helpers import makeStylesheetString
 
-from Widgets import FlightDisplay
-from Widgets import VehicleStatusWidget
-from Widgets import VideoWidget
-from Widgets import ControlStationStatus
-from Widgets import AnnunciatorPanel
-from Widgets import ButtonPanel
-from Widgets import SimpleConsoleWidget
-from Widgets import MapWidget
-from Widgets import TextBoxDropDownWidget
-from Widgets import Reconfigure
 
-from VehicleTabs.SubTabs.sub_tab_common import SubTab
-from VehicleTabs.SubTabs.primary_tab import PrimaryTab
-from VehicleTabs.SubTabs.diagnostic_tab import DiagnosticTab
-
-
-class VehicleTabCommon(object):
+class TabCommon(object):
     def __init__(self, mainWidget: QWidget, vehicleName: str):
-        self.mainWidget = mainWidget
-        self.mainWidget.setObjectName("tab_{}".format(vehicleName))
-        self.layout = QGridLayout()
-        self.mainWidget.setLayout(self.layout)
+        self.tabMainWidget = mainWidget
+        self.tabMainWidget.setObjectName("tab_{}".format(vehicleName))
 
         self.vehicleName = vehicleName
         self.widgetsCreated = 0
@@ -71,8 +54,8 @@ class VehicleTabCommon(object):
             widget.coreUpdate()
             callbacks += widget.getCallbackEvents()
 
-        for subTab in self.subTabObjects:
-            subTab.update()
+        # for subTab in self.subTabObjects:
+        #     subTab.update()
 
         self.customUpdate(data)
         return callbacks
@@ -95,47 +78,6 @@ class VehicleTabCommon(object):
             print(e)
             return QWidget()
 
-    def addSubTab(self, name, tabType="empty"):
-        if not self.hasSubTabs:
-            self.layout.addWidget(self.subTabHolder, 1, 1)
-            self.hasSubTabs = True
-
-        if tabType == "empty":
-            self.addSubTabObject(SubTab())
-            self.subTabObjects[-1].canAddWidgets = True
-        elif tabType == "primary":
-            self.addSubTabObject(PrimaryTab())
-        elif tabType == "diagnostic":
-            self.addSubTabObject(DiagnosticTab())
-        else:
-            print("Can't add tab of name {0} and type {1}: type not supported".format(name, tabType))
-            return
-
-        self.subTabs[-1].setObjectName("{0}_{1}_tab".format(self.vehicleName, name))
-        self.subTabHolder.addTab(self.subTabs[-1], name)
-
-    def addSubTabObject(self, subTabObject):
-        self.subTabObjects.append(subTabObject)
-        self.subTabs.append(subTabObject.getMainWidget())
-
-        newWidgets = subTabObject.getWidgetList()
-        for widget in newWidgets:
-            widget.setObjectName("{0}_{1}".format(self.vehicleName, self.widgetsCreated))
-            widget.tabName = self.vehicleName
-            self.widgetsCreated += 1
-        self.widgetList += newWidgets
-
-    def addWidgetToActiveSubTab(self, widgetName):
-        if self.subTabHolder.count() > 0:
-            tabIndex = self.subTabHolder.currentIndex()
-            if self.subTabObjects[tabIndex].canAddWidgets:
-                widget = self.createWidgetFromName(widgetName, self.subTabObjects[tabIndex].getMainWidget())
-                widget.show()
-        else:
-            widget = self.createWidgetFromName(widgetName, parent=self.mainWidget)
-            widget.show()
-        self.updateTheme()
-
     def addWidget(self, widget: QWidget, widgetName="_"):
         self.widgetList.append(widget)
         self.widgetList[-1].setObjectName("{0}_{1}_{2}".format(self.vehicleName, widgetName, self.widgetsCreated))
@@ -144,7 +86,7 @@ class VehicleTabCommon(object):
         return widget
 
     def setTheme(self, background, widgetBackground, text, headerText, border):
-        self.mainWidget.setStyleSheet("QWidget#" + self.mainWidget.objectName() + "{" + background + text + "}")
+        self.tabMainWidget.setStyleSheet("QWidget#" + self.tabMainWidget.objectName() + "{" + background + text + "}")
         self.subTabHolder.setStyleSheet("QWidget#" + self.subTabHolder.objectName() + "{" + makeStylesheetString("background", background) + makeStylesheetString("color", text) + "}")
         self.subTabHolder.tabBar().setStyleSheet("QWidget#" + self.subTabHolder.tabBar().objectName() + "{" + makeStylesheetString("background", background) + makeStylesheetString("color", text) + "}")
 
