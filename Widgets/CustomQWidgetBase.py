@@ -9,7 +9,6 @@ from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtWidgets import QWidget, QMenu
-# from PySide2.QtGui import QMouseEvent
 from PyQt5.QtGui import QMouseEvent
 
 from data_helpers import makeStylesheetString, getRGBFromString, clamp

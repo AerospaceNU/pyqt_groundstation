@@ -131,11 +131,25 @@ class GUICore(object):
         for theme in THEMES:
             themeMenu.addAction(theme, lambda themeName=theme: self.setThemeByName(themeName))
 
+    def createWidgetFromName(self, widgetName, parent=None):
+        """Will create any widget from its file name!"""
+        if widgetName not in self.widgetClasses:
+            print("No widget of type {}".format(widgetName))
+            return QWidget(parent)  # Kind of a hack
+        try:
+            widget = self.widgetClasses[widgetName](parent)
+            return widget
+        except all as e:
+            print("Dynamically creating {} type widgets is not supported yet".format(widgetName))
+            print(e)
+            return QWidget(parent)
+
     def makeNewWidgetInCurrentTab(self, name):
         if name in self.widgetClasses:
             activeTab = self.getActiveTabObject()
             if activeTab is not None:
-                activeTab.addWidgetToActiveSubTab(name)
+                activeTab.addWidget(self.createWidgetFromName(name, parent=activeTab.tabMainWidget))
+                activeTab.updateTheme()
         else:
             print("No widget named {}".format(name))
 

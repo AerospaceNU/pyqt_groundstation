@@ -2,10 +2,9 @@
 Code used in all vehicle tabs
 """
 
-import inspect
-import types
+from PyQt5.QtWidgets import QWidget, QTabWidget
 
-from PyQt5.QtWidgets import QWidget, QGridLayout, QTabWidget
+from Widgets import CustomQWidgetBase
 
 from data_helpers import makeStylesheetString
 
@@ -17,14 +16,6 @@ class TabCommon(object):
 
         self.vehicleName = vehicleName
         self.widgetsCreated = 0
-
-        # Code to do dynamic creation of classes
-        self.widgetClasses = {}
-        for name, val in globals().items():  # Loop through globals()
-            if isinstance(val, types.ModuleType) and "Widgets." in str(val):  # Only look at modules from Widgets
-                for item in inspect.getmembers(val):
-                    if name in str(item) and "__" not in str(item) and "Placeholder" not in name and 'WidgetClasses.QWidgets' not in str(item) and "Helpers" not in str(item):
-                        self.widgetClasses[name] = item[1]
 
         self.widgetList = []
         self.subTabs = []
@@ -64,22 +55,9 @@ class TabCommon(object):
         """The update function that should be overridden"""
         pass
 
-    def createWidgetFromName(self, widgetName, parent=None):
-        """Will create any widget from its file name!"""
-        if widgetName not in self.widgetClasses:
-            print("No widget of type {}".format(widgetName))
-            return QWidget()  # Kind of a hack
-        try:
-            widget = self.widgetClasses[widgetName](parent)
-            self.addWidget(widget, widgetName)
-            return widget
-        except all as e:
-            print("Dynamically creating {} type widgets is not supported yet".format(widgetName))
-            print(e)
-            return QWidget()
-
-    def addWidget(self, widget: QWidget, widgetName="_"):
+    def addWidget(self, widget: CustomQWidgetBase, widgetName="_"):
         self.widgetList.append(widget)
+        widget.show()
         self.widgetList[-1].setObjectName("{0}_{1}_{2}".format(self.vehicleName, widgetName, self.widgetsCreated))
         self.widgetList[-1].tabName = self.vehicleName  # Kind of a hack
         self.widgetsCreated += 1
