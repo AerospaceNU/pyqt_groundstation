@@ -4,12 +4,12 @@ Code to define widget layout to drive warpauv
 
 from Widgets import TextBoxDropDownWidget
 
-from MainTabs.SubTabs.sub_tab_common import SubTab
+from MainTabs.main_tab_common import TabCommon
 
 
-class DiagnosticTab(SubTab):
-    def __init__(self):
-        super().__init__()
-        self.addWidget(TextBoxDropDownWidget.TextBoxDropDownWidget(self.mainWidget))
+class DiagnosticTab(TabCommon):
+    def __init__(self, mainWidget, vehicleName):
+        super().__init__(mainWidget, vehicleName)
+        self.addWidget(TextBoxDropDownWidget.TextBoxDropDownWidget(self.tabMainWidget))
 
         self.canAddWidgets = True

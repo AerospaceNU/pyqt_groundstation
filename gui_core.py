@@ -13,6 +13,7 @@ from Widgets import Placeholder
 from MainTabs.main_tab_common import TabCommon
 from MainTabs.settings_tab import SettingsTab
 from MainTabs.primary_tab import PrimaryTab
+from MainTabs.diagnostic_tab import DiagnosticTab
 
 from Widgets import *
 
@@ -23,7 +24,6 @@ THEMES = {}
 THEMES["Dark"] = ["rgb[13, 17, 23]", "rgb[13, 17, 23]", "rgb[139,148,158]", "rgb[88,166,255]", "rgb[139,148,158]"]
 THEMES["Light"] = ["rgb[255, 255, 255]", "rgb[255, 255, 255]", "rgb[0,0,0]", "rgb[0,0,0]", "rgb[0,0,0]"]
 THEMES["High Contrast Dark"] = ["rgb[0, 0, 0]", "rgb[0, 0, 0]", "rgb[255,255,255]", "rgb[255,255,255]", "rgb[255,255,255]"]
-THEMES["For hardware labs only"] = ["rgb[0, 0, 0]", "rgb[0, 0, 0]", "rgb[0,0,0]", "rgb[0,0,0]", "rgb[0,0,0]"]
 
 
 class GUICore(object):
@@ -135,8 +135,7 @@ class GUICore(object):
         if name in self.widgetClasses:
             activeTab = self.getActiveTabObject()
             if activeTab is not None:
-                pass
-                # activeTab.addWidgetToActiveSubTab(name)
+                activeTab.addWidgetToActiveSubTab(name)
         else:
             print("No widget named {}".format(name))
 
@@ -154,6 +153,8 @@ class GUICore(object):
             self.addVehicleTab(SettingsTab, tabName)
         elif tabType == "primary":
             self.addVehicleTab(PrimaryTab, tabName)
+        elif tabType == "diagnostic":
+            self.addVehicleTab(DiagnosticTab, tabName)
         else:
             print("Don't have tab configuration for vehicle type {}".format(tabType))
 
