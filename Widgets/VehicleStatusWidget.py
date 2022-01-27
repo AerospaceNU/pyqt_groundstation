@@ -78,31 +78,26 @@ class VehicleStatusWidget(CustomQWidgetBase.CustomQWidgetBase):
             box.setFont(QFont("Monospace", self.widgetSize * 0.4))
 
     def updateData(self, vehicleData):
-        if "status" not in vehicleData:
-            self.setMinimumSize(5, 5)
-            return
-        data = vehicleData["status"]
-
-        faultStatus = int(float(getValueFromDictionary(data, self.statusSource, 3)))
-        canArm = int(float(getValueFromDictionary(data, self.allowedToArmSource, True)))
-        armed = int(float(getValueFromDictionary(data, self.armedSource, True)))
-        mode = str(getValueFromDictionary(data, self.modeSource, "Unknown"))
-        runtime = getValueFromDictionary(data, self.runtimeSource, "0")
-        systemTime = getValueFromDictionary(data, self.vehicleTimeSource, "0")
-        acousticStatus = getValueFromDictionary(data, "acoustic_enable", "unknown")
-        depth_mode = getValueFromDictionary(data, self.depthModeSource, "unknown")
+        faultStatus = int(float(getValueFromDictionary(vehicleData, self.statusSource, 3)))
+        canArm = int(float(getValueFromDictionary(vehicleData, self.allowedToArmSource, True)))
+        armed = int(float(getValueFromDictionary(vehicleData, self.armedSource, True)))
+        mode = str(getValueFromDictionary(vehicleData, self.modeSource, "Unknown"))
+        runtime = getValueFromDictionary(vehicleData, self.runtimeSource, "0")
+        systemTime = getValueFromDictionary(vehicleData, self.vehicleTimeSource, "0")
+        acousticStatus = getValueFromDictionary(vehicleData, "acoustic_enable", "unknown")
+        depth_mode = getValueFromDictionary(vehicleData, self.depthModeSource, "unknown")
 
         if str(acousticStatus).lower() == "true":  # I'm not sure if its a string or bool
             acousticStatus = "Enabled"
         elif str(acousticStatus).lower() == "false":
             acousticStatus = "Disabled"
 
-        percent = getValueFromDictionary(data, "battery_percent", -1)
-        voltage = getValueFromDictionary(data, "battery_voltage", -1)
-        current = getValueFromDictionary(data, "battery_current", -1)
-        cpu = getValueFromDictionary(data, "cpu_usage", -1)
-        ram = getValueFromDictionary(data, "ram_usage", -1)
-        disk = getValueFromDictionary(data, "disk_usage", -1)
+        percent = getValueFromDictionary(vehicleData, "battery_percent", -1)
+        voltage = getValueFromDictionary(vehicleData, "battery_voltage", -1)
+        current = getValueFromDictionary(vehicleData, "battery_current", -1)
+        cpu = getValueFromDictionary(vehicleData, "cpu_usage", -1)
+        ram = getValueFromDictionary(vehicleData, "ram_usage", -1)
+        disk = getValueFromDictionary(vehicleData, "disk_usage", -1)
 
         if faultStatus == 2:
             self.statusBox.setStyleSheet("color: red")

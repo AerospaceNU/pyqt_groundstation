@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget
 
 from Widgets import Placeholder
 from MainTabs.main_tab_common import TabCommon
-from MainTabs.warpauv_tab import WarpAUVTab
 from MainTabs.settings_tab import SettingsTab
 from MainTabs.primary_tab import PrimaryTab
 
@@ -78,9 +77,7 @@ class GUICore(object):
     def start(self):
         # Generate a random title from this list
         # I don't know why I did this
-        titles = ["this title intentionally left blank", "VvIP", "PLACEHOLDER TITLE", "PyQGroundControl", "", "Don't crash the robot", "WarpAUVIP", "Look Mom! No QGroundControl", "A snowman of buoyancy", "I'm going to go diving without my gear - Vv",
-                  "We're not a hardware lab - Yogi",
-                  "Gooey Geoduck"]
+        titles = ["DPF Ground Station"]
         self.title = random.choice(titles)
 
         self.mainWindow.setCentralWidget(self.tabHolderWidget)
@@ -153,9 +150,7 @@ class GUICore(object):
             return None
 
     def addTabByTabType(self, tabType: str, tabName: str):
-        if tabType == "warpauv":
-            self.addVehicleTab(WarpAUVTab, tabName)
-        elif tabType == "settings":
+        if tabType == "settings":
             self.addVehicleTab(SettingsTab, tabName)
         elif tabType == "primary":
             self.addVehicleTab(PrimaryTab, tabName)

@@ -98,26 +98,21 @@ class FlightDisplay(CustomQWidgetBase.CustomQWidgetBase):
         self.setMaximumWidth(int(self.scale * 2 + 40))
 
     def updateData(self, vehicleData):
-        if "state" not in vehicleData:
-            return
-
-        stateData = vehicleData["state"]
-
-        roll = float(getValueFromDictionary(stateData, self.rollSource, 0))
-        pitch = float(getValueFromDictionary(stateData, self.pitchSource, 0))
-        yaw = float(getValueFromDictionary(stateData, self.yawSource, 0))
-        altitude = float(getValueFromDictionary(stateData, self.altSource, 0))
-        groundSpeed = float(getValueFromDictionary(stateData, self.speedSource, 0))
-        vSpeed = float(getValueFromDictionary(stateData, self.vSpeedSource, 0))
-        terrainAlt = float(getValueFromDictionary(stateData, self.terrainAltSource, 0))
-        rollSetpoint = float(getValueFromDictionary(stateData, "roll_setpoint", 0))
-        pitchSetpoint = float(getValueFromDictionary(stateData, "pitch_setpoint", 0))
-        yawSetpoint = float(getValueFromDictionary(stateData, "yaw_setpoint", 0))
-        depthSetpoint = float(getValueFromDictionary(stateData, "depth_setpoint", 0))
-        altSetpoint = float(getValueFromDictionary(stateData, "alt_setpoint", 0))
-        xPos = float(getValueFromDictionary(stateData, "x_position_global", 0))
-        yPos = float(getValueFromDictionary(stateData, "y_position_global", 0))
-        surge_power = float(getValueFromDictionary(stateData, "surge_power", 0))
+        roll = float(getValueFromDictionary(vehicleData, self.rollSource, 0))
+        pitch = float(getValueFromDictionary(vehicleData, self.pitchSource, 0))
+        yaw = float(getValueFromDictionary(vehicleData, self.yawSource, 0))
+        altitude = float(getValueFromDictionary(vehicleData, self.altSource, 0))
+        groundSpeed = float(getValueFromDictionary(vehicleData, self.speedSource, 0))
+        vSpeed = float(getValueFromDictionary(vehicleData, self.vSpeedSource, 0))
+        terrainAlt = float(getValueFromDictionary(vehicleData, self.terrainAltSource, 0))
+        rollSetpoint = float(getValueFromDictionary(vehicleData, "roll_setpoint", 0))
+        pitchSetpoint = float(getValueFromDictionary(vehicleData, "pitch_setpoint", 0))
+        yawSetpoint = float(getValueFromDictionary(vehicleData, "yaw_setpoint", 0))
+        depthSetpoint = float(getValueFromDictionary(vehicleData, "depth_setpoint", 0))
+        altSetpoint = float(getValueFromDictionary(vehicleData, "alt_setpoint", 0))
+        xPos = float(getValueFromDictionary(vehicleData, "x_position_global", 0))
+        yPos = float(getValueFromDictionary(vehicleData, "y_position_global", 0))
+        surge_power = float(getValueFromDictionary(vehicleData, "surge_power", 0))
 
         self.HUDWidget.setRollPitch(roll, pitch)
         self.CompassWidget.setYaw(yaw)

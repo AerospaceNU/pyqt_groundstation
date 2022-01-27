@@ -9,6 +9,7 @@ import copy
 from PyQt5.QtCore import QTimer
 
 from gui_core import GUICore
+from DataInterfaces.data_interface_core import DataInterfaceCore
 
 
 class DPFGUI():
@@ -23,6 +24,8 @@ class DPFGUI():
         self.ROSConsole = [[]]
         self.callbacks = []
         self.callbackFunctions = {}
+
+        self.data_interfaces = {}
 
         self.tabsToAdd = []
 
@@ -56,6 +59,12 @@ class DPFGUI():
             for request in self.tabsToAdd:
                 self.GUICore.addTabByTabType(request[1], request[0])
             self.tabsToAdd = []
+
+        # Get data from interfaces
+        for interface in self.data_interfaces:
+            self.data_interfaces[interface].spin()  # TODO: Move this to a different thread?
+            temp_dictionary = self.data_interfaces[interface].getDataDictionary()
+            self.vehicleData.update(temp_dictionary.copy())
 
         self.callbacks += self.GUICore.update(self.vehicleData, self.ROSConsole)
 
@@ -97,3 +106,6 @@ class DPFGUI():
 
     def addTab(self, tabName, tabType):
         self.tabsToAdd.append([tabName, tabType])
+
+    def addDataInterface(self, interface_name: str, interface_object: DataInterfaceCore):
+        self.data_interfaces[interface_name] = interface_object

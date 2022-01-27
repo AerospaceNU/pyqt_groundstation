@@ -30,10 +30,6 @@ class MapWidget(CustomQWidgetBase):
         self.oldPoints = []
 
     def updateData(self, vehicleData):
-        if "state" not in vehicleData:
-            return
-        stateData = vehicleData["state"]
-
         if "paths" not in vehicleData:
             paths = {}
         else:
@@ -41,9 +37,9 @@ class MapWidget(CustomQWidgetBase):
 
         self.paths = paths
 
-        xPos = float(getValueFromDictionary(stateData, "x_position_global", 0))
-        yPos = float(getValueFromDictionary(stateData, "y_position_global", 0))
-        self.heading = float(getValueFromDictionary(stateData, "yaw", 0))
+        xPos = float(getValueFromDictionary(vehicleData, "x_position_global", 0))
+        yPos = float(getValueFromDictionary(vehicleData, "y_position_global", 0))
+        self.heading = float(getValueFromDictionary(vehicleData, "yaw", 0))
 
         self.setXY(xPos, yPos)
 

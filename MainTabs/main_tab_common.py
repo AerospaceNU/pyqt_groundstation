@@ -40,8 +40,8 @@ class TabCommon(object):
 
     def update(self, data, controlStationData, rosConsole):
         """The update function that should not be overridden"""
-        if isinstance(data, dict) and self.vehicleName in data:
-            vehicleData = data[self.vehicleName]
+        if isinstance(data, dict):
+            vehicleData = data
         else:
             vehicleData = {}
 
