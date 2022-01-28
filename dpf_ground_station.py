@@ -63,7 +63,6 @@ class DPFGUI():
 
         # Get data from interfaces
         for interface in self.data_interfaces:
-            self.data_interfaces[interface].spin()  # TODO: Move this to a different thread?
             temp_dictionary = self.data_interfaces[interface].getDataDictionary()
             self.vehicleData.update(temp_dictionary.copy())
 
@@ -100,6 +99,9 @@ class DPFGUI():
         self.callbackFunctions[target] = callback
 
     def stop(self):
+        for interface in self.data_interfaces:
+            self.data_interfaces[interface].stop()
+
         self.GUICore.stop()
 
     def getActiveVehicle(self):
@@ -110,3 +112,4 @@ class DPFGUI():
 
     def addDataInterface(self, interface_name: str, interface_object: DataInterfaceCore):
         self.data_interfaces[interface_name] = interface_object
+        interface_object.start()

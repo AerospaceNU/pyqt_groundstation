@@ -13,4 +13,5 @@ if __name__ == '__main__':
     GUI = DPFGUI(multi_robot_tab=False)
     GUI.addDataInterface("random", random_interface)
     GUI.run()
+    GUI.stop()
     print("Good Bye")

@@ -41,7 +41,7 @@ class TabCommon(object):
         for widget in self.widgetList:
             widget.updateData(vehicleData)
             widget.updateControlStationData(controlStationData)
-            widget.updateROSConsole(rosConsole)
+            widget.updateConsole(rosConsole)
             widget.coreUpdate()
             callbacks += widget.getCallbackEvents()
 

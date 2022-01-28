@@ -19,7 +19,7 @@ class AnnunciatorPanel(CustomQWidgetBase):
         self.rows = 10
         self.columns = 2
         self.title = "Test"
-        self.source = "overall"
+        self.source = "annunciator_1"
 
         layout = QGridLayout()
         self.titleWidget = QLabel()
@@ -39,15 +39,10 @@ class AnnunciatorPanel(CustomQWidgetBase):
         self.setLayout(layout)
 
     def updateData(self, vehicleData):
-        if "annunciator" not in vehicleData:
+        if self.source not in vehicleData:
             self.setMaximumWidth(100)
             return
-        annunciator = vehicleData["annunciator"]
-
-        if self.source not in annunciator:
-            self.setMaximumWidth(100)
-            return
-        data = annunciator[self.source]
+        data = vehicleData[self.source]
 
         for i in range(len(data)):
             if i >= len(self.annunciatorWidgets):

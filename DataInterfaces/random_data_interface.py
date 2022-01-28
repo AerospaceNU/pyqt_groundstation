@@ -6,6 +6,7 @@ import math
 import random
 
 from DataInterfaces.data_interface_core import DataInterfaceCore
+import time
 
 
 class RandomDataInterface(DataInterfaceCore):
@@ -40,3 +41,9 @@ class RandomDataInterface(DataInterfaceCore):
         self.data_dictionary["battery_percent"] = (float(self.i) / 360.0)
         self.data_dictionary["battery_voltage"] = ((float(self.i) / 360.0) * 5) + 13
         self.data_dictionary["battery_current"] = ((float(self.i) / 360.0) * 30)
+
+        annunciator = [["Overall", 0, "Test"], ["Battery", 1, "Test2"], ["Lights", 2, "Test3"], ["aaaaaaaaaaaaaaaaaaaaaaaaaa", 0, "test4"]]
+        self.data_dictionary["annunciator_1"] = annunciator
+
+        diagnostics = {"aaa": [["hi", "aaa"], ["bbb", random.random()]], "bbb": [["aa", "  {}".format(random.random())], ["bbb", random.random()], ["c", random.random()], ["ddddddddd", random.random()]]}
+        self.data_dictionary["diagnostics"] = diagnostics

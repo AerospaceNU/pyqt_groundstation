@@ -19,7 +19,7 @@ class SimpleConsoleWidget(CustomQWidgetBase.CustomQWidgetBase):
 
         self.setFont(QFont("Monospace", 10))
 
-    def updateROSConsole(self, data):
+    def updateConsole(self, data):
         self.data = data
 
     def paintEvent(self, a0: QtGui.QPaintEvent) -> None:

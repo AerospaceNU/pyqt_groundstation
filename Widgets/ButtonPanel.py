@@ -52,7 +52,7 @@ class ButtonPanel(CustomQWidgetBase.CustomQWidgetBase):
         self.calibratePressure.setText("MS5837 Cal")
         self.acousticSwitcherTextBox.setText("Acoustics")
         self.bagControlTextBox.setText("Bagging")
-        self.setVideoOptions(["No Data"])
+        self.setVideoOptions(["No Video"])
         self.clearMapButton.setText("Clear Map")
 
         self.acousticSwitcherButton.clicked.connect(self.acousticButtonPress)
@@ -65,8 +65,8 @@ class ButtonPanel(CustomQWidgetBase.CustomQWidgetBase):
     def setVideoOptions(self, items):
         if items != self.menuItems:
             self.videoSwitcher.clear()
-            self.videoSwitcher.addItems(items)
             self.videoSwitcher.addItems(["Map"])
+            self.videoSwitcher.addItems(items)
             self.menuItems = items
 
     def getSelectedVideo(self):

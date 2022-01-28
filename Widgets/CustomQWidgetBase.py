@@ -85,7 +85,7 @@ class CustomQWidgetBase(QWidget):
     def updateControlStationData(self, csData):
         pass
 
-    def updateROSConsole(self, data):
+    def updateConsole(self, data):
         pass
 
     def getCallbackEvents(self):
