@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QLabel, QWidget
 from PyQt5.QtGui import QPainter, QPen, QBrush, QPolygon, QColor, QFont, QRegion
 from PyQt5.QtCore import Qt, QPoint
 
-from data_helpers import roundToString
+from data_helpers import round_to_string
 
 
 class AltitudeSpeedIndicatorWidget(QLabel):
@@ -101,9 +101,9 @@ class AltitudeSpeedIndicatorWidget(QLabel):
         fontSize = int(fontSize * 0.8)
         painter.setFont(QFont("Monospace", fontSize))
         if self.leftOriented:
-            painter.drawText(int(-2 * (fontSize - 2)), int(fontSize / 2), roundToString(self.value, 5))
+            painter.drawText(int(-2 * (fontSize - 2)), int(fontSize / 2), round_to_string(self.value, 5))
         else:
-            painter.drawText(int(-3 * (fontSize - 2)), int(fontSize / 2), roundToString(self.value, 5))
+            painter.drawText(int(-3 * (fontSize - 2)), int(fontSize / 2), round_to_string(self.value, 5))
 
     def setValue(self, value):
         self.value = value

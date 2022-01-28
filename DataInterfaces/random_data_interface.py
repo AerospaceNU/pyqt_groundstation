@@ -6,7 +6,6 @@ import math
 import random
 
 from DataInterfaces.data_interface_core import DataInterfaceCore
-import time
 
 
 class RandomDataInterface(DataInterfaceCore):

@@ -3,8 +3,8 @@ import cv2
 
 from PyQt5.QtWidgets import QLabel, QWidget
 
-from Widgets.Helpers import BasicImageDisplay
-from data_helpers import getRGBFromString
+from Widgets.Helpers import basic_image_display
+from data_helpers import get_rgb_from_string
 
 
 class CompassDisplayWidget(QLabel):
@@ -20,8 +20,8 @@ class CompassDisplayWidget(QLabel):
         compass = cv2.imread("{}/Assets/compass.png".format(dirName), cv2.IMREAD_UNCHANGED)
         arrowImg = cv2.resize(cv2.imread("{}/Assets/arrow.png".format(dirName), cv2.IMREAD_UNCHANGED)[900:2100, 900:2100], (self.size, int(self.size / 2)))
 
-        self.compassImage = BasicImageDisplay.BasicImageDisplay(self, compass, self.size)
-        self.arrowImage = BasicImageDisplay.BasicImageDisplay(self, arrowImg, self.size)
+        self.compassImage = basic_image_display.BasicImageDisplay(self, compass, self.size)
+        self.arrowImage = basic_image_display.BasicImageDisplay(self, arrowImg, self.size)
 
         self.imageLoaded = True
 
@@ -42,5 +42,5 @@ class CompassDisplayWidget(QLabel):
         self.arrowImage.setGeometry(size * 1)
 
     def setCompassColor(self, colorString):
-        [r, g, b] = getRGBFromString(colorString)
+        [r, g, b] = get_rgb_from_string(colorString)
         self.compassImage.setSingleColor(r, g, b)

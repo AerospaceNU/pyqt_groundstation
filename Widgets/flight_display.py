@@ -6,17 +6,17 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 from PyQt5.QtGui import QFont
 
-from Widgets.QWidget_Parts import AttitudeDisplayWidget
-from Widgets.QWidget_Parts import AltitudeSpeedIndicatorWidget
-from Widgets.QWidget_Parts import VSpeedIndicatorWidget
-from Widgets.QWidget_Parts import CompassDisplayWidget
+from Widgets.QWidget_Parts import attitude_display_widget
+from Widgets.QWidget_Parts import altitude_speed_indicator_widget
+from Widgets.QWidget_Parts import v_speed_indicator_widget
+from Widgets.QWidget_Parts import compass_display_widget
 
-from Widgets import CustomQWidgetBase
+from Widgets import custom_q_widget_base
 
-from data_helpers import getValueFromDictionary, roundToString
+from data_helpers import get_value_from_dictionary, round_to_string
 
 
-class FlightDisplay(CustomQWidgetBase.CustomQWidgetBase):
+class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, widget: QWidget = None):
         super().__init__(widget)
 
@@ -43,16 +43,16 @@ class FlightDisplay(CustomQWidgetBase.CustomQWidgetBase):
         self.vSpeedSource = "verticalSpeed"
         self.terrainAltSource = "terrainAlt"
 
-        self.HUDWidget = AttitudeDisplayWidget.AttitudeDisplayWidget()
-        self.CompassWidget = CompassDisplayWidget.CompassDisplayWidget()
-        self.AltitudeWidget = AltitudeSpeedIndicatorWidget.AltitudeSpeedIndicatorWidget(onScreenSpacingScale=5)
-        self.SpeedWidget = AltitudeSpeedIndicatorWidget.AltitudeSpeedIndicatorWidget(leftOriented=False, onScreenSpacingScale=5)
-        self.TerrainAltWidget = AltitudeSpeedIndicatorWidget.AltitudeSpeedIndicatorWidget(onScreenSpacingScale=self.terrainAltScale)
+        self.HUDWidget = attitude_display_widget.AttitudeDisplayWidget()
+        self.CompassWidget = compass_display_widget.CompassDisplayWidget()
+        self.AltitudeWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(onScreenSpacingScale=5)
+        self.SpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(leftOriented=False, onScreenSpacingScale=5)
+        self.TerrainAltWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(onScreenSpacingScale=self.terrainAltScale)
 
         if self.useAltVSpeedWidget:
-            self.VSpeedWidget = VSpeedIndicatorWidget.VSpeedIndicatorWidget(maxSpeed=self.vSpeedScale)
+            self.VSpeedWidget = v_speed_indicator_widget.VSpeedIndicatorWidget(maxSpeed=self.vSpeedScale)
         else:
-            self.VSpeedWidget = AltitudeSpeedIndicatorWidget.AltitudeSpeedIndicatorWidget(onScreenSpacingScale=self.vSpeedScale)
+            self.VSpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(onScreenSpacingScale=self.vSpeedScale)
 
         layout = QGridLayout()
         layout.addWidget(self.SpeedWidget, 1, 1)
@@ -98,21 +98,21 @@ class FlightDisplay(CustomQWidgetBase.CustomQWidgetBase):
         self.setMaximumWidth(int(self.scale * 2 + 40))
 
     def updateData(self, vehicleData):
-        roll = float(getValueFromDictionary(vehicleData, self.rollSource, 0))
-        pitch = float(getValueFromDictionary(vehicleData, self.pitchSource, 0))
-        yaw = float(getValueFromDictionary(vehicleData, self.yawSource, 0))
-        altitude = float(getValueFromDictionary(vehicleData, self.altSource, 0))
-        groundSpeed = float(getValueFromDictionary(vehicleData, self.speedSource, 0))
-        vSpeed = float(getValueFromDictionary(vehicleData, self.vSpeedSource, 0))
-        terrainAlt = float(getValueFromDictionary(vehicleData, self.terrainAltSource, 0))
-        rollSetpoint = float(getValueFromDictionary(vehicleData, "roll_setpoint", 0))
-        pitchSetpoint = float(getValueFromDictionary(vehicleData, "pitch_setpoint", 0))
-        yawSetpoint = float(getValueFromDictionary(vehicleData, "yaw_setpoint", 0))
-        depthSetpoint = float(getValueFromDictionary(vehicleData, "depth_setpoint", 0))
-        altSetpoint = float(getValueFromDictionary(vehicleData, "alt_setpoint", 0))
-        xPos = float(getValueFromDictionary(vehicleData, "x_position_global", 0))
-        yPos = float(getValueFromDictionary(vehicleData, "y_position_global", 0))
-        surge_power = float(getValueFromDictionary(vehicleData, "surge_power", 0))
+        roll = float(get_value_from_dictionary(vehicleData, self.rollSource, 0))
+        pitch = float(get_value_from_dictionary(vehicleData, self.pitchSource, 0))
+        yaw = float(get_value_from_dictionary(vehicleData, self.yawSource, 0))
+        altitude = float(get_value_from_dictionary(vehicleData, self.altSource, 0))
+        groundSpeed = float(get_value_from_dictionary(vehicleData, self.speedSource, 0))
+        vSpeed = float(get_value_from_dictionary(vehicleData, self.vSpeedSource, 0))
+        terrainAlt = float(get_value_from_dictionary(vehicleData, self.terrainAltSource, 0))
+        rollSetpoint = float(get_value_from_dictionary(vehicleData, "roll_setpoint", 0))
+        pitchSetpoint = float(get_value_from_dictionary(vehicleData, "pitch_setpoint", 0))
+        yawSetpoint = float(get_value_from_dictionary(vehicleData, "yaw_setpoint", 0))
+        depthSetpoint = float(get_value_from_dictionary(vehicleData, "depth_setpoint", 0))
+        altSetpoint = float(get_value_from_dictionary(vehicleData, "alt_setpoint", 0))
+        xPos = float(get_value_from_dictionary(vehicleData, "x_position_global", 0))
+        yPos = float(get_value_from_dictionary(vehicleData, "y_position_global", 0))
+        surge_power = float(get_value_from_dictionary(vehicleData, "surge_power", 0))
 
         self.HUDWidget.setRollPitch(roll, pitch)
         self.CompassWidget.setYaw(yaw)
@@ -125,19 +125,19 @@ class FlightDisplay(CustomQWidgetBase.CustomQWidgetBase):
         stateText += "{0:<7s}{1:>5d}\n".format("roll:", int(roll))
         stateText += "{0:<7s}{1:>5d}\n".format("pitch:", int(pitch))
         stateText += "{0:<7s}{1:>5d}\n".format("yaw:", int(yaw))
-        stateText += "{0:<7s}{1:>5s}\n".format("depth:", roundToString(altitude, 5))
-        stateText += "{0:<7s}{1:>5s}\n".format("x (e):", roundToString(xPos, 5))
-        stateText += "{0:<7s}{1:>5s}\n".format("y (n):", roundToString(yPos, 5))
+        stateText += "{0:<7s}{1:>5s}\n".format("depth:", round_to_string(altitude, 5))
+        stateText += "{0:<7s}{1:>5s}\n".format("x (e):", round_to_string(xPos, 5))
+        stateText += "{0:<7s}{1:>5s}\n".format("y (n):", round_to_string(yPos, 5))
         self.StateTextBox.setText(stateText)
 
         setpointText = "Setpoints:\n"
         setpointText += "{0:<7s}{1:>5d}\n".format("roll:", int(rollSetpoint))
         setpointText += "{0:<7s}{1:>5d}\n".format("pitch:", int(pitchSetpoint))
         setpointText += "{0:<7s}{1:>5d}\n".format("yaw:", int(yawSetpoint))
-        setpointText += "{0:<7s}{1:>5s}\n".format("depth:", roundToString(depthSetpoint, 5))
-        setpointText += "{0:<7s}{1:>5s}\n".format("alt:", roundToString(altSetpoint, 5))
+        setpointText += "{0:<7s}{1:>5s}\n".format("depth:", round_to_string(depthSetpoint, 5))
+        setpointText += "{0:<7s}{1:>5s}\n".format("alt:", round_to_string(altSetpoint, 5))
         setpointText += 'Power:\n'
-        setpointText += "{0:<7s}{1:>5s}\n".format("surge:", roundToString(surge_power, 5))
+        setpointText += "{0:<7s}{1:>5s}\n".format("surge:", round_to_string(surge_power, 5))
         self.SetpointTextBox.setText(setpointText)
 
         self.update()

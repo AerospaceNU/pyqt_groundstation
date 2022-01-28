@@ -9,7 +9,7 @@ import random
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget
 
-from Widgets import Placeholder
+from Widgets import placeholder
 from MainTabs.main_tab_common import TabCommon
 from MainTabs.settings_tab import SettingsTab
 from MainTabs.primary_tab import PrimaryTab
@@ -17,7 +17,7 @@ from MainTabs.diagnostic_tab import DiagnosticTab
 
 from Widgets import *
 
-from data_helpers import getRGBFromString, getWellFormattedRGBString, formatRGBString, makeStylesheetString
+from data_helpers import get_rgb_from_string, get_well_formatted_rgb_string, format_rgb_string, make_stylesheet_string
 
 # Background, Widget Background, Text, Header Text, Border
 THEMES = {}
@@ -98,7 +98,7 @@ class GUICore(object):
         self.tabHolderWidget.addTab(self.tabs[name], name)
         self.tabNames.append(name)
 
-        self.placeHolderList.append(Placeholder.Placeholder(self.tabs[name]))  # Something needs to be updating for the GUI to function, so we make a silly thing to always do that
+        self.placeHolderList.append(placeholder.Placeholder(self.tabs[name]))  # Something needs to be updating for the GUI to function, so we make a silly thing to always do that
 
     def update(self, data, rosConsole):
         callbacks = []
@@ -200,19 +200,19 @@ class GUICore(object):
         :param border: Widget border color
         """
 
-        self.backgroundColor = getWellFormattedRGBString(background)
-        self.widgetBackgroundColor = getWellFormattedRGBString(widgetBackground)
-        self.textColor = getWellFormattedRGBString(text)
-        self.headerTextColor = getWellFormattedRGBString(headerText)
-        self.borderColor = getWellFormattedRGBString(border)
+        self.backgroundColor = get_well_formatted_rgb_string(background)
+        self.widgetBackgroundColor = get_well_formatted_rgb_string(widgetBackground)
+        self.textColor = get_well_formatted_rgb_string(text)
+        self.headerTextColor = get_well_formatted_rgb_string(headerText)
+        self.borderColor = get_well_formatted_rgb_string(border)
 
-        [red, green, blue] = getRGBFromString(background)
-        slightlyDarkerColor = formatRGBString(max(red - 10, 0), max(green - 10, 0), max(blue - 10, 0))
+        [red, green, blue] = get_rgb_from_string(background)
+        slightlyDarkerColor = format_rgb_string(max(red - 10, 0), max(green - 10, 0), max(blue - 10, 0))
 
-        self.mainWindow.setStyleSheet("QWidget#" + self.mainWindow.objectName() + "{" + makeStylesheetString("background", slightlyDarkerColor) + makeStylesheetString("color", self.textColor) + "}")
-        self.tabHolderWidget.setStyleSheet("QWidget#" + self.tabHolderWidget.objectName() + "{" + makeStylesheetString("background", self.backgroundColor) + makeStylesheetString("color", self.textColor) + "}")
-        self.mainWindow.menuBar().setStyleSheet("QWidget#" + self.mainWindow.menuBar().objectName() + "{" + makeStylesheetString("background", slightlyDarkerColor) + makeStylesheetString("color", self.textColor) + "}")
-        self.tabHolderWidget.tabBar().setStyleSheet("QWidget#" + self.tabHolderWidget.tabBar().objectName() + "{" + makeStylesheetString("background", slightlyDarkerColor) + makeStylesheetString("color", self.textColor) + "}")
+        self.mainWindow.setStyleSheet("QWidget#" + self.mainWindow.objectName() + "{" + make_stylesheet_string("background", slightlyDarkerColor) + make_stylesheet_string("color", self.textColor) + "}")
+        self.tabHolderWidget.setStyleSheet("QWidget#" + self.tabHolderWidget.objectName() + "{" + make_stylesheet_string("background", self.backgroundColor) + make_stylesheet_string("color", self.textColor) + "}")
+        self.mainWindow.menuBar().setStyleSheet("QWidget#" + self.mainWindow.menuBar().objectName() + "{" + make_stylesheet_string("background", slightlyDarkerColor) + make_stylesheet_string("color", self.textColor) + "}")
+        self.tabHolderWidget.tabBar().setStyleSheet("QWidget#" + self.tabHolderWidget.tabBar().objectName() + "{" + make_stylesheet_string("background", slightlyDarkerColor) + make_stylesheet_string("color", self.textColor) + "}")
 
         for tab in self.tabObjects:
             tab.setTheme(self.backgroundColor, self.widgetBackgroundColor, self.textColor, self.headerTextColor, self.borderColor)

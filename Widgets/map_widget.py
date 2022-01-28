@@ -4,8 +4,8 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QPolygon
 from PyQt5.QtCore import Qt, QPoint
 
-from Widgets.CustomQWidgetBase import CustomQWidgetBase
-from data_helpers import interpolate, getValueFromDictionary
+from Widgets.custom_q_widget_base import CustomQWidgetBase
+from data_helpers import interpolate, get_value_from_dictionary
 
 
 class MapWidget(CustomQWidgetBase):
@@ -37,9 +37,9 @@ class MapWidget(CustomQWidgetBase):
 
         self.paths = paths
 
-        xPos = float(getValueFromDictionary(vehicleData, "x_position_global", 0))
-        yPos = float(getValueFromDictionary(vehicleData, "y_position_global", 0))
-        self.heading = float(getValueFromDictionary(vehicleData, "yaw", 0))
+        xPos = float(get_value_from_dictionary(vehicleData, "x_position_global", 0))
+        yPos = float(get_value_from_dictionary(vehicleData, "y_position_global", 0))
+        self.heading = float(get_value_from_dictionary(vehicleData, "yaw", 0))
 
         self.setXY(xPos, yPos)
 

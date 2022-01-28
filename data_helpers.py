@@ -12,7 +12,7 @@ def clamp(value, minValue, maxValue):
     return min(max(value, minValue), maxValue)
 
 
-def distanceBetweenPoints(x, y, x2, y2):
+def distance_between_points(x, y, x2, y2):
     deltaX = x2 - x
     deltaY = y2 - y
 
@@ -30,20 +30,7 @@ def interpolate(value, in_min, in_max, out_min, out_max):
     return out_min + (scaled * out_span)
 
 
-def getXMLAttribute(XLM, attribute: str, default: str):
-    """
-    Returns the value from a chunk of xml data, with the option for a default value
-    :param XLM: the chunk of xml data
-    :param attribute: the name of the attribute to get
-    :param default: default value
-    """
-    if XLM.hasAttribute(attribute):
-        return XLM.getAttribute(attribute)
-    else:
-        return default
-
-
-def getValueFromDictionary(dictionary: {}, key: str, default):
+def get_value_from_dictionary(dictionary: {}, key: str, default):
     """
     Returns the dictionary entry for a given key, or the default
     """
@@ -54,14 +41,14 @@ def getValueFromDictionary(dictionary: {}, key: str, default):
         return default
 
 
-def getValueFromList(inputList: list, index: int, default):
+def get_value_from_list(inputList: list, index: int, default):
     if len(inputList) > index:
         return inputList[index]
     else:
         return default
 
 
-def getRGBFromString(textColor: str):
+def get_rgb_from_string(textColor: str):
     """
     Function to get red, green, and blue as integer values from 0-255
     """
@@ -76,23 +63,23 @@ def getRGBFromString(textColor: str):
     return [int(red), int(green), int(blue)]
 
 
-def formatRGBString(red, green, blue):
+def format_rgb_string(red, green, blue):
     return "rgb({0}, {1}, {2})".format(red, green, blue)
 
 
-def getWellFormattedRGBString(inputString):
+def get_well_formatted_rgb_string(inputString):
     """
     Function that returns a string like "rgb(red,green,blue)" for use with QT stylesheets from a variety of input types
     """
-    [red, green, blue] = getRGBFromString(inputString)
-    return formatRGBString(red, green, blue)
+    [red, green, blue] = get_rgb_from_string(inputString)
+    return format_rgb_string(red, green, blue)
 
 
-def makeStylesheetString(target, rgbString):
+def make_stylesheet_string(target, rgbString):
     return "{0}: {1}; ".format(target, rgbString)
 
 
-def roundToString(value: float, characters: int):
+def round_to_string(value: float, characters: int):
     """
     Creates a nicely formatted string of a specific length from a number
     """

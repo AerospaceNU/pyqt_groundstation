@@ -11,7 +11,7 @@ from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtWidgets import QWidget, QMenu
 from PyQt5.QtGui import QMouseEvent
 
-from data_helpers import makeStylesheetString, getRGBFromString, clamp
+from data_helpers import make_stylesheet_string, get_rgb_from_string, clamp
 
 
 class CustomQWidgetBase(QWidget):
@@ -36,14 +36,14 @@ class CustomQWidgetBase(QWidget):
 
     def setTheme(self, widgetBackground, text, headerText, border):
         """I implemented my own theme code instead of using the QT stuff, because this does what I want"""
-        widgetBackgroundString = makeStylesheetString("background", widgetBackground)
-        textString = makeStylesheetString("color", text)
-        headerTextString = makeStylesheetString("color", headerText)
+        widgetBackgroundString = make_stylesheet_string("background", widgetBackground)
+        textString = make_stylesheet_string("color", text)
+        headerTextString = make_stylesheet_string("color", headerText)
         borderString = "border: {0}px solid {1};".format(1, border)
 
-        self.borderColor = getRGBFromString(border)
-        self.backgroundColor = getRGBFromString(widgetBackground)
-        self.textColor = getRGBFromString(text)
+        self.borderColor = get_rgb_from_string(border)
+        self.backgroundColor = get_rgb_from_string(widgetBackground)
+        self.textColor = get_rgb_from_string(text)
         self.setWidgetColors(widgetBackgroundString, textString, headerTextString, borderString)
 
     def rightClickMenu(self, e: QPoint):

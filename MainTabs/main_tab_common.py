@@ -4,9 +4,9 @@ Code used in all vehicle tabs
 
 from PyQt5.QtWidgets import QWidget, QTabWidget
 
-from Widgets import CustomQWidgetBase
+from Widgets import custom_q_widget_base
 
-from data_helpers import makeStylesheetString
+from data_helpers import make_stylesheet_string
 
 
 class TabCommon(object):
@@ -55,7 +55,7 @@ class TabCommon(object):
         """The update function that should be overridden"""
         pass
 
-    def addWidget(self, widget: CustomQWidgetBase, widgetName="_"):
+    def addWidget(self, widget: custom_q_widget_base, widgetName="_"):
         self.widgetList.append(widget)
         widget.show()
         self.widgetList[-1].setObjectName("{0}_{1}_{2}".format(self.vehicleName, widgetName, self.widgetsCreated))
@@ -65,8 +65,8 @@ class TabCommon(object):
 
     def setTheme(self, background, widgetBackground, text, headerText, border):
         self.tabMainWidget.setStyleSheet("QWidget#" + self.tabMainWidget.objectName() + "{" + background + text + "}")
-        self.subTabHolder.setStyleSheet("QWidget#" + self.subTabHolder.objectName() + "{" + makeStylesheetString("background", background) + makeStylesheetString("color", text) + "}")
-        self.subTabHolder.tabBar().setStyleSheet("QWidget#" + self.subTabHolder.tabBar().objectName() + "{" + makeStylesheetString("background", background) + makeStylesheetString("color", text) + "}")
+        self.subTabHolder.setStyleSheet("QWidget#" + self.subTabHolder.objectName() + "{" + make_stylesheet_string("background", background) + make_stylesheet_string("color", text) + "}")
+        self.subTabHolder.tabBar().setStyleSheet("QWidget#" + self.subTabHolder.tabBar().objectName() + "{" + make_stylesheet_string("background", background) + make_stylesheet_string("color", text) + "}")
 
         for tab in self.subTabs:
             tab.setStyleSheet("QWidget#" + tab.objectName() + "{background: " + background + "; color: " + text + "}")

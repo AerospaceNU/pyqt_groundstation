@@ -5,10 +5,10 @@ import cv2
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QWidget, QLabel, QSizePolicy
 
-from Widgets import CustomQWidgetBase
+from Widgets import custom_q_widget_base
 
 
-class VideoWidget(CustomQWidgetBase.CustomQWidgetBase):
+class VideoWidget(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, widget: QWidget = None):
         super().__init__(widget)
         self.videoToUse = "webcam"

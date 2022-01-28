@@ -6,7 +6,7 @@ import PyQt5.QtCore as QtCore
 
 from PyQt5.QtWidgets import QLabel, QGridLayout
 
-from Widgets.CustomQWidgetBase import CustomQWidgetBase
+from Widgets.custom_q_widget_base import CustomQWidgetBase
 
 
 class AnnunciatorPanel(CustomQWidgetBase):

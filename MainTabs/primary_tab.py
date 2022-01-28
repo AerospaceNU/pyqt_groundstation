@@ -4,14 +4,14 @@ Code to define widget layout to drive warpauv
 
 from PyQt5.QtWidgets import QGridLayout
 
-from Widgets import FlightDisplay
-from Widgets import VehicleStatusWidget
-from Widgets import VideoWidget
-from Widgets import ControlStationStatus
-from Widgets import AnnunciatorPanel
-from Widgets import ButtonPanel
-from Widgets import SimpleConsoleWidget
-from Widgets import MapWidget
+from Widgets import flight_display
+from Widgets import vehicle_status_widget
+from Widgets import video_widget
+from Widgets import control_station_status
+from Widgets import annunciator_panel
+from Widgets import button_panel
+from Widgets import simple_console_widget
+from Widgets import map_widget
 
 from MainTabs.main_tab_common import TabCommon
 
@@ -20,13 +20,13 @@ class PrimaryTab(TabCommon):
     def __init__(self, mainWidget, vehicleName):
         super().__init__(mainWidget, vehicleName)
 
-        self.FlightDisplay = self.addWidget(FlightDisplay.FlightDisplay())
-        self.StatusBar = self.addWidget(VehicleStatusWidget.VehicleStatusWidget())
-        self.VideoPanel = self.addWidget(VideoWidget.VideoWidget())
-        self.Annunciator = self.addWidget(AnnunciatorPanel.AnnunciatorPanel())
-        self.ButtonPanel = self.addWidget(ButtonPanel.ButtonPanel())
-        self.Console = self.addWidget(SimpleConsoleWidget.SimpleConsoleWidget())
-        self.Map = self.addWidget(MapWidget.MapWidget())
+        self.FlightDisplay = self.addWidget(flight_display.FlightDisplay())
+        self.StatusBar = self.addWidget(vehicle_status_widget.VehicleStatusWidget())
+        self.VideoPanel = self.addWidget(video_widget.VideoWidget())
+        self.Annunciator = self.addWidget(annunciator_panel.AnnunciatorPanel())
+        self.ButtonPanel = self.addWidget(button_panel.ButtonPanel())
+        self.Console = self.addWidget(simple_console_widget.SimpleConsoleWidget())
+        self.Map = self.addWidget(map_widget.MapWidget())
 
         self.ButtonPanel.clearMapButton.clicked.connect(self.Map.clearMap)  # This is a sketchy way to do this
 

@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QLabel, QWidget
 from PyQt5.QtGui import QPainter, QPen, QBrush, QPolygon, QColor, QFont, QRegion
 from PyQt5.QtCore import Qt, QPoint
 
-from Widgets.Helpers import BasicImageDisplay
+from Widgets.Helpers import basic_image_display
 
 
 class AttitudeDisplayWidget(QLabel):
@@ -26,9 +26,9 @@ class AttitudeDisplayWidget(QLabel):
         self.rollIndicator = cv2.imread("{}/Assets/roll_dial_1.png".format(dirName), cv2.IMREAD_UNCHANGED)
 
         # Cross hair
-        self.crossHairImage = BasicImageDisplay.BasicImageDisplay(self, self.crossHair, self.size * 0.7)
-        self.rollPointerImage = BasicImageDisplay.BasicImageDisplay(self, self.rollPointer, self.size * 0.05, y=10)
-        self.rollIndicatorImage = BasicImageDisplay.BasicImageDisplay(self, self.rollIndicator, self.size * 0.9)
+        self.crossHairImage = basic_image_display.BasicImageDisplay(self, self.crossHair, self.size * 0.7)
+        self.rollPointerImage = basic_image_display.BasicImageDisplay(self, self.rollPointer, self.size * 0.05, y=10)
+        self.rollIndicatorImage = basic_image_display.BasicImageDisplay(self, self.rollIndicator, self.size * 0.9)
 
         self.refreshMask()
 

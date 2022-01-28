@@ -6,10 +6,10 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QPainter, QColor, QFont
 from PyQt5.QtWidgets import QLabel, QGridLayout, QWidget
 
-from Widgets import CustomQWidgetBase
+from Widgets import custom_q_widget_base
 
 
-class SimpleConsoleWidget(CustomQWidgetBase.CustomQWidgetBase):
+class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, widget: QWidget = None):
         super().__init__(widget)
 

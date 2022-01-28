@@ -5,12 +5,12 @@ Widget for buttons
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QComboBox, QSizePolicy, QLabel
 
-from Widgets import CustomQWidgetBase
+from Widgets import custom_q_widget_base
 
 STROBE_MODES = ["Off", "Strobe", "Status", "Auto"]
 
 
-class ButtonPanel(CustomQWidgetBase.CustomQWidgetBase):
+class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, widget: QWidget = None):
         super().__init__(widget)
         self.videoSwitcher = QComboBox()

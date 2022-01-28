@@ -5,13 +5,13 @@ Text box widget
 from PyQt5.QtWidgets import QLabel, QWidget, QGridLayout, QComboBox, QPushButton
 from PyQt5.QtGui import QFont
 
-from Widgets import CustomQWidgetBase
+from Widgets import custom_q_widget_base
 
-from Widgets.Helpers import ReconfigureLine
-from data_helpers import getValueFromList
+from Widgets.Helpers import reconfigure_line
+from data_helpers import get_value_from_list
 
 
-class Reconfigure(CustomQWidgetBase.CustomQWidgetBase):
+class Reconfigure(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, parentWidget: QWidget = None):
         super().__init__(parentWidget)
 
@@ -68,7 +68,7 @@ class Reconfigure(CustomQWidgetBase.CustomQWidgetBase):
         resetNeeded = self.resetNeeded
         self.resetNeeded = False
         while len(reconfigureItems) > len(self.reconfigureWidgetLabels):
-            line = ReconfigureLine.ReconfigureLine()
+            line = reconfigure_line.ReconfigureLine()
             line.setText(reconfigureItems[len(self.reconfigureWidgetLabels)][0])
             line.setCallback(self.textEntryCallback)
 
@@ -86,9 +86,9 @@ class Reconfigure(CustomQWidgetBase.CustomQWidgetBase):
         for i in range(len(reconfigureItems)):
             text = reconfigureItems[i][0]
             type = reconfigureItems[i][1]
-            value = getValueFromList(reconfigureItems[i], 2, "")
-            description = getValueFromList(reconfigureItems[i], 3, "")
-            config = getValueFromList(reconfigureItems[i], 4, "")
+            value = get_value_from_list(reconfigureItems[i], 2, "")
+            description = get_value_from_list(reconfigureItems[i], 3, "")
+            config = get_value_from_list(reconfigureItems[i], 4, "")
 
             # Order matters here type then config then value
             self.reconfigureWidgetLabels[i].setText(text)

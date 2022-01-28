@@ -5,10 +5,10 @@ Text box widget
 from PyQt5.QtWidgets import QLabel, QWidget, QGridLayout, QComboBox
 from PyQt5.QtGui import QFont
 
-from Widgets import CustomQWidgetBase
+from Widgets import custom_q_widget_base
 
 
-class TextBoxDropDownWidget(CustomQWidgetBase.CustomQWidgetBase):
+class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, parentWidget: QWidget = None):
         super().__init__(parentWidget)
 
