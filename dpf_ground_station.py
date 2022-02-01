@@ -21,7 +21,7 @@ class DPFGUI():
         self.multiRobot = multi_robot_tab
 
         self.vehicleData = {}
-        self.ROSConsole = [[]]
+        self.ConsoleData = [[]]
         self.callbacks = []
         self.callbackFunctions = {}
 
@@ -50,6 +50,7 @@ class DPFGUI():
 
         # This happens after the GUI closes
         self.isRunning = False
+        self.stop()
 
     def updateGUI(self):
         """Runs in GUI thread every 10ms"""
@@ -66,7 +67,7 @@ class DPFGUI():
             temp_dictionary = self.data_interfaces[interface].getDataDictionary()
             self.vehicleData.update(temp_dictionary.copy())
 
-        self.callbacks += self.GUICore.update(self.vehicleData, self.ROSConsole)
+        self.callbacks += self.GUICore.update(self.vehicleData, self.ConsoleData)
 
         tabIndex = self.GUICore.tabHolderWidget.currentIndex()
         activeTab = self.GUICore.tabHolderWidget.tabText(tabIndex)
@@ -81,7 +82,7 @@ class DPFGUI():
         self.vehicleData[vehicleName] = data
 
     def updateROSConsole(self, value, level):
-        self.ROSConsole = ([[value, level]] + self.ROSConsole)[:40]
+        self.ConsoleData = ([[value, level]] + self.ConsoleData)[:40]
 
     def processCallbacks(self):
         callbacks = copy.deepcopy(self.callbacks)

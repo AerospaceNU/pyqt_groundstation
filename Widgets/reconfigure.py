@@ -2,12 +2,11 @@
 Text box widget
 """
 
-from PyQt5.QtWidgets import QLabel, QWidget, QGridLayout, QComboBox, QPushButton
-from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QWidget, QGridLayout, QComboBox, QPushButton
 
 from Widgets import custom_q_widget_base
 
-from Widgets.Helpers import reconfigure_line
+from Widgets.QWidget_Parts import reconfigure_line
 from data_helpers import get_value_from_list
 
 

@@ -1,92 +1,51 @@
 # pyqt_groundstation
 
+PyQt based GUI program for the DPF rocket (and other stuff?). 
 
+## Naming conventions
+PyQt has the concept of a "widget", or a specific part of a GUI, like a text entry box or something. 
+This GUI also has "widgets", which are typically a collection of PyQt widgets. 
+For the rest of this document, when I say "widgets", I mean the ones specific to this GUI, 
+and when I say "PyQt widgets", I mean widget classes from PyQt.
 
-## Getting started
+## Structure
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Database dictionary
+All the data in the gui lives inside the main database dictionary. 
+This dictionary is updated from the Data Interfaces, and sent to each widget every update cycle. 
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### Widgets
+Classes for widgets live in the Widgets folder. 
+Each widget class extends `custom_q_widget_base.py`, which provides all the base functions needed for the data-handling side of the GUI. 
+`custom_q_widget_base.py` extends QWidget, so any of the widgets for this GUI can be treated like normal PyQt widgets.
 
-## Add your files
+To get data from the widget overwrites the `updateData` function, which takes the GUI database dictionary as an argument. 
+Each widget then gets their required data from the GUI database dictionary, and sets values accordingly.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+#### QWidget_Parts
+This is where custom PyQt widgets (widgets that directly extend a PyQt widget) go. 
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/aeronu/dollar-per-foot/pyqt_groundstation.git
-git branch -M main
-git push -uf origin main
-```
+#### Helpers
+This is kind of legacy structure that I don't want to fix, but the class in here handles image display, but doesn't extend a PyQt widget. 
+It would be better to refactor it so that it does extend QWidget or QLabel or something.
 
-## Integrate with your tools
+### Main Tabs
+`main_tab_common.py` is an abomination. 
+I'm going to try to fix it some, but I don't want to spend a huge amount of time on it yet, since it works.
+To add a custom tab, extend `main_tab_common.py` and call `self.addWidget` to add widgets to the call list.
+Look at `primary_tab.py` for a nice example.
 
-- [ ] [Set up project integrations](https://gitlab.com/aeronu/dollar-per-foot/pyqt_groundstation/-/settings/integrations)
+### Data Interfaces
+The data interfaces are how the GUI actually gets data from radios or log files or whatever.
+`data_interface_core.py` spins up a thread, and calls `spin()` in a loop at a maximum of 100hz.
+`spin()` runs in a thread, so your implementation can hang the thread, but maybe don't hang forever, because the thread might not close down correctly.
+Like other things, to add a new one, extend `data_interface_core.py`, and overwrite the `spin()` function. 
+You'll also need to add a line to `main.py` to register your data interface.
 
-## Collaborate with your team
+## Adding custom functionality
+In basically anything simple you'd need to add, you'll just extend the base class, and overwrite a few functions.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!).  Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- For widgets, everything should happen automatically from there.
+- For Data interfaces, you'll need to add a line to main.py to register it.
+- For Tabs, you'll need to add a line to `gui_core.py` in the `addTabByTabType` function, that takes the string name and string type of your tab, and calls `self.addVehicleTab([TabType], tabName)`. 
+You'll also need to add a line to the `run` function in `dpf_ground_station.py` that calls `self.addTab()` with the string name and string type from above.
