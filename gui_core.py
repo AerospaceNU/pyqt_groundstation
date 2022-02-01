@@ -4,6 +4,7 @@ Core functions that need to run in the GUI thread, not the main thread
 
 import inspect
 import types
+import sys
 
 import random
 
@@ -213,6 +214,9 @@ class GUICore(object):
         self.tabHolderWidget.setStyleSheet("QWidget#" + self.tabHolderWidget.objectName() + "{" + make_stylesheet_string("background", self.backgroundColor) + make_stylesheet_string("color", self.textColor) + "}")
         self.mainWindow.menuBar().setStyleSheet("QWidget#" + self.mainWindow.menuBar().objectName() + "{" + make_stylesheet_string("background", slightlyDarkerColor) + make_stylesheet_string("color", self.textColor) + "}")
         self.tabHolderWidget.tabBar().setStyleSheet("QWidget#" + self.tabHolderWidget.tabBar().objectName() + "{" + make_stylesheet_string("background", slightlyDarkerColor) + make_stylesheet_string("color", self.textColor) + "}")
+
+        if sys.platform == "win32":
+            self.tabHolderWidget.tabBar().setStyleSheet("QTabBar::tab{ background: " + get_well_formatted_rgb_string(background) + "; color: " + get_well_formatted_rgb_string(text) + "}")  # Seems to sort of fix tab bar coloring issues on windows
 
         for tab in self.tabObjects:
             tab.setTheme(self.backgroundColor, self.widgetBackgroundColor, self.textColor, self.headerTextColor, self.borderColor)
