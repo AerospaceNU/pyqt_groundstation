@@ -28,7 +28,7 @@ class TabCommon(object):
             vehicleData = {}
 
         callbacks = []
-N
+
         for widget in self.widgetList:
             widget.updateData(vehicleData)
             widget.updateControlStationData(controlStationData)
