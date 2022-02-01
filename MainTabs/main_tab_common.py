@@ -17,11 +17,10 @@ class TabCommon(object):
         self.widgetsCreated = 0
 
         self.widgetList = []
-        self.hasSubTabs = False
 
         self.colors = []
 
-    def update(self, data, controlStationData, rosConsole):
+    def update(self, data, controlStationData, console_data):
         """The update function that should not be overridden"""
         if isinstance(data, dict):
             vehicleData = data
@@ -29,11 +28,11 @@ class TabCommon(object):
             vehicleData = {}
 
         callbacks = []
-
+N
         for widget in self.widgetList:
             widget.updateData(vehicleData)
             widget.updateControlStationData(controlStationData)
-            widget.updateConsole(rosConsole)
+            widget.updateConsole(console_data)
             widget.coreUpdate()
             callbacks += widget.getCallbackEvents()
 
