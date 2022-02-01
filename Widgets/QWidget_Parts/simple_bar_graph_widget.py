@@ -45,7 +45,7 @@ class SimpleBarGraphWidget(QLabel):
         # TODO: Use the QWidget size functions instead of this sketchy one
         self.size = size
 
-        width = size / 3
+        width = int(size / 3)
 
         self.setGeometry(0, 0, width, size)
         self.setMinimumWidth(width)
