@@ -2,11 +2,10 @@
 Code used in all vehicle tabs
 """
 
-from PyQt5.QtWidgets import QWidget, QTabWidget
+from PyQt5.QtWidgets import QWidget
 
 from Widgets import custom_q_widget_base
-
-from data_helpers import make_stylesheet_string
+from data_helpers import make_stylesheet_string, get_well_formatted_rgb_string
 
 
 class TabCommon(object):
@@ -18,14 +17,7 @@ class TabCommon(object):
         self.widgetsCreated = 0
 
         self.widgetList = []
-        self.subTabs = []
-        self.subTabObjects = []
-
         self.hasSubTabs = False
-
-        self.subTabHolder = QTabWidget()
-        self.subTabHolder.setObjectName("{}_Tab_Holder".format(vehicleName))
-        self.subTabHolder.tabBar().setObjectName("{}_Tab_Bar".format(vehicleName))
 
         self.colors = []
 
@@ -45,9 +37,6 @@ class TabCommon(object):
             widget.coreUpdate()
             callbacks += widget.getCallbackEvents()
 
-        # for subTab in self.subTabObjects:
-        #     subTab.update()
-
         self.customUpdate(data)
         return callbacks
 
@@ -64,12 +53,10 @@ class TabCommon(object):
         return widget
 
     def setTheme(self, background, widgetBackground, text, headerText, border):
-        self.tabMainWidget.setStyleSheet("QWidget#" + self.tabMainWidget.objectName() + "{" + background + text + "}")
-        self.subTabHolder.setStyleSheet("QWidget#" + self.subTabHolder.objectName() + "{" + make_stylesheet_string("background", background) + make_stylesheet_string("color", text) + "}")
-        self.subTabHolder.tabBar().setStyleSheet("QWidget#" + self.subTabHolder.tabBar().objectName() + "{" + make_stylesheet_string("background", background) + make_stylesheet_string("color", text) + "}")
-
-        for tab in self.subTabs:
-            tab.setStyleSheet("QWidget#" + tab.objectName() + "{background: " + background + "; color: " + text + "}")
+        background_string = make_stylesheet_string("background", background)
+        color_string = make_stylesheet_string("color", text)
+        border_string = "border: 1px solid " + get_well_formatted_rgb_string("rgb[10,10,10]") + ";"
+        self.tabMainWidget.setStyleSheet("QWidget#" + self.tabMainWidget.objectName() + "{" + background_string + color_string + border_string + "}")
 
         for widget in self.widgetList:
             widget.setTheme(widgetBackground, text, headerText, border)

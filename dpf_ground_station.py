@@ -8,8 +8,8 @@ import copy
 
 from PyQt5.QtCore import QTimer
 
-from gui_core import GUICore
 from DataInterfaces.data_interface_core import DataInterfaceCore
+from gui_core import GUICore
 
 
 class DPFGUI():
@@ -43,7 +43,7 @@ class DPFGUI():
         # QTimer to run the update method
         timer = QTimer()
         timer.timeout.connect(self.updateGUI)
-        timer.start(10)
+        timer.start(20)
 
         self.GUIStarted = True
         self.GUICore.start()
