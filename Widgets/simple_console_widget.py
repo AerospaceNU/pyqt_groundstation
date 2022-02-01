@@ -35,11 +35,11 @@ class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
                 color = line[1]
                 self.maxLineWidth = max(self.maxLineWidth, len(line[0]))
 
-                if color == 2:
+                if color == 0:
                     painter.setPen(QColor(self.textColor[0], self.textColor[1], self.textColor[2]))
-                elif color == 4:
+                elif color == 1:
                     painter.setPen(QColor("yellow"))
-                elif color == 8 or color == 16:
+                elif color == 2:
                     painter.setPen(QColor("red"))
                 else:
                     painter.setPen(QColor("blue"))

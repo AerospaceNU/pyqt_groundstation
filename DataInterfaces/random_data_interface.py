@@ -46,3 +46,6 @@ class RandomDataInterface(DataInterfaceCore):
 
         diagnostics = {"aaa": [["hi", "aaa"], ["bbb", random.random()]], "bbb": [["aa", "  {}".format(random.random())], ["bbb", random.random()], ["c", random.random()], ["ddddddddd", random.random()]]}
         self.data_dictionary["diagnostics"] = diagnostics
+
+        if self.i % 10 == 1:
+            self.console_callback(str(random.random()), int(random.random() * 3))

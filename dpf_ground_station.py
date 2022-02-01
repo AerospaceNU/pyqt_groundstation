@@ -81,7 +81,7 @@ class DPFGUI():
         """Called in the main thread"""
         self.vehicleData[vehicleName] = data
 
-    def updateROSConsole(self, value, level):
+    def updateConsole(self, value, level):
         self.ConsoleData = ([[value, level]] + self.ConsoleData)[:40]
 
     def processCallbacks(self):
@@ -113,4 +113,5 @@ class DPFGUI():
 
     def addDataInterface(self, interface_name: str, interface_object: DataInterfaceCore):
         self.data_interfaces[interface_name] = interface_object
+        interface_object.setConsoleCallback(self.updateConsole)
         interface_object.start()

@@ -2,6 +2,11 @@
 
 PyQt based GUI program for the DPF rocket (and other stuff?). 
 
+## Install dependencies
+~~~
+pip3 install pyqt5 imutils
+~~~
+
 ## Naming conventions
 PyQt has the concept of a "widget", or a specific part of a GUI, like a text entry box or something. 
 This GUI also has "widgets", which are typically a collection of PyQt widgets. 

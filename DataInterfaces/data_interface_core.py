@@ -12,6 +12,11 @@ class DataInterfaceCore(threading.Thread):
         self.data_dictionary = {}
         self.is_running = True
 
+        self.console_callback = None
+
+    def setConsoleCallback(self, callback):
+        self.console_callback = callback
+
     def run(self):
         while self.is_running:
             self.spin()
