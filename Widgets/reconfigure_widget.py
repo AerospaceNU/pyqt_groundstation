@@ -10,7 +10,7 @@ from Widgets.QWidget_Parts import reconfigure_line
 from data_helpers import get_value_from_list
 
 
-class Reconfigure(custom_q_widget_base.CustomQWidgetBase):
+class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, parentWidget: QWidget = None):
         super().__init__(parentWidget)
 

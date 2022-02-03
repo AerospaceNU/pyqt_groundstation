@@ -32,7 +32,7 @@ class DPFGUI():
         self.GUICore.addTabByTabType("settings", "Settings")
 
         self.addTab("Primary", "rocket_primary")
-        self.addTab("Old", "primary")
+        # self.addTab("Old", "primary")
         self.addTab("Diagnostic", "diagnostic")
 
         self.GUICore.setThemeByName("Dark")
@@ -50,7 +50,7 @@ class DPFGUI():
         self.stop()
 
     def updateGUI(self):
-        """Runs in GUI thread every 10ms"""
+        """Runs in GUI thread every 20ms"""
         if self.GUIStopCommanded:
             self.stop()
 

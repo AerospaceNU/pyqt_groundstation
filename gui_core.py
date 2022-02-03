@@ -2,8 +2,6 @@
 Core functions that need to run in the GUI thread, not the main thread
 """
 
-import inspect
-import types
 import sys
 
 import random
@@ -17,7 +15,15 @@ from MainTabs.primary_tab import PrimaryTab
 from MainTabs.diagnostic_tab import DiagnosticTab
 from MainTabs.rocket_primary_tab import RocketPrimaryTab
 
-from Widgets import *
+from Widgets import annunciator_panel
+from Widgets import control_station_status
+from Widgets import flight_display
+from Widgets import map_widget
+from Widgets import reconfigure_widget
+from Widgets import simple_console_widget
+from Widgets import text_box_drop_down_widget
+from Widgets import vehicle_status_widget
+from Widgets import video_widget
 
 from data_helpers import get_rgb_from_string, get_well_formatted_rgb_string, format_rgb_string, make_stylesheet_string
 
@@ -52,19 +58,17 @@ class GUICore(object):
         self.tabHolderWidget = QTabWidget()
 
         # Code to do dynamic creation of classes
+        # The names are for humans, so they don't have to be the class name or anything
         self.widgetClasses = {}
-        excluded = ["__", "Placeholder", "WidgetClasses.QWidgets", "QWidget_Parts", "DataInterfaceTools", "CustomQWidget"]
-        for name, val in globals().items():  # Loop through globals()
-            if isinstance(val, types.ModuleType) and "Widgets." in str(val):  # Only look at modules from Widgets
-                for item in inspect.getmembers(val):
-                    containsExcludedStrings = False
-                    for a in excluded:
-                        if a in str(item):
-                            containsExcludedStrings = True
-                            break
-
-                    if name in str(item) and not containsExcludedStrings:
-                        self.widgetClasses[name] = item[1]
+        self.widgetClasses["Annunciator Panel"] = annunciator_panel.AnnunciatorPanel
+        self.widgetClasses["Control Station Status"] = control_station_status.ControlStationStatus
+        self.widgetClasses["Flight Display"] = flight_display.FlightDisplay
+        self.widgetClasses["Map Widget"] = map_widget.MapWidget
+        self.widgetClasses["Reconfigure"] = reconfigure_widget.ReconfigureWidget
+        self.widgetClasses["Simple Console"] = simple_console_widget.SimpleConsoleWidget
+        self.widgetClasses["Diagnostic Panel"] = text_box_drop_down_widget.TextBoxDropDownWidget
+        self.widgetClasses["Vehicle Status"] = vehicle_status_widget.VehicleStatusWidget
+        self.widgetClasses["Video Panel"] = video_widget.VideoWidget
 
         self.setUpMenuBar()
 
