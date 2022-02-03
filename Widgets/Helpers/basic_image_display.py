@@ -17,7 +17,7 @@ class BasicImageDisplay(object):
 
         self.theta = 0
 
-        self.setGeometry(targetWidth, x, y)
+        self.setGeometry(int(targetWidth), x, y)
 
     def setGeometry(self, targetWidth, x=None, y=None):
         windowWidth = self.rootWidget.width()
