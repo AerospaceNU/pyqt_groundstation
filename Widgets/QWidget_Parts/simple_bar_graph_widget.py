@@ -45,7 +45,7 @@ class SimpleBarGraphWidget(QLabel):
         # TODO: Use the QWidget size functions instead of this sketchy one
         self.size = size
 
-        width = size / 3
+        width = int(size / 3)
 
         self.setGeometry(0, 0, width, size)
         self.setMinimumWidth(width)
@@ -70,9 +70,11 @@ class SimpleBarGraphWidget(QLabel):
         painter.setBrush(QBrush(QColor(50, 50, 50), Qt.SolidPattern))
 
         topY = 2 * padding + fontHeight
-        rectangleHeight = self.height() - 2 * topY
-        startX = self.width() * 0.1
-        rectangleWidth = self.width() - 2 * startX
+        startX = int(self.width() * 0.1)
+
+
+        rectangleHeight = int(self.height() - 2 * topY)
+        rectangleWidth = int(self.width() - 2 * startX)
 
         painter.translate(0, topY + rectangleHeight)
 
@@ -81,7 +83,7 @@ class SimpleBarGraphWidget(QLabel):
         painter.setPen(QPen(self.barColor, 0, Qt.SolidLine))
         painter.setBrush(QBrush(self.barColor, Qt.SolidPattern))
 
-        barHeight = clamp(interpolate(self.value, self.minValue, self.maxValue, 0, rectangleHeight), 0, rectangleHeight)
+        barHeight = int(clamp(interpolate(self.value, self.minValue, self.maxValue, 0, rectangleHeight), 0, rectangleHeight))
         painter.drawRect(startX, 0, rectangleWidth, -barHeight)
 
     def setValue(self, value):
