@@ -49,7 +49,7 @@ class AttitudeDisplayWidget(QLabel):
 
     def refreshMask(self):
         # Set up octagonal mask for painter
-        cornerSize = self.width() / 8
+        cornerSize = int(self.width() / 8)
         points = [
             QPoint(cornerSize, 0),
             QPoint(0, cornerSize),
