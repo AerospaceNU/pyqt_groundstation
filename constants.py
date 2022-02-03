@@ -11,6 +11,8 @@ class Constants:
     acceleration_key = "acceleration"
     fcb_state_key = "fcb_state"
 
+    barometer_pressure_key = "barometer_pressure"
+
     fcb_battery_voltage = "fcb_battery_voltage"
     fcb_memory_usage = "fcb_memory"
 

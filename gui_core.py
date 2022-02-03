@@ -53,7 +53,7 @@ class GUICore(object):
 
         # Code to do dynamic creation of classes
         self.widgetClasses = {}
-        excluded = ["__", "Placeholder", "WidgetClasses.QWidgets", "QWidget_Parts", "Helpers", "CustomQWidget"]
+        excluded = ["__", "Placeholder", "WidgetClasses.QWidgets", "QWidget_Parts", "DataInterfaceTools", "CustomQWidget"]
         for name, val in globals().items():  # Loop through globals()
             if isinstance(val, types.ModuleType) and "Widgets." in str(val):  # Only look at modules from Widgets
                 for item in inspect.getmembers(val):

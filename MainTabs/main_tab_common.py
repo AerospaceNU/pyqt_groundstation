@@ -43,7 +43,7 @@ class TabCommon(object):
         """The update function that should be overridden"""
         pass
 
-    def addWidget(self, widget: custom_q_widget_base, widgetName="_"):
+    def addWidget(self, widget: custom_q_widget_base, widgetName="_") -> custom_q_widget_base.CustomQWidgetBase:
         self.widgetList.append(widget)
         widget.show()
         self.widgetList[-1].setObjectName("{0}_{1}_{2}".format(self.vehicleName, widgetName, self.widgetsCreated))

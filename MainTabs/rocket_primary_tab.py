@@ -2,12 +2,11 @@
 A rewrite of primary_tab to be more useful on a rocket
 """
 
-from PyQt5.QtWidgets import QGridLayout
+from PyQt5.QtWidgets import QGridLayout, QSizePolicy
 
 from Widgets import flight_display
 from Widgets import vehicle_status_widget
 from Widgets import video_widget
-from Widgets import control_station_status
 from Widgets import annunciator_panel
 from Widgets import button_panel
 from Widgets import simple_console_widget

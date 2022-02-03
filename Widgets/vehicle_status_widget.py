@@ -42,6 +42,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         layout.addWidget(self.line_cutter_batt_1_graph, 1, 8, 4, 1)
         layout.addWidget(self.line_cutter_batt_2_graph, 1, 9, 4, 1)
         layout.addWidget(self.fcb_memory_graph, 1, 10, 4, 1)
+        layout.setContentsMargins(1, 1, 3, 1)
         self.setLayout(layout)
 
         self.widgetSize = 20
