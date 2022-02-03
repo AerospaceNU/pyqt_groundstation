@@ -34,7 +34,8 @@ class DPFGUI():
     def run(self):
         self.GUICore.addTabByTabType("settings", "Settings")
 
-        self.addTab("Primary", "primary")
+        self.addTab("Primary", "rocket_primary")
+        # self.addTab("Old", "primary")
         self.addTab("Diagnostic", "diagnostic")
 
         # Need to do themes better at some point, but this is good for now

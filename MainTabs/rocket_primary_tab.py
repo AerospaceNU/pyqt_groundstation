@@ -1,5 +1,5 @@
 """
-Layouts to drive a vehicle
+A rewrite of primary_tab to be more useful on a rocket
 """
 
 from PyQt5.QtWidgets import QGridLayout
@@ -16,11 +16,11 @@ from Widgets import map_widget
 from MainTabs.main_tab_common import TabCommon
 
 
-class PrimaryTab(TabCommon):
+class RocketPrimaryTab(TabCommon):
     def __init__(self, mainWidget, vehicleName):
         super().__init__(mainWidget, vehicleName)
 
-        self.FlightDisplay = self.addWidget(flight_display.FlightDisplay(compass_and_text=True))
+        self.FlightDisplay = self.addWidget(flight_display.FlightDisplay(compass_and_text=False))
         self.StatusBar = self.addWidget(vehicle_status_widget.VehicleStatusWidget())
         self.VideoPanel = self.addWidget(video_widget.VideoWidget())
         self.Annunciator = self.addWidget(annunciator_panel.AnnunciatorPanel())

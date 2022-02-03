@@ -15,6 +15,7 @@ from MainTabs.main_tab_common import TabCommon
 from MainTabs.settings_tab import SettingsTab
 from MainTabs.primary_tab import PrimaryTab
 from MainTabs.diagnostic_tab import DiagnosticTab
+from MainTabs.rocket_primary_tab import RocketPrimaryTab
 
 from Widgets import *
 
@@ -84,6 +85,7 @@ class GUICore(object):
         self.mainWindow.setCentralWidget(self.tabHolderWidget)
         self.mainWindow.show()
         self.mainWindow.setWindowTitle(self.title)
+
         self.application.exec_()
 
     def stop(self):
@@ -170,6 +172,8 @@ class GUICore(object):
             self.addVehicleTab(PrimaryTab, tabName)
         elif tabType == "diagnostic":
             self.addVehicleTab(DiagnosticTab, tabName)
+        elif tabType == "rocket_primary":
+            self.addVehicleTab(RocketPrimaryTab, tabName)
         else:
             print("Don't have tab configuration for vehicle type {}".format(tabType))
 
