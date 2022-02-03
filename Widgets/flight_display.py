@@ -97,7 +97,6 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.VSpeedWidget.setSize(self.scale)
         self.TerrainAltWidget.setSize(self.scale)
 
-        print(v_scale_factor)
         self.setMaximumHeight(self.scale * v_scale_factor + 40)
         self.setMaximumWidth(int(self.scale * 2 + 40))
 

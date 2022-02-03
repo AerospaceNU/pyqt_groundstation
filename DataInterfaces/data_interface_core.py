@@ -10,23 +10,34 @@ class DataInterfaceCore(threading.Thread):
     def __init__(self):
         super().__init__()
         self.data_dictionary = {}
-        self.is_running = True
+        self.should_be_running = True
+        self.enabled = True
 
         self.console_callback = None
 
     def setConsoleCallback(self, callback):
         self.console_callback = callback
 
+    def logToConsole(self, value, level):
+        if self.enabled:
+            self.console_callback(value, level)
+
+    def setEnabled(self, enabled):
+        self.enabled = enabled
+
     def run(self):
-        while self.is_running:
+        while self.should_be_running:
             self.spin()
             time.sleep(0.01)  # Keep python from locking the database objects all the time
 
     def stop(self):
-        self.is_running = False
+        self.should_be_running = False
 
     def spin(self):
         pass
 
     def getDataDictionary(self):
-        return self.data_dictionary
+        if self.enabled:
+            return self.data_dictionary
+        else:
+            return {}

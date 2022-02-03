@@ -74,8 +74,6 @@ class GUICore(object):
         self.tabHolderWidget.setObjectName("Tab_Holder")
         self.tabHolderWidget.tabBar().setObjectName("Tab_Bar")
 
-        self.mainWindow.resize(1920, 1080)
-
     def start(self):
         # Generate a random title from this list
         # I don't know why I did this
@@ -85,6 +83,8 @@ class GUICore(object):
         self.mainWindow.setCentralWidget(self.tabHolderWidget)
         self.mainWindow.show()
         self.mainWindow.setWindowTitle(self.title)
+
+        self.mainWindow.resize(1920, 1080)
 
         self.application.exec_()
 
@@ -111,6 +111,10 @@ class GUICore(object):
 
         for tab in self.tabObjects:
             callbacks += tab.update(data, self.controlStationData, rosConsole)
+
+        tabIndex = self.tabHolderWidget.currentIndex()
+        activeTab = self.tabHolderWidget.tabText(tabIndex)
+        self.mainWindow.setWindowTitle("[{0}] - {1}".format(activeTab, self.title))
 
         return callbacks
 

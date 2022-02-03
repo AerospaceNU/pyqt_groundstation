@@ -10,7 +10,7 @@ from DataInterfaces.ground_station_data_interface import GroundStationDataInterf
 
 if __name__ == '__main__':
     GUI = DPFGUI(multi_robot_tab=False)
-    # GUI.addDataInterface("random", RandomDataInterface())
+    GUI.addDataInterface("random", RandomDataInterface(), enabled=False)
     GUI.addDataInterface("ground_station", GroundStationDataInterface())
     GUI.run()
     print("Good Bye")

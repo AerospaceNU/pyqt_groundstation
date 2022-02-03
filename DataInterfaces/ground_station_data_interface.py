@@ -27,7 +27,7 @@ class GroundStationDataInterface(DataInterfaceCore):
 
     def spin(self):
         if self.nextCheckTime <= time.time():
-            self.console_callback("Trying to connect to ground station on {}".format(self.serial_port), 0)
+            self.logToConsole("Trying to connect to ground station on {}".format(self.serial_port), 0)
             try:
                 self.serial = serial.Serial(self.serial_port, self.baud_rate, timeout=1)
                 self.connected = True
@@ -37,21 +37,21 @@ class GroundStationDataInterface(DataInterfaceCore):
             except IOError as e:
                 self.connected = False
                 self.has_data = False
-                self.console_callback("Could not connect to ground station on port {}".format(self.serial_port), 2)
+                self.logToConsole("Could not connect to ground station on port {}".format(self.serial_port), 2)
                 # print(e)
                 self.nextCheckTime = time.time() + 5
 
         self.updateEveryLoop()
 
     def connectedLoop(self):
-        while self.connected and self.is_running:
+        while self.connected and self.should_be_running:
             try:
                 self.readData()
                 time.sleep(0.01)
             except IOError:
                 self.connected = False
                 self.has_data = False
-                self.console_callback("Lost connection to ground station on port {}".format(self.serial_port), 2)
+                self.logToConsole("Lost connection to ground station on port {}".format(self.serial_port), 2)
             self.updateEveryLoop()
 
     def readData(self):
@@ -71,11 +71,11 @@ class GroundStationDataInterface(DataInterfaceCore):
             self.data_dictionary[Constants.barometer_pressure_key] = baro_pres
             self.data_dictionary[Constants.fcb_battery_voltage] = batt_voltage
 
-            self.console_callback("New data: {}".format(unpacked_data), 0)
+            self.logToConsole("New data: {}".format(unpacked_data), 0)
 
             self.has_data = True
         except struct.error as e:
-            self.console_callback("Can't parse {0} (length: {2} bytes):\n{1}".format(raw_bytes, e, len(raw_bytes)), 1)
+            self.logToConsole("Can't parse {0} (length: {2} bytes):\n{1}".format(raw_bytes, e, len(raw_bytes)), 1)
 
     def updateEveryLoop(self):
         if self.connected:

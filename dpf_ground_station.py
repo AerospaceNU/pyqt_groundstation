@@ -17,7 +17,6 @@ class DPFGUI():
         self.GUIStarted = False
         self.GUIStopCommanded = False
         self.isRunning = True
-        self.activeVehicle = ""
         self.multiRobot = multi_robot_tab
 
         self.vehicleData = {}
@@ -27,19 +26,16 @@ class DPFGUI():
 
         self.data_interfaces = {}
 
-        self.tabsToAdd = []
-
-        self.GUICore = GUICore()  # Need to define this inside the thread
+        self.GUICore = GUICore()
 
     def run(self):
         self.GUICore.addTabByTabType("settings", "Settings")
 
         self.addTab("Primary", "rocket_primary")
-        # self.addTab("Old", "primary")
+        self.addTab("Old", "primary")
         self.addTab("Diagnostic", "diagnostic")
 
-        # Need to do themes better at some point, but this is good for now
-        self.GUICore.setTheme("rgb[13, 17, 23]", "rgb[13, 17, 23]", "rgb[139,148,158]", "rgb[88,166,255]", "rgb[139,148,158]")
+        self.GUICore.setThemeByName("Dark")
 
         # QTimer to run the update method
         timer = QTimer()
@@ -58,25 +54,12 @@ class DPFGUI():
         if self.GUIStopCommanded:
             self.stop()
 
-        if len(self.tabsToAdd) > 0:  # Have to do the adding in this thread
-            for request in self.tabsToAdd:
-                self.GUICore.addTabByTabType(request[1], request[0])
-            self.tabsToAdd = []
-
         # Get data from interfaces
         for interface in self.data_interfaces:
             temp_dictionary = self.data_interfaces[interface].getDataDictionary()
             self.vehicleData.update(temp_dictionary.copy())
 
         self.callbacks += self.GUICore.update(self.vehicleData, self.ConsoleData)
-
-        tabIndex = self.GUICore.tabHolderWidget.currentIndex()
-        activeTab = self.GUICore.tabHolderWidget.tabText(tabIndex)
-
-        if activeTab in self.GUICore.vehicleTabNames:
-            self.activeVehicle = activeTab
-
-        self.GUICore.mainWindow.setWindowTitle("[{0}] - {1}".format(self.activeVehicle, self.GUICore.title))
 
     def updateVehicleData(self, vehicleName, data):
         """Called in the main thread"""
@@ -91,7 +74,7 @@ class DPFGUI():
 
         for callback in callbacks:
             if callback[0] in self.callbackFunctions:
-                self.callbackFunctions[callback[0]](callback[1])  # What amazingly clean code
+                self.callbackFunctions[callback[0]](callback[1])  # <sarcasm>What amazingly clean code</sarcasm>
             else:
                 pass
                 # print("{} isn't a valid callback".format(callback[0])) # Debugging code
@@ -106,13 +89,11 @@ class DPFGUI():
 
         self.GUICore.stop()
 
-    def getActiveVehicle(self):
-        return self.activeVehicle
-
     def addTab(self, tabName, tabType):
-        self.tabsToAdd.append([tabName, tabType])
+        self.GUICore.addTabByTabType(tabType, tabName)
 
-    def addDataInterface(self, interface_name: str, interface_object: DataInterfaceCore):
+    def addDataInterface(self, interface_name: str, interface_object: DataInterfaceCore, enabled=True):
         self.data_interfaces[interface_name] = interface_object
         interface_object.setConsoleCallback(self.updateConsole)
+        interface_object.setEnabled(enabled)
         interface_object.start()
