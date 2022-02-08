@@ -7,9 +7,14 @@ class Constants:
     altitude_key = "altitude"
     latitude_key = "latitude"
     longitude_key = "longitude"
+    gps_alt_key = "gps_alt"
     vertical_speed_key = "v_speed"
     acceleration_key = "acceleration"
     fcb_state_key = "fcb_state"
+    pyro_continuity = "pyro_continuity"
+    software_version_key = "software_version"
+    timestamp_ms_key = "time_stamp_ms"
+    callisgn_key = "callsign"
 
     barometer_pressure_key = "barometer_pressure"
 
@@ -22,3 +27,23 @@ class Constants:
 
     message_age_key = "message_age"
     rssi_key = "rssi"
+    lqi_key = "lqi"
+
+    invalid_fcb_state_name = "Invalid FCB State"
+    fcb_state_names = ["Cli Calibrate",
+                       "Cli Config",
+                       "Cli Erase Flash",
+                       "Cli Help",
+                       "Cli Main",
+                       "Cli Offload",
+                       "Cli Sense",
+                       "Coast Ascent",
+                       "Drogue Descent N",
+                       "Initialize",
+                       "Main Descent",
+                       "Post Flight",
+                       "Powered Ascent",
+                       "Pre Flight",
+                       "Shutdown",
+                       "NUM_STATES",
+                       "UNKNOWN"]

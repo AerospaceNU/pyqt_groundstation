@@ -57,7 +57,7 @@ def get_rgb_from_string(textColor: str):
     elif "rgb(" in textColor:
         [red, green, blue] = textColor.split("(")[1].split(")")[0].split(",")
     else:
-        print("Invalid color string: {}".format(textColor))
+        # print("Invalid color string: {}".format(textColor))
         [red, green, blue] = [0, 0, 0]
 
     return [int(red), int(green), int(blue)]

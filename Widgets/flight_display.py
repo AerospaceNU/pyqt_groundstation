@@ -24,15 +24,15 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.useAltVSpeedWidget = True
         self.altScale = 1
         self.vSpeedScale = 1
-        self.terrainAltScale = 1
+        self.accelerationScale = 1
 
         self.pitchSource = "pitch"
         self.rollSource = "roll"
         self.yawSource = "yaw"
-        self.altSource = "depth"
+        self.altSource = "altitude"
         self.speedSource = "groundSpeed"
         self.vSpeedSource = "verticalSpeed"
-        self.terrainAltSource = "terrainAlt"
+        self.terrainAltSource = "acceleration"
 
         self.SpeedTextBox = QLabel()
         self.VSpeedTextBox = QLabel()
@@ -42,7 +42,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.HUDWidget = attitude_display_widget.AttitudeDisplayWidget()
         self.AltitudeWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(onScreenSpacingScale=5)
         self.SpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(leftOriented=False, onScreenSpacingScale=5)
-        self.TerrainAltWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(onScreenSpacingScale=self.terrainAltScale)
+        self.AccelerationWidget = v_speed_indicator_widget.VSpeedIndicatorWidget(maxSpeed=self.accelerationScale, leftOriented=False)
 
         if self.useAltVSpeedWidget:
             self.VSpeedWidget = v_speed_indicator_widget.VSpeedIndicatorWidget(maxSpeed=self.vSpeedScale)
@@ -54,7 +54,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         layout.addWidget(self.HUDWidget, 1, 2)
         layout.addWidget(self.AltitudeWidget, 1, 3)
         layout.addWidget(self.VSpeedWidget, 1, 4)
-        layout.addWidget(self.TerrainAltWidget, 1, 0)
+        layout.addWidget(self.AccelerationWidget, 1, 0)
         layout.addWidget(self.TerrainTextBox, 2, 0)
 
         layout.addWidget(self.SpeedTextBox, 2, 1)
@@ -88,14 +88,14 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
 
         self.SpeedTextBox.setText("GS")
         self.VSpeedTextBox.setText("VS")
-        self.AltitudeTextBox.setText("DEPTH")
-        self.TerrainTextBox.setText("ALT")
+        self.AltitudeTextBox.setText("ALT")
+        self.TerrainTextBox.setText("A")
 
         self.HUDWidget.setSize(self.scale)
         self.AltitudeWidget.setSize(self.scale)
         self.SpeedWidget.setSize(self.scale)
         self.VSpeedWidget.setSize(self.scale)
-        self.TerrainAltWidget.setSize(self.scale)
+        self.AccelerationWidget.setSize(self.scale)
 
         self.setMaximumHeight(self.scale * v_scale_factor + 40)
         self.setMaximumWidth(int(self.scale * 2 + 40))
@@ -121,7 +121,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.AltitudeWidget.setValue(altitude)
         self.SpeedWidget.setValue(groundSpeed)
         self.VSpeedWidget.setValue(vSpeed)
-        self.TerrainAltWidget.setValue(terrainAlt)
+        self.AccelerationWidget.setValue(terrainAlt)
 
         if self.compass_and_text:
             self.CompassWidget.setYaw(yaw)

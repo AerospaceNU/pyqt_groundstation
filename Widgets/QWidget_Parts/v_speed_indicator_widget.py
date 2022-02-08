@@ -50,6 +50,10 @@ class VSpeedIndicatorWidget(QLabel):
         painter.setPen(QPen(QColor(50, 50, 50), 0, Qt.SolidLine))
         painter.setBrush(QBrush(QColor(50, 50, 50), Qt.SolidPattern))
 
+        if not self.leftOriented:
+            painter.scale(-1, 1)
+            painter.translate(-self.width(), 0)
+
         cornerX = self.width() / 2
         cornerY = self.height() / 8
         cornerHeight = self.height() / 4
@@ -76,15 +80,8 @@ class VSpeedIndicatorWidget(QLabel):
 
         painter.setPen(QPen(Qt.white, 1, Qt.SolidLine))
         painter.setBrush(QBrush(Qt.black, Qt.SolidPattern))
+
         painter.translate(0, cornerY)
-
-        for i in range(int(maxSpeed / speedIncrement) * 2 + 1):
-            y = int(interpolate(i, 0, 2 * maxSpeed / speedIncrement, padding, gaugeHeight - padding))
-            painter.drawLine(fontSize, y, fontSize + self.width() / 8, y)
-
-            if (i * speedIncrement) % numberIncrement == 0:
-                painter.drawText(0, y + (fontSize / 2), "{}".format(int(abs((i * speedIncrement) - maxSpeed))))
-
         painter.translate(0, self.height() / 2 - cornerY)
 
         currentSpeedY = -interpolate(clamp(self.value, -maxSpeed, maxSpeed), 0, 2 * maxSpeed / speedIncrement, 0, gaugeHeight - padding)
@@ -93,6 +90,26 @@ class VSpeedIndicatorWidget(QLabel):
             painter.setPen(QPen(Qt.red, 1, Qt.SolidLine))
 
         painter.drawLine(self.width() * 1.5, 0, self.width() / 3, int(currentSpeedY / float(speedIncrement)))
+
+        painter.translate(0, -(self.height() / 2 - cornerY))
+
+        if not self.leftOriented:
+            painter.scale(-1, 1)
+            painter.translate(-self.width(), 0)
+
+        for i in range(int(maxSpeed / speedIncrement) * 2 + 1):
+            y = int(interpolate(i, 0, 2 * maxSpeed / speedIncrement, padding, gaugeHeight - padding))
+
+            if self.leftOriented:
+                painter.drawLine(fontSize, y, fontSize + self.width() / 8, y)
+            else:
+                painter.drawLine(self.width() - fontSize - self.width() / 8, y, self.width() - fontSize, y)
+
+            if (i * speedIncrement) % numberIncrement == 0:
+                if self.leftOriented:
+                    painter.drawText(0, y + (fontSize / 2), "{}".format(int(abs((i * speedIncrement) - maxSpeed))))
+                else:
+                    painter.drawText(self.width() - fontSize, y + (fontSize / 2), "{}".format(int(abs((i * speedIncrement) - maxSpeed))))
 
     def setValue(self, value):
         self.value = value

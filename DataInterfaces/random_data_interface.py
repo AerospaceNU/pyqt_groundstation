@@ -32,7 +32,7 @@ class RandomDataInterface(DataInterfaceCore):
         self.data_dictionary[Constants.altitude_key] = float(self.i) / 80.0 - 10
         self.data_dictionary["groundSpeed"] = 19.5
         self.data_dictionary["verticalSpeed"] = (self.i / 15) - 10
-        self.data_dictionary["terrainAlt"] = (-self.i / 5) + 40
+        self.data_dictionary["acceleration"] = (self.i / 60) - 5
         self.data_dictionary["j"] = self.j
         self.data_dictionary["slowSweep"] = 1 - float(self.j) / 180.0
         self.data_dictionary["x_position_global"] = math.cos(math.radians(self.j)) * r

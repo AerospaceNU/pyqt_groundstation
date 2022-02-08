@@ -36,6 +36,8 @@ class TabCommon(object):
             widget.coreUpdate()
             callbacks += widget.getCallbackEvents()
 
+        self.tabMainWidget.update()
+
         self.customUpdate(data)
         return callbacks
 
