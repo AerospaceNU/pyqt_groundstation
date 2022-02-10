@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import imutils
+import self as self
 
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel
