@@ -1,3 +1,5 @@
+
+
 """
 Line Chart Display Base
 """
@@ -37,11 +39,12 @@ class Window(QMainWindow):
         chart.addSeries(series)
         chart.createDefaultAxes()
         chart.setAnimationOptions(QChart.SeriesAnimations)
-        chart.setTitle("Line Chart Example")
+        chart.setTitle("Altitude vs. Time Graph")
 
         # Legend of Chart
         chart.legend().setVisible(True)
         chart.legend().setAlignment(Qt.AlignBottom)
+
 
         chartview = QChartView(chart)
         chartview.setRenderHint(QPainter.Antialiasing)
