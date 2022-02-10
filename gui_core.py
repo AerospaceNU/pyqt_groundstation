@@ -70,7 +70,7 @@ class GUICore(object):
         self.widgetClasses["Diagnostic Panel"] = text_box_drop_down_widget.TextBoxDropDownWidget
         self.widgetClasses["Vehicle Status"] = vehicle_status_widget.VehicleStatusWidget
         self.widgetClasses["Video Panel"] = video_widget.VideoWidget
-        self.widgetClasses["Altitude Graph"] = graph_display_base.Graph
+        self.widgetClasses["Altitude Graph"] = graph_display_base.GraphDisplay
 
         self.setUpMenuBar()
 

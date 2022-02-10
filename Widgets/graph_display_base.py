@@ -9,12 +9,36 @@ from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import Qt
 
 
-class LineChart(QWidget):
-    def __init__(self):
-        super().__init__()
+class GraphDisplay(custom_q_widget_base.CustomQWidgetBase):
+    def __init__(self, parentWidget: QWidget = None, pointsToKeep=200, updateInterval=3):
+        super().__init__(parentWidget)
 
+        self.updateInterval = updateInterval
         self.setWindowTitle("PyQtChart Line")
         self.setGeometry(100, 100, 680, 500)
+
+        series = QLineSeries(self)
+
+        # Start Data should always be starting at 0, 0
+        xTimePos = 0
+        yAltitudePos = 0
+
+        series.append(xTimePos, yAltitudePos)
+
+        chart = QChart()
+        chart.addSeries(series)
+        chart.createDefaultAxes()
+        chart.setAnimationOptions(QChart.SeriesAnimations)
+        chart.setTitle("Line Chart Example")
+
+        # Legend of Chart
+        chart.legend().setVisible(True)
+        chart.legend().setAlignment(Qt.AlignBottom)
+
+        chartview = QChartView(chart)
+        chartview.setRenderHint(QPainter.Antialiasing)
+
+        self.setCentralWidget(chartview)
 
         self.show()
 
@@ -48,6 +72,25 @@ class LineChart(QWidget):
         self.setCentralWidget(chartview)
 
 
-App = QApplication(sys.argv)
-window = Window()
-sys.exit(App.exec_())
+    def updateData(self, vehicleData):
+        if "paths" not in vehicleData:
+            paths = {}
+        else:
+            paths = vehicleData["paths"]
+
+            # series append next point gotten from data
+            series.append()
+
+            #
+            series << QPointF()
+        self.paths = paths
+
+
+
+
+
+
+        self.update()
+
+#App = QApplication(sys.argv)
+#sys.exit(App.exec_())
