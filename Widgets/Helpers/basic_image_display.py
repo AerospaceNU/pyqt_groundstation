@@ -20,7 +20,7 @@ class BasicImageDisplay(object):
 
         self.setGeometry(targetWidth, x, y)
 
-    def setGeometry(self, int(targetWidth), x=None, y=None):
+    def setGeometry(self, targetWidth, x=None, y=None):
         windowWidth = self.rootWidget.width()
         windowHeight = self.rootWidget.height()
 
