@@ -1,16 +1,9 @@
-
-
-"""
-Line Chart Display Base
-"""
-
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys
 from PyQt5.QtChart import QChart, QChartView, QLineSeries
 from PyQt5.QtCore import QPointF
 from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import Qt
-
 
 class Window(QMainWindow):
     def __init__(self):
@@ -39,12 +32,11 @@ class Window(QMainWindow):
         chart.addSeries(series)
         chart.createDefaultAxes()
         chart.setAnimationOptions(QChart.SeriesAnimations)
-        chart.setTitle("Altitude vs. Time Graph")
+        chart.setTitle("Line Chart Example")
 
         # Legend of Chart
         chart.legend().setVisible(True)
         chart.legend().setAlignment(Qt.AlignBottom)
-
 
         chartview = QChartView(chart)
         chartview.setRenderHint(QPainter.Antialiasing)
