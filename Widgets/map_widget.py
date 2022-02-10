@@ -1,4 +1,5 @@
 import time
+import navpy
 
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QPolygon
@@ -6,6 +7,7 @@ from PyQt5.QtCore import Qt, QPoint
 
 from Widgets.custom_q_widget_base import CustomQWidgetBase
 from data_helpers import interpolate, get_value_from_dictionary
+from constants import Constants
 
 
 class MapWidget(CustomQWidgetBase):
@@ -23,6 +25,8 @@ class MapWidget(CustomQWidgetBase):
         self.x_position = 0
         self.y_position = 0
         self.heading = 0
+        self.has_datum = False
+        self.datum = [0, 0]
 
         self.maxAxis = 0.1
         self.minAxis = -0.1
@@ -37,11 +41,16 @@ class MapWidget(CustomQWidgetBase):
 
         self.paths = paths
 
-        xPos = float(get_value_from_dictionary(vehicleData, "x_position_global", 0))
-        yPos = float(get_value_from_dictionary(vehicleData, "y_position_global", 0))
+        latitude = float(get_value_from_dictionary(vehicleData, Constants.latitude_key, 0))
+        longitude = float(get_value_from_dictionary(vehicleData, Constants.longitude_key, 0))
         self.heading = float(get_value_from_dictionary(vehicleData, "yaw", 0))
 
-        self.setXY(xPos, yPos)
+        if latitude != 0 and longitude != 0 and not self.has_datum:
+            self.has_datum = True
+            self.datum = [latitude, longitude]
+
+        ned = navpy.lla2ned(latitude, longitude, 0, self.datum[0], self.datum[1], 0)
+        self.setXY(ned[1], ned[0])  # ned to enu
 
     def paintEvent(self, e):
         painter = QPainter(self)  # Blue background
@@ -161,3 +170,4 @@ class MapWidget(CustomQWidgetBase):
         self.maxAxis = 0.1
         self.minAxis = -0.1
         self.paths = {}
+        self.has_datum = False

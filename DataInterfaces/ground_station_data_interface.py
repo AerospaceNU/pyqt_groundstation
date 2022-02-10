@@ -25,6 +25,8 @@ class GroundStationDataInterface(DataInterfaceCore):
         self.has_data = False
         self.good_fcb_data = False
 
+        self.has_lat_an_lon = False
+
         self.last_good_data_time = 0
         self.last_data_time = 0
 

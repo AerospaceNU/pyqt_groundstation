@@ -16,6 +16,9 @@ class Constants:
     timestamp_ms_key = "time_stamp_ms"
     callisgn_key = "callsign"
 
+    ground_station_latitude_key = "gs_lat"
+    ground_station_longitude_key = "gs_lon"
+
     barometer_pressure_key = "barometer_pressure"
 
     fcb_battery_voltage = "fcb_battery_voltage"

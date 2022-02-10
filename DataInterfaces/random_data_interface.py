@@ -4,6 +4,7 @@ Generates random data for testing
 
 import math
 import random
+import navpy
 
 from constants import Constants
 
@@ -35,8 +36,13 @@ class RandomDataInterface(DataInterfaceCore):
         self.data_dictionary["acceleration"] = (self.i / 60) - 5
         self.data_dictionary["j"] = self.j
         self.data_dictionary["slowSweep"] = 1 - float(self.j) / 180.0
-        self.data_dictionary["x_position_global"] = math.cos(math.radians(self.j)) * r
-        self.data_dictionary["y_position_global"] = math.sin(math.radians(self.j)) * r
+
+        # Generate lat-lon coords
+        e = math.cos(math.radians(self.j)) * r
+        n = math.sin(math.radians(self.j)) * r
+        lla = navpy.ned2lla([n, e, 0], 42.3601, 71.0589, 0)
+        self.data_dictionary[Constants.latitude_key] = lla[0]
+        self.data_dictionary[Constants.longitude_key] = lla[1]
 
         self.data_dictionary["status"] = int((float(self.i) / 360.0) * 3)
         self.data_dictionary["fcb_battery_voltage"] = ((float(self.i) / 360.0) * 5) + 13
