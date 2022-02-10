@@ -1,11 +1,15 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow
+
+import PyQt5.QtCore as QtCore
+from PyQt5.QtWidgets import QApplication, QWidget
+from Widgets import custom_q_widget_base
 import sys
 from PyQt5.QtChart import QChart, QChartView, QLineSeries
 from PyQt5.QtCore import QPointF
 from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import Qt
 
-class Window(QMainWindow):
+
+class LineChart(QWidget):
     def __init__(self):
         super().__init__()
 
