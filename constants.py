@@ -15,6 +15,12 @@ class Constants:
     software_version_key = "software_version"
     timestamp_ms_key = "time_stamp_ms"
     callisgn_key = "callsign"
+    temperature_key = "temperature"
+    gps_time_key = "gps_time"
+    ground_speed_key = "ground_speed"
+    climb_rate_key = "climb_rate"
+    gps_sats_key = "gps_sats"
+    bluetooth_connection_key = "ble_client"
 
     ground_station_latitude_key = "gs_lat"
     ground_station_longitude_key = "gs_lon"

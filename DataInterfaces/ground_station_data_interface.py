@@ -12,6 +12,7 @@ from DataInterfaces.MessageParsing import fcb_message_parsing
 from DataInterfaces.data_interface_core import DataInterfaceCore
 from DataInterfaces.DataInterfaceTools.annunciator_helper import AnnunciatorHelper
 from DataInterfaces.DataInterfaceTools.diagnostics_box_helper import DiagnosticsBoxHelper
+from DataInterfaces.DataInterfaceTools.gps_position_filter import GPSPositionFilter
 
 
 class GroundStationDataInterface(DataInterfaceCore):
@@ -32,6 +33,8 @@ class GroundStationDataInterface(DataInterfaceCore):
 
         self.annunciator = AnnunciatorHelper()
         self.diagnostics_box_helper = DiagnosticsBoxHelper()
+        self.vehicle_position_filter = GPSPositionFilter()
+        self.ground_station_position_filter = GPSPositionFilter()  # Not used yet
 
     def spin(self):
         if self.nextCheckTime <= time.time():
@@ -78,10 +81,17 @@ class GroundStationDataInterface(DataInterfaceCore):
             [success, dictionary, message_type] = fcb_message_parsing.parse_fcb_message(raw_bytes)
             if success:
                 self.logToConsole("New [{0}] message".format(message_type), 0)
+
+                if Constants.latitude_key in dictionary and Constants.longitude_key in dictionary:  # If dictionary contains vehicle gps position, filter it
+                    self.vehicle_position_filter.new_gps_coords(dictionary[Constants.latitude_key], dictionary[Constants.longitude_key])
+                    [new_lat, new_lon] = self.vehicle_position_filter.get_filtered_position_output()
+                    dictionary[Constants.latitude_key] = new_lat
+                    dictionary[Constants.longitude_key] = new_lon
+
                 self.data_dictionary.update(dictionary)
                 self.diagnostics_box_helper.updatePanel(message_type, dictionary)
 
-                if message_type != "Ground Station Status":  
+                if message_type != "Ground Station Status":
                     self.last_good_data_time = time.time()
                     self.good_fcb_data = True
             else:
@@ -107,6 +117,11 @@ class GroundStationDataInterface(DataInterfaceCore):
             self.annunciator.setAnnunciator(2, "Good FCB Data", 0, "FCB data current")
         else:
             self.annunciator.setAnnunciator(2, "Good FCB Data", 2, "FCB data timed out")
+
+        if self.vehicle_position_filter.has_gps_data():
+            self.annunciator.setAnnunciator(3, "GPS Fix", 0, "Valid GPS Fix")
+        else:
+            self.annunciator.setAnnunciator(3, "GPS Fix", 1, "No GPS Fix")
 
         self.data_dictionary["annunciator_1"] = self.annunciator.getList()
 

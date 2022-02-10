@@ -12,11 +12,15 @@ def clamp(value, minValue, maxValue):
     return min(max(value, minValue), maxValue)
 
 
+def vector_length(x, y):
+    return math.sqrt(x ** 2 + y ** 2)
+
+
 def distance_between_points(x, y, x2, y2):
     deltaX = x2 - x
     deltaY = y2 - y
 
-    return math.sqrt(deltaX ** 2 + deltaY ** 2)
+    vector_length(deltaX, deltaY)
 
 
 def interpolate(value, in_min, in_max, out_min, out_max):

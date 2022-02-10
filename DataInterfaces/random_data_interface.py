@@ -9,6 +9,7 @@ import navpy
 from constants import Constants
 
 from DataInterfaces.data_interface_core import DataInterfaceCore
+from DataInterfaces.DataInterfaceTools.gps_position_filter import GPSPositionFilter
 
 
 class RandomDataInterface(DataInterfaceCore):
@@ -16,6 +17,8 @@ class RandomDataInterface(DataInterfaceCore):
         super().__init__()
         self.i = 0
         self.j = 0
+
+        self.vehicle_position_filter = GPSPositionFilter()
 
     def spin(self):
         self.i += 3
@@ -41,8 +44,10 @@ class RandomDataInterface(DataInterfaceCore):
         e = math.cos(math.radians(self.j)) * r
         n = math.sin(math.radians(self.j)) * r
         lla = navpy.ned2lla([n, e, 0], 42.3601, 71.0589, 0)
-        self.data_dictionary[Constants.latitude_key] = lla[0]
-        self.data_dictionary[Constants.longitude_key] = lla[1]
+        self.vehicle_position_filter.new_gps_coords(lla[0], lla[1])
+        [new_lat, new_lon] = self.vehicle_position_filter.get_filtered_position_output()
+        self.data_dictionary[Constants.latitude_key] = new_lat
+        self.data_dictionary[Constants.longitude_key] = new_lon
 
         self.data_dictionary["status"] = int((float(self.i) / 360.0) * 3)
         self.data_dictionary["fcb_battery_voltage"] = ((float(self.i) / 360.0) * 5) + 13
