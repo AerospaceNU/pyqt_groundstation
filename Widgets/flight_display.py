@@ -12,6 +12,7 @@ from Widgets.QWidget_Parts import attitude_display_widget
 from Widgets.QWidget_Parts import compass_display_widget
 from Widgets.QWidget_Parts import v_speed_indicator_widget
 from data_helpers import get_value_from_dictionary, round_to_string
+from constants import Constants
 
 
 class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
@@ -21,7 +22,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.scale = 200
         v_scale_factor = 1
         self.compass_and_text = compass_and_text
-        self.useAltVSpeedWidget = True
+        self.useAltVSpeedWidget = False
         self.altScale = 1
         self.vSpeedScale = 1
         self.accelerationScale = 1
@@ -29,9 +30,9 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.pitchSource = "pitch"
         self.rollSource = "roll"
         self.yawSource = "yaw"
-        self.altSource = "altitude"
+        self.altSource = Constants.altitude_key
         self.speedSource = "groundSpeed"
-        self.vSpeedSource = "verticalSpeed"
+        self.vSpeedSource = Constants.vertical_speed_key
         self.terrainAltSource = "acceleration"
 
         self.SpeedTextBox = QLabel()
@@ -40,14 +41,10 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.TerrainTextBox = QLabel()
 
         self.HUDWidget = attitude_display_widget.AttitudeDisplayWidget()
-        self.AltitudeWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(onScreenSpacingScale=5)
-        self.SpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(leftOriented=False, onScreenSpacingScale=5)
+        self.AltitudeWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(textSpacing=0.1)
+        self.SpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(leftOriented=False, textSpacing=0.1)
         self.AccelerationWidget = v_speed_indicator_widget.VSpeedIndicatorWidget(maxSpeed=self.accelerationScale, leftOriented=False)
-
-        if self.useAltVSpeedWidget:
-            self.VSpeedWidget = v_speed_indicator_widget.VSpeedIndicatorWidget(maxSpeed=self.vSpeedScale)
-        else:
-            self.VSpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(onScreenSpacingScale=self.vSpeedScale)
+        self.VSpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(textSpacing=1)
 
         layout = QGridLayout()
         layout.addWidget(self.SpeedWidget, 1, 1)

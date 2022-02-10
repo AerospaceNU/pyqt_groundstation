@@ -7,6 +7,30 @@ PyQt based GUI program for the DPF rocket (and other stuff?).
 pip3 install pyqt5 imutils
 ~~~
 
+## Radio messages
+All radio messages from the rocket have this format:
+~~~
+uint8_t packetType;
+uint8_t softwareVersion;
+uint32_t timestampMs;
+char callsign[8];//14
+[DATA]
+uint8_t RSSI
+uint8_t CRC and LQI
+~~~
+
+The [DATA] field is different depending on the packetType
+
+Message type 0 is called "Old transmit stuff"
+~~~
+float  gps_lat,     gps_long,     gps_alt;//26
+float pos_z, vel_z;//34
+float    baro_pres;//38
+double   battery_voltage;//46
+uint8_t  pyro_continuity;
+uint8_t  state;//48
+~~~
+
 ## Naming conventions
 PyQt has the concept of a "widget", or a specific part of a GUI, like a text entry box or something. 
 This GUI also has "widgets", which are typically a collection of PyQt widgets. 

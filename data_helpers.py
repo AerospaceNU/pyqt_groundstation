@@ -102,7 +102,11 @@ def round_to_string(value: float, characters: int):
             preDecimalLength += 1
 
         string = "{}".format(round(value, characters - preDecimalLength - 1))
+
+        if "." in string and len(string) > characters:
+            string = string.split(".")[0]
+
         while len(string) < characters:
-            string += "0"
+            string = " " + string
 
     return string
