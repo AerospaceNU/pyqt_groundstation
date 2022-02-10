@@ -57,7 +57,7 @@ class RandomDataInterface(DataInterfaceCore):
         self.data_dictionary["annunciator_1"] = annunciator
 
         diagnostics = {"aaa": [["hi", "aaa"], ["bbb", random.random()]], "bbb": [["aa", "  {}".format(random.random())], ["bbb", random.random()], ["c", random.random()], ["ddddddddd", random.random()]]}
-        self.data_dictionary["diagnostics"] = diagnostics
+        self.data_dictionary[Constants.raw_message_data_key] = diagnostics
 
         if self.i % 10 == 1:
             self.logToConsole(str(random.random()), int(random.random() * 3))

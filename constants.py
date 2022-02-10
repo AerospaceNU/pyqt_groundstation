@@ -32,6 +32,7 @@ class Constants:
     rssi_key = "rssi"
     lqi_key = "lqi"
     crc_key = "crc"
+    raw_message_data_key = "raw_message_data"
 
     invalid_fcb_state_name = "Invalid FCB State"
     fcb_state_names = ["Cli Calibrate",

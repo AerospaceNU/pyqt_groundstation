@@ -7,6 +7,8 @@ from PyQt5.QtGui import QFont
 
 from Widgets import custom_q_widget_base
 
+from constants import Constants
+
 
 class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, parentWidget: QWidget = None):
@@ -25,16 +27,18 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
         self.yBuffer = 0
         self.colorString = ""
 
-        self.source = "diagnostics"
+        self.source = Constants.raw_message_data_key
 
         self.menuItems = []
         self.setMenuItems(["No data"])
 
     def updateData(self, vehicleData):
-        if "diagnostics" not in vehicleData:
+        if self.source not in vehicleData:
             self.setMinimumSize(5, 5)
             return
-        dataStruct = vehicleData["diagnostics"]
+        dataStruct = vehicleData[self.source]
+
+        print(self.source)
 
         selectedTarget = self.dropDownWidget.currentText()
         menuItems = []

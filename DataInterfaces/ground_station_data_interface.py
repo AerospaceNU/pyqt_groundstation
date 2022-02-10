@@ -111,6 +111,6 @@ class GroundStationDataInterface(DataInterfaceCore):
         self.data_dictionary["annunciator_1"] = self.annunciator.getList()
 
         self.data_dictionary["status"] = self.annunciator.getOverallStatus()
-        self.data_dictionary["diagnostics"] = self.diagnostics_box_helper.get_diagnostics_dict()
+        self.data_dictionary[Constants.raw_message_data_key] = self.diagnostics_box_helper.get_diagnostics_dict()
 
         self.data_dictionary[Constants.message_age_key] = round(time.time() - self.last_good_data_time, 3)
