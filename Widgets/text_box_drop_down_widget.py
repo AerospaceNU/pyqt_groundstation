@@ -38,8 +38,6 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
             return
         dataStruct = vehicleData[self.source]
 
-        print(self.source)
-
         selectedTarget = self.dropDownWidget.currentText()
         menuItems = []
         for item in dataStruct:

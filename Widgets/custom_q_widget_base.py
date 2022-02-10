@@ -26,13 +26,12 @@ class CustomQWidgetBase(QWidget):
 
         self.borderColor = [0, 0, 0]
         self.backgroundColor = [0, 0, 0]
-        self.textColor = [0,0,0]
+        self.textColor = [0, 0, 0]
         self.callbackEvents = []
         self.tabName = ""
 
-        if not self.isInLayout:
-            self.setContextMenuPolicy(Qt.CustomContextMenu)
-            self.customContextMenuRequested.connect(self.rightClickMenu)
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.rightClickMenu)
 
     def setTheme(self, widgetBackground, text, headerText, border):
         """I implemented my own theme code instead of using the QT stuff, because this does what I want"""
@@ -49,16 +48,25 @@ class CustomQWidgetBase(QWidget):
     def rightClickMenu(self, e: QPoint):
         menu = QMenu()
 
-        if self.draggable:
-            menu.addAction("Disable dragging", lambda draggable=False: self.setDraggable(draggable))
-        else:
-            menu.addAction("Enable dragging", lambda draggable=True: self.setDraggable(draggable))
+        if not self.isInLayout:
+            if self.draggable:
+                menu.addAction("Disable dragging", lambda draggable=False: self.setDraggable(draggable))
+            else:
+                menu.addAction("Enable dragging", lambda draggable=True: self.setDraggable(draggable))
 
-        menu.addSeparator()
-        menu.addAction("Delete", self.hide)
-        menu.addSeparator()
+            menu.addSeparator()
+            menu.addAction("Delete", self.hide)
+            menu.addSeparator()
+
+        self.addCustomMenuItems(menu)
 
         menu.exec_(self.mapToGlobal(e))
+
+    def addCustomMenuItems(self, menu: QMenu):
+        pass
+
+    def requestCallback(self, callback_name, callback_data):
+        self.callbackEvents.append([callback_name, callback_data])
 
     def setDraggable(self, draggable):
         if not self.isInLayout:

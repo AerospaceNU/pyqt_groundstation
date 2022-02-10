@@ -39,7 +39,6 @@ class GUICore(object):
         self.tabs = {}
         self.tabNames = []
         self.vehicleTabNames = []
-        self.widgetList = []
         self.placeHolderList = []
 
         self.tabObjects = []

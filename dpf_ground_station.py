@@ -13,11 +13,10 @@ from gui_core import GUICore
 
 
 class DPFGUI():
-    def __init__(self, multi_robot_tab=True):
+    def __init__(self):
         self.GUIStarted = False
         self.GUIStopCommanded = False
         self.isRunning = True
-        self.multiRobot = multi_robot_tab
 
         self.vehicleData = {}
         self.ConsoleData = [[]]
@@ -34,6 +33,8 @@ class DPFGUI():
         self.addTab("Primary", "rocket_primary")
         # self.addTab("Old", "primary")
         self.addTab("Diagnostic", "diagnostic")
+
+        self.addCallback("clear_console", self.clearConsole)
 
         self.GUICore.setThemeByName("Dark")
 
@@ -61,6 +62,8 @@ class DPFGUI():
 
         self.callbacks += self.GUICore.update(self.vehicleData, self.ConsoleData)
 
+        self.processCallbacks()
+
     def updateVehicleData(self, vehicleName, data):
         """Called in the main thread"""
         self.vehicleData[vehicleName] = data
@@ -77,7 +80,7 @@ class DPFGUI():
                 self.callbackFunctions[callback[0]](callback[1])  # <sarcasm>What amazingly clean code</sarcasm>
             else:
                 pass
-                # print("{} isn't a valid callback".format(callback[0])) # Debugging code
+                # print("{} isn't a valid callback".format(callback[0]))  # Debugging code
                 # print(self.callbackFunctions.keys())
 
     def addCallback(self, target, callback):
@@ -97,3 +100,6 @@ class DPFGUI():
         interface_object.setConsoleCallback(self.updateConsole)
         interface_object.setEnabled(enabled)
         interface_object.start()
+
+    def clearConsole(self, _):  # Need a empty arg to fit with callback system
+        self.ConsoleData = [[]]

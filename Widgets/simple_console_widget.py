@@ -50,3 +50,9 @@ class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         height = self.fontInfo().pixelSize() * len(self.data) + 10
         width = int(max(self.fontInfo().pixelSize() * 0.7 * self.maxLineWidth, 1))
         self.resize(width, height)
+
+    def addCustomMenuItems(self, menu):
+        menu.addAction("Clear console", self.clearConsole)
+
+    def clearConsole(self):
+        self.requestCallback("clear_console", "")
