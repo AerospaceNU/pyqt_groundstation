@@ -14,13 +14,19 @@ class DataInterfaceCore(threading.Thread):
         self.enabled = True
 
         self.console_callback = None
+        self.last_console_message = ""
 
     def setConsoleCallback(self, callback):
         self.console_callback = callback
 
+    def logToConsoleAndCheck(self, value, level):
+        if value != self.last_console_message:
+            self.logToConsole(value, level)
+
     def logToConsole(self, value, level):
         if self.enabled:
-            self.console_callback(value, level)
+            self.console_callback("{0}: {1}".format(time.strftime("%H:%M:%S"), value), level)
+            self.last_console_message = value
 
     def setEnabled(self, enabled):
         self.enabled = enabled

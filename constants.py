@@ -28,6 +28,7 @@ class Constants:
     message_age_key = "message_age"
     rssi_key = "rssi"
     lqi_key = "lqi"
+    crc_key = "crc"
 
     invalid_fcb_state_name = "Invalid FCB State"
     fcb_state_names = ["Cli Calibrate",

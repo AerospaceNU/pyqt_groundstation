@@ -57,13 +57,16 @@ class GroundStationDataInterface(DataInterfaceCore):
                 self.readData()
                 time.sleep(0.01)
                 if time.time() - self.last_data_time > 5:  # Timeout checks on any data, not just good data
-                    self.logToConsole("Ground station on port {} timed out".format(self.serial_port), 2)
+                    self.logToConsoleAndCheck("Ground station on port {} timed out".format(self.serial_port), 2)
+                    self.has_data = False
+                    self.good_fcb_data = False
             except IOError:
                 self.logToConsole("Lost connection to ground station on port {}".format(self.serial_port), 2)
+                self.connected = False
             self.updateEveryLoop()
 
     def readData(self):
-        raw_bytes = self.serial.read(100)  # Read in bytes
+        raw_bytes = self.serial.read(50)  # Read in bytes
         if len(raw_bytes) == 0:  # If it didn't send a message, we don't parse
             return
 
@@ -72,19 +75,20 @@ class GroundStationDataInterface(DataInterfaceCore):
         try:
             [success, dictionary, message_type] = fcb_message_parsing.parse_fcb_message(raw_bytes)
             if success:
-                self.logToConsole("New [{0}] message at time {1}".format(message_type, time.strftime("%H:%M:%S")), 0)
-                # self.logToConsole("New data: {}".format(dictionary), 0)
+                self.logToConsole("New [{0}] message".format(message_type), 0)
                 self.data_dictionary.update(dictionary)
                 self.diagnostics_box_helper.updatePanel(message_type, dictionary)
-                self.last_good_data_time = time.time()
-                self.good_fcb_data = True
+
+                if message_type != "Ground Station Status":  
+                    self.last_good_data_time = time.time()
+                    self.good_fcb_data = True
             else:
-                self.logToConsole("Could not parse message: {}".format(message_type), 1)
+                self.logToConsole("Could not parse message: {0}".format(message_type), 1)
                 self.good_fcb_data = False
 
             self.has_data = True
         except struct.error as e:
-            self.logToConsole("Can't parse {0} (length: {2} bytes):\n{1}".format(raw_bytes, e, len(raw_bytes)), 1)
+            self.logToConsole("Can't parse message (length: {2} bytes):\n{1}".format(raw_bytes, e, len(raw_bytes)), 1)
 
     def updateEveryLoop(self):
         if self.connected:
@@ -93,14 +97,14 @@ class GroundStationDataInterface(DataInterfaceCore):
             self.annunciator.setAnnunciator(0, "GS Connection", 2, "No connection")
 
         if self.has_data:
-            self.annunciator.setAnnunciator(1, "GS Data", 0, "Receiving data from ground station")
+            self.annunciator.setAnnunciator(1, "FCB Data", 0, "Receiving data from rocket")
         else:
-            self.annunciator.setAnnunciator(1, "GS Data", 2, "No data")
+            self.annunciator.setAnnunciator(1, "FCB Data", 2, "No data from rocket")
 
         if self.good_fcb_data:
-            self.annunciator.setAnnunciator(2, "Good Data", 0, "FCB data current")
+            self.annunciator.setAnnunciator(2, "Good FCB Data", 0, "FCB data current")
         else:
-            self.annunciator.setAnnunciator(2, "Good Data", 2, "FCB data timed out")
+            self.annunciator.setAnnunciator(2, "Good FCB Data", 2, "FCB data timed out")
 
         self.data_dictionary["annunciator_1"] = self.annunciator.getList()
 
