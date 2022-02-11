@@ -98,7 +98,7 @@ def parse_fcb_message(data):
         try:
             MESSAGE_CALLBACKS[message_number][1](raw_packet, dictionary)  # Parse message
             success = True
-        except struct.error:
+        except struct.error as e:
             success = False
 
         # Add radio stuff

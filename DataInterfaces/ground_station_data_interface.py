@@ -1,5 +1,5 @@
 """
-Generates random data for testing
+Reads data from the ground station hardware, and parses it
 """
 
 import struct
@@ -27,6 +27,12 @@ class GroundStationDataInterface(DataInterfaceCore):
         self.good_fcb_data = False
 
         self.has_lat_an_lon = False
+
+        self.raw_data_file = open("raw_data.txt", "a+")
+        self.parsed_messages_file = open("parsed_messages.txt", "a+")
+
+        self.raw_data_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%M-%d %H:%M:%S")))
+        self.parsed_messages_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%M-%d %H:%M:%S")))
 
         self.last_good_data_time = 0
         self.last_data_time = 0
@@ -75,12 +81,15 @@ class GroundStationDataInterface(DataInterfaceCore):
         if len(raw_bytes) == 0:  # If it didn't send a message, we don't parse
             return
 
+        self.raw_data_file.write("{0}: {1}\n".format(time.strftime("%H:%M:%S"), str(raw_bytes)))
+
         self.last_data_time = time.time()
 
         try:
             [success, dictionary, message_type] = fcb_message_parsing.parse_fcb_message(raw_bytes)
             if success:
                 self.logToConsole("New [{0}] message".format(message_type), 0)
+                self.logMessageToFile(message_type, dictionary)
 
                 if Constants.latitude_key in dictionary and Constants.longitude_key in dictionary:  # If dictionary contains vehicle gps position, filter it
                     self.vehicle_position_filter.new_gps_coords(dictionary[Constants.latitude_key], dictionary[Constants.longitude_key])
@@ -101,6 +110,9 @@ class GroundStationDataInterface(DataInterfaceCore):
             self.has_data = True
         except struct.error as e:
             self.logToConsole("Can't parse message (length: {2} bytes):\n{1}".format(raw_bytes, e, len(raw_bytes)), 1)
+
+    def logMessageToFile(self, message_type, parsed_message):
+        self.parsed_messages_file.write("{0}: {1} {2}\n".format(time.strftime("%H:%M:%S"), message_type, str(parsed_message)))
 
     def updateEveryLoop(self):
         if self.connected:

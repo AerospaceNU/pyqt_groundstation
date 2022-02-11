@@ -1,2 +1,4 @@
 .idea
 __pycache__
+parsed_messages.txt
+raw_data.txt

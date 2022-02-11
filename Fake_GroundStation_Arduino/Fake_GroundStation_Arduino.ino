@@ -10,6 +10,8 @@ typedef struct __attribute__((__packed__)) {
   double   battery_voltage;//46
   uint8_t  pyro_continuity;
   uint8_t  state;//48
+  uint8_t rssi;
+  uint8_t crc_lqi;
 } TransmitData_t;
 static TransmitData_t transmitPacket;
 
@@ -37,6 +39,7 @@ void loop() {
   transmitPacket.state = 2;
   transmitPacket.pos_z = 0;
   transmitPacket.vel_z = 10;
+  transmitPacket.crc_lqi = 255;
 
   Serial.write((char*)(uint8_t*) &transmitPacket, sizeof(transmitPacket));
   delay(100);
