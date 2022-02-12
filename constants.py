@@ -24,6 +24,7 @@ class Constants:
 
     ground_station_latitude_key = "gs_lat"
     ground_station_longitude_key = "gs_lon"
+    ground_station_altitude_key = "gps_alt"
 
     barometer_pressure_key = "barometer_pressure"
 

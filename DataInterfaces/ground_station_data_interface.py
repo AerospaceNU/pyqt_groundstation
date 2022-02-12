@@ -91,11 +91,19 @@ class GroundStationDataInterface(DataInterfaceCore):
                 self.logToConsole("New [{0}] message".format(message_type), 0)
                 self.logMessageToFile(message_type, dictionary)
 
+                # Special parse operations to deal with filtering lat and lon data
                 if Constants.latitude_key in dictionary and Constants.longitude_key in dictionary:  # If dictionary contains vehicle gps position, filter it
                     self.vehicle_position_filter.new_gps_coords(dictionary[Constants.latitude_key], dictionary[Constants.longitude_key])
                     [new_lat, new_lon] = self.vehicle_position_filter.get_filtered_position_output()
                     dictionary[Constants.latitude_key] = new_lat
                     dictionary[Constants.longitude_key] = new_lon
+
+                # Filter ground station lat and lon
+                if Constants.ground_station_latitude_key in dictionary and Constants.ground_station_longitude_key in dictionary:
+                    self.ground_station_position_filter.new_gps_coords(dictionary[Constants.ground_station_latitude_key], dictionary[Constants.ground_station_longitude_key])
+                    [new_lat, new_lon] = self.ground_station_position_filter.get_filtered_position_output()
+                    dictionary[Constants.ground_station_latitude_key] = new_lat
+                    dictionary[Constants.ground_station_longitude_key] = new_lon
 
                 self.data_dictionary.update(dictionary)
                 self.diagnostics_box_helper.updatePanel(message_type, dictionary)
@@ -131,9 +139,14 @@ class GroundStationDataInterface(DataInterfaceCore):
             self.annunciator.setAnnunciator(2, "Good FCB Data", 2, "FCB data timed out")
 
         if self.vehicle_position_filter.has_gps_data():
-            self.annunciator.setAnnunciator(3, "GPS Fix", 0, "Valid GPS Fix")
+            self.annunciator.setAnnunciator(3, "FCB GPS Fix", 0, "Valid GPS Fix")
         else:
-            self.annunciator.setAnnunciator(3, "GPS Fix", 1, "No GPS Fix")
+            self.annunciator.setAnnunciator(3, "FCB GPS Fix", 1, "No GPS Fix")
+
+        # if self.ground_station_position_filter.has_gps_data():
+        #     self.annunciator.setAnnunciator(4, "GS GPS Fix", 0, "Valid GPS Fix")
+        # else:
+        #     self.annunciator.setAnnunciator(4, "GS GPS Fix", 1, "No GPS Fix")
 
         self.data_dictionary["annunciator_1"] = self.annunciator.getList()
 

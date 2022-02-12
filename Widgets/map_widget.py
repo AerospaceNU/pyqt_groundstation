@@ -41,16 +41,22 @@ class MapWidget(CustomQWidgetBase):
 
         self.paths = paths
 
+        self.heading = float(get_value_from_dictionary(vehicleData, "yaw", 0))
         latitude = float(get_value_from_dictionary(vehicleData, Constants.latitude_key, 0))
         longitude = float(get_value_from_dictionary(vehicleData, Constants.longitude_key, 0))
-        self.heading = float(get_value_from_dictionary(vehicleData, "yaw", 0))
+        gs_lat = float(get_value_from_dictionary(vehicleData, Constants.ground_station_latitude_key, 0))
+        gs_lon = float(get_value_from_dictionary(vehicleData, Constants.ground_station_longitude_key, 0))
 
-        if latitude != 0 and longitude != 0 and not self.has_datum:
-            self.has_datum = True
-            self.datum = [latitude, longitude]
+        # if latitude != 0 and longitude != 0 and gs_lat != 0 and gs_lon != 0:
+        if latitude != 0 and longitude != 0:
+            if not self.has_datum:
+                self.datum = [latitude, longitude]
+                self.has_datum = True
 
-        ned = navpy.lla2ned(latitude, longitude, 0, self.datum[0], self.datum[1], 0)
-        self.setXY(ned[1], ned[0])  # ned to enu
+            ned = navpy.lla2ned(latitude, longitude, 0, self.datum[0], self.datum[1], 0)
+            self.setXY(ned[1], ned[0])  # ned to enu
+        else:
+            self.setXY(0, 0)
 
     def paintEvent(self, e):
         painter = QPainter(self)  # Blue background

@@ -47,6 +47,14 @@ def parse_alt_lat_lon_message(data, dictionary):
     dictionary[Constants.bluetooth_connection_key] = unpacked_data[15]
 
 
+def parse_ground_station_gps(data, dictionary):
+    unpacked_data = struct.unpack("<Bfff", data)
+
+    dictionary[Constants.ground_station_latitude_key] = unpacked_data[1]
+    dictionary[Constants.ground_station_longitude_key] = unpacked_data[2]
+    dictionary[Constants.ground_station_altitude_key] = unpacked_data[3]
+
+
 def parse_test_message(data, dictionary):
     """Parses the test message"""
     unpacked_data = struct.unpack("<ffffffdBB", data)
@@ -108,5 +116,11 @@ def parse_fcb_message(data):
 
         # return
         return [success, dictionary, message_type]
+    elif message_number == 200:  # Ground station packet
+        try:
+            parse_ground_station_gps(data, dictionary)
+            return [True, dictionary, "Ground Station GPS"]
+        except:
+            return [False, {}, "Ground Station GPS"]
     else:
         return [False, {}, "Invalid message type {}".format(message_number)]
