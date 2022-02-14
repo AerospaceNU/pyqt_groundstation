@@ -71,7 +71,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         fault_status = int(float(get_value_from_dictionary(vehicleData, self.statusSource, 3)))
         fcb_state = str(get_value_from_dictionary(vehicleData, Constants.fcb_state_key, "No Data"))
         altitude = float(get_value_from_dictionary(vehicleData, Constants.altitude_key, -1))
-        rssi = str(get_value_from_dictionary(vehicleData, Constants.rssi_key, "0"))
+        rssi = str(get_value_from_dictionary(vehicleData, Constants.rssi_key, "No Data"))
         message_age = float(get_value_from_dictionary(vehicleData, Constants.message_age_key, -1))
         v_speed = float(get_value_from_dictionary(vehicleData, Constants.vertical_speed_key, -1))
         acceleration = float(get_value_from_dictionary(vehicleData, Constants.acceleration_key, -1))
@@ -98,7 +98,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.fcb_state_box.setText(fcb_state)
 
         self.modeBox.setText("Alt: {} m".format(round_to_string(altitude, 6)))
-        self.rssi_box.setText("RSSI: {} db".format(rssi))
+        self.rssi_box.setText("RSSI: {}".format(rssi))
         self.message_age_box.setText("Message age: {} s".format(message_age))
         self.v_speed_box.setText("Vertical Speed: {} m/s".format(round_to_string(v_speed, 6)))
         self.acceleration_box.setText("Acceleration: {} m/s^2".format(round_to_string(acceleration, 6)))

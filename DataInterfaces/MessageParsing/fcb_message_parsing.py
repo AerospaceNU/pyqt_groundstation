@@ -84,7 +84,7 @@ def parse_fcb_message(data):
         # Get CRC, LQI, RSSI data from message (last two bytes)
         fcb_data = data[0:-2]
         radio_data = data[-2:]
-        unpacked_radio_status_data = struct.unpack('<BB', radio_data)
+        unpacked_radio_status_data = struct.unpack('<bB', radio_data)
         lqi = unpacked_radio_status_data[1] & 0b1111111  # The last 7 bits of the lqi byte are the lqi
         crc = bin(unpacked_radio_status_data[1]).lstrip('0b')[0]
 
@@ -103,14 +103,21 @@ def parse_fcb_message(data):
         raw_packet = fcb_data[14:]
         message_type = MESSAGE_CALLBACKS[message_number][0]  # Get message type
 
+        # Parse message
         try:
-            MESSAGE_CALLBACKS[message_number][1](raw_packet, dictionary)  # Parse message
+            MESSAGE_CALLBACKS[message_number][1](raw_packet, dictionary)
             success = True
         except struct.error as e:
             success = False
 
         # Add radio stuff
-        dictionary[Constants.rssi_key] = unpacked_radio_status_data[0]
+        rssi = unpacked_radio_status_data[0]
+        if rssi != -128:
+            rssi_text = "{} db".format(rssi - 50)
+        else:
+            rssi_text = "Invalid RSSI"
+
+        dictionary[Constants.rssi_key] = rssi_text
         dictionary[Constants.lqi_key] = lqi
         dictionary[Constants.crc_key] = crc
 
