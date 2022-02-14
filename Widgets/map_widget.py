@@ -159,7 +159,7 @@ class MapWidget(CustomQWidgetBase):
             self.oldPoints = [[x, y]]
         else:
             if time.time() > self.lastPointTime + self.newPointInterval:
-                self.oldPoints = ([[x, y]] + self.oldPoints)[:self.pointsToKeep]
+                self.oldPoints = ([[x, y]] + self.oldPoints)  # [:self.pointsToKeep] We keep all the points now
                 self.lastPointTime = time.time()
 
         realAxisSize = self.maxAxis - self.minAxis
@@ -176,4 +176,7 @@ class MapWidget(CustomQWidgetBase):
         self.maxAxis = 0.1
         self.minAxis = -0.1
         self.paths = {}
+
+    def resetDatum(self):
         self.has_datum = False
+        self.clearMap()

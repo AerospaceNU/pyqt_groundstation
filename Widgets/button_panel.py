@@ -7,8 +7,6 @@ from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QComboBox, QSizeP
 
 from Widgets import custom_q_widget_base
 
-STROBE_MODES = ["Off", "Strobe", "Status", "Auto"]
-
 
 class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, widget: QWidget = None):
@@ -20,7 +18,7 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
         self.bagControlTextBox = QLabel()
         self.bagControlButton = QPushButton()
         self.clearMapButton = QPushButton()
-        self.strobeButton = QPushButton()
+        self.resetDatumButton = QPushButton()
 
         self.menuItems = []
         self.acousticMode = 2
@@ -30,13 +28,13 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
 
         layout = QGridLayout()
         layout.addWidget(self.videoSwitcher, 1, 1)
-        layout.addWidget(self.calibratePressure, 2, 1)
-        layout.addWidget(self.acousticSwitcherTextBox, 3, 1)
-        layout.addWidget(self.acousticSwitcherButton, 4, 1)
-        layout.addWidget(self.bagControlTextBox, 5, 1)
-        layout.addWidget(self.bagControlButton, 6, 1)
-        layout.addWidget(self.clearMapButton, 7, 1)
-        layout.addWidget(self.strobeButton, 8, 1)
+        # layout.addWidget(self.calibratePressure, 2, 1)
+        # layout.addWidget(self.acousticSwitcherTextBox, 3, 1)
+        # layout.addWidget(self.acousticSwitcherButton, 4, 1)
+        # layout.addWidget(self.bagControlTextBox, 5, 1)
+        # layout.addWidget(self.bagControlButton, 6, 1)
+        layout.addWidget(self.clearMapButton, 2, 1)
+        layout.addWidget(self.resetDatumButton, 3, 1)
         self.setLayout(layout)
 
         font = QFont("Monospace", 9)
@@ -47,18 +45,18 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
         self.bagControlTextBox.setFont(font)
         self.bagControlButton.setFont(font)
         self.clearMapButton.setFont(font)
-        self.strobeButton.setFont(font)
+        self.resetDatumButton.setFont(font)
 
         self.calibratePressure.setText("MS5837 Cal")
         self.acousticSwitcherTextBox.setText("Acoustics")
         self.bagControlTextBox.setText("Bagging")
         self.setVideoOptions(["No Video"])
         self.clearMapButton.setText("Clear Map")
+        self.resetDatumButton.setText("Reset Datum")
 
         self.acousticSwitcherButton.clicked.connect(self.acousticButtonPress)
         self.calibratePressure.clicked.connect(self.calibrateButtonPress)
         self.bagControlButton.clicked.connect(self.bagButtonPress)
-        self.strobeButton.clicked.connect(self.strobeButtonPress)
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
@@ -87,13 +85,6 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
         self.isBagging = not self.isBagging
         self.callbackEvents.append(["{}_bagging".format(self.tabName), self.isBagging])
 
-    def strobeButtonPress(self):
-        self.strobeMode += 1
-        if self.strobeMode > 3:
-            self.strobeMode = 0
-
-        self.callbackEvents.append(["{}_strobe".format(self.tabName), self.strobeMode])
-
     def updateData(self, vehicleData):
         if "camera" in vehicleData:
             cameras = list(vehicleData["camera"])
@@ -113,12 +104,6 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
         else:
             self.bagControlButton.setText("Disabled")
 
-        self.strobeButton.setText(STROBE_MODES[self.strobeMode])
-
-        if not self.initialized:
-            self.initialized = True
-            self.callbackEvents.append(["{}_strobe".format(self.tabName), self.strobeMode])
-
     def setWidgetColors(self, widgetBackgroundString, textString, headerTextString, borderString):
         string = "{0}{1}{2}{3}".format(widgetBackgroundString, textString, headerTextString, borderString)
         self.setStyleSheet("QWidget#" + self.objectName() + "{" + string + "}")
@@ -130,4 +115,4 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
         self.bagControlTextBox.setStyleSheet(widgetBackgroundString + textString)
         self.bagControlButton.setStyleSheet(widgetBackgroundString + textString)
         self.clearMapButton.setStyleSheet(widgetBackgroundString + textString)
-        self.strobeButton.setStyleSheet(widgetBackgroundString + textString)
+        self.resetDatumButton.setStyleSheet(widgetBackgroundString + textString)

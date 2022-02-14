@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget
 from Widgets import placeholder
 from MainTabs.main_tab_common import TabCommon
 from MainTabs.settings_tab import SettingsTab
-from MainTabs.primary_tab import PrimaryTab
 from MainTabs.diagnostic_tab import DiagnosticTab
 from MainTabs.rocket_primary_tab import RocketPrimaryTab
 
@@ -175,8 +174,6 @@ class GUICore(object):
     def addTabByTabType(self, tabType: str, tabName: str):
         if tabType == "settings":
             self.addVehicleTab(SettingsTab, tabName)
-        elif tabType == "primary":
-            self.addVehicleTab(PrimaryTab, tabName)
         elif tabType == "diagnostic":
             self.addVehicleTab(DiagnosticTab, tabName)
         elif tabType == "rocket_primary":
