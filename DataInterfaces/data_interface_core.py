@@ -6,7 +6,6 @@ import threading
 import time
 
 
-
 class DataInterfaceCore(threading.Thread):
     def __init__(self):
         super().__init__()
