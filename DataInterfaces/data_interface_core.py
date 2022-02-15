@@ -6,6 +6,7 @@ import threading
 import time
 
 
+
 class DataInterfaceCore(threading.Thread):
     def __init__(self):
         super().__init__()
@@ -20,10 +21,12 @@ class DataInterfaceCore(threading.Thread):
         self.console_callback = callback
 
     def logToConsoleAndCheck(self, value, level):
+        """Logs to console if the message isn't the same as the last message"""
         if value != self.last_console_message:
             self.logToConsole(value, level)
 
     def logToConsole(self, value, level):
+        """Logs data to GUI Console"""
         if self.enabled:
             self.console_callback("{0}: {1}".format(time.strftime("%H:%M:%S"), value), level)
             self.last_console_message = value

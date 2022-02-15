@@ -5,6 +5,7 @@ Reads data from the ground station hardware, and parses it
 import struct
 import time
 import serial
+import serial.tools.list_ports
 
 from constants import Constants
 
@@ -14,10 +15,14 @@ from DataInterfaces.DataInterfaceTools.annunciator_helper import AnnunciatorHelp
 from DataInterfaces.DataInterfaceTools.diagnostics_box_helper import DiagnosticsBoxHelper
 from DataInterfaces.DataInterfaceTools.gps_position_filter import GPSPositionFilter
 
+from dpf_ground_station import DPFGUI
+
 
 class GroundStationDataInterface(DataInterfaceCore):
-    def __init__(self):
+    def __init__(self, gui: DPFGUI):
         super().__init__()
+
+        self.gui_object = gui  # I'm not really sure if this is a good idea or not, but I need the functionality
 
         self.nextCheckTime = time.time()
         self.serial_port = "/dev/ttyACM0"
@@ -26,7 +31,7 @@ class GroundStationDataInterface(DataInterfaceCore):
         self.has_data = False
         self.good_fcb_data = False
 
-        self.has_lat_an_lon = False
+        self.has_lat_and_lon = False
 
         self.raw_data_file = open("raw_data.txt", "a+")
         self.parsed_messages_file = open("parsed_messages.txt", "a+")
@@ -37,10 +42,16 @@ class GroundStationDataInterface(DataInterfaceCore):
         self.last_good_data_time = 0
         self.last_data_time = 0
 
+        self.gui_object.addCallback("set_serial_port", self.changeActiveSerialPort)
+
         self.annunciator = AnnunciatorHelper()
         self.diagnostics_box_helper = DiagnosticsBoxHelper()
         self.vehicle_position_filter = GPSPositionFilter()
         self.ground_station_position_filter = GPSPositionFilter()  # Not used yet
+
+    def changeActiveSerialPort(self, portName):
+        self.serial_port = portName
+        self.connected = False
 
     def spin(self):
         if self.nextCheckTime <= time.time():
@@ -49,7 +60,7 @@ class GroundStationDataInterface(DataInterfaceCore):
                 self.serial = serial.Serial(self.serial_port, self.baud_rate, timeout=0.05)  # Set the serial port timeout really small, so we only get one message at a time
                 self.connected = True
                 self.connectedLoop()
-                self.nextCheckTime = time.time() + 5
+                self.nextCheckTime = time.time() + 1
                 self.serial.close()
             except IOError as e:
                 self.logToConsole("Could not connect to ground station on port {}".format(self.serial_port), 2)
@@ -63,18 +74,19 @@ class GroundStationDataInterface(DataInterfaceCore):
         self.updateEveryLoop()
 
     def connectedLoop(self):
-        while self.connected and self.should_be_running:
-            try:
+        try:
+            while self.connected and self.should_be_running:
                 self.readData()
                 time.sleep(0.01)
                 if time.time() - self.last_data_time > 5:  # Timeout checks on any data, not just good data
                     self.logToConsoleAndCheck("Ground station on port {} timed out".format(self.serial_port), 2)
                     self.has_data = False
                     self.good_fcb_data = False
-            except IOError:
-                self.logToConsole("Lost connection to ground station on port {}".format(self.serial_port), 2)
-                self.connected = False
-            self.updateEveryLoop()
+                self.updateEveryLoop()
+            self.logToConsole("Disconnected from ground station on port {}".format(self.serial_port), 2)
+        except IOError:
+            self.logToConsole("Lost connection to ground station on port {}".format(self.serial_port), 2)
+            self.connected = False
 
     def readData(self):
         raw_bytes = self.serial.read(50)  # Read in bytes

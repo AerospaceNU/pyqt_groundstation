@@ -3,10 +3,11 @@ Core functions that need to run in the GUI thread, not the main thread
 """
 
 import sys
-
+import copy
 import random
+import serial.tools.list_ports
 
-from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget
+from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget, QMenu
 
 from Widgets import placeholder
 from MainTabs.main_tab_common import TabCommon
@@ -39,6 +40,7 @@ class GUICore(object):
         self.tabNames = []
         self.vehicleTabNames = []
         self.placeHolderList = []
+        self.callback_queue = []
 
         self.tabObjects = []
         self.controlStationData = {}
@@ -54,6 +56,8 @@ class GUICore(object):
         self.application = QApplication([])
         self.mainWindow = QMainWindow()
         self.tabHolderWidget = QTabWidget()
+
+        self.serial_port_menu = QMenu()
 
         # Code to do dynamic creation of classes
         # The names are for humans, so they don't have to be the class name or anything
@@ -118,6 +122,9 @@ class GUICore(object):
         activeTab = self.tabHolderWidget.tabText(tabIndex)
         self.mainWindow.setWindowTitle("[{0}] - {1}".format(activeTab, self.title))
 
+        callbacks += copy.deepcopy(self.callback_queue)
+        self.callback_queue = []
+
         return callbacks
 
     def updateControlStationData(self, data):
@@ -139,6 +146,21 @@ class GUICore(object):
         themeMenu = menuBar.addMenu("Theme")
         for theme in THEMES:
             themeMenu.addAction(theme, lambda themeName=theme: self.setThemeByName(themeName))
+
+        self.serial_port_menu = menuBar.addMenu("Serial Port")
+        self.serial_port_menu.aboutToShow.connect(self.refreshSerialPorts)  # aboutToShow runs before the menu is created
+        serial_ports = [comport.device for comport in serial.tools.list_ports.comports()]
+        for port in serial_ports:
+            self.serial_port_menu.addAction(port, lambda portName=port: self.setActiveSerialPort(portName))
+
+    def setActiveSerialPort(self, portName):
+        self.callback_queue.append(["set_serial_port", portName])
+
+    def refreshSerialPorts(self):
+        serial_ports = [comport.device for comport in serial.tools.list_ports.comports()]
+        self.serial_port_menu.clear()
+        for port in serial_ports:
+            self.serial_port_menu.addAction(port, lambda portName=port: self.setActiveSerialPort(portName))
 
     def createWidgetFromName(self, widgetName, parent=None):
         """Will create any widget from its file name!"""

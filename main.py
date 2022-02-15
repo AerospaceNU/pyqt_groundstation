@@ -11,6 +11,6 @@ from DataInterfaces.ground_station_data_interface import GroundStationDataInterf
 if __name__ == '__main__':
     GUI = DPFGUI()
     GUI.addDataInterface("random", RandomDataInterface(), enabled=False)
-    GUI.addDataInterface("ground_station", GroundStationDataInterface())
+    GUI.addDataInterface("ground_station", GroundStationDataInterface(GUI))
     GUI.run()
     print("Good Bye")
