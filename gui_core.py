@@ -41,6 +41,7 @@ class GUICore(object):
         self.vehicleTabNames = []
         self.placeHolderList = []
         self.callback_queue = []
+        self.data_interface_dict = {}
 
         self.tabObjects = []
         self.controlStationData = {}
@@ -58,6 +59,7 @@ class GUICore(object):
         self.tabHolderWidget = QTabWidget()
 
         self.serial_port_menu = QMenu()
+        self.data_interface_menu = QMenu()
 
         # Code to do dynamic creation of classes
         # The names are for humans, so they don't have to be the class name or anything
@@ -71,8 +73,6 @@ class GUICore(object):
         self.widgetClasses["Diagnostic Panel"] = text_box_drop_down_widget.TextBoxDropDownWidget
         self.widgetClasses["Vehicle Status"] = vehicle_status_widget.VehicleStatusWidget
         self.widgetClasses["Video Panel"] = video_widget.VideoWidget
-
-        self.setUpMenuBar()
 
         self.application.setObjectName("Application")
         self.mainWindow.setObjectName("Main_Window")
@@ -89,6 +89,8 @@ class GUICore(object):
         self.mainWindow.setCentralWidget(self.tabHolderWidget)
         self.mainWindow.show()
         self.mainWindow.setWindowTitle(self.title)
+
+        self.setUpMenuBar()
 
         self.mainWindow.resize(1920, 1080)
 
@@ -149,12 +151,26 @@ class GUICore(object):
 
         self.serial_port_menu = menuBar.addMenu("Serial Port")
         self.serial_port_menu.aboutToShow.connect(self.refreshSerialPorts)  # aboutToShow runs before the menu is created
-        serial_ports = [comport.device for comport in serial.tools.list_ports.comports()]
-        for port in serial_ports:
-            self.serial_port_menu.addAction(port, lambda portName=port: self.setActiveSerialPort(portName))
+
+        self.data_interface_menu = menuBar.addMenu("Data Interfaces")
+        self.data_interface_menu.aboutToShow.connect(self.refreshDataInterfaces)
 
     def setActiveSerialPort(self, portName):
         self.callback_queue.append(["set_serial_port", portName])
+
+    def enableDisableDataInterface(self, interfaceName):
+        interface = self.data_interface_dict[interfaceName]
+        interface.toggleEnabled()
+
+    def refreshDataInterfaces(self):
+        self.data_interface_menu.clear()
+
+        for interfaceName in self.data_interface_dict:
+            interface = self.data_interface_dict[interfaceName]
+            if interface.enabled:
+                self.data_interface_menu.addAction("Disable {}".format(interfaceName), lambda targetInterface=interfaceName: self.enableDisableDataInterface(targetInterface))
+            else:
+                self.data_interface_menu.addAction("Enable {}".format(interfaceName), lambda targetInterface=interfaceName: self.enableDisableDataInterface(targetInterface))
 
     def refreshSerialPorts(self):
         serial_ports = [comport.device for comport in serial.tools.list_ports.comports()]
@@ -219,6 +235,9 @@ class GUICore(object):
                 self.title = "We're not a hardware lab"
         else:
             print("No Theme named {}".format(name))
+
+    def setDataInterfaceDict(self, data_interface_dict):
+        self.data_interface_dict = data_interface_dict
 
     def setTheme(self, background: str, widgetBackground: str, text: str, headerText: str, border: str):
         """

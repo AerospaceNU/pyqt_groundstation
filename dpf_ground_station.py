@@ -38,6 +38,8 @@ class DPFGUI():
 
         self.GUICore.setThemeByName("Dark")
 
+        self.GUICore.setDataInterfaceDict(self.data_interfaces)
+
         # QTimer to run the update method
         timer = QTimer()
         timer.timeout.connect(self.updateGUI)

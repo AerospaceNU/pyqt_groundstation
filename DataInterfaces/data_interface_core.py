@@ -33,6 +33,9 @@ class DataInterfaceCore(threading.Thread):
     def setEnabled(self, enabled):
         self.enabled = enabled
 
+    def toggleEnabled(self):
+        self.setEnabled(not self.enabled)
+
     def run(self):
         while self.should_be_running:
             self.spin()
