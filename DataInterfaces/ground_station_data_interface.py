@@ -57,7 +57,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
 
     def connectedLoop(self):
         try:
-            while self.connected and self.should_be_running:
+            while self.connected and self.should_be_running and self.enabled:
                 self.readData()
                 time.sleep(0.01)
                 if time.time() - self.last_data_time > 5:  # Timeout checks on any data, not just good data

@@ -38,7 +38,8 @@ class DataInterfaceCore(threading.Thread):
 
     def run(self):
         while self.should_be_running:
-            self.spin()
+            if self.enabled:
+                self.spin()
             time.sleep(0.01)  # Keep python from locking the database objects all the time
 
     def stop(self):
