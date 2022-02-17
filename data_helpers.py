@@ -20,7 +20,7 @@ def distance_between_points(x, y, x2, y2):
     deltaX = x2 - x
     deltaY = y2 - y
 
-    vector_length(deltaX, deltaY)
+    return vector_length(deltaX, deltaY)
 
 
 def interpolate(value, in_min, in_max, out_min, out_max):

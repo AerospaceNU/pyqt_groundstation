@@ -25,4 +25,4 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
 
         self.handleParsedData(packet_type, parsed_packet)
         self.updateEveryLoop()
-        time.sleep(.01)
+        time.sleep(.05)

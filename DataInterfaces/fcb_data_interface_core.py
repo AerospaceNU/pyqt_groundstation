@@ -44,6 +44,8 @@ class FCBDataInterfaceCore(DataInterfaceCore):
         self.updateEveryLoop()
 
     def handleParsedData(self, message_type, dictionary):
+        self.diagnostics_box_helper.updatePanel(message_type, dictionary)  # Update the diagnostics box with the unfiltered data
+
         # Special parse operations to deal with filtering lat and lon data
         if Constants.latitude_key in dictionary and Constants.longitude_key in dictionary:  # If dictionary contains vehicle gps position, filter it
             self.vehicle_position_filter.new_gps_coords(dictionary[Constants.latitude_key], dictionary[Constants.longitude_key])
@@ -59,7 +61,6 @@ class FCBDataInterfaceCore(DataInterfaceCore):
             dictionary[Constants.ground_station_longitude_key] = new_lon
 
         self.data_dictionary.update(dictionary)
-        self.diagnostics_box_helper.updatePanel(message_type, dictionary)
 
         if message_type != "Ground Station Status":
             self.last_good_data_time = time.time()

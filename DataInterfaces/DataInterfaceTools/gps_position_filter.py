@@ -4,21 +4,18 @@ Really rough filter for GPS data
 It checks to see if the position received is within 10000 meters of the last gps point, and only accepts positions that are
 """
 
-import navpy
-
-from data_helpers import vector_length
+import statistics
 
 
 class GPSPositionFilter(object):
-    def __init__(self, name, max_bad_points=10):
-        self.latitude = 0
-        self.longitude = 0
-        self.has_initial_point = False
-
+    def __init__(self, name, filter_history_length=10):
         self.name = name
 
-        self.max_bad_points = max_bad_points
-        self.bad_points_in_a_row = 0
+        self.has_initial_point = False
+        self.filter_history_length = filter_history_length
+
+        self.latitude_list = []
+        self.longitude_list = []
 
     def new_gps_coords(self, latitude, longitude):
         """Really simple threshold rejection filter, only takes points within 10km of the last fix"""
@@ -26,27 +23,19 @@ class GPSPositionFilter(object):
         if latitude == 0 or longitude == 0:  # Don't update the filter on 0 data
             return
 
-        # TODO: Write a better filter for gps data
-        # TODO: if we get bad GPS data, we should probably ignore the whole packet (or at least everything after GPS)
-        if self.has_initial_point:
-            ned_delta = navpy.lla2ned(latitude, longitude, 0, self.latitude, self.longitude, 0)
-            if (vector_length(ned_delta[0], ned_delta[1])) < 10000:
-                self.latitude = latitude
-                self.longitude = longitude
-            else:
-                print("GUI received GPS position too far from last: [{0}, {1}].  Ignoring".format(latitude, longitude))
-                self.bad_points_in_a_row += 1
+        self.has_initial_point = True
 
-                if self.bad_points_in_a_row > self.max_bad_points:
-                    self.reset_filter()
-
-        else:
-            self.latitude = latitude
-            self.longitude = longitude
-            self.has_initial_point = True
+        self.latitude_list = (self.latitude_list + [latitude])[-self.filter_history_length:]
+        self.longitude_list = (self.longitude_list + [longitude])[-self.filter_history_length:]
 
     def get_filtered_position_output(self):
-        return [self.latitude, self.longitude]
+        if len(self.latitude_list) > 0 and len(self.longitude_list) > 0:
+            latitude = statistics.median(self.latitude_list)
+            longitude = statistics.median(self.longitude_list)
+
+            return [latitude, longitude]
+        else:
+            return [0, 0]
 
     def has_gps_data(self):
         return self.has_initial_point
@@ -54,4 +43,5 @@ class GPSPositionFilter(object):
     def reset_filter(self):
         print("{} GPS Filer resetting".format(self.name))
         self.has_initial_point = False
-        self.bad_points_in_a_row = 0
+        self.latitude_list = []
+        self.longitude_list = []

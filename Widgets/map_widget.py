@@ -6,7 +6,7 @@ from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QPolygon
 from PyQt5.QtCore import Qt, QPoint
 
 from Widgets.custom_q_widget_base import CustomQWidgetBase
-from data_helpers import interpolate, get_value_from_dictionary
+from data_helpers import interpolate, get_value_from_dictionary, distance_between_points
 from constants import Constants
 
 
@@ -20,6 +20,7 @@ class MapWidget(CustomQWidgetBase):
 
         self.pointsToKeep = pointsToKeep
         self.newPointInterval = updateInterval
+        self.newPointSpacing = 10
         self.lastPointTime = 0
 
         self.x_position = 0
@@ -153,12 +154,18 @@ class MapWidget(CustomQWidgetBase):
         self.x_position = x
         self.y_position = y
 
+        if len(self.oldPoints) > 0:
+            last_point_in_list = self.oldPoints[0]
+            distance = distance_between_points(self.x_position, self.y_position, last_point_in_list[0], last_point_in_list[1])
+        else:
+            distance = 0
+
         if x == 0:
             return
         if len(self.oldPoints) == 0:
             self.oldPoints = [[x, y]]
         else:
-            if time.time() > self.lastPointTime + self.newPointInterval:
+            if time.time() > self.lastPointTime + self.newPointInterval or distance > self.newPointSpacing:
                 self.oldPoints = ([[x, y]] + self.oldPoints)  # [:self.pointsToKeep] We keep all the points now
                 self.lastPointTime = time.time()
 
