@@ -18,6 +18,8 @@ class RecordedDataReader(object):
         has_first_point = False
         first_point = []
 
+        packet_data = {}
+
         for line in data:
             if len(line.strip()) == 0 or "RUN START" in line:
                 pass
