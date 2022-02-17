@@ -18,7 +18,7 @@ class RandomDataInterface(DataInterfaceCore):
         self.i = 0
         self.j = 0
 
-        self.vehicle_position_filter = GPSPositionFilter()
+        self.vehicle_position_filter = GPSPositionFilter("random data")
 
     def spin(self):
         self.i += 3
