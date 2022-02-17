@@ -37,6 +37,7 @@ THEMES = {}
 THEMES["Dark"] = ["rgb[13, 17, 23]", "rgb[13, 17, 23]", "rgb[139,148,158]", "rgb[88,166,255]", "rgb[139,148,158]"]
 THEMES["Light"] = ["rgb[255, 255, 255]", "rgb[255, 255, 255]", "rgb[0,0,0]", "rgb[0,0,0]", "rgb[0,0,0]"]
 THEMES["High Contrast Dark"] = ["rgb[0, 0, 0]", "rgb[0, 0, 0]", "rgb[255,255,255]", "rgb[255,255,255]", "rgb[255,255,255]"]
+THEMES["Don't click on this one"] = ["rgb[0, 0, 0]", "rgb[0, 0, 0]", "rgb[0, 0, 0]", "rgb[0, 0, 0]", "rgb[0, 0, 0]"]
 
 
 class DPFGUI():
