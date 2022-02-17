@@ -10,10 +10,15 @@ from data_helpers import vector_length
 
 
 class GPSPositionFilter(object):
-    def __init__(self):
+    def __init__(self, name, max_bad_points=10):
         self.latitude = 0
         self.longitude = 0
         self.has_initial_point = False
+
+        self.name = name
+
+        self.max_bad_points = max_bad_points
+        self.bad_points_in_a_row = 0
 
     def new_gps_coords(self, latitude, longitude):
         """Really simple threshold rejection filter, only takes points within 10km of the last fix"""
@@ -30,6 +35,11 @@ class GPSPositionFilter(object):
                 self.longitude = longitude
             else:
                 print("GUI received GPS position too far from last: [{0}, {1}].  Ignoring".format(latitude, longitude))
+                self.bad_points_in_a_row += 1
+
+                if self.bad_points_in_a_row > self.max_bad_points:
+                    self.reset_filter()
+
         else:
             self.latitude = latitude
             self.longitude = longitude
@@ -40,3 +50,8 @@ class GPSPositionFilter(object):
 
     def has_gps_data(self):
         return self.has_initial_point
+
+    def reset_filter(self):
+        print("{} GPS Filer resetting".format(self.name))
+        self.has_initial_point = False
+        self.bad_points_in_a_row = 0

@@ -33,8 +33,8 @@ class FCBDataInterfaceCore(DataInterfaceCore):
 
         self.annunciator = AnnunciatorHelper()
         self.diagnostics_box_helper = DiagnosticsBoxHelper()
-        self.vehicle_position_filter = GPSPositionFilter()
-        self.ground_station_position_filter = GPSPositionFilter()  # Not used yet
+        self.vehicle_position_filter = GPSPositionFilter("FCB")
+        self.ground_station_position_filter = GPSPositionFilter("Ground Station")  # Not used yet
 
     def spin(self):
         self.connected = False
