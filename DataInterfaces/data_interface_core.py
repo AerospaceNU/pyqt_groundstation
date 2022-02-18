@@ -10,6 +10,7 @@ class DataInterfaceCore(threading.Thread):
     def __init__(self):
         super().__init__()
         self.data_dictionary = {}
+        self.gui_full_data_dictionary = {}
         self.should_be_running = True
         self.enabled = True
 
@@ -47,6 +48,9 @@ class DataInterfaceCore(threading.Thread):
 
     def spin(self):
         pass
+
+    def setFullDataDictionary(self, data_dict):
+        self.gui_full_data_dictionary = data_dict
 
     def getDataDictionary(self):
         if self.enabled:

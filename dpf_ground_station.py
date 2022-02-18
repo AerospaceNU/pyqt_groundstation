@@ -45,7 +45,7 @@ class DPFGUI():
         self.GUIStopCommanded = False
 
         # This could use some restructuring
-        self.vehicleData = {}
+        self.database_dictionary = {}
         self.ConsoleData = [[]]
         self.callbackFunctions = {}
         self.callback_queue = []
@@ -91,12 +91,15 @@ class DPFGUI():
         self.tabHolderWidget.tabBar().setObjectName("Tab_Bar")
 
     def run(self):
+        # Add tabs to GUI
         self.addTabByTabType("settings", "Settings")
         self.addTabByTabType("rocket_primary", "Primary")
         self.addTabByTabType("diagnostic", "Diagnostic")
 
+        # Add callback to clear console
         self.addCallback("clear_console", self.clearConsole)
 
+        # Other setup tasks
         self.setThemeByName("Dark")
         self.setUpMenuBar()
 
@@ -107,7 +110,6 @@ class DPFGUI():
 
         # Set up main window
         self.mainWindow.setCentralWidget(self.tabHolderWidget)
-        self.mainWindow.show()
         self.mainWindow.setWindowTitle(self.title)
         self.mainWindow.resize(1920, 1080)
 
@@ -117,6 +119,7 @@ class DPFGUI():
         timer.start(20)
 
         # Run (blocks until GUI closes)
+        self.mainWindow.show()
         self.application.exec_()
 
         # This happens after the GUI closes
@@ -124,24 +127,30 @@ class DPFGUI():
 
     def setUpMenuBar(self):
         """Create menu bar"""
+
+        # Get main menu bar object
         menuBar = self.mainWindow.menuBar()
         fileMenu = menuBar.addMenu("File")
         fileMenu.addAction("Quit", self.stop)
 
-        # Menu bar for widgets
+        # Menu bar to add new widgets
         widgetMenu = menuBar.addMenu("Add")
 
         for item in self.widgetClasses:
             widgetMenu.addAction(item, lambda name=item: self.makeNewWidgetInCurrentTab(name))
         widgetMenu.addSeparator()
 
+        # Menu bar to change theme
         themeMenu = menuBar.addMenu("Theme")
         for theme in THEMES:
             themeMenu.addAction(theme, lambda themeName=theme: self.setThemeByName(themeName))
 
+        # Menu bar to set serial port
+        # Because the available serial ports and data interfaces change after this class is created, we run a method every time we create the menu
         self.serial_port_menu = menuBar.addMenu("Serial Port")
         self.serial_port_menu.aboutToShow.connect(self.refreshSerialPorts)  # aboutToShow runs before the menu is created
 
+        # Menu bar to enable/disable data interfaces
         self.data_interface_menu = menuBar.addMenu("Data Interfaces")
         self.data_interface_menu.aboutToShow.connect(self.refreshDataInterfaces)
 
@@ -175,8 +184,11 @@ class DPFGUI():
 
         # Get data from interfaces
         for interface in self.data_interface_dict:
-            temp_dictionary = self.data_interface_dict[interface].getDataDictionary()
-            self.vehicleData.update(temp_dictionary.copy())
+            self.database_dictionary.update(self.data_interface_dict[interface].getDataDictionary().copy())
+
+        # Send full database dictionary back to the data interfaces
+        for interface in self.data_interface_dict:
+            self.data_interface_dict[interface].setFullDataDictionary(copy.deepcopy(self.database_dictionary))
 
         # Update placeholder widgets
         for widget in self.placeHolderList:
@@ -184,13 +196,14 @@ class DPFGUI():
 
         # Update tabs
         for tab in self.tabObjects:
-            self.callback_queue += tab.update(self.vehicleData, self.controlStationData, self.ConsoleData)
+            self.callback_queue += tab.update(self.database_dictionary, self.controlStationData, self.ConsoleData)
 
         # set window title
         tabIndex = self.tabHolderWidget.currentIndex()
         activeTab = self.tabHolderWidget.tabText(tabIndex)
         self.mainWindow.setWindowTitle("[{0}] - {1}".format(activeTab, self.title))
 
+        # Process callbacks
         self.processCallbacks()
 
     def createWidgetFromName(self, widgetName, parent=None):
@@ -294,7 +307,7 @@ class DPFGUI():
 
     def updateVehicleData(self, keyName, data):
         """Called in the main thread"""
-        self.vehicleData[keyName] = data
+        self.database_dictionary[keyName] = data
 
     def updateConsole(self, value, level):
         self.ConsoleData = ([[value, level]] + self.ConsoleData)[:40]
