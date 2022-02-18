@@ -96,7 +96,8 @@ def parse_fcb_message(data):
 
         callsign = ""
         for i in range(3, 10):
-            callsign += chr(unpacked_header[i])
+            if chr(unpacked_header[i]).isalnum():
+                callsign += chr(unpacked_header[i])
         dictionary[Constants.callisgn_key] = callsign.strip()
 
         # Get the rest of the packet
