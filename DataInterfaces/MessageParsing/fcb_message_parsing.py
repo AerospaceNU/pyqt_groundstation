@@ -86,7 +86,8 @@ def parse_fcb_message(data):
         radio_data = data[-2:]
         unpacked_radio_status_data = struct.unpack('<bB', radio_data)
         lqi = unpacked_radio_status_data[1] & 0b1111111  # The last 7 bits of the lqi byte are the lqi
-        crc = bin(unpacked_radio_status_data[1]).lstrip('0b')[0]
+        crc = (unpacked_radio_status_data[1] & 0b10000000) # And top is CRC
+        crc_str = "Good" if crc else "Bad"
 
         # Get the packet header
         header_data = fcb_data[0:14]
@@ -120,9 +121,10 @@ def parse_fcb_message(data):
 
         dictionary[Constants.rssi_key] = rssi_text
         dictionary[Constants.lqi_key] = lqi
-        dictionary[Constants.crc_key] = crc
+        dictionary[Constants.crc_key] = crc_str
 
-        # return
+        # TODO this means that the diagonstics tab only shows the most recent _good_ packet. Is that what we want?
+        success = success and crc
         return [success, dictionary, message_type]
     elif message_number == 200:  # Ground station packet
         try:
