@@ -24,11 +24,15 @@ class RecordedDataReader(object):
             if len(line.strip()) == 0 or "RUN START" in line:
                 pass
             else:
-                timestamp = line.split(" ")[0][0:-1]
-                nan = float("NaN")
-                packet_type = line.split(timestamp)[1].split("{")[0][2:].strip()  # don't even ask
-                packet_data = eval("{" + line.split("{")[1])
-                packet_data["timestamp"] = timestamp
+                try:
+                    timestamp = line.split(" ")[0][0:-1]
+                    nan = float("NaN")
+                    packet_type = line.split(timestamp)[1].split("{")[0][2:].strip()  # don't even ask
+                    packet_data = eval("{" + line.split("{")[1])
+                    packet_data["timestamp"] = timestamp
+                except Exception as e:
+                    print(e)
+                    continue
 
                 # Calculate distance from start
                 if packet_data[Constants.latitude_key] != 0:
