@@ -25,6 +25,7 @@ class RecordedDataReader(object):
                 pass
             else:
                 timestamp = line.split(" ")[0][0:-1]
+                nan = float("NaN")
                 packet_type = line.split(timestamp)[1].split("{")[0][2:].strip()  # don't even ask
                 packet_data = eval("{" + line.split("{")[1])
                 packet_data["timestamp"] = timestamp
