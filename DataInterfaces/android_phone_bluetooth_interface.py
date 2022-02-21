@@ -6,6 +6,7 @@ import threading
 import math
 import time
 import pynmea2
+import bluetooth.btcommon
 from bluetooth import *
 
 from constants import Constants
@@ -42,9 +43,10 @@ def format_lat_lon_for_nmea(latitude, longitude):
 class AndroidPhoneBluetoothInterface(DataInterfaceCore):
     def __init__(self):
         super().__init__()
-
         self.server_sock = BluetoothSocket(RFCOMM)
         self.server_sock.bind(("", PORT_ANY))
+        self.server_sock.settimeout(1)
+        self.bluetooth_running = False
 
         self.client_sock_list = []
 
@@ -71,7 +73,8 @@ class AndroidPhoneBluetoothInterface(DataInterfaceCore):
             pass
 
     def advertise_bluetooth(self):
-        print("Starting Bluetooth")
+        time.sleep(1)  # wait for other stuff to spin up
+        self.logToConsole("Starting Bluetooth", 1)
         self.server_sock.listen(1)
 
         port = self.server_sock.getsockname()[1]
@@ -80,13 +83,22 @@ class AndroidPhoneBluetoothInterface(DataInterfaceCore):
         advertise_service(self.server_sock, "TestServer", service_id=uuid, service_classes=[uuid, SERIAL_PORT_CLASS], profiles=[SERIAL_PORT_PROFILE])
 
         while self.should_be_running:
+            if self.enabled and not self.bluetooth_running:
+                self.logToConsole("Waiting for connection on RFCOMM channel {}".format(port), 1)
+            if not self.enabled and self.bluetooth_running:
+                self.logToConsole("No longer advertising bluetooth on channel {}".format(port), 1, override_disabled_check=True)
+
             if self.enabled:
-                print("Waiting for connection on RFCOMM channel %d" % port)
-                client_socket, client_info = self.server_sock.accept()
-                self.client_sock_list.append(client_socket)
-                print("Accepted connection from ", client_info)
+                self.bluetooth_running = True
+                try:
+                    client_socket, client_info = self.server_sock.accept()
+                    self.client_sock_list.append(client_socket)
+                    self.logToConsole("Accepted connection from {}".format(client_info), 1)
+                except bluetooth.btcommon.BluetoothError as e:
+                    pass
             else:
                 time.sleep(1)
+                self.bluetooth_running = False
 
     def send_bluetooth(self, dataString):
         dataString += "\n"
@@ -94,6 +106,6 @@ class AndroidPhoneBluetoothInterface(DataInterfaceCore):
             try:
                 client_socket.send(dataString)
             except Exception as e:
-                print("Lost bluetooth connection")
+                self.logToConsole("Lost connection to one bluetooth device", 2)
                 client_socket.close()
                 self.client_sock_list.remove(client_socket)

@@ -80,14 +80,17 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.last_data_time = time.time()
 
         try:
-            [success, dictionary, message_type] = fcb_message_parsing.parse_fcb_message(raw_bytes)
-            if success:
+            [success, dictionary, message_type, crc] = fcb_message_parsing.parse_fcb_message(raw_bytes)
+            if not success:
+                self.logToConsole("Could not parse message: {0}".format(message_type), 1)
+                self.good_fcb_data = False
+            elif not crc:
+                self.logToConsole("Bad CRC for {} message".format(message_type), 1)
+                self.good_fcb_data = False
+            else:
                 self.logToConsole("New [{0}] message".format(message_type), 0)
                 self.logMessageToFile(message_type, dictionary)
                 self.handleParsedData(message_type, dictionary)
-            else:
-                self.logToConsole("Could not parse message: {0}".format(message_type), 1)
-                self.good_fcb_data = False
 
             self.has_data = True
         except struct.error as e:

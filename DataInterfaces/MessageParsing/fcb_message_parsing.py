@@ -123,14 +123,12 @@ def parse_fcb_message(data):
         dictionary[Constants.lqi_key] = lqi
         dictionary[Constants.crc_key] = crc_str
 
-        # TODO this means that the diagonstics tab only shows the most recent _good_ packet. Is that what we want?
-        success = success and crc
-        return [success, dictionary, message_type]
+        return [success, dictionary, message_type, crc]
     elif message_number == 200:  # Ground station packet
         try:
             parse_ground_station_gps(data, dictionary)
-            return [True, dictionary, "Ground Station GPS"]
+            return [True, dictionary, "Ground Station GPS", 1]
         except:
-            return [False, {}, "Ground Station GPS"]
+            return [False, {}, "Ground Station GPS", 1]
     else:
-        return [False, {}, "Invalid message type {}".format(message_number)]
+        return [False, {}, "Invalid message type {}".format(message_number), 1]

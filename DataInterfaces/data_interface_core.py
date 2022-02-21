@@ -25,9 +25,9 @@ class DataInterfaceCore(threading.Thread):
         if value != self.last_console_message:
             self.logToConsole(value, level)
 
-    def logToConsole(self, value, level):
+    def logToConsole(self, value, level, override_disabled_check=False):
         """Logs data to GUI Console"""
-        if self.enabled:
+        if self.enabled or override_disabled_check:
             self.console_callback("{0}: {1}".format(time.strftime("%H:%M:%S"), value), level)
             self.last_console_message = value
 
