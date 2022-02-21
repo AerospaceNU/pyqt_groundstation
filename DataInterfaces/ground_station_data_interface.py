@@ -86,6 +86,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 self.good_fcb_data = False
             elif not crc:
                 self.logToConsole("Bad CRC for {} message".format(message_type), 1)
+                self.logMessageToFile(message_type, dictionary)
+                self.handleParsedData(message_type, dictionary)
                 self.good_fcb_data = False
             else:
                 self.logToConsole("New [{0}] message".format(message_type), 0)
