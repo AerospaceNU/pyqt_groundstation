@@ -32,7 +32,7 @@ class FCBDataInterfaceCore(DataInterfaceCore):
         self.annunciator = AnnunciatorHelper()
         self.diagnostics_box_helper = DiagnosticsBoxHelper()
         self.vehicle_position_filter = GPSPositionFilter("FCB")
-        self.ground_station_position_filter = GPSPositionFilter("Ground Station")  # Not used yet
+        self.ground_station_position_filter = GPSPositionFilter("Ground Station")
 
     def spin(self):
         self.connected = False
@@ -53,6 +53,7 @@ class FCBDataInterfaceCore(DataInterfaceCore):
             [new_lat, new_lon] = self.vehicle_position_filter.get_filtered_position_output()
             dictionary[Constants.latitude_key] = new_lat
             dictionary[Constants.longitude_key] = new_lon
+            dictionary[Constants.ground_speed_key] = self.vehicle_position_filter.get_filtered_speed_output()
 
         # Filter ground station lat and lon
         if Constants.ground_station_latitude_key in dictionary and Constants.ground_station_longitude_key in dictionary:

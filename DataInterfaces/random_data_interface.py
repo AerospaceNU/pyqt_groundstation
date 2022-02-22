@@ -35,7 +35,7 @@ class RandomDataInterface(DataInterfaceCore):
         self.data_dictionary["pitch"] = 10
         self.data_dictionary["yaw"] = self.i
         self.data_dictionary[Constants.altitude_key] = float(self.i) / 80.0 - 10
-        self.data_dictionary["groundSpeed"] = 19.5
+        self.data_dictionary["groundSpeed"] = float(self.i)/10.0
         self.data_dictionary["verticalSpeed"] = (self.i / 15) - 10
         self.data_dictionary["acceleration"] = (self.i / 60) - 5
         self.data_dictionary["j"] = self.j

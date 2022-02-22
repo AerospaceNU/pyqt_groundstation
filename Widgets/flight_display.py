@@ -31,9 +31,9 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.rollSource = "roll"
         self.yawSource = "yaw"
         self.altSource = Constants.altitude_key
-        self.speedSource = "groundSpeed"
+        self.speedSource = Constants.ground_speed_key
         self.vSpeedSource = Constants.vertical_speed_key
-        self.terrainAltSource = "acceleration"
+        self.terrainAltSource = Constants.acceleration_key
 
         self.SpeedTextBox = QLabel()
         self.VSpeedTextBox = QLabel()
@@ -41,10 +41,10 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.TerrainTextBox = QLabel()
 
         self.HUDWidget = attitude_display_widget.AttitudeDisplayWidget()
-        self.AltitudeWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(textSpacing=10, pixelsPerLine=20)
-        self.SpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(leftOriented=False, textSpacing=1, pixelsPerLine=15)
+        self.AltitudeWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(textSpacing=10, pixelsPerLine=20, intermediateLines=0)
+        self.SpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(leftOriented=False, textSpacing=1, pixelsPerLine=30, intermediateLines=2)
         self.AccelerationWidget = v_speed_indicator_widget.VSpeedIndicatorWidget(maxSpeed=self.accelerationScale, leftOriented=False)
-        self.VSpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(textSpacing=10, pixelsPerLine=15)
+        self.VSpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(textSpacing=10, pixelsPerLine=20, intermediateLines=0)
 
         layout = QGridLayout()
         layout.addWidget(self.SpeedWidget, 1, 1)
@@ -105,14 +105,6 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         groundSpeed = float(get_value_from_dictionary(vehicleData, self.speedSource, 0))
         vSpeed = float(get_value_from_dictionary(vehicleData, self.vSpeedSource, 0))
         terrainAlt = float(get_value_from_dictionary(vehicleData, self.terrainAltSource, 0))
-        rollSetpoint = float(get_value_from_dictionary(vehicleData, "roll_setpoint", 0))
-        pitchSetpoint = float(get_value_from_dictionary(vehicleData, "pitch_setpoint", 0))
-        yawSetpoint = float(get_value_from_dictionary(vehicleData, "yaw_setpoint", 0))
-        depthSetpoint = float(get_value_from_dictionary(vehicleData, "depth_setpoint", 0))
-        altSetpoint = float(get_value_from_dictionary(vehicleData, "alt_setpoint", 0))
-        xPos = float(get_value_from_dictionary(vehicleData, "x_position_global", 0))
-        yPos = float(get_value_from_dictionary(vehicleData, "y_position_global", 0))
-        surge_power = float(get_value_from_dictionary(vehicleData, "surge_power", 0))
 
         self.HUDWidget.setRollPitch(roll, pitch)
         self.AltitudeWidget.setValue(altitude)

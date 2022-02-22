@@ -12,7 +12,7 @@ class AltitudeSpeedIndicatorWidget(QLabel):
         self.size = 200
 
         self.textSpacing = textSpacing  # Delta Value between lines
-        self.intermediateLines = 0  # int(intermediateLines)  # Number of lines to draw between text
+        self.intermediateLines = int(intermediateLines)  # Number of lines to draw between text
         self.pixelsPerLine = int(pixelsPerLine)
 
         self.value = 0
@@ -46,7 +46,7 @@ class AltitudeSpeedIndicatorWidget(QLabel):
         painter.setBrush(QBrush(Qt.white, Qt.SolidPattern))
 
         linesToDraw = (self.height() / 2) / (self.pixelsPerLine / (self.intermediateLines + 1))
-        lineDeltaValue = self.textSpacing * (self.intermediateLines + 1)
+        lineDeltaValue = self.textSpacing / (self.intermediateLines + 1)
 
         startX = int(self.width() / 2)
         endX = int(self.width() / 2) - shortLength
@@ -58,12 +58,13 @@ class AltitudeSpeedIndicatorWidget(QLabel):
         roundedValue = nearest_multiple(self.value, self.textSpacing)
         delta_value_per_pixel = float(self.textSpacing) / float(self.pixelsPerLine)
         center_offset_pixels = float(roundedValue - self.value) / float(delta_value_per_pixel)
+        line_pixel_spacing = self.pixelsPerLine / (self.intermediateLines + 1)
 
         for i in range(-int(linesToDraw), int(linesToDraw + 2)):
-            lineYPosition = (i * self.pixelsPerLine) - center_offset_pixels
+            lineYPosition = (i * line_pixel_spacing) - center_offset_pixels
             painter.drawLine(startX, lineYPosition, endX, lineYPosition)
 
-            if True:  # i % self.intermediateLines == 0:
+            if i % (self.intermediateLines + 1) == 0:
                 value = round_to_string(roundedValue + (-i * lineDeltaValue), 4)
                 if self.leftOriented:
                     painter.drawText(endX + 5, lineYPosition + int(fontSize / 2), "{}".format(value))
