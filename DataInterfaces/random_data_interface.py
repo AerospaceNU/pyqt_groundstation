@@ -2,6 +2,7 @@
 Generates random data for testing
 """
 
+import time
 import math
 import random
 import navpy
@@ -66,3 +67,5 @@ class RandomDataInterface(DataInterfaceCore):
 
         if self.i % 10 == 1:
             self.logToConsole(str(random.random()), int(random.random() * 3))
+
+        time.sleep(0.02)

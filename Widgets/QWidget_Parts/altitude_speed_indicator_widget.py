@@ -1,19 +1,19 @@
 from PyQt5.QtWidgets import QLabel, QWidget
-from PyQt5.QtGui import QPainter, QPen, QBrush, QPolygon, QColor, QFont, QRegion
+from PyQt5.QtGui import QPainter, QPen, QBrush, QPolygon, QColor, QFont
 from PyQt5.QtCore import Qt, QPoint
 
-from data_helpers import round_to_string
+from data_helpers import round_to_string, nearest_multiple
 
 
 class AltitudeSpeedIndicatorWidget(QLabel):
-    def __init__(self, parentWidget: QWidget = None, leftOriented=True, lineSpacing=1, textSpacing=1, pixelsPerLine=10):
+    def __init__(self, parentWidget: QWidget = None, leftOriented=True, textSpacing=1, pixelsPerLine=10, intermediateLines=1):
         super().__init__(parentWidget)
 
         self.size = 200
 
         self.textSpacing = textSpacing  # Delta Value between lines
-        self.lineSpacing = lineSpacing  # Delta Value between text
-        self.pixelsPerLine = pixelsPerLine
+        self.intermediateLines = 0  # int(intermediateLines)  # Number of lines to draw between text
+        self.pixelsPerLine = int(pixelsPerLine)
 
         self.value = 0
 
@@ -45,7 +45,8 @@ class AltitudeSpeedIndicatorWidget(QLabel):
         painter.setPen(QPen(Qt.white, lineWidth, Qt.SolidLine))
         painter.setBrush(QBrush(Qt.white, Qt.SolidPattern))
 
-        linesToDraw = (self.height() / 2) / self.pixelsPerLine
+        linesToDraw = (self.height() / 2) / (self.pixelsPerLine / (self.intermediateLines + 1))
+        lineDeltaValue = self.textSpacing * (self.intermediateLines + 1)
 
         startX = int(self.width() / 2)
         endX = int(self.width() / 2) - shortLength
@@ -54,12 +55,16 @@ class AltitudeSpeedIndicatorWidget(QLabel):
             startX = -startX
             endX = -endX
 
-        for i in range(-int(linesToDraw), int(linesToDraw+2), self.lineSpacing):
-            lineYPosition = i * self.pixelsPerLine
+        roundedValue = nearest_multiple(self.value, self.textSpacing)
+        delta_value_per_pixel = float(self.textSpacing) / float(self.pixelsPerLine)
+        center_offset_pixels = float(roundedValue - self.value) / float(delta_value_per_pixel)
+
+        for i in range(-int(linesToDraw), int(linesToDraw + 2)):
+            lineYPosition = (i * self.pixelsPerLine) - center_offset_pixels
             painter.drawLine(startX, lineYPosition, endX, lineYPosition)
 
-            if i % 2 == 0:
-                value = round_to_string(-(self.value + (float(i) * float(self.pixelsPerLine) * self.textSpacing)), 4)
+            if True:  # i % self.intermediateLines == 0:
+                value = round_to_string(roundedValue + (-i * lineDeltaValue), 4)
                 if self.leftOriented:
                     painter.drawText(endX + 5, lineYPosition + int(fontSize / 2), "{}".format(value))
                 else:

@@ -34,6 +34,10 @@ def interpolate(value, in_min, in_max, out_min, out_max):
     return out_min + (scaled * out_span)
 
 
+def nearest_multiple(value, base):
+    return base * round(value / base)
+
+
 def get_value_from_dictionary(dictionary: {}, key: str, default):
     """
     Returns the dictionary entry for a given key, or the default
