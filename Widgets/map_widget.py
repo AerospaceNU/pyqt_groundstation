@@ -48,15 +48,17 @@ class MapWidget(CustomQWidgetBase):
         gs_lat = float(get_value_from_dictionary(vehicleData, Constants.ground_station_latitude_key, 0))
         gs_lon = float(get_value_from_dictionary(vehicleData, Constants.ground_station_longitude_key, 0))
 
-        # if latitude != 0 and longitude != 0 and gs_lat != 0 and gs_lon != 0:
-        if latitude != 0 and longitude != 0:
+        if latitude != 0 and longitude != 0 and gs_lat != 0 and gs_lon != 0:  # If we have rocket lat-lon and gs lat-lon, use that
+            ned = navpy.lla2ned(latitude, longitude, 0, gs_lat, gs_lon, 0)
+            self.setXY(ned[1], ned[0])
+        elif latitude != 0 and longitude != 0:  # If not, use the first rocket position as the datum
             if not self.has_datum:
                 self.datum = [latitude, longitude]
                 self.has_datum = True
 
             ned = navpy.lla2ned(latitude, longitude, 0, self.datum[0], self.datum[1], 0)
             self.setXY(ned[1], ned[0])  # ned to enu
-        else:
+        else:  # Otherwise, we're at 0,0
             self.setXY(0, 0)
 
     def paintEvent(self, e):

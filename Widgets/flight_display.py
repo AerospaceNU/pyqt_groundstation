@@ -25,7 +25,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.useAltVSpeedWidget = False
         self.altScale = 1
         self.vSpeedScale = 1
-        self.accelerationScale = 1
+        self.accelerationScale = 10
 
         self.pitchSource = "pitch"
         self.rollSource = "roll"
@@ -41,8 +41,8 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.TerrainTextBox = QLabel()
 
         self.HUDWidget = attitude_display_widget.AttitudeDisplayWidget()
-        self.AltitudeWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(textSpacing=0.1)
-        self.SpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(leftOriented=False, textSpacing=0.1)
+        self.AltitudeWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(textSpacing=1, pixelsPerLine=15)
+        self.SpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(leftOriented=False, textSpacing=0.3)
         self.AccelerationWidget = v_speed_indicator_widget.VSpeedIndicatorWidget(maxSpeed=self.accelerationScale, leftOriented=False)
         self.VSpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(textSpacing=1)
 

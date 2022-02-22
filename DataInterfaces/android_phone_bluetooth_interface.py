@@ -74,17 +74,23 @@ class AndroidPhoneBluetoothInterface(DataInterfaceCore):
 
     def advertise_bluetooth(self):
         time.sleep(1)  # wait for other stuff to spin up
-        self.logToConsole("Starting Bluetooth", 1)
-        self.server_sock.listen(1)
+        can_start = True
 
-        port = self.server_sock.getsockname()[1]
+        try:
+            self.server_sock.listen(1)
+            port = self.server_sock.getsockname()[1]
+            uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
+            advertise_service(self.server_sock, "TestServer", service_id=uuid, service_classes=[uuid, SERIAL_PORT_CLASS], profiles=[SERIAL_PORT_PROFILE])
+            self.logToConsole("Starting Bluetooth", 1)
+        except bluetooth.btcommon.BluetoothError as e:
+            self.logToConsole("Can't start bluetooth: {}".format(e), 2)
+            if "permission" in str(e).lower() and sys.platform == "linux":
+                self.logToConsole("Linux permission error for bluetooth, try running [sudo chmod o+rw /var/run/sdp]", 2)
+            can_start = False
 
-        uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
-        advertise_service(self.server_sock, "TestServer", service_id=uuid, service_classes=[uuid, SERIAL_PORT_CLASS], profiles=[SERIAL_PORT_PROFILE])
-
-        while self.should_be_running:
+        while self.should_be_running and can_start:
             if self.enabled and not self.bluetooth_running:
-                self.logToConsole("Waiting for connection on RFCOMM channel {}".format(port), 1)
+                self.logToConsole("Waiting for connection on RFCOMM channel {}".format(port), 0)
             if not self.enabled and self.bluetooth_running:
                 self.logToConsole("No longer advertising bluetooth on channel {}".format(port), 1, override_disabled_check=True)
 

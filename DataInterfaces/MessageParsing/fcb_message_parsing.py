@@ -48,11 +48,13 @@ def parse_alt_lat_lon_message(data, dictionary):
 
 
 def parse_ground_station_gps(data, dictionary):
-    unpacked_data = struct.unpack("<Bfff", data)
+    unpacked_data = struct.unpack("<Bfffdd", data)
 
-    dictionary[Constants.ground_station_latitude_key] = unpacked_data[1]
-    dictionary[Constants.ground_station_longitude_key] = unpacked_data[2]
+    dictionary[Constants.ground_station_latitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[1])
+    dictionary[Constants.ground_station_longitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[2])
     dictionary[Constants.ground_station_altitude_key] = unpacked_data[3]
+    dictionary[Constants.ground_station_pressure_key] = unpacked_data[4]
+    dictionary[Constants.ground_station_temperature_key] = unpacked_data[5]
 
 
 def parse_test_message(data, dictionary):
@@ -86,7 +88,7 @@ def parse_fcb_message(data):
         radio_data = data[-2:]
         unpacked_radio_status_data = struct.unpack('<bB', radio_data)
         lqi = unpacked_radio_status_data[1] & 0b1111111  # The last 7 bits of the lqi byte are the lqi
-        crc = (unpacked_radio_status_data[1] & 0b10000000) # And top is CRC
+        crc = (unpacked_radio_status_data[1] & 0b10000000)  # And top is CRC
         crc_str = "Good" if crc else "Bad"
 
         # Get the packet header
@@ -126,6 +128,7 @@ def parse_fcb_message(data):
         return [success, dictionary, message_type, crc]
     elif message_number == 200:  # Ground station packet
         try:
+            data = data[0:29]
             parse_ground_station_gps(data, dictionary)
             return [True, dictionary, "Ground Station GPS", 1]
         except:

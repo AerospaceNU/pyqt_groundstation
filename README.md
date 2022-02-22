@@ -71,6 +71,11 @@ The data interfaces are how the GUI actually gets data from radios or log files 
 Like other things, to add a new one, extend `data_interface_core.py`, and overwrite the `spin()` function. 
 You'll also need to add a line to `main.py` to register your data interface.
 
+### Bluetooth linux error
+~~~
+sudo chmod o+rw /var/run/sdp
+~~~
+
 ## Adding custom functionality
 In basically anything simple you'd need to add, you'll just extend the base class, and overwrite a few functions.
 

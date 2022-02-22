@@ -6,13 +6,15 @@ from data_helpers import round_to_string
 
 
 class AltitudeSpeedIndicatorWidget(QLabel):
-    def __init__(self, parentWidget: QWidget = None, leftOriented=True, lineSpacing=1, textSpacing=1):
+    def __init__(self, parentWidget: QWidget = None, leftOriented=True, lineSpacing=1, textSpacing=1, pixelsPerLine=10):
         super().__init__(parentWidget)
 
         self.size = 200
 
         self.textSpacing = textSpacing  # Delta Value between lines
         self.lineSpacing = lineSpacing  # Delta Value between text
+        self.pixelsPerLine = pixelsPerLine
+
         self.value = 0
 
         self.leftOriented = leftOriented
@@ -28,7 +30,6 @@ class AltitudeSpeedIndicatorWidget(QLabel):
         self.setMaximumHeight(size)
 
     def paintEvent(self, e):
-        pixelsPerLine = 10
         shortLength = 10
         fontSize = max(self.width() / 5, 10)
 
@@ -44,7 +45,7 @@ class AltitudeSpeedIndicatorWidget(QLabel):
         painter.setPen(QPen(Qt.white, lineWidth, Qt.SolidLine))
         painter.setBrush(QBrush(Qt.white, Qt.SolidPattern))
 
-        linesToDraw = (self.height() / 2) / pixelsPerLine
+        linesToDraw = (self.height() / 2) / self.pixelsPerLine
 
         startX = int(self.width() / 2)
         endX = int(self.width() / 2) - shortLength
@@ -54,11 +55,11 @@ class AltitudeSpeedIndicatorWidget(QLabel):
             endX = -endX
 
         for i in range(-int(linesToDraw), int(linesToDraw+2), self.lineSpacing):
-            lineYPosition = i * pixelsPerLine
+            lineYPosition = i * self.pixelsPerLine
             painter.drawLine(startX, lineYPosition, endX, lineYPosition)
 
             if i % 2 == 0:
-                value = round_to_string(-(self.value + (float(i) * float(pixelsPerLine) * self.textSpacing)), 4)
+                value = round_to_string(-(self.value + (float(i) * float(self.pixelsPerLine) * self.textSpacing)), 4)
                 if self.leftOriented:
                     painter.drawText(endX + 5, lineYPosition + int(fontSize / 2), "{}".format(value))
                 else:

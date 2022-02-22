@@ -31,7 +31,7 @@ class RecordedDataReader(object):
                 packet_data["timestamp"] = timestamp
 
                 # Calculate distance from start
-                if packet_data[Constants.latitude_key] != 0:
+                if Constants.latitude_key in packet_data and packet_data[Constants.latitude_key] != 0:
                     if not has_first_point:
                         first_point = [packet_data[Constants.latitude_key], packet_data[Constants.longitude_key]]
                         has_first_point = True
