@@ -1,6 +1,7 @@
 
 import PyQt5.QtCore as QtCore
-from PyQt5.QtWidgets import QApplication, QWidget
+import time
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow
 from Widgets import custom_q_widget_base
 import sys
 from PyQt5.QtChart import QChart, QChartView, QLineSeries
@@ -9,11 +10,18 @@ from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import Qt
 
 from constants import Constants
-from data_helpers import get_value_from_dictionary
+from Widgets.custom_q_widget_base import CustomQWidgetBase
+from data_helpers import get_value_from_dictionary, interpolate
 
 
 class GraphDisplay(custom_q_widget_base.CustomQWidgetBase):
     series = QLineSeries()
+
+    # Start Data should always be starting at 0, 0
+    xTimePos = 0
+    yAltitudePos = 0
+
+    series.append(QPointF(xTimePos, yAltitudePos))
 
     def __init__(self, parentWidget: QWidget = None, pointsToKeep=200, updateInterval=3):
         super().__init__(parentWidget)
@@ -43,11 +51,7 @@ class GraphDisplay(custom_q_widget_base.CustomQWidgetBase):
         chartview = QChartView(chart)
         chartview.setRenderHint(QPainter.Antialiasing)
 
-        self.setCentralWidget(chartview)
-
         self.show()
-
-        #self.create_linechart()
 
 
 # Data for Linechart
@@ -75,12 +79,11 @@ class GraphDisplay(custom_q_widget_base.CustomQWidgetBase):
         chartview = QChartView(chart)
         chartview.setRenderHint(QPainter.Antialiasing)
 
-        self.setCentralWidget(chartview)
+        #self.setCentralWidget(chartview)
 
 
     def addPoint(self, point):
         self.series.append(point)
-        #self.xCenter =
         self.create_linechart()
 
 
@@ -92,9 +95,8 @@ class GraphDisplay(custom_q_widget_base.CustomQWidgetBase):
 
             self.paths = paths
 
-            xTimePos = int(get_value_from_dictionary(vehicleData, Constants.altitude_key, 0))
-            yTimePos = int(get_value_from_dictionary(vehicleData, Constants.timestamp_ms_key, 0))
-
+            yTimePos= int(get_value_from_dictionary(vehicleData, Constants.altitude_key, 0))
+            xTimePos = int(get_value_from_dictionary(vehicleData, Constants.timestamp_ms_key, 0))
             point = QPointF(xTimePos, yTimePos)
 
             # series append next point gotten from data
