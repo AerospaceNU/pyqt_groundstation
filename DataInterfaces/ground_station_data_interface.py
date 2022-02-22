@@ -94,7 +94,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 self.logMessageToFile(message_type, dictionary)
                 self.handleParsedData(message_type, dictionary)
 
-            if message_type != "Ground Station GPS":
+            if not fcb_message_parsing.is_ground_station_message(message_type):
                 self.has_data = True
         except struct.error as e:
             self.logToConsole("Can't parse message (length: {2} bytes):\n{1}".format(raw_bytes, e, len(raw_bytes)), 1)

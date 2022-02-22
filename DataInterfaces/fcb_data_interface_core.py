@@ -10,6 +10,7 @@ from DataInterfaces.data_interface_core import DataInterfaceCore
 from DataInterfaces.DataInterfaceTools.annunciator_helper import AnnunciatorHelper
 from DataInterfaces.DataInterfaceTools.diagnostics_box_helper import DiagnosticsBoxHelper
 from DataInterfaces.DataInterfaceTools.gps_position_filter import GPSPositionFilter
+from DataInterfaces.MessageParsing import fcb_message_parsing
 
 from data_helpers import get_value_from_dictionary
 
@@ -62,7 +63,7 @@ class FCBDataInterfaceCore(DataInterfaceCore):
 
         self.data_dictionary.update(dictionary)
 
-        if message_type != "Ground Station GPS":
+        if not fcb_message_parsing.is_ground_station_message(message_type):
             self.last_good_data_time = time.time()
             self.good_fcb_data = True
 

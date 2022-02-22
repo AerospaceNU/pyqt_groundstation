@@ -76,6 +76,8 @@ def parse_test_message(data, dictionary):
 MESSAGE_CALLBACKS = {0: ["Lat/Lon/Alt", parse_alt_lat_lon_message],
                      2: ["Old transmit stuff", parse_test_message]}
 
+GROUND_STATION_MESSAGE_TYPES = ["Ground Station GPS"]
+
 
 def parse_fcb_message(data):
     """Will check packet type, and call the required parse function"""
@@ -130,8 +132,12 @@ def parse_fcb_message(data):
         try:
             data = data[0:29]
             parse_ground_station_gps(data, dictionary)
-            return [True, dictionary, "Ground Station GPS", 1]
+            return [True, dictionary, GROUND_STATION_MESSAGE_TYPES[0], 1]
         except:
-            return [False, {}, "Ground Station GPS", 1]
+            return [False, {}, GROUND_STATION_MESSAGE_TYPES[0], 1]
     else:
         return [False, {}, "Invalid message type {}".format(message_number), 1]
+
+
+def is_ground_station_message(message_type):
+    return message_type in GROUND_STATION_MESSAGE_TYPES
