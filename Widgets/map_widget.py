@@ -87,7 +87,7 @@ class MapWidget(CustomQWidgetBase):
 
             [xPos, yPos] = self.pointToDrawLocation(point[0], point[1])
             [oldX, oldY] = self.pointToDrawLocation(lastPoint[0], lastPoint[1])
-            painter.drawLine(int(xPos), int(yPos), oldX, oldY)
+            painter.drawLine(int(xPos), int(yPos), int(oldX), int(oldY))
 
         # Draw current position
         [xPos, yPos] = self.pointToDrawLocation(self.x_position, self.y_position)
@@ -95,7 +95,7 @@ class MapWidget(CustomQWidgetBase):
         if len(self.oldPoints) > 0:
             lastPoint = self.oldPoints[0]
             [oldX, oldY] = self.pointToDrawLocation(lastPoint[0], lastPoint[1])
-            painter.drawLine(xPos, yPos, oldX, oldY)
+            painter.drawLine(int(xPos), int(yPos), int(oldX), int(oldY))
 
         painter.setPen(QPen(QColor(255, 0, 0), 1, Qt.SolidLine))
         painter.setBrush(QBrush(QColor(255, 0, 0), Qt.SolidPattern))
@@ -115,11 +115,12 @@ class MapWidget(CustomQWidgetBase):
         painter.drawLine(originX, originY, originX, originY - self.originSize)
 
         # Draw X axis
-        minXAxis = 0.1 * round(self.minAxis / 0.1) - 1
-        maxXAxis = 0.1 * round(self.maxAxis / 0.1) + 1
-        [minX, _] = self.pointToDrawLocation(minXAxis, 0)
-        [maxX, _] = self.pointToDrawLocation(maxXAxis, 0)
-        for x in range(minX, maxX, 50):
+        line_spacing_px = 60
+        number_of_lines_to_draw = int(self.width() / line_spacing_px) + 1
+
+        for i in range(-number_of_lines_to_draw, number_of_lines_to_draw):
+            x = i * line_spacing_px + originX
+
             painter.drawLine(x, self.height(), x, self.height() - 10)
             painter.drawLine(0, x, 10, x)
 

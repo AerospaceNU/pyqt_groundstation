@@ -8,6 +8,8 @@ from DataInterfaces.fcb_data_interface_core import FCBDataInterfaceCore
 
 from Postprocessing.recorded_data_reader import RecordedDataReader
 
+from constants import Constants
+
 
 class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
     def __init__(self):
@@ -22,6 +24,10 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
 
         [packet_type, parsed_packet] = self.reader.getNextPacket()
         self.logToConsole("New [{0}] message".format(packet_type), 0)
+
+        # We changed how crc is logged at some point, so this is needed to look at old data
+        if Constants.crc_key in parsed_packet and parsed_packet[Constants.crc_key] == "1":
+            parsed_packet[Constants.crc_key] = "Good"
 
         self.handleParsedData(packet_type, parsed_packet)
         self.updateEveryLoop()
