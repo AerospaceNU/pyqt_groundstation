@@ -8,8 +8,13 @@ from PyQt5.QtCore import QPointF
 from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import Qt
 
+from constants import Constants
+from data_helpers import get_value_from_dictionary
+
 
 class GraphDisplay(custom_q_widget_base.CustomQWidgetBase):
+    series = QLineSeries()
+
     def __init__(self, parentWidget: QWidget = None, pointsToKeep=200, updateInterval=3):
         super().__init__(parentWidget)
 
@@ -42,7 +47,8 @@ class GraphDisplay(custom_q_widget_base.CustomQWidgetBase):
 
         self.show()
 
-        self.create_linechart()
+        #self.create_linechart()
+
 
 # Data for Linechart
     def create_linechart(self):
@@ -72,25 +78,32 @@ class GraphDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.setCentralWidget(chartview)
 
 
+    def addPoint(self, point):
+        self.series.append(point)
+        #self.xCenter =
+        self.create_linechart()
+
+
     def updateData(self, vehicleData):
         if "paths" not in vehicleData:
             paths = {}
         else:
             paths = vehicleData["paths"]
 
+            self.paths = paths
+
+            xTimePos = int(get_value_from_dictionary(vehicleData, Constants.altitude_key, 0))
+            yTimePos = int(get_value_from_dictionary(vehicleData, Constants.timestamp_ms_key, 0))
+
+            point = QPointF(xTimePos, yTimePos)
+
             # series append next point gotten from data
-            series.append()
-
-            #
-            series << QPointF()
-        self.paths = paths
-
-
-
-
-
+            self.addPoint(point)
 
         self.update()
+        self.adjustSize()
+
+
 
 #App = QApplication(sys.argv)
 #sys.exit(App.exec_())
