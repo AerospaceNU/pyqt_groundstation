@@ -50,7 +50,6 @@ class DPFGUI():
         self.callbackFunctions = {}
         self.callback_queue = []
         self.data_interface_dict = {}
-        self.controlStationData = {}
 
         self.tabs = {}
         self.tabNames = []
@@ -196,7 +195,7 @@ class DPFGUI():
 
         # Update tabs
         for tab in self.tabObjects:
-            self.callback_queue += tab.update(self.database_dictionary, self.controlStationData, self.ConsoleData)
+            self.callback_queue += tab.update(self.database_dictionary, self.ConsoleData)
 
         # set window title
         tabIndex = self.tabHolderWidget.currentIndex()

@@ -1,3 +1,8 @@
+"""
+Class to contain the data structure for a diagnostics box
+"""
+
+
 class DiagnosticsBoxHelper(object):
     def __init__(self):
         self.diagnostics_dict = {}

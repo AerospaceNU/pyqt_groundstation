@@ -55,6 +55,10 @@ class AndroidPhoneBluetoothInterface(DataInterfaceCore):
         self.connection_thread.start()
 
     def spin(self):
+        """
+        Creates a NMEA string of the vehicle position and sends that to all the connected clients at 1hz
+        """
+
         try:
             latitude = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.latitude_key, 0)
             longitude = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.longitude_key, 0)
@@ -73,9 +77,14 @@ class AndroidPhoneBluetoothInterface(DataInterfaceCore):
             pass
 
     def advertise_bluetooth(self):
+        """
+        Runs in a separate thread to handle new connections
+        """
+
         time.sleep(1)  # wait for other stuff to spin up
         can_start = True
 
+        # Try to set up the socket, and handle the errors that have come up in testing
         try:
             self.server_sock.listen(1)
             port = self.server_sock.getsockname()[1]
@@ -88,6 +97,7 @@ class AndroidPhoneBluetoothInterface(DataInterfaceCore):
                 self.logToConsole("Linux permission error for bluetooth, try running [sudo chmod o+rw /var/run/sdp]", 2)
             can_start = False
 
+        # Wait for connections, and add them to the client list
         while self.should_be_running and can_start:
             if self.enabled and not self.bluetooth_running:
                 self.logToConsole("Waiting for connection on RFCOMM channel {}".format(port), 0)
@@ -107,6 +117,10 @@ class AndroidPhoneBluetoothInterface(DataInterfaceCore):
                 self.bluetooth_running = False
 
     def send_bluetooth(self, dataString):
+        """
+        Send dataString to every connected bluetooth client
+        """
+
         dataString += "\n"
         for client_socket in self.client_sock_list:
             try:

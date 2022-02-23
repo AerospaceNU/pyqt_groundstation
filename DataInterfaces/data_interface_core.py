@@ -38,6 +38,9 @@ class DataInterfaceCore(threading.Thread):
         self.setEnabled(not self.enabled)
 
     def run(self):
+        """
+        Runs in thread when start() is called
+        """
         while self.should_be_running:
             if self.enabled:
                 self.spin()
@@ -50,6 +53,11 @@ class DataInterfaceCore(threading.Thread):
         pass
 
     def setFullDataDictionary(self, data_dict):
+        """
+        Allows the GUI to give each interface the full database dictionary
+        This feels like a hack, but I don't have a great alternative right now
+        """
+
         self.gui_full_data_dictionary = data_dict
 
     def getDataDictionary(self):

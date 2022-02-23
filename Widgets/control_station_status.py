@@ -9,6 +9,7 @@ from Widgets import custom_q_widget_base
 from Widgets.QWidget_Parts import simple_bar_graph_widget
 
 from data_helpers import get_value_from_dictionary
+from constants import Constants
 
 
 class ControlStationStatus(custom_q_widget_base.CustomQWidgetBase):
@@ -27,11 +28,11 @@ class ControlStationStatus(custom_q_widget_base.CustomQWidgetBase):
         layout.addWidget(self.DiskStatus, 1, 4)
         self.setLayout(layout)
 
-    def updateControlStationData(self, csData):
-        battery = float(get_value_from_dictionary(csData, "battery", -1))
-        ram = float(get_value_from_dictionary(csData, "ram", -1))
-        cpu = float(get_value_from_dictionary(csData, "cpu", -1))
-        disk = float(get_value_from_dictionary(csData, "disk", -1))
+    def updateData(self, vehicle_data):
+        battery = float(get_value_from_dictionary(vehicle_data, Constants.laptop_battery_percent_key, -1))
+        ram = float(get_value_from_dictionary(vehicle_data, Constants.laptop_ram_usage_key, -1))
+        cpu = float(get_value_from_dictionary(vehicle_data, Constants.laptop_cpu_usage_key, -1))
+        disk = float(get_value_from_dictionary(vehicle_data, Constants.laptop_disk_usage_key, -1))
 
         scale = 0.7
         self.BatteryStatus.fixWidth(scale)

@@ -90,9 +90,6 @@ class CustomQWidgetBase(QWidget):
     def updateData(self, vehicleData):
         pass
 
-    def updateControlStationData(self, csData):
-        pass
-
     def updateConsole(self, data):
         pass
 

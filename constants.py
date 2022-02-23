@@ -28,6 +28,12 @@ class Constants:
     ground_station_pressure_key = "gs_baro"
     ground_station_temperature_key = "gs_temp"
 
+    laptop_disk_usage_key = "laptop_disk"
+    laptop_cpu_usage_key = "laptop_cpu"
+    laptop_ram_usage_key = "laptop_ram"
+    laptop_battery_percent_key = "laptop_battery_percent"
+    laptop_battery_charging_key = "laptop_charging"
+
     barometer_pressure_key = "barometer_pressure"
 
     fcb_battery_voltage = "fcb_battery_voltage"

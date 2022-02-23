@@ -1,7 +1,8 @@
 """
 Really rough filter for GPS data
 
-It checks to see if the position received is within 10000 meters of the last gps point, and only accepts positions that are
+Has a median filter for GPS position
+Calculates ground speed and median filters that as well
 """
 
 import statistics

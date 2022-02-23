@@ -1,5 +1,7 @@
 """
 Contains common functions to handle parsed data from the fcb
+
+Used by both the serial ground station interface and the recorded data interface
 """
 
 import time
@@ -11,8 +13,6 @@ from DataInterfaces.DataInterfaceTools.annunciator_helper import AnnunciatorHelp
 from DataInterfaces.DataInterfaceTools.diagnostics_box_helper import DiagnosticsBoxHelper
 from DataInterfaces.DataInterfaceTools.gps_position_filter import GPSPositionFilter
 from DataInterfaces.MessageParsing import fcb_message_parsing
-
-from data_helpers import get_value_from_dictionary
 
 
 class FCBDataInterfaceCore(DataInterfaceCore):
