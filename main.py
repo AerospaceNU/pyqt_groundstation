@@ -13,10 +13,10 @@ from DataInterfaces.laptop_status_monitor import LaptopStatusMonitor
 
 if __name__ == '__main__':
     GUI = DPFGUI()
-    GUI.addDataInterface("random", RandomDataInterface(), enabled=False)
     GUI.addDataInterface("ground_station", GroundStationDataInterface(GUI))
-    GUI.addDataInterface("ground_station_recorded_data", GroundStationRecordedDataInterface(), enabled=False)
     GUI.addDataInterface("android_phone_bluetooth", AndroidPhoneBluetoothInterface())
     GUI.addDataInterface("laptop_status_monitor", LaptopStatusMonitor())
+    GUI.addDataInterface("ground_station_recorded_data", GroundStationRecordedDataInterface(), enabled=False)
+    GUI.addDataInterface("random", RandomDataInterface(), enabled=False)
     GUI.run()
     print("Good Bye")

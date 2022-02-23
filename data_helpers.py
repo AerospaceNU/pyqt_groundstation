@@ -44,7 +44,10 @@ def get_value_from_dictionary(dictionary: {}, key: str, default):
     """
 
     if key in dictionary:
-        return dictionary[key]
+        if type(dictionary[key]) == float and math.isnan(dictionary[key]):
+            return default
+        else:
+            return dictionary[key]
     else:
         return default
 
