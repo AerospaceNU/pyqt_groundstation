@@ -28,9 +28,12 @@ class TextToSpeech(ThreadedModuleCore):
         self.speech_interval_seconds = 10
 
     def spin(self):
-        state = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.fcb_state_key, "Invalid State")
+        state = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.fcb_state_key, "")
         altitude = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.altitude_key, "Invalid Altitude")
         v_speed = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.vertical_speed_key, "Invalid Vertical Speed")
+
+        if state == "":
+            return
 
         if state != self.last_state:
             if self.last_state == Constants.fcb_state_names[Constants.PREFLIGHT_STATE_INDEX]:  # If we're going out of preflight (happens when launch is detected)

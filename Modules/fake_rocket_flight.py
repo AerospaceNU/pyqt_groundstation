@@ -23,25 +23,28 @@ class FakeFlight(FCBDataInterfaceCore):
     def __init__(self):
         super().__init__()
 
-        self.initial_latitude = 37.2431
-        self.initial_longitude = -115.7930
-        self.course_enu = 1
+        # Rocket parameters
+        self.course_enu = 1  # Initial course
         self.ground_speed_scale = 0.1
         self.boost_accel = 98
         self.gravity = -9.8
+        self.main_deploy_accel = 50
         self.drogue_speed = -50
         self.main_speed = -5
-
         self.boost_duration = 2
-        self.launch_time = 0
 
+        # Fixed parameters and flight variables
+        self.initial_latitude = 37.2431
+        self.initial_longitude = -115.7930
         self.latitude = self.initial_latitude
         self.longitude = self.initial_longitude
         self.altitude = 0
         self.vertical_velocity = 0
 
+        # State control
         self.state = 0
         self.last_loop_time = time.time()
+        self.launch_time = 0
 
     def runOnEnableAndDisable(self):
         if self.enabled:
@@ -93,7 +96,7 @@ class FakeFlight(FCBDataInterfaceCore):
                 self.state = DROGUE
                 self.logToConsole("Apogee", 1)
         elif self.state == DROGUE:
-            self.vertical_velocity = self.drogue_speed
+            self.vertical_velocity = max(self.vertical_velocity + self.gravity * loop_time, self.drogue_speed)  # Clamp at drogue speed
             measured_acceleration = random.uniform(0, 9.8)
             fcb_state = Constants.DROGUE_DESCENT_INDEX
 
@@ -103,7 +106,7 @@ class FakeFlight(FCBDataInterfaceCore):
                 self.state = MAIN
                 self.logToConsole("Main deploy", 1)
         elif self.state == MAIN:
-            self.vertical_velocity = self.main_speed
+            self.vertical_velocity = min(self.vertical_velocity + self.main_deploy_accel * loop_time, self.main_speed)
             measured_acceleration = random.uniform(0, 9.8)
             fcb_state = Constants.MAIN_DESCENT_INDEX
 
@@ -137,6 +140,6 @@ class FakeFlight(FCBDataInterfaceCore):
 
         packet[Constants.fcb_state_key] = Constants.fcb_state_names[fcb_state]
 
-        self.handleParsedData("Test packet", packet)
+        self.handleParsedData("Sim flight packet", packet)
 
         self.updateEveryLoop()
