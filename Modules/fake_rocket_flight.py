@@ -72,7 +72,7 @@ class FakeFlight(FCBDataInterfaceCore):
             measured_acceleration = -self.gravity
             fcb_state = Constants.PREFLIGHT_STATE_INDEX  # Pre flight
 
-            countdown_time = int(self.launch_time - time.time())
+            countdown_time = int(self.launch_time - time.time()) + 1
             self.logToConsoleThrottle("Launching in {}".format(countdown_time), 1, 1)
 
             if time.time() > self.launch_time:
