@@ -4,7 +4,7 @@ Reads recorded data from groundstation back into ground station
 
 import time
 
-from DataInterfaces.fcb_data_interface_core import FCBDataInterfaceCore
+from Modules.fcb_data_interface_core import FCBDataInterfaceCore
 
 from Postprocessing.recorded_data_reader import RecordedDataReader
 

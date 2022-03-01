@@ -12,7 +12,7 @@ import serial.tools.list_ports
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget, QMenu
 
-from DataInterfaces.data_interface_core import DataInterfaceCore
+from Modules.data_interface_core import ThreadedModuleCore
 
 from Widgets import placeholder
 from MainTabs.main_tab_common import TabCommon
@@ -104,7 +104,7 @@ class DPFGUI():
 
         # Generate a random title from this list
         # I don't know why I did this
-        titles = ["DPF Ground Station"]
+        titles = ["DPF Ground Station", "Make sure the pointy end is facing up", "This title intentionally left blank", "Don't crash the rocket"]
         self.title = random.choice(titles)
 
         # Set up main window
@@ -326,7 +326,7 @@ class DPFGUI():
     def addCallback(self, target, callback):
         self.callbackFunctions[target] = callback
 
-    def addDataInterface(self, interface_name: str, interface_object: DataInterfaceCore, enabled=True):
+    def addDataInterface(self, interface_name: str, interface_object: ThreadedModuleCore, enabled=True):
         self.data_interface_dict[interface_name] = interface_object
         interface_object.setConsoleCallback(self.updateConsole)
         interface_object.setEnabled(enabled)

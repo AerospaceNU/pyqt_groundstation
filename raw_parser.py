@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import matplotlib.pylab as plt
-from DataInterfaces.MessageParsing.fcb_message_parsing import parse_fcb_message
+from Modules.MessageParsing.fcb_message_parsing import parse_fcb_message
 
 dictlist = []
 

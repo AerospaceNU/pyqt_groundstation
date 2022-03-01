@@ -9,11 +9,11 @@ import navpy
 
 from constants import Constants
 
-from DataInterfaces.data_interface_core import DataInterfaceCore
-from DataInterfaces.DataInterfaceTools.gps_position_filter import GPSPositionFilter
+from Modules.data_interface_core import ThreadedModuleCore
+from Modules.DataInterfaceTools.gps_position_filter import GPSPositionFilter
 
 
-class RandomDataInterface(DataInterfaceCore):
+class RandomDataInterface(ThreadedModuleCore):
     def __init__(self):
         super().__init__()
         self.i = 0

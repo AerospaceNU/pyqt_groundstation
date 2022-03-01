@@ -6,7 +6,7 @@ import threading
 import time
 
 
-class DataInterfaceCore(threading.Thread):
+class ThreadedModuleCore(threading.Thread):
     def __init__(self):
         super().__init__()
         self.data_dictionary = {}
@@ -16,6 +16,7 @@ class DataInterfaceCore(threading.Thread):
 
         self.console_callback = None
         self.last_console_message = ""
+        self.last_log_time = 0
 
     def setConsoleCallback(self, callback):
         self.console_callback = callback
@@ -31,11 +32,21 @@ class DataInterfaceCore(threading.Thread):
             self.console_callback("{0}: {1}".format(time.strftime("%H:%M:%S"), value), level)
             self.last_console_message = value
 
+    def logToConsoleThrottle(self, value, level, interval):
+        """Logs data to GUI Console once per interval"""
+        if time.time() - interval > self.last_log_time:
+            self.logToConsole(value, level)
+            self.last_log_time = time.time()
+
     def setEnabled(self, enabled):
         self.enabled = enabled
+        self.runOnEnableAndDisable()
 
     def toggleEnabled(self):
         self.setEnabled(not self.enabled)
+
+    def runOnEnableAndDisable(self):
+        pass
 
     def run(self):
         """

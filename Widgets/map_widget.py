@@ -122,7 +122,7 @@ class MapWidget(CustomQWidgetBase):
             x = i * line_spacing_px + originX
 
             painter.drawLine(x, self.height(), x, self.height() - 10)
-            painter.drawLine(0, x, 10, x)
+            # painter.drawLine(0, x, 10, x)
 
             [xPoint, _] = self.drawLocationToPoint(x, 0)
             if self.decimals == 0:
@@ -133,6 +133,21 @@ class MapWidget(CustomQWidgetBase):
             xPointStr = str(xPoint)
             xOffset = 6 * len(xPointStr) / 2
             painter.drawText(x - xOffset, self.height() - 15, xPointStr)
+
+        number_of_y_lines_to_draw = int(self.height() / line_spacing_px) + 1
+        for i in range(-number_of_y_lines_to_draw, number_of_y_lines_to_draw):
+            y = i * line_spacing_px + originY
+            painter.drawLine(0, y, 10, y)
+
+            [_, y_label] = self.drawLocationToPoint(0, y)
+
+            if self.decimals == 0:
+                y_label = int(y_label)
+            else:
+                y_label = round(y_label, self.decimals)
+
+            text_y_offset = self.fontInfo().pixelSize() / 3
+            painter.drawText(15, y + text_y_offset, str(y_label))
 
     def pointToDrawLocation(self, x, y):
         """Converts a point in the real world to a position on the screen"""

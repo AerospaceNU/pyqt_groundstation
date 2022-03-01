@@ -5,11 +5,11 @@ Measures important stats from laptop
 import time
 import psutil
 
-from DataInterfaces.data_interface_core import DataInterfaceCore
+from Modules.data_interface_core import ThreadedModuleCore
 from constants import Constants
 
 
-class LaptopStatusMonitor(DataInterfaceCore):
+class LaptopStatusMonitor(ThreadedModuleCore):
     def __init__(self):
         super().__init__()
 

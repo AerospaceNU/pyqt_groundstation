@@ -12,7 +12,7 @@ from bluetooth import *
 from constants import Constants
 from data_helpers import get_value_from_dictionary, interpolate
 
-from DataInterfaces.data_interface_core import DataInterfaceCore
+from Modules.data_interface_core import ThreadedModuleCore
 
 
 def decimal_degrees_to_deg_min(decimal_degrees):
@@ -40,7 +40,7 @@ def format_lat_lon_for_nmea(latitude, longitude):
     return [decimal_degrees_to_deg_min(latitude), lat_sign, decimal_degrees_to_deg_min(longitude), lon_sign]
 
 
-class AndroidPhoneBluetoothInterface(DataInterfaceCore):
+class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
     def __init__(self):
         super().__init__()
         self.server_sock = BluetoothSocket(RFCOMM)

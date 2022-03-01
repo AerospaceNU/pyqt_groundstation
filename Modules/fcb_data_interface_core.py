@@ -8,14 +8,14 @@ import time
 
 from constants import Constants
 
-from DataInterfaces.data_interface_core import DataInterfaceCore
-from DataInterfaces.DataInterfaceTools.annunciator_helper import AnnunciatorHelper
-from DataInterfaces.DataInterfaceTools.diagnostics_box_helper import DiagnosticsBoxHelper
-from DataInterfaces.DataInterfaceTools.gps_position_filter import GPSPositionFilter
-from DataInterfaces.MessageParsing import fcb_message_parsing
+from Modules.data_interface_core import ThreadedModuleCore
+from Modules.DataInterfaceTools.annunciator_helper import AnnunciatorHelper
+from Modules.DataInterfaceTools.diagnostics_box_helper import DiagnosticsBoxHelper
+from Modules.DataInterfaceTools.gps_position_filter import GPSPositionFilter
+from Modules.MessageParsing import fcb_message_parsing
 
 
-class FCBDataInterfaceCore(DataInterfaceCore):
+class FCBDataInterfaceCore(ThreadedModuleCore):
     def __init__(self):
         super().__init__()
 

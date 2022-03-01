@@ -7,8 +7,8 @@ import time
 import serial
 import serial.tools.list_ports
 
-from DataInterfaces.MessageParsing import fcb_message_parsing
-from DataInterfaces.fcb_data_interface_core import FCBDataInterfaceCore
+from Modules.MessageParsing import fcb_message_parsing
+from Modules.fcb_data_interface_core import FCBDataInterfaceCore
 
 from dpf_ground_station import DPFGUI
 
