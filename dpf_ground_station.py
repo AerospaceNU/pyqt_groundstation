@@ -49,7 +49,8 @@ class DPFGUI():
         self.ConsoleData = [[]]
         self.callbackFunctions = {}
         self.callback_queue = []
-        self.data_interface_dict = {}
+        self.module_dictionary = {}
+        self.hidden_modules = []
 
         self.tabs = {}
         self.tabNames = []
@@ -70,7 +71,7 @@ class DPFGUI():
         self.tabHolderWidget = QTabWidget()
 
         self.serial_port_menu = QMenu()
-        self.data_interface_menu = QMenu()
+        self.modules_menu = QMenu()
 
         self.widgetClasses = {}
         self.widgetClasses["Annunciator Panel"] = annunciator_panel.AnnunciatorPanel
@@ -150,25 +151,27 @@ class DPFGUI():
         self.serial_port_menu.aboutToShow.connect(self.refreshSerialPorts)  # aboutToShow runs before the menu is created
 
         # Menu bar to enable/disable data interfaces
-        self.data_interface_menu = menuBar.addMenu("Data Interfaces")
-        self.data_interface_menu.aboutToShow.connect(self.refreshDataInterfaces)
+        self.modules_menu = menuBar.addMenu("Modules")
+        self.modules_menu.aboutToShow.connect(self.refreshDataInterfaces)
 
     def setActiveSerialPort(self, portName):
         self.callback_queue.append(["set_serial_port", portName])
 
     def enableDisableDataInterface(self, interfaceName):
-        interface = self.data_interface_dict[interfaceName]
+        interface = self.module_dictionary[interfaceName]
         interface.toggleEnabled()
 
     def refreshDataInterfaces(self):
-        self.data_interface_menu.clear()
+        self.modules_menu.clear()
 
-        for interfaceName in self.data_interface_dict:
-            interface = self.data_interface_dict[interfaceName]
-            if interface.enabled:
-                self.data_interface_menu.addAction("Disable {}".format(interfaceName), lambda targetInterface=interfaceName: self.enableDisableDataInterface(targetInterface))
+        for interfaceName in self.module_dictionary:
+            interface = self.module_dictionary[interfaceName]
+            if interfaceName in self.hidden_modules:
+                pass
+            elif interface.enabled:
+                self.modules_menu.addAction("Disable {}".format(interfaceName), lambda targetInterface=interfaceName: self.enableDisableDataInterface(targetInterface))
             else:
-                self.data_interface_menu.addAction("Enable {}".format(interfaceName), lambda targetInterface=interfaceName: self.enableDisableDataInterface(targetInterface))
+                self.modules_menu.addAction("Enable {}".format(interfaceName), lambda targetInterface=interfaceName: self.enableDisableDataInterface(targetInterface))
 
     def refreshSerialPorts(self):
         serial_ports = [comport.device for comport in serial.tools.list_ports.comports()]
@@ -182,12 +185,12 @@ class DPFGUI():
             self.stop()
 
         # Get data from interfaces
-        for interface in self.data_interface_dict:
-            self.database_dictionary.update(self.data_interface_dict[interface].getDataDictionary().copy())
+        for interface in self.module_dictionary:
+            self.database_dictionary.update(self.module_dictionary[interface].getDataDictionary().copy())
 
         # Send full database dictionary back to the data interfaces
-        for interface in self.data_interface_dict:
-            self.data_interface_dict[interface].setFullDataDictionary(copy.deepcopy(self.database_dictionary))
+        for interface in self.module_dictionary:
+            self.module_dictionary[interface].setFullDataDictionary(copy.deepcopy(self.database_dictionary))
 
         # Update placeholder widgets
         for widget in self.placeHolderList:
@@ -326,17 +329,20 @@ class DPFGUI():
     def addCallback(self, target, callback):
         self.callbackFunctions[target] = callback
 
-    def addDataInterface(self, interface_name: str, interface_object: ThreadedModuleCore, enabled=True):
-        self.data_interface_dict[interface_name] = interface_object
+    def addDataInterface(self, interface_name: str, interface_object: ThreadedModuleCore, enabled=True, hide_toggle=False):
+        self.module_dictionary[interface_name] = interface_object
         interface_object.setConsoleCallback(self.updateConsole)
         interface_object.setEnabled(enabled)
         interface_object.start()
+
+        if hide_toggle:
+            self.hidden_modules.append(interface_name)
 
     def clearConsole(self, _):  # Need a empty arg to fit with callback system
         self.ConsoleData = [[]]
 
     def stop(self):
-        for interface in self.data_interface_dict:
-            self.data_interface_dict[interface].stop()
+        for interface in self.module_dictionary:
+            self.module_dictionary[interface].stop()
 
         self.application.exit()

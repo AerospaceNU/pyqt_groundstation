@@ -11,14 +11,16 @@ from Modules.ground_station_recorded_data_interface import GroundStationRecorded
 from Modules.android_phone_bluetooth_interface import AndroidPhoneBluetoothInterface
 from Modules.laptop_status_monitor import LaptopStatusMonitor
 from Modules.fake_rocket_flight import FakeFlight
+from Modules.text_to_speech import TextToSpeech
 
 if __name__ == '__main__':
     GUI = DPFGUI()
-    GUI.addDataInterface("Serial Ground Station", GroundStationDataInterface(GUI))
+    GUI.addDataInterface("Serial Ground Station", GroundStationDataInterface(GUI), enabled=True)
     GUI.addDataInterface("Android Phone Bluetooth", AndroidPhoneBluetoothInterface())
-    GUI.addDataInterface("Laptop Status Monitor", LaptopStatusMonitor())
+    GUI.addDataInterface("Text To Speech", TextToSpeech(), enabled=False)
+    GUI.addDataInterface("Laptop Status Monitor", LaptopStatusMonitor(), hide_toggle=True)
     GUI.addDataInterface("Ground Station Recorded Data", GroundStationRecordedDataInterface(), enabled=False)
-    GUI.addDataInterface("Random Data for Debugging", RandomDataInterface(), enabled=False)
     GUI.addDataInterface("Fake Flight", FakeFlight(), enabled=False)
+    GUI.addDataInterface("Random Data for Debugging", RandomDataInterface(), enabled=False, hide_toggle=True)
     GUI.run()
     print("Good Bye")

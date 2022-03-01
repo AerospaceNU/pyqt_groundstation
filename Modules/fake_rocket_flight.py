@@ -26,7 +26,7 @@ class FakeFlight(FCBDataInterfaceCore):
         self.initial_latitude = 37.2431
         self.initial_longitude = -115.7930
         self.course_enu = 1
-        self.ground_speed_scale = 0.01
+        self.ground_speed_scale = 0.1
         self.boost_accel = 98
         self.gravity = -9.8
         self.drogue_speed = -50
@@ -35,7 +35,8 @@ class FakeFlight(FCBDataInterfaceCore):
         self.boost_duration = 2
         self.launch_time = 0
 
-        self.distance_traveled = 0
+        self.latitude = self.initial_latitude
+        self.longitude = self.initial_longitude
         self.altitude = 0
         self.vertical_velocity = 0
 
@@ -62,8 +63,11 @@ class FakeFlight(FCBDataInterfaceCore):
             self.distance_traveled = 0
             self.altitude = 0
             self.vertical_velocity = 0
+            self.latitude = self.initial_latitude
+            self.longitude = self.initial_longitude
+
             measured_acceleration = -self.gravity
-            fcb_state = 13  # Pre flight
+            fcb_state = Constants.PREFLIGHT_STATE_INDEX  # Pre flight
 
             countdown_time = int(self.launch_time - time.time())
             self.logToConsoleThrottle("Launching in {}".format(countdown_time), 1, 1)
@@ -75,7 +79,7 @@ class FakeFlight(FCBDataInterfaceCore):
         elif self.state == BOOST:
             self.vertical_velocity += self.boost_accel * loop_time
             measured_acceleration = self.boost_accel - self.gravity
-            fcb_state = 12
+            fcb_state = Constants.POWERED_ASCENT_STATE_INDEX
 
             if time.time() - self.launch_time > self.boost_duration:
                 self.state = COAST
@@ -83,7 +87,7 @@ class FakeFlight(FCBDataInterfaceCore):
         elif self.state == COAST:
             self.vertical_velocity += self.gravity * loop_time
             measured_acceleration = 0
-            fcb_state = 7
+            fcb_state = Constants.COAST_TO_APOGEE_INDEX
 
             if self.vertical_velocity < 0:
                 self.state = DROGUE
@@ -91,7 +95,9 @@ class FakeFlight(FCBDataInterfaceCore):
         elif self.state == DROGUE:
             self.vertical_velocity = self.drogue_speed
             measured_acceleration = random.uniform(0, 9.8)
-            fcb_state = 8
+            fcb_state = Constants.DROGUE_DESCENT_INDEX
+
+            self.course_enu += random.uniform(-.1, .1)
 
             if self.altitude < 100:
                 self.state = MAIN
@@ -99,7 +105,7 @@ class FakeFlight(FCBDataInterfaceCore):
         elif self.state == MAIN:
             self.vertical_velocity = self.main_speed
             measured_acceleration = random.uniform(0, 9.8)
-            fcb_state = 10
+            fcb_state = Constants.MAIN_DESCENT_INDEX
 
             if self.altitude < 0:
                 self.state = LANDED
@@ -108,20 +114,20 @@ class FakeFlight(FCBDataInterfaceCore):
             measured_acceleration = -self.gravity
             self.altitude = 0
             self.vertical_velocity = 0
-            fcb_state = 14
+            fcb_state = Constants.END_STATE_INDEX
         else:
-            fcb_state = 16
+            fcb_state = Constants.UNKNOWN_STATE_INDEX
             measured_acceleration = 0
 
         self.altitude += self.vertical_velocity * loop_time
         ground_speed = self.vertical_velocity * self.ground_speed_scale
-        self.distance_traveled += ground_speed * loop_time
+        distance_traveled = ground_speed * loop_time
 
-        delta_x = self.distance_traveled * math.cos(self.course_enu)
-        delta_y = self.distance_traveled * math.sin(self.course_enu)
-        [lat, lon, _] = navpy.ned2lla([delta_y, delta_x, 0], self.initial_latitude, self.initial_longitude, 0)
-        packet[Constants.latitude_key] = lat
-        packet[Constants.longitude_key] = lon
+        delta_x = distance_traveled * math.cos(self.course_enu)
+        delta_y = distance_traveled * math.sin(self.course_enu)
+        [self.latitude, self.longitude, _] = navpy.ned2lla([delta_y, delta_x, 0], self.latitude, self.longitude, 0)
+        packet[Constants.latitude_key] = self.latitude
+        packet[Constants.longitude_key] = self.longitude
         packet[Constants.altitude_key] = self.altitude
         packet[Constants.vertical_speed_key] = self.vertical_velocity
         packet[Constants.acceleration_key] = measured_acceleration

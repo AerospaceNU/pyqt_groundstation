@@ -67,3 +67,12 @@ class Constants:
                        "Shutdown",
                        "NUM_STATES",
                        "UNKNOWN"]
+
+    PREFLIGHT_STATE_INDEX = 13
+    POWERED_ASCENT_STATE_INDEX = 12
+    COAST_TO_APOGEE_INDEX = 7
+    DROGUE_DESCENT_INDEX = 8
+    MAIN_DESCENT_INDEX = 10
+    END_STATE_INDEX = 14
+    UNKNOWN_STATE_INDEX = 16
+
