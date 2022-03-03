@@ -13,11 +13,12 @@ from Widgets.custom_q_widget_base import CustomQWidgetBase
 from data_helpers import get_value_from_dictionary, interpolate
 
 
-class GraphDisplay(CustomQWidgetBase):
+class GraphWidget(CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None):
         super().__init__(parent_widget)
 
-        self.setGeometry(100, 100, 680, 500)
+        if parent_widget is not None:
+            self.setGeometry(100, 100, 680, 500)
 
         self.graphWidget = PlotWidget()
         self.graphWidget.setTitle("Altitude")

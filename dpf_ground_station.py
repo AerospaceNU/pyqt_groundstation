@@ -29,7 +29,7 @@ from Widgets import simple_console_widget
 from Widgets import text_box_drop_down_widget
 from Widgets import vehicle_status_widget
 from Widgets import video_widget
-from Widgets import graph_display_base
+from Widgets import graph_widget
 
 from data_helpers import get_rgb_from_string, get_well_formatted_rgb_string, format_rgb_string, make_stylesheet_string
 
@@ -84,7 +84,7 @@ class DPFGUI():
         self.widgetClasses["Diagnostic Panel"] = text_box_drop_down_widget.TextBoxDropDownWidget
         self.widgetClasses["Vehicle Status"] = vehicle_status_widget.VehicleStatusWidget
         self.widgetClasses["Video Panel"] = video_widget.VideoWidget
-        self.widgetClasses["Altitude Graph"] = graph_display_base.GraphDisplay
+        self.widgetClasses["Altitude Graph"] = graph_widget.GraphWidget
 
         self.application.setObjectName("Application")
         self.mainWindow.setObjectName("Main_Window")
