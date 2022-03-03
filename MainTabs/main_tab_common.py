@@ -30,7 +30,7 @@ class TabCommon(object):
         callbacks = []
 
         for widget in self.widgetList:
-            widget.updateData(vehicleData)
+            widget.setVehicleData(vehicleData)
             widget.updateConsole(console_data)
             widget.coreUpdate()
             callbacks += widget.getCallbackEvents()

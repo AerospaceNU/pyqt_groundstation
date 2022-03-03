@@ -2,7 +2,7 @@
 A rewrite of primary_tab to be more useful on a rocket
 """
 
-from PyQt5.QtWidgets import QGridLayout, QSizePolicy
+from PyQt5.QtWidgets import QGridLayout
 
 from Widgets import flight_display
 from Widgets import vehicle_status_widget
@@ -14,6 +14,8 @@ from Widgets import map_widget
 from Widgets import graph_widget
 
 from MainTabs.main_tab_common import TabCommon
+
+from constants import Constants
 
 
 class RocketPrimaryTab(TabCommon):
@@ -27,7 +29,7 @@ class RocketPrimaryTab(TabCommon):
         self.ButtonPanel = self.addWidget(button_panel.ButtonPanel())
         self.Console = self.addWidget(simple_console_widget.SimpleConsoleWidget())
         self.Map = self.addWidget(map_widget.MapWidget())
-        self.AltitudeGraph = self.addWidget(graph_widget.GraphWidget())
+        self.AltitudeGraph = self.addWidget(graph_widget.GraphWidget(source_list=[Constants.altitude_key]))
 
         self.ButtonPanel.clearMapButton.clicked.connect(self.Map.clearMap)  # This is a sketchy way to do this
         self.ButtonPanel.resetDatumButton.clicked.connect(self.Map.resetDatum)

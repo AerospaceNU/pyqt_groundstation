@@ -27,13 +27,13 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.vSpeedScale = 1
         self.accelerationScale = 10
 
-        self.pitchSource = Constants.pitch_position_key
-        self.rollSource = Constants.roll_position_key
-        self.yawSource = Constants.yaw_position_key
-        self.altSource = Constants.altitude_key
-        self.speedSource = Constants.ground_speed_key
-        self.vSpeedSource = Constants.vertical_speed_key
-        self.terrainAltSource = Constants.acceleration_key
+        self.addSourceKey("pitch", float, Constants.pitch_position_key, default_value=0)
+        self.addSourceKey("roll", float, Constants.roll_position_key, default_value=0)
+        self.addSourceKey("yaw", float, Constants.yaw_position_key, default_value=0)
+        self.addSourceKey("altitude", float, Constants.altitude_key, default_value=0)
+        self.addSourceKey("speed", float, Constants.ground_speed_key, default_value=0)
+        self.addSourceKey("vspeed", float, Constants.vertical_speed_key, default_value=0)
+        self.addSourceKey("accel", float, Constants.acceleration_key, default_value=0)
 
         self.SpeedTextBox = QLabel()
         self.VSpeedTextBox = QLabel()
@@ -98,19 +98,19 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.setMaximumWidth(int(self.scale * 2 + 40))
 
     def updateData(self, vehicle_data):
-        roll = float(get_value_from_dictionary(vehicle_data, self.rollSource, 0))
-        pitch = float(get_value_from_dictionary(vehicle_data, self.pitchSource, 0))
-        yaw = float(get_value_from_dictionary(vehicle_data, self.yawSource, 0))
-        altitude = float(get_value_from_dictionary(vehicle_data, self.altSource, 0))
-        ground_speed = float(get_value_from_dictionary(vehicle_data, self.speedSource, 0))
-        v_speed = float(get_value_from_dictionary(vehicle_data, self.vSpeedSource, 0))
-        terrain_alt = float(get_value_from_dictionary(vehicle_data, self.terrainAltSource, 0))
+        roll = self.getDictValueUsingSourceKey("roll")
+        pitch = self.getDictValueUsingSourceKey("pitch")
+        yaw = self.getDictValueUsingSourceKey("yaw")
+        altitude = self.getDictValueUsingSourceKey("altitude")
+        ground_speed = self.getDictValueUsingSourceKey("speed")
+        v_speed = self.getDictValueUsingSourceKey("vspeed")
+        acceleration = self.getDictValueUsingSourceKey("accel")
 
         self.HUDWidget.setRollPitch(roll, pitch)
         self.AltitudeWidget.setValue(altitude)
         self.SpeedWidget.setValue(ground_speed)
         self.VSpeedWidget.setValue(v_speed)
-        self.AccelerationWidget.setValue(terrain_alt)
+        self.AccelerationWidget.setValue(acceleration)
 
         if self.compass_and_text:
             self.CompassWidget.setYaw(yaw)

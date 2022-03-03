@@ -11,7 +11,16 @@ from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtWidgets import QWidget, QMenu
 from PyQt5.QtGui import QMouseEvent
 
-from data_helpers import make_stylesheet_string, get_rgb_from_string, clamp
+from data_helpers import make_stylesheet_string, get_rgb_from_string, clamp, get_value_from_dictionary, check_type
+
+
+class SourceKeyData(object):
+    """Data structure to hold info about a source key thingy"""
+
+    def __init__(self, key_name, value_type, default_value):
+        self.key_name = key_name
+        self.value_type = value_type
+        self.default_value = default_value
 
 
 class CustomQWidgetBase(QWidget):
@@ -29,6 +38,9 @@ class CustomQWidgetBase(QWidget):
         self.textColor = [0, 0, 0]
         self.callbackEvents = []
         self.tabName = ""
+
+        self.vehicleData = {}
+        self.sourceList = {}
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.rightClickMenu)
@@ -58,8 +70,15 @@ class CustomQWidgetBase(QWidget):
             menu.addAction("Delete", self.hide)
             menu.addSeparator()
 
-        self.addCustomMenuItems(menu)
+        for source in self.sourceList:
+            submenu = menu.addMenu(source)
+            available_sources = self.getAvailableSourceOptions(source)
 
+            for option in available_sources:
+                submenu.addAction(option, lambda a=source, b=option: self.updateDictKeyTarget(a, b))
+
+        menu.addSeparator()
+        self.addCustomMenuItems(menu)
         menu.exec_(self.mapToGlobal(e))
 
     def addCustomMenuItems(self, menu: QMenu):
@@ -87,7 +106,13 @@ class CustomQWidgetBase(QWidget):
         if not self.isInLayout:
             self.adjustSize()
 
+    def setVehicleData(self, vehicle_data):
+        """Called by the tab every loop.  DO NOT OVERRIDE"""
+        self.vehicleData = vehicle_data
+        self.updateData(vehicle_data)
+
     def updateData(self, vehicle_data):
+        """Called every loop with new vehicle database dictionary"""
         pass
 
     def updateConsole(self, data):
@@ -113,3 +138,30 @@ class CustomQWidgetBase(QWidget):
 
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.isClicked = False
+
+    def addSourceKey(self, internal_id: str, value_type, default_key: str, default_value=None):
+        self.sourceList[internal_id] = SourceKeyData(default_key, value_type, default_value)
+
+    def getDictValueUsingSourceKey(self, internal_key_id):
+        dictionary_key = self.sourceList[internal_key_id].key_name
+        default_value = self.sourceList[internal_key_id].default_value
+        value_type = self.sourceList[internal_key_id].value_type
+
+        return_value = get_value_from_dictionary(self.vehicleData, dictionary_key, default_value)
+        try:
+            return value_type(return_value)
+        except TypeError:
+            return default_value
+
+    def updateDictKeyTarget(self, internal_key_id, new_key):
+        self.sourceList[internal_key_id].key_name = new_key
+
+    def getAvailableSourceOptions(self, source):
+        value_type = self.sourceList[source].value_type
+        option_list = []
+
+        for key in self.vehicleData:
+            if check_type(self.vehicleData[key], value_type):
+                option_list.append(key)
+
+        return option_list

@@ -59,6 +59,17 @@ def get_value_from_list(inputList: list, index: int, default):
         return default
 
 
+def check_type(value, data_type):
+    if type(value) == data_type:
+        return True
+
+    try:
+        data_type(value)
+        return True
+    except:
+        return False
+
+
 def get_rgb_from_string(textColor: str):
     """
     Function to get red, green, and blue as integer values from 0-255

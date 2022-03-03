@@ -19,6 +19,7 @@ from MainTabs.main_tab_common import TabCommon
 from MainTabs.settings_tab import SettingsTab
 from MainTabs.diagnostic_tab import DiagnosticTab
 from MainTabs.rocket_primary_tab import RocketPrimaryTab
+from MainTabs.graphs_tab import GraphsTab
 
 from Widgets import annunciator_panel
 from Widgets import control_station_status
@@ -97,6 +98,7 @@ class DPFGUI():
         self.addTabByTabType("settings", "Settings")
         self.addTabByTabType("rocket_primary", "Primary")
         self.addTabByTabType("diagnostic", "Diagnostic")
+        self.addTabByTabType("graph", "Graphs")
 
         # Add callback to clear console
         self.addCallback("clear_console", self.clearConsole)
@@ -248,6 +250,8 @@ class DPFGUI():
             self.addVehicleTab(DiagnosticTab, tabName)
         elif tabType == "rocket_primary":
             self.addVehicleTab(RocketPrimaryTab, tabName)
+        elif tabType == "graph":
+            self.addVehicleTab(GraphsTab, tabName)
         else:
             print("Don't have tab configuration for vehicle type {}".format(tabType))
 

@@ -10,26 +10,34 @@ from pyqtgraph import PlotWidget
 
 from constants import Constants
 from Widgets.custom_q_widget_base import CustomQWidgetBase
-from data_helpers import get_value_from_dictionary, interpolate
 
 
 class GraphWidget(CustomQWidgetBase):
-    def __init__(self, parent_widget: QWidget = None):
+    def __init__(self, parent_widget: QWidget = None, source_list=None, title=None):
         super().__init__(parent_widget)
 
+        if source_list is None:
+            source_list = []
         if parent_widget is not None:
             self.setGeometry(100, 100, 680, 500)
 
         self.graphWidget = PlotWidget()
-        self.graphWidget.setTitle("Altitude")
         self.graphWidget.setLabel('bottom', "Time (s)")
         self.graphWidget.showGrid(x=True, y=True)
 
+        if title is not None:
+            self.graphWidget.setTitle(title)
+
+        for i in range(len(source_list)):
+            source = source_list[i]
+            self.addSourceKey("line_{}".format(i), float, source, default_value=0)
+
+        self.data_dictionary = {}
+        self.plot_line_dictionary = {}
         self.time_list = []
-        self.value_list = []
         self.start_time = time.time()
 
-        self.data_line = self.graphWidget.plot(self.time_list, self.value_list)
+        self.updatePlot()
 
         layout = QGridLayout()
         layout.addWidget(self.graphWidget)
@@ -38,9 +46,36 @@ class GraphWidget(CustomQWidgetBase):
         self.show()
 
     def updateData(self, vehicle_data):
-        altitude = float(get_value_from_dictionary(vehicle_data, Constants.altitude_key, 0))
-
         self.time_list.append(time.time() - self.start_time)
-        self.value_list.append(altitude)
 
-        self.data_line.setData(self.time_list, self.value_list)
+        for source in self.sourceList:
+            value = self.getDictValueUsingSourceKey(source)
+
+            if source not in self.data_dictionary:
+                self.data_dictionary[source] = []
+            self.data_dictionary[source].append(value)
+
+        self.updatePlot()
+
+    def updatePlot(self):
+        for data_name in self.data_dictionary:
+            if data_name not in self.plot_line_dictionary:
+                self.plot_line_dictionary[data_name] = self.graphWidget.plot(self.time_list, self.data_dictionary[data_name])
+
+            self.plot_line_dictionary[data_name].setData(self.time_list, self.data_dictionary[data_name])
+
+    def addCustomMenuItems(self, menu):
+        menu.addAction("Clear graph", self.clearGraph)
+        menu.addAction("Add Line", self.addLineToPlot)
+
+    def addLineToPlot(self):
+        num_keys = len(self.sourceList.keys())
+        self.addSourceKey("line_{}".format(num_keys), float, "", default_value=0)
+
+        self.time_list = []  # Hack to clear stored data without clearing the graph
+        self.data_dictionary = {}  # We need to clear stored data to keep all the lists the same length
+
+    def clearGraph(self):
+        self.time_list = []
+        self.data_dictionary = {}
+        # self.plot_line_dictionary = {}
