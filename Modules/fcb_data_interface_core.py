@@ -53,7 +53,9 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
             [new_lat, new_lon] = self.vehicle_position_filter.get_filtered_position_output()
             dictionary[Constants.latitude_key] = new_lat
             dictionary[Constants.longitude_key] = new_lon
-            dictionary[Constants.ground_speed_key] = self.vehicle_position_filter.get_filtered_speed_output()
+
+            if Constants.ground_speed_key not in dictionary:
+                dictionary[Constants.ground_speed_key] = self.vehicle_position_filter.get_filtered_speed_output()
 
         # Filter ground station lat and lon
         if Constants.ground_station_latitude_key in dictionary and Constants.ground_station_longitude_key in dictionary:

@@ -18,9 +18,16 @@ class Constants:
     temperature_key = "temperature"
     gps_time_key = "gps_time"
     ground_speed_key = "ground_speed"
+    course_over_ground_key = "course_over_ground"
     climb_rate_key = "climb_rate"
     gps_sats_key = "gps_sats"
     bluetooth_connection_key = "ble_client"
+
+    orientation_quaternion_key = "orientation_quaternion"
+    orientation_rpy_key = "orientation_rpy"
+    rotational_velocity_key = "rotational_velocity"
+    acceleration_vector_key = "acceleration_vector"
+    magnetic_vector_key = "magnetic_vector"
 
     ground_station_latitude_key = "gs_lat"
     ground_station_longitude_key = "gs_lon"

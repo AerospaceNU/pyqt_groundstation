@@ -56,6 +56,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.updateEveryLoop()
 
     def connectedLoop(self):
+        self.last_data_time = time.time()
         try:
             while self.connected and self.should_be_running and self.enabled:
                 self.readData()
