@@ -75,7 +75,10 @@ class CustomQWidgetBase(QWidget):
             available_sources = self.getAvailableSourceOptions(source)
 
             for option in available_sources:
-                submenu.addAction(option, lambda a=source, b=option: self.updateDictKeyTarget(a, b))
+                if self.sourceList[source].key_name == option:
+                    submenu.addAction("--- {} ---".format(option), lambda a=source, b=option: self.updateDictKeyTarget(a, b))  # If its the currently selected
+                else:
+                    submenu.addAction(option, lambda a=source, b=option: self.updateDictKeyTarget(a, b))
 
         menu.addSeparator()
         self.addCustomMenuItems(menu)

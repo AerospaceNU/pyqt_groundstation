@@ -85,7 +85,7 @@ class DPFGUI():
         self.widgetClasses["Diagnostic Panel"] = text_box_drop_down_widget.TextBoxDropDownWidget
         self.widgetClasses["Vehicle Status"] = vehicle_status_widget.VehicleStatusWidget
         self.widgetClasses["Video Panel"] = video_widget.VideoWidget
-        self.widgetClasses["Altitude Graph"] = graph_widget.GraphWidget
+        self.widgetClasses["Graph Widget"] = graph_widget.GraphWidget
 
         self.application.setObjectName("Application")
         self.mainWindow.setObjectName("Main_Window")

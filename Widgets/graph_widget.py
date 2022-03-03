@@ -18,8 +18,6 @@ class GraphWidget(CustomQWidgetBase):
 
         if source_list is None:
             source_list = []
-        if parent_widget is not None:
-            self.setGeometry(100, 100, 680, 500)
 
         self.graphWidget = PlotWidget()
         self.graphWidget.setLabel('bottom', "Time (s)")
@@ -42,6 +40,11 @@ class GraphWidget(CustomQWidgetBase):
         layout = QGridLayout()
         layout.addWidget(self.graphWidget)
         self.setLayout(layout)
+
+        if parent_widget is not None:
+            self.setGeometry(100, 100, 680, 500)
+        else:
+            layout.setContentsMargins(1, 1, 1, 1)
 
         self.show()
 
@@ -78,4 +81,8 @@ class GraphWidget(CustomQWidgetBase):
     def clearGraph(self):
         self.time_list = []
         self.data_dictionary = {}
+        self.start_time = time.time()
         # self.plot_line_dictionary = {}
+
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        self.graphWidget.setStyleSheet(widget_background_string)
