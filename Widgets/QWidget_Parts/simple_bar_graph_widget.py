@@ -70,8 +70,10 @@ class SimpleBarGraphWidget(QLabel):
         painter.setBrush(QBrush(QColor(50, 50, 50), Qt.SolidPattern))
 
         topY = 2 * padding + fontHeight
-        rectangleHeight = int(self.height() - 2 * topY)
         startX = int(self.width() * 0.1)
+
+
+        rectangleHeight = int(self.height() - 2 * topY)
         rectangleWidth = int(self.width() - 2 * startX)
 
         painter.translate(0, topY + rectangleHeight)

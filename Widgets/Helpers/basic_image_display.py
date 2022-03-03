@@ -27,14 +27,14 @@ class BasicImageDisplay(object):
         height, width, channels = self.image.shape
 
         if x is None:
-            xOffset = (windowWidth - width) / 2
+            xOffset = int((windowWidth - width) / 2)
         else:
-            xOffset = x
+            xOffset = int(x)
 
         if y is None:
-            yOffset = (windowHeight - height) / 2
+            yOffset = int((windowHeight - height) / 2)
         else:
-            yOffset = y
+            yOffset = int(y)
 
         self.imageWidget.setGeometry(xOffset, yOffset, width, height)
 
