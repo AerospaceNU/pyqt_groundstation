@@ -1,7 +1,3 @@
-"""
-Generates random data for testing
-"""
-
 import time
 import math
 import random
@@ -20,6 +16,10 @@ LANDED = 5
 
 
 class FakeFlight(FCBDataInterfaceCore):
+    """
+    Generates random data for testing
+    """
+
     def __init__(self):
         super().__init__()
 

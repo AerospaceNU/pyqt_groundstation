@@ -1,7 +1,3 @@
-"""
-Sends data to a android phone over bluetooth
-"""
-
 import threading
 import math
 import time
@@ -41,6 +37,10 @@ def format_lat_lon_for_nmea(latitude, longitude):
 
 
 class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
+    """
+    Sends data to a android phone over bluetooth
+    """
+
     def __init__(self):
         super().__init__()
         self.server_sock = BluetoothSocket(RFCOMM)

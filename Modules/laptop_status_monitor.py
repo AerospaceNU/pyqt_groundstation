@@ -1,7 +1,3 @@
-"""
-Measures important stats from laptop
-"""
-
 import time
 import psutil
 
@@ -10,6 +6,10 @@ from constants import Constants
 
 
 class LaptopStatusMonitor(ThreadedModuleCore):
+    """
+    Measures important stats from laptop
+    """
+
     def __init__(self):
         super().__init__()
 

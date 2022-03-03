@@ -1,7 +1,3 @@
-"""
-Reads recorded data from groundstation back into ground station
-"""
-
 import time
 
 from Modules.fcb_data_interface_core import FCBDataInterfaceCore
@@ -12,6 +8,10 @@ from constants import Constants
 
 
 class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
+    """
+    Reads recorded data from groundstation back into ground station
+    """
+
     def __init__(self):
         super().__init__()
 

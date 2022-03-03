@@ -1,7 +1,3 @@
-"""
-Generates random data for testing
-"""
-
 import time
 import math
 import random
@@ -14,6 +10,10 @@ from Modules.DataInterfaceTools.gps_position_filter import GPSPositionFilter
 
 
 class RandomDataInterface(ThreadedModuleCore):
+    """
+    Generates random data for testing
+    """
+
     def __init__(self):
         super().__init__()
         self.i = 0

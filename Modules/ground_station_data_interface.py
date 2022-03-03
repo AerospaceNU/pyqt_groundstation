@@ -1,7 +1,3 @@
-"""
-Reads data from the ground station hardware, and parses it
-"""
-
 import struct
 import time
 import serial
@@ -14,6 +10,10 @@ from dpf_ground_station import DPFGUI
 
 
 class GroundStationDataInterface(FCBDataInterfaceCore):
+    """
+    Reads data from the ground station hardware, and parses it
+    """
+
     def __init__(self, gui: DPFGUI):
         super().__init__()
 

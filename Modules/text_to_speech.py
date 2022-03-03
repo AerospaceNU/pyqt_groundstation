@@ -1,7 +1,3 @@
-"""
-Generates random data for testing
-"""
-
 import pyttsx3
 import time
 
@@ -15,6 +11,10 @@ DESCENT_LOGGING_STATES = [Constants.fcb_state_names[Constants.DROGUE_DESCENT_IND
 
 
 class TextToSpeech(ThreadedModuleCore):
+    """
+    Yells at you
+    """
+
     def __init__(self):
         super().__init__()
         self.engine = pyttsx3.init()

@@ -7,6 +7,10 @@ import time
 
 
 class ThreadedModuleCore(threading.Thread):
+    """
+    Spins up module in its own thread, and handles all cross-thread data transfer
+    """
+
     def __init__(self):
         super().__init__()
         self.data_dictionary = {}

@@ -1,9 +1,3 @@
-"""
-Contains common functions to handle parsed data from the fcb
-
-Used by both the serial ground station interface and the recorded data interface
-"""
-
 import time
 
 from constants import Constants
@@ -16,6 +10,12 @@ from Modules.MessageParsing import fcb_message_parsing
 
 
 class FCBDataInterfaceCore(ThreadedModuleCore):
+    """
+    Contains common functions to handle parsed data from the fcb
+
+    Used by both the serial ground station interface and the recorded data interface
+    """
+
     def __init__(self):
         super().__init__()
 
