@@ -331,7 +331,7 @@ class DPFGUI():
     def addCallback(self, target, callback):
         self.callbackFunctions[target] = callback
 
-    def addDataInterface(self, interface_name: str, interface_object: ThreadedModuleCore, enabled=True, hide_toggle=False):
+    def addModule(self, interface_name: str, interface_object: ThreadedModuleCore, enabled=True, hide_toggle=False):
         self.module_dictionary[interface_name] = interface_object
         interface_object.setConsoleCallback(self.updateConsole)
         interface_object.setEnabled(enabled)
