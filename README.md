@@ -4,7 +4,7 @@ PyQt based GUI program for the DPF rocket (and other stuff?).
 
 ## Install dependencies
 ~~~
-pip3 install pyqt5 imutils navpy pyqtchart
+pip3 install pyqt5 imutils navpy pyqtchart pyqtgraph
 ~~~
 
 ## Radio messages
