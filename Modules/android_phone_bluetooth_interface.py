@@ -116,15 +116,15 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
                 time.sleep(1)
                 self.bluetooth_running = False
 
-    def send_bluetooth(self, dataString):
+    def send_bluetooth(self, data_string):
         """
         Send dataString to every connected bluetooth client
         """
 
-        dataString += "\n"
+        data_string += "\n"
         for client_socket in self.client_sock_list:
             try:
-                client_socket.send(dataString)
+                client_socket.send(data_string)
             except Exception as e:
                 self.logToConsole("Lost connection to one bluetooth device", 2)
                 client_socket.close()

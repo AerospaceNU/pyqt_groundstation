@@ -3,9 +3,18 @@
 PyQt based GUI program for the DPF rocket (and other stuff?). 
 
 ## Install dependencies
+This has all been tested on python 3.8.  Use another version at your own risk
+
 ~~~
-pip3 install pyqt5 imutils navpy pyqtchart pyqtgraph
+pip3 install pyserial opencv-python pyqt5 imutils navpy pyqtchart pyqtgraph pynmea2 pybluez psutil pyttsx3
 ~~~
+
+On Windows I had to get microsoft visual cpp first
+`https://visualstudio.microsoft.com/visual-cpp-build-tools/`
+You need the "Visual studio build tools"
+
+This link was helpful:
+https://stackoverflow.com/questions/44951456/pip-error-microsoft-visual-c-14-0-is-required
 
 ## Radio messages
 All radio messages from the rocket have this format:
