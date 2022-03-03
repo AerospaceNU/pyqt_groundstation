@@ -1,8 +1,9 @@
 import os
 import time
+import sys
 
-# I don't even know anymore
-os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")  # https://stackoverflow.com/questions/63829991/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it
+if sys.platform == "linux":  # I don't even know anymore
+    os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")  # https://stackoverflow.com/questions/63829991/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it
 
 from PyQt5.QtWidgets import QWidget, QGridLayout
 from pyqtgraph import PlotWidget
@@ -13,7 +14,7 @@ from data_helpers import get_value_from_dictionary, interpolate
 
 
 class GraphDisplay(CustomQWidgetBase):
-    def __init__(self, parentWidget: QWidget = None, pointsToKeep=200):
+    def __init__(self, parentWidget: QWidget = None):
         super().__init__(parentWidget)
 
         self.setGeometry(100, 100, 680, 500)
@@ -21,6 +22,7 @@ class GraphDisplay(CustomQWidgetBase):
         self.graphWidget = PlotWidget()
         self.graphWidget.setTitle("Altitude")
         self.graphWidget.setLabel('bottom', "Time (s)")
+        self.graphWidget.showGrid(x=True, y=True)
 
         self.time_list = []
         self.value_list = []
