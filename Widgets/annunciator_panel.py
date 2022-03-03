@@ -10,8 +10,8 @@ from Widgets.custom_q_widget_base import CustomQWidgetBase
 
 
 class AnnunciatorPanel(CustomQWidgetBase):
-    def __init__(self, parentWidget=None):
-        super().__init__(parentWidget)
+    def __init__(self, parent_widget=None):
+        super().__init__(parent_widget)
 
         self.xBuffer = 0
         self.yBuffer = 0
@@ -38,11 +38,11 @@ class AnnunciatorPanel(CustomQWidgetBase):
 
         self.setLayout(layout)
 
-    def updateData(self, vehicleData):
-        if self.source not in vehicleData:
+    def updateData(self, vehicle_data):
+        if self.source not in vehicle_data:
             self.setMaximumWidth(100)
             return
-        data = vehicleData[self.source]
+        data = vehicle_data[self.source]
 
         for i in range(len(data)):
             if i >= len(self.annunciatorWidgets):
@@ -72,6 +72,6 @@ class AnnunciatorPanel(CustomQWidgetBase):
         self.setMaximumWidth(self.width())
         self.setMaximumHeight(self.height())
 
-    def setWidgetColors(self, widgetBackgroundString, textString, headerTextString, borderString):
-        string = "{0}{1}{2}{3}".format(widgetBackgroundString, textString, headerTextString, borderString)
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        string = "{0}{1}{2}{3}".format(widget_background_string, text_string, header_text_string, border_string)
         self.setStyleSheet("QWidget#" + self.objectName() + "{" + string + "}")

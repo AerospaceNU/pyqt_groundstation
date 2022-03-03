@@ -85,9 +85,9 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
         self.isBagging = not self.isBagging
         self.callbackEvents.append(["{}_bagging".format(self.tabName), self.isBagging])
 
-    def updateData(self, vehicleData):
-        if "camera" in vehicleData:
-            cameras = list(vehicleData["camera"])
+    def updateData(self, vehicle_data):
+        if "camera" in vehicle_data:
+            cameras = list(vehicle_data["camera"])
             self.setVideoOptions(cameras)
 
         if self.acousticMode == 0:
@@ -104,15 +104,15 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
         else:
             self.bagControlButton.setText("Disabled")
 
-    def setWidgetColors(self, widgetBackgroundString, textString, headerTextString, borderString):
-        string = "{0}{1}{2}{3}".format(widgetBackgroundString, textString, headerTextString, borderString)
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        string = "{0}{1}{2}{3}".format(widget_background_string, text_string, header_text_string, border_string)
         self.setStyleSheet("QWidget#" + self.objectName() + "{" + string + "}")
 
-        self.videoSwitcher.setStyleSheet(widgetBackgroundString + textString)
-        self.calibratePressure.setStyleSheet(widgetBackgroundString + textString)
-        self.acousticSwitcherTextBox.setStyleSheet(widgetBackgroundString + textString)
-        self.acousticSwitcherButton.setStyleSheet(widgetBackgroundString + textString)
-        self.bagControlTextBox.setStyleSheet(widgetBackgroundString + textString)
-        self.bagControlButton.setStyleSheet(widgetBackgroundString + textString)
-        self.clearMapButton.setStyleSheet(widgetBackgroundString + textString)
-        self.resetDatumButton.setStyleSheet(widgetBackgroundString + textString)
+        self.videoSwitcher.setStyleSheet(widget_background_string + text_string)
+        self.calibratePressure.setStyleSheet(widget_background_string + text_string)
+        self.acousticSwitcherTextBox.setStyleSheet(widget_background_string + text_string)
+        self.acousticSwitcherButton.setStyleSheet(widget_background_string + text_string)
+        self.bagControlTextBox.setStyleSheet(widget_background_string + text_string)
+        self.bagControlButton.setStyleSheet(widget_background_string + text_string)
+        self.clearMapButton.setStyleSheet(widget_background_string + text_string)
+        self.resetDatumButton.setStyleSheet(widget_background_string + text_string)

@@ -28,7 +28,7 @@ class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         painter.setPen(QColor(self.borderColor[0], self.borderColor[1], self.borderColor[2]))
         painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
 
-        fontHeight = self.fontInfo().pixelSize()
+        font_height = self.fontInfo().pixelSize()
         for i in range(len(self.data)):
             line = self.data[i]
             if len(line) >= 2:
@@ -44,7 +44,7 @@ class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
                 else:
                     painter.setPen(QColor("blue"))
 
-                painter.drawText(5, fontHeight * (i + 1), line[0])
+                painter.drawText(5, font_height * (i + 1), line[0])
 
     def adjustSize(self) -> None:
         height = self.fontInfo().pixelSize() * len(self.data) + 10

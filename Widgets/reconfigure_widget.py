@@ -11,8 +11,8 @@ from data_helpers import get_value_from_list
 
 
 class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
-    def __init__(self, parentWidget: QWidget = None):
-        super().__init__(parentWidget)
+    def __init__(self, parent_widget: QWidget = None):
+        super().__init__(parent_widget)
 
         self.dropDownWidget = QComboBox()
         self.resetButton = QPushButton()
@@ -20,10 +20,10 @@ class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
         self.resetButton.clicked.connect(self.resetCallback)
 
         header = QWidget()
-        headerLayout = QGridLayout()
-        headerLayout.addWidget(self.dropDownWidget, 0, 0)
-        headerLayout.addWidget(self.resetButton, 0, 1)
-        header.setLayout(headerLayout)
+        header_layout = QGridLayout()
+        header_layout.addWidget(self.dropDownWidget, 0, 0)
+        header_layout.addWidget(self.resetButton, 0, 1)
+        header.setLayout(header_layout)
         header.setContentsMargins(0, 0, 0, 0)
 
         layout = QGridLayout()
@@ -43,58 +43,58 @@ class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
         self.menuItems = []
         self.setMenuItems(["No data"])
 
-    def updateData(self, vehicleData):
-        if self.source not in vehicleData:
+    def updateData(self, vehicle_data):
+        if self.source not in vehicle_data:
             self.setMinimumSize(5, 5)
             return
-        dataStruct = vehicleData[self.source]
+        data_struct = vehicle_data[self.source]
 
-        if len(dataStruct) == 0:
+        if len(data_struct) == 0:
             self.setMinimumSize(5, 5)
             return
 
-        self.setMenuItems(list(dataStruct.keys()))
-        selectedTarget = self.dropDownWidget.currentText()
-        if selectedTarget != self.selectedTarget:
+        self.setMenuItems(list(data_struct.keys()))
+        selected_target = self.dropDownWidget.currentText()
+        if selected_target != self.selectedTarget:
             self.resetNeeded = True
-            self.selectedTarget = selectedTarget
+            self.selectedTarget = selected_target
 
-        if selectedTarget not in dataStruct:
+        if selected_target not in data_struct:
             return
-        reconfigureItems = dataStruct[selectedTarget]
+        reconfigure_items = data_struct[selected_target]
 
         # If there's the wrong number of items, adjust the widget
-        resetNeeded = self.resetNeeded
+        reset_needed = self.resetNeeded
         self.resetNeeded = False
-        while len(reconfigureItems) > len(self.reconfigureWidgetLabels):
+        while len(reconfigure_items) > len(self.reconfigureWidgetLabels):
             line = reconfigure_line.ReconfigureLine()
-            line.setText(reconfigureItems[len(self.reconfigureWidgetLabels)][0])
+            line.setText(reconfigure_items[len(self.reconfigureWidgetLabels)][0])
             line.setCallback(self.textEntryCallback)
 
             self.layout().addWidget(line)
             self.reconfigureWidgetLabels.append(line)
             line.setColor(self.widgetBackgroundString, self.borderString, self.textString)
-            resetNeeded = True
-        while len(reconfigureItems) < len(self.reconfigureWidgetLabels):
+            reset_needed = True
+        while len(reconfigure_items) < len(self.reconfigureWidgetLabels):
             self.layout().removeWidget(self.reconfigureWidgetLabels[-1])
             self.reconfigureWidgetLabels[-1].deleteLater()
             del self.reconfigureWidgetLabels[-1]
-            resetNeeded = True
+            reset_needed = True
 
         # Set text and labels on widgets
-        for i in range(len(reconfigureItems)):
-            text = reconfigureItems[i][0]
-            type = reconfigureItems[i][1]
-            value = get_value_from_list(reconfigureItems[i], 2, "")
-            description = get_value_from_list(reconfigureItems[i], 3, "")
-            config = get_value_from_list(reconfigureItems[i], 4, "")
+        for i in range(len(reconfigure_items)):
+            text = reconfigure_items[i][0]
+            type = reconfigure_items[i][1]
+            value = get_value_from_list(reconfigure_items[i], 2, "")
+            description = get_value_from_list(reconfigure_items[i], 3, "")
+            config = get_value_from_list(reconfigure_items[i], 4, "")
 
             # Order matters here type then config then value
             self.reconfigureWidgetLabels[i].setText(text)
             self.reconfigureWidgetLabels[i].setType(type)
             self.reconfigureWidgetLabels[i].setDescription(description)
-            self.reconfigureWidgetLabels[i].setConfig(config, force=resetNeeded)
-            self.reconfigureWidgetLabels[i].setValue(value, force=resetNeeded)
+            self.reconfigureWidgetLabels[i].setConfig(config, force=reset_needed)
+            self.reconfigureWidgetLabels[i].setValue(value, force=reset_needed)
 
         for line in self.reconfigureWidgetLabels:
             line.update()
@@ -106,19 +106,19 @@ class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
     def textEntryCallback(self, name, value):
         self.callbackEvents.append(["{}_reconfigure_set_new".format(self.tabName), "{0}:{1}:{2}".format(self.selectedTarget, name, value)])
 
-    def setMenuItems(self, menuItemList):
-        if len(menuItemList) > 0:
-            menuItemList.sort()
-        if menuItemList != self.menuItems:
+    def setMenuItems(self, menu_item_list):
+        if len(menu_item_list) > 0:
+            menu_item_list.sort()
+        if menu_item_list != self.menuItems:
             self.dropDownWidget.clear()
-            self.dropDownWidget.addItems(menuItemList)
-        self.menuItems = menuItemList
+            self.dropDownWidget.addItems(menu_item_list)
+        self.menuItems = menu_item_list
         self.dropDownWidget.setStyleSheet(self.widgetBackgroundString + self.headerTextString)
 
-    def setWidgetColors(self, widgetBackgroundString, textString, headerTextString, borderString):
-        self.widgetBackgroundString = widgetBackgroundString
-        self.textString = textString
-        self.headerTextString = headerTextString
-        self.borderString = borderString
-        self.dropDownWidget.setStyleSheet(widgetBackgroundString + headerTextString)
-        self.resetButton.setStyleSheet(widgetBackgroundString + headerTextString)
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        self.widgetBackgroundString = widget_background_string
+        self.textString = text_string
+        self.headerTextString = header_text_string
+        self.borderString = border_string
+        self.dropDownWidget.setStyleSheet(widget_background_string + header_text_string)
+        self.resetButton.setStyleSheet(widget_background_string + header_text_string)

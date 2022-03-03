@@ -11,15 +11,15 @@ from constants import Constants
 
 
 class MapWidget(CustomQWidgetBase):
-    def __init__(self, parentWidget: QWidget = None, pointsToKeep=200, updateInterval=3):
-        super().__init__(parentWidget)
+    def __init__(self, parent_widget: QWidget = None, points_to_keep=200, update_interval=3):
+        super().__init__(parent_widget)
         self.padding = 20
         self.originSize = 20
         self.decimals = 2
         self.paths = {}
 
-        self.pointsToKeep = pointsToKeep
-        self.newPointInterval = updateInterval
+        self.pointsToKeep = points_to_keep
+        self.newPointInterval = update_interval
         self.newPointSpacing = 10
         self.lastPointTime = 0
 
@@ -34,19 +34,19 @@ class MapWidget(CustomQWidgetBase):
 
         self.oldPoints = []
 
-    def updateData(self, vehicleData):
-        if "paths" not in vehicleData:
+    def updateData(self, vehicle_data):
+        if "paths" not in vehicle_data:
             paths = {}
         else:
-            paths = vehicleData["paths"]
+            paths = vehicle_data["paths"]
 
         self.paths = paths
 
-        self.heading = float(get_value_from_dictionary(vehicleData, "yaw", 0))
-        latitude = float(get_value_from_dictionary(vehicleData, Constants.latitude_key, 0))
-        longitude = float(get_value_from_dictionary(vehicleData, Constants.longitude_key, 0))
-        gs_lat = float(get_value_from_dictionary(vehicleData, Constants.ground_station_latitude_key, 0))
-        gs_lon = float(get_value_from_dictionary(vehicleData, Constants.ground_station_longitude_key, 0))
+        self.heading = float(get_value_from_dictionary(vehicle_data, "yaw", 0))
+        latitude = float(get_value_from_dictionary(vehicle_data, Constants.latitude_key, 0))
+        longitude = float(get_value_from_dictionary(vehicle_data, Constants.longitude_key, 0))
+        gs_lat = float(get_value_from_dictionary(vehicle_data, Constants.ground_station_latitude_key, 0))
+        gs_lon = float(get_value_from_dictionary(vehicle_data, Constants.ground_station_longitude_key, 0))
 
         if latitude != 0 and longitude != 0 and gs_lat != 0 and gs_lon != 0:  # If we have rocket lat-lon and gs lat-lon, use that
             ned = navpy.lla2ned(latitude, longitude, 0, gs_lat, gs_lon, 0)
@@ -151,17 +151,17 @@ class MapWidget(CustomQWidgetBase):
 
     def pointToDrawLocation(self, x, y):
         """Converts a point in the real world to a position on the screen"""
-        sizeRatio = self.height() / self.width()
+        size_ratio = self.height() / self.width()
 
-        out_x = interpolate(x, self.minAxis / sizeRatio, self.maxAxis / sizeRatio, self.padding + 10, self.width() - self.padding)
+        out_x = interpolate(x, self.minAxis / size_ratio, self.maxAxis / size_ratio, self.padding + 10, self.width() - self.padding)
         out_y = interpolate(y, self.minAxis, self.maxAxis, self.height() - (self.padding + 10), self.padding)
         return [int(out_x), int(out_y)]
 
     def drawLocationToPoint(self, x, y):
         """Should be the opposite of the function above"""
-        sizeRatio = self.height() / self.width()
+        size_ratio = self.height() / self.width()
 
-        out_x = interpolate(x, self.padding + 10, self.width() - self.padding, self.minAxis / sizeRatio, self.maxAxis / sizeRatio)
+        out_x = interpolate(x, self.padding + 10, self.width() - self.padding, self.minAxis / size_ratio, self.maxAxis / size_ratio)
         out_y = interpolate(y, self.height() - (self.padding + 10), self.padding, self.minAxis, self.maxAxis)
         return [out_x, out_y]
 
@@ -187,11 +187,11 @@ class MapWidget(CustomQWidgetBase):
                 self.oldPoints = ([[x, y]] + self.oldPoints)  # [:self.pointsToKeep] We keep all the points now
                 self.lastPointTime = time.time()
 
-        realAxisSize = self.maxAxis - self.minAxis
+        real_axis_size = self.maxAxis - self.minAxis
 
-        if realAxisSize < 1:
+        if real_axis_size < 1:
             self.decimals = 2
-        elif 1 <= realAxisSize < 20:
+        elif 1 <= real_axis_size < 20:
             self.decimals = 1
         else:
             self.decimals = 0

@@ -41,10 +41,10 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.TerrainTextBox = QLabel()
 
         self.HUDWidget = attitude_display_widget.AttitudeDisplayWidget()
-        self.AltitudeWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(textSpacing=10, pixelsPerLine=20, intermediateLines=0)
-        self.SpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(leftOriented=False, textSpacing=1, pixelsPerLine=30, intermediateLines=2)
+        self.AltitudeWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(text_spacing=10, pixels_per_line=20, intermediate_lines=0)
+        self.SpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(left_oriented=False, text_spacing=1, pixels_per_line=30, intermediate_lines=2)
         self.AccelerationWidget = v_speed_indicator_widget.VSpeedIndicatorWidget(maxSpeed=self.accelerationScale, leftOriented=False)
-        self.VSpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(textSpacing=10, pixelsPerLine=20, intermediateLines=0)
+        self.VSpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(text_spacing=10, pixels_per_line=20, intermediate_lines=0)
 
         layout = QGridLayout()
         layout.addWidget(self.SpeedWidget, 1, 1)
@@ -97,55 +97,55 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.setMaximumHeight(self.scale * v_scale_factor + 40)
         self.setMaximumWidth(int(self.scale * 2 + 40))
 
-    def updateData(self, vehicleData):
-        roll = float(get_value_from_dictionary(vehicleData, self.rollSource, 0))
-        pitch = float(get_value_from_dictionary(vehicleData, self.pitchSource, 0))
-        yaw = float(get_value_from_dictionary(vehicleData, self.yawSource, 0))
-        altitude = float(get_value_from_dictionary(vehicleData, self.altSource, 0))
-        groundSpeed = float(get_value_from_dictionary(vehicleData, self.speedSource, 0))
-        vSpeed = float(get_value_from_dictionary(vehicleData, self.vSpeedSource, 0))
-        terrainAlt = float(get_value_from_dictionary(vehicleData, self.terrainAltSource, 0))
+    def updateData(self, vehicle_data):
+        roll = float(get_value_from_dictionary(vehicle_data, self.rollSource, 0))
+        pitch = float(get_value_from_dictionary(vehicle_data, self.pitchSource, 0))
+        yaw = float(get_value_from_dictionary(vehicle_data, self.yawSource, 0))
+        altitude = float(get_value_from_dictionary(vehicle_data, self.altSource, 0))
+        ground_speed = float(get_value_from_dictionary(vehicle_data, self.speedSource, 0))
+        v_speed = float(get_value_from_dictionary(vehicle_data, self.vSpeedSource, 0))
+        terrain_alt = float(get_value_from_dictionary(vehicle_data, self.terrainAltSource, 0))
 
         self.HUDWidget.setRollPitch(roll, pitch)
         self.AltitudeWidget.setValue(altitude)
-        self.SpeedWidget.setValue(groundSpeed)
-        self.VSpeedWidget.setValue(vSpeed)
-        self.AccelerationWidget.setValue(terrainAlt)
+        self.SpeedWidget.setValue(ground_speed)
+        self.VSpeedWidget.setValue(v_speed)
+        self.AccelerationWidget.setValue(terrain_alt)
 
         if self.compass_and_text:
             self.CompassWidget.setYaw(yaw)
 
-            stateText = "Positions:\n"
-            stateText += "{0:<7s}{1:>5d}\n".format("roll:", int(roll))
-            stateText += "{0:<7s}{1:>5d}\n".format("pitch:", int(pitch))
-            stateText += "{0:<7s}{1:>5d}\n".format("yaw:", int(yaw))
-            stateText += "{0:<7s}{1:>5s}\n".format("depth:", round_to_string(altitude, 5))
-            stateText += "{0:<7s}{1:>5s}\n".format("x (e):", round_to_string(xPos, 5))
-            stateText += "{0:<7s}{1:>5s}\n".format("y (n):", round_to_string(yPos, 5))
-            self.StateTextBox.setText(stateText)
+            state_text = "Positions:\n"
+            state_text += "{0:<7s}{1:>5d}\n".format("roll:", int(roll))
+            state_text += "{0:<7s}{1:>5d}\n".format("pitch:", int(pitch))
+            state_text += "{0:<7s}{1:>5d}\n".format("yaw:", int(yaw))
+            state_text += "{0:<7s}{1:>5s}\n".format("depth:", round_to_string(altitude, 5))
+            # state_text += "{0:<7s}{1:>5s}\n".format("x (e):", round_to_string(xPos, 5))
+            # state_text += "{0:<7s}{1:>5s}\n".format("y (n):", round_to_string(yPos, 5))
+            self.StateTextBox.setText(state_text)
 
-            setpointText = "Setpoints:\n"
-            setpointText += "{0:<7s}{1:>5d}\n".format("roll:", int(rollSetpoint))
-            setpointText += "{0:<7s}{1:>5d}\n".format("pitch:", int(pitchSetpoint))
-            setpointText += "{0:<7s}{1:>5d}\n".format("yaw:", int(yawSetpoint))
-            setpointText += "{0:<7s}{1:>5s}\n".format("depth:", round_to_string(depthSetpoint, 5))
-            setpointText += "{0:<7s}{1:>5s}\n".format("alt:", round_to_string(altSetpoint, 5))
-            setpointText += 'Power:\n'
-            setpointText += "{0:<7s}{1:>5s}\n".format("surge:", round_to_string(surge_power, 5))
-            self.SetpointTextBox.setText(setpointText)
+            setpoint_text = "Setpoints:\n"
+            # setpoint_text += "{0:<7s}{1:>5d}\n".format("roll:", int(rollSetpoint))
+            # setpoint_text += "{0:<7s}{1:>5d}\n".format("pitch:", int(pitchSetpoint))
+            # setpoint_text += "{0:<7s}{1:>5d}\n".format("yaw:", int(yawSetpoint))
+            # setpoint_text += "{0:<7s}{1:>5s}\n".format("depth:", round_to_string(depthSetpoint, 5))
+            # setpoint_text += "{0:<7s}{1:>5s}\n".format("alt:", round_to_string(altSetpoint, 5))
+            setpoint_text += 'Power:\n'
+            # setpoint_text += "{0:<7s}{1:>5s}\n".format("surge:", round_to_string(surge_power, 5))
+            self.SetpointTextBox.setText(setpoint_text)
 
         self.update()
         self.adjustSize()
 
-    def setWidgetColors(self, widgetBackgroundString, textString, headerTextString, borderString):
-        self.SpeedTextBox.setStyleSheet(textString)
-        self.VSpeedTextBox.setStyleSheet(textString)
-        self.AltitudeTextBox.setStyleSheet(textString)
-        self.TerrainTextBox.setStyleSheet(textString)
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        self.SpeedTextBox.setStyleSheet(text_string)
+        self.VSpeedTextBox.setStyleSheet(text_string)
+        self.AltitudeTextBox.setStyleSheet(text_string)
+        self.TerrainTextBox.setStyleSheet(text_string)
 
         if self.compass_and_text:
-            self.CompassWidget.setCompassColor(textString)
-            self.StateTextBox.setStyleSheet(textString)
-            self.SetpointTextBox.setStyleSheet(textString)
+            self.CompassWidget.setCompassColor(text_string)
+            self.StateTextBox.setStyleSheet(text_string)
+            self.SetpointTextBox.setStyleSheet(text_string)
 
-        self.setStyleSheet("QWidget#" + self.objectName() + "{" + "{0}{1}{2}{3}".format(widgetBackgroundString, textString, headerTextString, borderString) + "}")
+        self.setStyleSheet("QWidget#" + self.objectName() + "{" + "{0}{1}{2}{3}".format(widget_background_string, text_string, header_text_string, border_string) + "}")

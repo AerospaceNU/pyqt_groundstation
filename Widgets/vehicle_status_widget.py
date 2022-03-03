@@ -67,20 +67,20 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         for box in [self.rssi_box, self.message_age_box, self.v_speed_box, self.acceleration_box]:
             box.setFont(QFont("Monospace", self.widgetSize * 0.4))
 
-    def updateData(self, vehicleData):
-        fault_status = int(float(get_value_from_dictionary(vehicleData, self.statusSource, 3)))
-        fcb_state = str(get_value_from_dictionary(vehicleData, Constants.fcb_state_key, "No Data"))
-        altitude = float(get_value_from_dictionary(vehicleData, Constants.altitude_key, -1))
-        rssi = str(get_value_from_dictionary(vehicleData, Constants.rssi_key, "No Data"))
-        message_age = float(get_value_from_dictionary(vehicleData, Constants.message_age_key, -1))
-        v_speed = float(get_value_from_dictionary(vehicleData, Constants.vertical_speed_key, -1))
-        acceleration = float(get_value_from_dictionary(vehicleData, Constants.acceleration_key, -1))
+    def updateData(self, vehicle_data):
+        fault_status = int(float(get_value_from_dictionary(vehicle_data, self.statusSource, 3)))
+        fcb_state = str(get_value_from_dictionary(vehicle_data, Constants.fcb_state_key, "No Data"))
+        altitude = float(get_value_from_dictionary(vehicle_data, Constants.altitude_key, -1))
+        rssi = str(get_value_from_dictionary(vehicle_data, Constants.rssi_key, "No Data"))
+        message_age = float(get_value_from_dictionary(vehicle_data, Constants.message_age_key, -1))
+        v_speed = float(get_value_from_dictionary(vehicle_data, Constants.vertical_speed_key, -1))
+        acceleration = float(get_value_from_dictionary(vehicle_data, Constants.acceleration_key, -1))
 
-        fcb_voltage = get_value_from_dictionary(vehicleData, Constants.fcb_battery_voltage, -1)
-        prop_voltage = get_value_from_dictionary(vehicleData, Constants.prop_battery_voltage, -1)
-        lc1_voltage = get_value_from_dictionary(vehicleData, Constants.line_cutter_1_voltage, -1)
-        lc2_voltage = get_value_from_dictionary(vehicleData, Constants.line_cutter_2_voltage, -1)
-        fcb_mem = get_value_from_dictionary(vehicleData, Constants.fcb_memory_usage, -1)
+        fcb_voltage = get_value_from_dictionary(vehicle_data, Constants.fcb_battery_voltage, -1)
+        prop_voltage = get_value_from_dictionary(vehicle_data, Constants.prop_battery_voltage, -1)
+        lc1_voltage = get_value_from_dictionary(vehicle_data, Constants.line_cutter_1_voltage, -1)
+        lc2_voltage = get_value_from_dictionary(vehicle_data, Constants.line_cutter_2_voltage, -1)
+        fcb_mem = get_value_from_dictionary(vehicle_data, Constants.fcb_memory_usage, -1)
 
         if fault_status == 2:
             self.statusBox.setStyleSheet("color: red")
@@ -120,16 +120,16 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.line_cutter_batt_2_graph.setValue(lc2_voltage)
         self.fcb_memory_graph.setValue(fcb_mem)
 
-    def setWidgetColors(self, widgetBackgroundString, textString, headerTextString, borderString):
-        self.modeBox.setStyleSheet(textString)
-        self.rssi_box.setStyleSheet(textString)
-        self.message_age_box.setStyleSheet(textString)
-        self.v_speed_box.setStyleSheet(textString)
-        self.acceleration_box.setStyleSheet(textString)
-        self.fcb_state_box.setStyleSheet(textString)
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        self.modeBox.setStyleSheet(text_string)
+        self.rssi_box.setStyleSheet(text_string)
+        self.message_age_box.setStyleSheet(text_string)
+        self.v_speed_box.setStyleSheet(text_string)
+        self.acceleration_box.setStyleSheet(text_string)
+        self.fcb_state_box.setStyleSheet(text_string)
 
-        self.fcb_battery_graph.setTextColor(textString)
-        self.prop_battery_graph.setTextColor(textString)
-        self.line_cutter_batt_1_graph.setTextColor(textString)
-        self.line_cutter_batt_2_graph.setTextColor(textString)
-        self.fcb_memory_graph.setTextColor(textString)
+        self.fcb_battery_graph.setTextColor(text_string)
+        self.prop_battery_graph.setTextColor(text_string)
+        self.line_cutter_batt_1_graph.setTextColor(text_string)
+        self.line_cutter_batt_2_graph.setTextColor(text_string)
+        self.fcb_memory_graph.setTextColor(text_string)

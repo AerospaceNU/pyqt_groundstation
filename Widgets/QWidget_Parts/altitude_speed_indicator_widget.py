@@ -6,18 +6,18 @@ from data_helpers import round_to_string, nearest_multiple
 
 
 class AltitudeSpeedIndicatorWidget(QLabel):
-    def __init__(self, parentWidget: QWidget = None, leftOriented=True, textSpacing=1, pixelsPerLine=10, intermediateLines=1):
-        super().__init__(parentWidget)
+    def __init__(self, parent_widget: QWidget = None, left_oriented=True, text_spacing=1, pixels_per_line=10, intermediate_lines=1):
+        super().__init__(parent_widget)
 
         self.size = 200
 
-        self.textSpacing = textSpacing  # Delta Value between lines
-        self.intermediateLines = int(intermediateLines)  # Number of lines to draw between text
-        self.pixelsPerLine = int(pixelsPerLine)
+        self.textSpacing = text_spacing  # Delta Value between lines
+        self.intermediateLines = int(intermediate_lines)  # Number of lines to draw between text
+        self.pixelsPerLine = int(pixels_per_line)
 
         self.value = 0
 
-        self.leftOriented = leftOriented
+        self.leftOriented = left_oriented
 
     def setSize(self, size):
         # TODO: Use the QWidget size functions instead of this sketchy one
@@ -30,78 +30,78 @@ class AltitudeSpeedIndicatorWidget(QLabel):
         self.setMaximumHeight(size)
 
     def paintEvent(self, e):
-        shortLength = 10
-        fontSize = max(self.width() / 5, 10)
+        short_length = 10
+        font_size = max(self.width() / 5, 10)
 
         painter = QPainter(self)  # Grey background
         painter.setPen(QPen(QColor(50, 50, 50), 0, Qt.SolidLine))
         painter.setBrush(QBrush(QColor(50, 50, 50), Qt.SolidPattern))
         painter.drawRect(0, 0, self.width(), self.height())
-        painter.setFont(QFont("Monospace", fontSize))
+        painter.setFont(QFont("Monospace", font_size))
 
-        lineWidth = self.height() / 100
+        line_width = self.height() / 100
 
         painter.translate(int(self.width() / 2), int(self.height() / 2))  # Set our coordinate system to be centered on the widget
-        painter.setPen(QPen(Qt.white, lineWidth, Qt.SolidLine))
+        painter.setPen(QPen(Qt.white, line_width, Qt.SolidLine))
         painter.setBrush(QBrush(Qt.white, Qt.SolidPattern))
 
-        linesToDraw = (self.height() / 2) / (self.pixelsPerLine / (self.intermediateLines + 1))
-        lineDeltaValue = self.textSpacing / (self.intermediateLines + 1)
+        lines_to_draw = (self.height() / 2) / (self.pixelsPerLine / (self.intermediateLines + 1))
+        line_delta_value = self.textSpacing / (self.intermediateLines + 1)
 
-        startX = int(self.width() / 2)
-        endX = int(self.width() / 2) - shortLength
+        start_x = int(self.width() / 2)
+        end_x = int(self.width() / 2) - short_length
 
         if self.leftOriented:
-            startX = -startX
-            endX = -endX
+            start_x = -start_x
+            end_x = -end_x
 
-        roundedValue = nearest_multiple(self.value, self.textSpacing)
+        rounded_value = nearest_multiple(self.value, self.textSpacing)
         delta_value_per_pixel = float(self.textSpacing) / float(self.pixelsPerLine)
-        center_offset_pixels = float(roundedValue - self.value) / float(delta_value_per_pixel)
+        center_offset_pixels = float(rounded_value - self.value) / float(delta_value_per_pixel)
         line_pixel_spacing = self.pixelsPerLine / (self.intermediateLines + 1)
 
-        for i in range(-int(linesToDraw), int(linesToDraw + 2)):
-            lineYPosition = (i * line_pixel_spacing) - center_offset_pixels
-            painter.drawLine(startX, lineYPosition, endX, lineYPosition)
+        for i in range(-int(lines_to_draw), int(lines_to_draw + 2)):
+            line_y_position = (i * line_pixel_spacing) - center_offset_pixels
+            painter.drawLine(start_x, line_y_position, end_x, line_y_position)
 
             if i % (self.intermediateLines + 1) == 0:
-                value = round_to_string(roundedValue + (-i * lineDeltaValue), 4)
+                value = round_to_string(rounded_value + (-i * line_delta_value), 4)
                 if self.leftOriented:
-                    painter.drawText(endX + 5, lineYPosition + int(fontSize / 2), "{}".format(value))
+                    painter.drawText(end_x + 5, line_y_position + int(font_size / 2), "{}".format(value))
                 else:
-                    painter.drawText(endX - 5 - (4 * (fontSize - 2)), lineYPosition + int(fontSize / 2), "{:>3}".format(value))
+                    painter.drawText(end_x - 5 - (4 * (font_size - 2)), line_y_position + int(font_size / 2), "{:>3}".format(value))
 
-        pointerCornerX = int(self.width() / 5)
-        pointerHeight = int(self.height() / 20)
+        pointer_corner_x = int(self.width() / 5)
+        pointer_height = int(self.height() / 20)
 
         painter.setPen(QPen(Qt.white, 2, Qt.SolidLine))
         painter.setBrush(QBrush(Qt.black, Qt.SolidPattern))
 
         if self.leftOriented:
             points = [
-                QPoint(-pointerCornerX, pointerHeight),
-                QPoint(self.width() / 2, pointerHeight),
-                QPoint(self.width() / 2, -pointerHeight),
-                QPoint(-pointerCornerX, -pointerHeight),
+                QPoint(-pointer_corner_x, pointer_height),
+                QPoint(self.width() / 2, pointer_height),
+                QPoint(self.width() / 2, -pointer_height),
+                QPoint(-pointer_corner_x, -pointer_height),
                 QPoint(-self.width() / 2, 0),
             ]
         else:
             points = [
-                QPoint(pointerCornerX, pointerHeight),
-                QPoint(-self.width() / 2, pointerHeight),
-                QPoint(-self.width() / 2, -pointerHeight),
-                QPoint(pointerCornerX, -pointerHeight),
+                QPoint(pointer_corner_x, pointer_height),
+                QPoint(-self.width() / 2, pointer_height),
+                QPoint(-self.width() / 2, -pointer_height),
+                QPoint(pointer_corner_x, -pointer_height),
                 QPoint(self.width() / 2, 0),
             ]
         poly = QPolygon(points)
         painter.drawPolygon(poly)
 
-        fontSize = int(fontSize * 0.8)
-        painter.setFont(QFont("Monospace", fontSize))
+        font_size = int(font_size * 0.8)
+        painter.setFont(QFont("Monospace", font_size))
         if self.leftOriented:
-            painter.drawText(int(-2 * (fontSize - 2)), int(fontSize / 2), round_to_string(self.value, 5))
+            painter.drawText(int(-2 * (font_size - 2)), int(font_size / 2), round_to_string(self.value, 5))
         else:
-            painter.drawText(int(-3 * (fontSize - 2)), int(fontSize / 2), round_to_string(self.value, 5))
+            painter.drawText(int(-3 * (font_size - 2)), int(font_size / 2), round_to_string(self.value, 5))
 
     def setValue(self, value):
         self.value = value

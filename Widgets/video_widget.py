@@ -18,48 +18,48 @@ class VideoWidget(custom_q_widget_base.CustomQWidgetBase):
     def setSource(self, source):
         self.videoToUse = source
 
-    def updateData(self, vehicleData):
+    def updateData(self, vehicle_data):
         if self.isHidden():
             return
 
-        if "camera" not in vehicleData:
+        if "camera" not in vehicle_data:
             self.setMinimumSize(5, 5)
             return
-        cameras = vehicleData["camera"]
+        cameras = vehicle_data["camera"]
         if self.videoToUse not in cameras:
             self.setMinimumSize(5, 5)
             return
 
         frame = cameras[self.videoToUse]
 
-        screenWidth = self.width()
-        screenHeight = self.height()
+        screen_width = self.width()
+        screen_height = self.height()
 
         height = frame.shape[0]
         width = frame.shape[1]
-        aspectRatio = float(width) / float(height)
-        screenAspectRatio = float(screenWidth) / float(screenHeight)
+        aspect_ratio = float(width) / float(height)
+        screen_aspect_ratio = float(screen_width) / float(screen_height)
 
         # Fix aspect ratio
-        if aspectRatio >= screenAspectRatio:
-            imageWidth = screenWidth
-            imageHeight = int(self.width() / aspectRatio)
+        if aspect_ratio >= screen_aspect_ratio:
+            image_width = screen_width
+            image_height = int(self.width() / aspect_ratio)
         else:
-            imageHeight = screenHeight
-            imageWidth = int(self.height() * aspectRatio)
+            image_height = screen_height
+            image_width = int(self.height() * aspect_ratio)
 
         # If the width isn't a multiple of four, bad things happen
-        imageWidth = 4 * round(imageWidth / 4)
+        image_width = 4 * round(image_width / 4)
 
-        # self.setSize(int(imageWidth), int(imageHeight))
-        centeredCornerPos = (screenWidth - imageWidth) / 2
-        self.videoWidget.move(int(centeredCornerPos), 0)
-        self.videoWidget.setMaximumSize(imageWidth, imageHeight)
-        self.videoWidget.setMinimumSize(imageWidth, imageHeight)
+        # self.setSize(int(image_width), int(image_height))
+        centered_corner_pos = (screen_width - image_width) / 2
+        self.videoWidget.move(int(centered_corner_pos), 0)
+        self.videoWidget.setMaximumSize(image_width, image_height)
+        self.videoWidget.setMinimumSize(image_width, image_height)
 
         # Resize image
-        frame = cv2.resize(frame, (int(imageWidth), int(imageHeight)))
-        rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        convertToQtFormat = QtGui.QImage(rgbImage.data, rgbImage.shape[1], rgbImage.shape[0], QtGui.QImage.Format_RGB888)
-        convertToQtFormat = QtGui.QPixmap.fromImage(convertToQtFormat)
-        self.videoWidget.setPixmap(convertToQtFormat)
+        frame = cv2.resize(frame, (int(image_width), int(image_height)))
+        rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        convert_to_qt_format = QtGui.QImage(rgb_image.data, rgb_image.shape[1], rgb_image.shape[0], QtGui.QImage.Format_RGB888)
+        convert_to_qt_format = QtGui.QPixmap.fromImage(convert_to_qt_format)
+        self.videoWidget.setPixmap(convert_to_qt_format)

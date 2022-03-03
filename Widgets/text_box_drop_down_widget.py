@@ -11,8 +11,8 @@ from constants import Constants
 
 
 class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
-    def __init__(self, parentWidget: QWidget = None):
-        super().__init__(parentWidget)
+    def __init__(self, parent_widget: QWidget = None):
+        super().__init__(parent_widget)
 
         self.textBoxWidget = QLabel()
         self.dropDownWidget = QComboBox()
@@ -32,49 +32,49 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
         self.menuItems = []
         self.setMenuItems(["No data"])
 
-    def updateData(self, vehicleData):
-        if self.source not in vehicleData:
+    def updateData(self, vehicle_data):
+        if self.source not in vehicle_data:
             self.setMinimumSize(5, 5)
             return
-        dataStruct = vehicleData[self.source]
+        data_struct = vehicle_data[self.source]
 
-        selectedTarget = self.dropDownWidget.currentText()
-        menuItems = []
-        for item in dataStruct:
-            menuItems.append(item)
-        self.setMenuItems(menuItems)
+        selected_target = self.dropDownWidget.currentText()
+        menu_items = []
+        for item in data_struct:
+            menu_items.append(item)
+        self.setMenuItems(menu_items)
 
-        if selectedTarget not in dataStruct:
+        if selected_target not in data_struct:
             return
-        dataToPrint = dataStruct[selectedTarget]
+        data_to_print = data_struct[selected_target]
 
-        outString = ""
-        longestLine = 0
-        for line in dataToPrint:
+        out_string = ""
+        longest_line = 0
+        for line in data_to_print:
             line[0] = line[0].replace("\t", "     ").rstrip()  # Do some formatting to convert tabs to spaces and ditch trailing spaces
-            longestLine = max(longestLine, len(line[0]))
+            longest_line = max(longest_line, len(line[0]))
 
-        for line in dataToPrint:
-            spaces = " " * (longestLine - len(line[0]) + 2)  # Add two extra spaces to everything
-            newLine = "{0}{2}{1}\n".format(line[0], str(line[1]).lstrip(), spaces)
+        for line in data_to_print:
+            spaces = " " * (longest_line - len(line[0]) + 2)  # Add two extra spaces to everything
+            new_line = "{0}{2}{1}\n".format(line[0], str(line[1]).lstrip(), spaces)
 
-            outString = outString + newLine
+            out_string = out_string + new_line
 
-        outString = outString[:-1]  # Remove last character
+        out_string = out_string[:-1]  # Remove last character
 
-        self.textBoxWidget.setText(outString)
+        self.textBoxWidget.setText(out_string)
         self.adjustSize()
 
-    def setMenuItems(self, menuItemList):
-        if len(menuItemList) > 0:
-            menuItemList.sort()
-        if menuItemList != self.menuItems:
+    def setMenuItems(self, menu_item_list):
+        if len(menu_item_list) > 0:
+            menu_item_list.sort()
+        if menu_item_list != self.menuItems:
             self.dropDownWidget.clear()
-            self.dropDownWidget.addItems(menuItemList)
-        self.menuItems = menuItemList
+            self.dropDownWidget.addItems(menu_item_list)
+        self.menuItems = menu_item_list
         self.dropDownWidget.setStyleSheet(self.colorString)
 
-    def setWidgetColors(self, widgetBackgroundString, textString, headerTextString, borderString):
-        self.colorString = widgetBackgroundString + headerTextString
-        self.textBoxWidget.setStyleSheet(widgetBackgroundString + textString)
-        self.dropDownWidget.setStyleSheet(widgetBackgroundString + headerTextString)
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        self.colorString = widget_background_string + header_text_string
+        self.textBoxWidget.setStyleSheet(widget_background_string + text_string)
+        self.dropDownWidget.setStyleSheet(widget_background_string + header_text_string)

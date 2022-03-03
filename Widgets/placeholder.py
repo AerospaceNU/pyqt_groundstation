@@ -17,6 +17,6 @@ class Placeholder(QLabel):
         self.move(-100, -100)
 
     def update(self):
-        outString = str(time.time())
-        self.setText(outString)
+        out_string = str(time.time())
+        self.setText(out_string)
         self.adjustSize()

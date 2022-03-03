@@ -35,15 +35,15 @@ class CustomQWidgetBase(QWidget):
 
     def setTheme(self, widgetBackground, text, headerText, border):
         """I implemented my own theme code instead of using the QT stuff, because this does what I want"""
-        widgetBackgroundString = make_stylesheet_string("background", widgetBackground)
-        textString = make_stylesheet_string("color", text)
-        headerTextString = make_stylesheet_string("color", headerText)
-        borderString = "border: {0}px solid {1};".format(1, border)
+        widget_background_string = make_stylesheet_string("background", widgetBackground)
+        text_string = make_stylesheet_string("color", text)
+        header_text_string = make_stylesheet_string("color", headerText)
+        border_string = "border: {0}px solid {1};".format(1, border)
 
         self.borderColor = get_rgb_from_string(border)
         self.backgroundColor = get_rgb_from_string(widgetBackground)
         self.textColor = get_rgb_from_string(text)
-        self.setWidgetColors(widgetBackgroundString, textString, headerTextString, borderString)
+        self.setWidgetColors(widget_background_string, text_string, header_text_string, border_string)
 
     def rightClickMenu(self, e: QPoint):
         menu = QMenu()
@@ -72,9 +72,9 @@ class CustomQWidgetBase(QWidget):
         if not self.isInLayout:
             self.draggable = draggable
 
-    def setWidgetColors(self, widgetBackgroundString, textString, headerTextString, borderString):
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         """Overwrite this for each widget"""
-        self.setStyleSheet("{0}{1}{2}{3}".format(widgetBackgroundString, textString, headerTextString, borderString))
+        self.setStyleSheet("{0}{1}{2}{3}".format(widget_background_string, text_string, header_text_string, border_string))
 
     def paintEvent(self, a0: QtGui.QPaintEvent) -> None:
         """Draw border around widget"""
@@ -87,7 +87,7 @@ class CustomQWidgetBase(QWidget):
         if not self.isInLayout:
             self.adjustSize()
 
-    def updateData(self, vehicleData):
+    def updateData(self, vehicle_data):
         pass
 
     def updateConsole(self, data):

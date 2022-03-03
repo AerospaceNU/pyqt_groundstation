@@ -14,8 +14,8 @@ from data_helpers import get_value_from_dictionary, interpolate
 
 
 class GraphDisplay(CustomQWidgetBase):
-    def __init__(self, parentWidget: QWidget = None):
-        super().__init__(parentWidget)
+    def __init__(self, parent_widget: QWidget = None):
+        super().__init__(parent_widget)
 
         self.setGeometry(100, 100, 680, 500)
 
@@ -36,8 +36,8 @@ class GraphDisplay(CustomQWidgetBase):
 
         self.show()
 
-    def updateData(self, vehicleData):
-        altitude = float(get_value_from_dictionary(vehicleData, Constants.altitude_key, 0))
+    def updateData(self, vehicle_data):
+        altitude = float(get_value_from_dictionary(vehicle_data, Constants.altitude_key, 0))
 
         self.time_list.append(time.time() - self.start_time)
         self.value_list.append(altitude)
