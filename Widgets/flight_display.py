@@ -27,9 +27,9 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.vSpeedScale = 1
         self.accelerationScale = 10
 
-        self.pitchSource = "pitch"
-        self.rollSource = "roll"
-        self.yawSource = "yaw"
+        self.pitchSource = Constants.pitch_position_key
+        self.rollSource = Constants.roll_position_key
+        self.yawSource = Constants.yaw_position_key
         self.altSource = Constants.altitude_key
         self.speedSource = Constants.ground_speed_key
         self.vSpeedSource = Constants.vertical_speed_key

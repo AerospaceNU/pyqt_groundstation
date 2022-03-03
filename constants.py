@@ -29,6 +29,18 @@ class Constants:
     acceleration_vector_key = "acceleration_vector"
     magnetic_vector_key = "magnetic_vector"
 
+    roll_position_key = "roll"
+    pitch_position_key = "pitch"
+    yaw_position_key = "yaw"
+
+    rotational_velocity_x_key = "rot_vel_x"
+    rotational_velocity_y_key = "rot_vel_y"
+    rotational_velocity_z_key = "rot_vel_z"
+
+    acceleration_x_key = "accel_x"
+    acceleration_y_key = "accel_y"
+    acceleration_z_key = "accel_z"
+
     ground_station_latitude_key = "gs_lat"
     ground_station_longitude_key = "gs_lon"
     ground_station_altitude_key = "gps_alt"
@@ -82,4 +94,3 @@ class Constants:
     MAIN_DESCENT_INDEX = 10
     END_STATE_INDEX = 14
     UNKNOWN_STATE_INDEX = 16
-

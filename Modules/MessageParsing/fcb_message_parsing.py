@@ -75,8 +75,22 @@ def parse_orientation_message(data, dictionary):
     by = unpacked_data[12]
     bz = unpacked_data[13]
 
+    rpy = quaternion_to_euler_angle(qw, qx, qy, qz)
+
+    dictionary[Constants.roll_position_key] = rpy[0]
+    dictionary[Constants.pitch_position_key] = rpy[1]
+    dictionary[Constants.yaw_position_key] = rpy[2]
+
+    dictionary[Constants.rotational_velocity_x_key] = wx
+    dictionary[Constants.rotational_velocity_y_key] = wy
+    dictionary[Constants.rotational_velocity_z_key] = wz
+
+    dictionary[Constants.acceleration_x_key] = ax
+    dictionary[Constants.acceleration_y_key] = ay
+    dictionary[Constants.acceleration_z_key] = az
+
     dictionary[Constants.orientation_quaternion_key] = [qw, qx, qy, qz]
-    dictionary[Constants.orientation_rpy_key] = quaternion_to_euler_angle(qw, qx, qy, qz)
+    dictionary[Constants.orientation_rpy_key] = rpy
     dictionary[Constants.rotational_velocity_key] = [wx, wy, wz]
     dictionary[Constants.acceleration_key] = [ax, ay, az]
     dictionary[Constants.magnetic_vector_key] = [bx, by, bz]
