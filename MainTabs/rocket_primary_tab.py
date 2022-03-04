@@ -29,7 +29,7 @@ class RocketPrimaryTab(TabCommon):
         self.ButtonPanel = self.addWidget(button_panel.ButtonPanel())
         self.Console = self.addWidget(simple_console_widget.SimpleConsoleWidget())
         self.Map = self.addWidget(map_widget.MapWidget())
-        self.AltitudeGraph = self.addWidget(graph_widget.GraphWidget(source_list=[Constants.altitude_key]))
+        self.AltitudeGraph = self.addWidget(graph_widget.GraphWidget(title="Altitude", source_list=[Constants.altitude_key]))
 
         self.ButtonPanel.clearMapButton.clicked.connect(self.Map.clearMap)  # This is a sketchy way to do this
         self.ButtonPanel.resetDatumButton.clicked.connect(self.Map.resetDatum)

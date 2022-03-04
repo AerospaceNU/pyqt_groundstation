@@ -73,6 +73,7 @@ class CustomQWidgetBase(QWidget):
         for source in self.sourceList:
             submenu = menu.addMenu(source)
             available_sources = self.getAvailableSourceOptions(source)
+            available_sources.sort()
 
             for option in available_sources:
                 if self.sourceList[source].key_name == option:

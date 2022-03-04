@@ -92,11 +92,12 @@ def parse_orientation_message(data, dictionary):
     dictionary[Constants.orientation_quaternion_key] = [qw, qx, qy, qz]
     dictionary[Constants.orientation_rpy_key] = rpy
     dictionary[Constants.rotational_velocity_key] = [wx, wy, wz]
-    dictionary[Constants.acceleration_key] = [ax, ay, az]
+    dictionary[Constants.acceleration_vector_key] = [ax, ay, az]
     dictionary[Constants.magnetic_vector_key] = [bx, by, bz]
 
 
 def parse_position_data_message(data, dictionary):
+    data = data[0:44]
     unpacked_data = struct.unpack("<fffffffffIBBBB", data)
 
     dictionary[Constants.temperature_key] = unpacked_data[0]
@@ -184,6 +185,7 @@ def parse_fcb_message(data):
             MESSAGE_CALLBACKS[message_number][1](raw_packet, dictionary)
             success = True
         except struct.error as e:
+            print(e)
             success = False
 
         # Add radio stuff

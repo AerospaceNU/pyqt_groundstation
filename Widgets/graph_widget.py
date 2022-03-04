@@ -1,6 +1,7 @@
 import os
 import time
 import sys
+import pyqtgraph
 
 if sys.platform == "linux":  # I don't even know anymore
     os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")  # https://stackoverflow.com/questions/63829991/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it
@@ -8,8 +9,20 @@ if sys.platform == "linux":  # I don't even know anymore
 from PyQt5.QtWidgets import QWidget, QGridLayout
 from pyqtgraph import PlotWidget
 
-from constants import Constants
+from data_helpers import get_qcolor_from_string
+
 from Widgets.custom_q_widget_base import CustomQWidgetBase
+
+PEN_COLORS = ["red", "blue", "green", "magenta"]
+
+
+def get_pen_from_line_number(line_number):
+    index = line_number % len(PEN_COLORS)
+    return pyqtgraph.mkPen(color=PEN_COLORS[index])
+
+
+def rgb_to_hex(rgb):
+    return '%02x%02x%02x' % rgb
 
 
 class GraphWidget(CustomQWidgetBase):
@@ -22,18 +35,22 @@ class GraphWidget(CustomQWidgetBase):
         self.graphWidget = PlotWidget()
         self.graphWidget.setLabel('bottom', "Time (s)")
         self.graphWidget.showGrid(x=True, y=True)
+        self.graphWidget.addLegend()
+        self.title = title
+        self.update_interval = 0.01
 
         if title is not None:
             self.graphWidget.setTitle(title)
 
         for i in range(len(source_list)):
             source = source_list[i]
-            self.addSourceKey("line_{}".format(i), float, source, default_value=0)
+            self.addSourceKey("line {}".format(i), float, source, default_value=0)
 
-        self.data_dictionary = {}
-        self.plot_line_dictionary = {}
-        self.time_list = []
+        self.data_dictionary = {}  # Stores the history for each data field we track
+        self.plot_line_dictionary = {}  # Stores the plot line objects
+        self.time_list = []  # Stores the times we've taken data at (the x axis)
         self.start_time = time.time()
+        self.last_update_time = time.time()
 
         self.updatePlot()
 
@@ -49,6 +66,10 @@ class GraphWidget(CustomQWidgetBase):
         self.show()
 
     def updateData(self, vehicle_data):
+        if time.time() - self.last_update_time < self.update_interval:
+            return
+        self.last_update_time = time.time()
+
         self.time_list.append(time.time() - self.start_time)
 
         for source in self.sourceList:
@@ -61,9 +82,11 @@ class GraphWidget(CustomQWidgetBase):
         self.updatePlot()
 
     def updatePlot(self):
+        """Actually updates lines on plot"""
         for data_name in self.data_dictionary:
+            data_label = self.sourceList[data_name].key_name
             if data_name not in self.plot_line_dictionary:
-                self.plot_line_dictionary[data_name] = self.graphWidget.plot(self.time_list, self.data_dictionary[data_name])
+                self.plot_line_dictionary[data_name] = self.graphWidget.plot(self.time_list, self.data_dictionary[data_name], name=data_label, pen=get_pen_from_line_number(len(self.plot_line_dictionary)))
 
             self.plot_line_dictionary[data_name].setData(self.time_list, self.data_dictionary[data_name])
 
@@ -73,7 +96,7 @@ class GraphWidget(CustomQWidgetBase):
 
     def addLineToPlot(self):
         num_keys = len(self.sourceList.keys())
-        self.addSourceKey("line_{}".format(num_keys), float, "", default_value=0)
+        self.addSourceKey("line {}".format(num_keys), float, "", default_value=0)
 
         self.time_list = []  # Hack to clear stored data without clearing the graph
         self.data_dictionary = {}  # We need to clear stored data to keep all the lists the same length
@@ -82,7 +105,15 @@ class GraphWidget(CustomQWidgetBase):
         self.time_list = []
         self.data_dictionary = {}
         self.start_time = time.time()
-        # self.plot_line_dictionary = {}
 
     def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         self.graphWidget.setStyleSheet(widget_background_string)
+
+        self.graphWidget.setBackground(get_qcolor_from_string(widget_background_string))
+        self.graphWidget.getAxis("left").setTextPen(self.textColor)
+        self.graphWidget.getAxis("left").setPen(self.textColor)
+        self.graphWidget.getAxis("bottom").setTextPen(self.textColor)
+        self.graphWidget.getAxis("bottom").setPen(self.textColor)
+
+        if self.title is not None:
+            self.graphWidget.setTitle(self.title, color=get_qcolor_from_string(header_text_string))

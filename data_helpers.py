@@ -1,4 +1,5 @@
 import math
+from PyQt5.QtGui import QColor
 
 """
 Some functions to help with repetitive tasks
@@ -95,6 +96,11 @@ def get_well_formatted_rgb_string(inputString):
     """
     [red, green, blue] = get_rgb_from_string(inputString)
     return format_rgb_string(red, green, blue)
+
+
+def get_qcolor_from_string(input_string):
+    [red, green, blue] = get_rgb_from_string(input_string)
+    return QColor.fromRgb(red, green, blue)
 
 
 def make_stylesheet_string(target, rgbString):

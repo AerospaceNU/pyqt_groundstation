@@ -39,7 +39,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         if self.nextCheckTime <= time.time():
             self.logToConsole("Trying to connect to ground station on {}".format(self.serial_port), 0)
             try:
-                self.serial = serial.Serial(self.serial_port, self.baud_rate, timeout=0.05)  # Set the serial port timeout really small, so we only get one message at a time
+                self.serial = serial.Serial(self.serial_port, self.baud_rate, timeout=0.01)  # Set the serial port timeout really small, so we only get one message at a time
                 self.connected = True
                 self.connectedLoop()
                 self.nextCheckTime = time.time() + 1
@@ -72,7 +72,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
             self.connected = False
 
     def readData(self):
-        raw_bytes = self.serial.read(50)  # Read in bytes
+        raw_bytes = self.serial.read(1000)  # Read in bytes
         if len(raw_bytes) == 0:  # If it didn't send a message, we don't parse
             return
 
