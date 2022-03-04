@@ -63,7 +63,6 @@ class FakeFlight(FCBDataInterfaceCore):
         packet = {}
 
         if self.state == PRE_FLIGHT:
-            self.distance_traveled = 0
             self.altitude = 0
             self.vertical_velocity = 0
             self.latitude = self.initial_latitude
@@ -143,3 +142,5 @@ class FakeFlight(FCBDataInterfaceCore):
         self.handleParsedData("Sim flight packet", packet)
 
         self.updateEveryLoop()
+
+        time.sleep(1)

@@ -46,9 +46,9 @@ class GraphWidget(CustomQWidgetBase):
             source = source_list[i]
             self.addSourceKey("line {}".format(i), float, source, default_value=0)
 
-        self.data_dictionary = {}  # Stores the history for each data field we track
+        self.data_dictionary = {}  # Stores the history for each data field we
+        self.time_dictionary = {}  # Stores the times we've taken data at (the x axis) for each field we track
         self.plot_line_dictionary = {}  # Stores the plot line objects
-        self.time_list = []  # Stores the times we've taken data at (the x axis)
         self.start_time = time.time()
         self.last_update_time = time.time()
 
@@ -70,14 +70,14 @@ class GraphWidget(CustomQWidgetBase):
             return
         self.last_update_time = time.time()
 
-        self.time_list.append(time.time() - self.start_time)
-
         for source in self.sourceList:
             value = self.getDictValueUsingSourceKey(source)
 
             if source not in self.data_dictionary:
                 self.data_dictionary[source] = []
+                self.time_dictionary[source] = []
             self.data_dictionary[source].append(value)
+            self.time_dictionary[source].append(time.time() - self.start_time)
 
         self.updatePlot()
 
@@ -86,9 +86,13 @@ class GraphWidget(CustomQWidgetBase):
         for data_name in self.data_dictionary:
             data_label = self.sourceList[data_name].key_name
             if data_name not in self.plot_line_dictionary:
-                self.plot_line_dictionary[data_name] = self.graphWidget.plot(self.time_list, self.data_dictionary[data_name], name=data_label, pen=get_pen_from_line_number(len(self.plot_line_dictionary)))
+                self.plot_line_dictionary[data_name] = self.graphWidget.plot(self.time_dictionary[data_name], self.data_dictionary[data_name], name=data_label, pen=get_pen_from_line_number(len(self.plot_line_dictionary)))
+            if self.plot_line_dictionary[data_name].name() != data_label:
+                self.graphWidget.getPlotItem().removeItem(self.plot_line_dictionary[data_name])
+                del self.plot_line_dictionary[data_name]
+                self.plot_line_dictionary[data_name] = self.graphWidget.plot(self.time_dictionary[data_name], self.data_dictionary[data_name], name=data_label, pen=get_pen_from_line_number(len(self.plot_line_dictionary)))
 
-            self.plot_line_dictionary[data_name].setData(self.time_list, self.data_dictionary[data_name])
+            self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name], self.data_dictionary[data_name])
 
     def addCustomMenuItems(self, menu):
         menu.addAction("Clear graph", self.clearGraph)
@@ -98,11 +102,8 @@ class GraphWidget(CustomQWidgetBase):
         num_keys = len(self.sourceList.keys())
         self.addSourceKey("line {}".format(num_keys), float, "", default_value=0)
 
-        self.time_list = []  # Hack to clear stored data without clearing the graph
-        self.data_dictionary = {}  # We need to clear stored data to keep all the lists the same length
-
     def clearGraph(self):
-        self.time_list = []
+        self.time_dictionary = {}
         self.data_dictionary = {}
         self.start_time = time.time()
 

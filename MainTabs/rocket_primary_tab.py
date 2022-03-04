@@ -33,6 +33,7 @@ class RocketPrimaryTab(TabCommon):
 
         self.ButtonPanel.clearMapButton.clicked.connect(self.Map.clearMap)  # This is a sketchy way to do this
         self.ButtonPanel.resetDatumButton.clicked.connect(self.Map.resetDatum)
+        self.ButtonPanel.resetGraphButton.clicked.connect(self.AltitudeGraph.clearGraph)
 
         layout = QGridLayout()
         layout.addWidget(self.StatusBar, 1, 1, 1, 2)  # Upper right
