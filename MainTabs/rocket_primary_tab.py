@@ -19,8 +19,8 @@ from constants import Constants
 
 
 class RocketPrimaryTab(TabCommon):
-    def __init__(self, mainWidget, vehicleName):
-        super().__init__(mainWidget, vehicleName)
+    def __init__(self, vehicleName):
+        super().__init__(vehicleName)
 
         self.FlightDisplay = self.addWidget(flight_display.FlightDisplay(compass_and_text=False))
         self.StatusBar = self.addWidget(vehicle_status_widget.VehicleStatusWidget())
@@ -48,7 +48,7 @@ class RocketPrimaryTab(TabCommon):
         self.AltitudeGraph.setMaximumHeight(350)
         layout.setRowStretch(1, 0)
         layout.setColumnStretch(1, 0)
-        self.tabMainWidget.setLayout(layout)
+        self.setLayout(layout)
 
     def customUpdate(self, data):
         self.ButtonPanel.setMaximumWidth(max(self.FlightDisplay.width() - self.Annunciator.width() - 6, 5))

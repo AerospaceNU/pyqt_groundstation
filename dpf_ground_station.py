@@ -55,9 +55,7 @@ class DPFGUI():
         self.module_dictionary = {}
         self.hidden_modules = []
 
-        self.tabs = {}
         self.tabNames = []
-        self.vehicleTabNames = []
         self.placeHolderList = []
         self.tabObjects = []
 
@@ -203,7 +201,7 @@ class DPFGUI():
 
         # Update tabs
         for tab in self.tabObjects:
-            self.callback_queue += tab.update(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary)
+            self.callback_queue += tab.updateVehicleData(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary)
 
         # set window title
         tabIndex = self.tabHolderWidget.currentIndex()
@@ -248,8 +246,8 @@ class DPFGUI():
         tabIndex = self.tabHolderWidget.currentIndex()
         activeTab = self.tabHolderWidget.tabText(tabIndex)
 
-        if activeTab in self.vehicleTabNames:
-            return self.tabObjects[self.vehicleTabNames.index(activeTab)]
+        if activeTab in self.tabNames:
+            return self.tabObjects[self.tabNames.index(activeTab)]
         else:
             return None
 
@@ -266,29 +264,22 @@ class DPFGUI():
             print("Don't have tab configuration for vehicle type {}".format(tabType))
 
     def addVehicleTab(self, tab, vehicleName: str):
-        self.createTab(vehicleName)
-        self.tabObjects.append(tab(self.tabs[vehicleName], vehicleName))
-        self.vehicleTabNames.append(vehicleName)
-        self.tabObjects[-1].setTheme(self.backgroundColor, self.widgetBackgroundColor, self.textColor, self.headerTextColor, self.borderColor)
+        new_tab_object = tab(vehicleName)
+
+        self.tabObjects.append(new_tab_object)
+        self.tabHolderWidget.addTab(new_tab_object, vehicleName)
+        self.tabNames.append(vehicleName)
+
+        self.placeHolderList.append(placeholder.Placeholder(new_tab_object))  # Something needs to be updating for the GUI to function, so we make a silly thing to always do that
+
+        new_tab_object.setTheme(self.backgroundColor, self.widgetBackgroundColor, self.textColor, self.headerTextColor, self.borderColor)
         self.tabHolderWidget.setCurrentIndex(self.tabHolderWidget.count() - 1)
         self.tabHolderWidget.setCurrentIndex(1)
-
-    def createTab(self, name):
-        """Creates a tab with the specified name"""
-        self.tabs[name] = QWidget()
-        self.tabs[name].setObjectName(name)
-
-        self.tabHolderWidget.addTab(self.tabs[name], name)
-        self.tabNames.append(name)
-
-        self.placeHolderList.append(placeholder.Placeholder(self.tabs[name]))  # Something needs to be updating for the GUI to function, so we make a silly thing to always do that
 
     def setThemeByName(self, name: str):
         if name in THEMES:
             theme = THEMES[name]
             self.setTheme(theme[0], theme[1], theme[2], theme[3], theme[4])
-            if name == "For hardware labs only":  # Silly stuff
-                self.title = "We're not a hardware lab"
         else:
             print("No Theme named {}".format(name))
 

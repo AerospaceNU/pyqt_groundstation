@@ -8,10 +8,10 @@ from Widgets import custom_q_widget_base
 from data_helpers import make_stylesheet_string, get_well_formatted_rgb_string
 
 
-class TabCommon(object):
-    def __init__(self, mainWidget: QWidget, vehicleName: str):
-        self.tabMainWidget = mainWidget
-        self.tabMainWidget.setObjectName("tab_{}".format(vehicleName))
+class TabCommon(QWidget):
+    def __init__(self, vehicleName: str):
+        super().__init__()
+        self.setObjectName("tab_{}".format(vehicleName))
 
         self.vehicleName = vehicleName
         self.widgetsCreated = 0
@@ -20,7 +20,7 @@ class TabCommon(object):
 
         self.colors = []
 
-    def update(self, data, console_data, updated_data):
+    def updateVehicleData(self, data, console_data, updated_data):
         """The update function that should not be overridden"""
         if isinstance(data, dict):
             vehicleData = data
@@ -38,7 +38,7 @@ class TabCommon(object):
             widget.coreUpdate()
             callbacks += widget.getCallbackEvents()
 
-        self.tabMainWidget.update()
+        self.update()
 
         self.customUpdate(data)
         return callbacks
@@ -59,7 +59,7 @@ class TabCommon(object):
         background_string = make_stylesheet_string("background", background)
         color_string = make_stylesheet_string("color", text)
         border_string = "border: 1px solid " + get_well_formatted_rgb_string("rgb[10,10,10]") + ";"
-        self.tabMainWidget.setStyleSheet("QWidget#" + self.tabMainWidget.objectName() + "{" + background_string + color_string + border_string + "}")
+        self.setStyleSheet("QWidget#" + self.objectName() + "{" + background_string + color_string + border_string + "}")
 
         for widget in self.widgetList:
             widget.setTheme(widgetBackground, text, headerText, border)

@@ -12,8 +12,8 @@ from MainTabs.main_tab_common import TabCommon
 
 
 class GraphsTab(TabCommon):
-    def __init__(self, mainWidget, vehicleName):
-        super().__init__(mainWidget, vehicleName)
+    def __init__(self, vehicleName):
+        super().__init__(vehicleName)
 
         layout = QGridLayout()
         layout.addWidget(self.addWidget(graph_widget.GraphWidget(title="Altitude", source_list=[Constants.altitude_key])), 1, 1)
@@ -26,4 +26,4 @@ class GraphsTab(TabCommon):
         layout.addWidget(self.addWidget(graph_widget.GraphWidget()), 3, 2)
         layout.addWidget(self.addWidget(graph_widget.GraphWidget()), 3, 3)
 
-        self.tabMainWidget.setLayout(layout)
+        self.setLayout(layout)
