@@ -59,3 +59,6 @@ class RecordedDataReader(object):
     def getNextPacket(self):
         self.packetIndex += 1
         return self.getPacket(self.packetIndex)
+
+    def setPacketIndex(self, packet_index):
+        self.packetIndex = packet_index

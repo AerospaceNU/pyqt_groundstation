@@ -17,6 +17,9 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
 
         self.reader = RecordedDataReader()
 
+    def runOnEnableAndDisable(self):
+        self.reader.setPacketIndex(0)
+
     def spin(self):
         self.good_fcb_data = True
         self.connected = True
