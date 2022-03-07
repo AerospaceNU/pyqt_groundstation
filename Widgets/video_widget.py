@@ -18,7 +18,7 @@ class VideoWidget(custom_q_widget_base.CustomQWidgetBase):
     def setSource(self, source):
         self.videoToUse = source
 
-    def updateData(self, vehicle_data):
+    def updateData(self, vehicle_data, updated_data):
         if self.isHidden():
             return
 

@@ -63,6 +63,7 @@ class Constants:
     line_cutter_2_voltage = "line_cutter_2_voltage"
 
     message_age_key = "message_age"
+    message_time_key = "message_time"
     rssi_key = "rssi"
     lqi_key = "lqi"
     crc_key = "crc"

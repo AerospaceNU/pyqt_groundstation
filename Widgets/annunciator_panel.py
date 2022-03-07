@@ -38,7 +38,7 @@ class AnnunciatorPanel(CustomQWidgetBase):
 
         self.setLayout(layout)
 
-    def updateData(self, vehicle_data):
+    def updateData(self, vehicle_data, updated_data):
         if self.source not in vehicle_data:
             self.setMaximumWidth(100)
             return

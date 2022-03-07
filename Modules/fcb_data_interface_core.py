@@ -109,3 +109,4 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
         self.data_dictionary[Constants.raw_message_data_key] = self.diagnostics_box_helper.get_diagnostics_dict()
 
         self.data_dictionary[Constants.message_age_key] = round(time.time() - self.last_good_data_time, 3)
+        self.data_dictionary[Constants.message_time_key] = time.time()

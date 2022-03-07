@@ -67,7 +67,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         for box in [self.rssi_box, self.message_age_box, self.v_speed_box, self.acceleration_box]:
             box.setFont(QFont("Monospace", self.widgetSize * 0.4))
 
-    def updateData(self, vehicle_data):
+    def updateData(self, vehicle_data, updated_data):
         fault_status = int(float(get_value_from_dictionary(vehicle_data, self.statusSource, 3)))
         fcb_state = str(get_value_from_dictionary(vehicle_data, Constants.fcb_state_key, "No Data"))
         altitude = float(get_value_from_dictionary(vehicle_data, Constants.altitude_key, -1))

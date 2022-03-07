@@ -52,7 +52,7 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
     def getSelectedVideo(self):
         return self.videoSwitcher.currentText()
 
-    def updateData(self, vehicle_data):
+    def updateData(self, vehicle_data, updated_data):
         if "camera" in vehicle_data:
             cameras = list(vehicle_data["camera"])
             self.setVideoOptions(cameras)

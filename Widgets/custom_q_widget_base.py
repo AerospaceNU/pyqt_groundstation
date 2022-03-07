@@ -40,6 +40,7 @@ class CustomQWidgetBase(QWidget):
         self.tabName = ""
 
         self.vehicleData = {}
+        self.updated_data_dictionary = {}  # Tracks which keys are new since the last GUI loop
         self.sourceList = {}
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -110,12 +111,13 @@ class CustomQWidgetBase(QWidget):
         if not self.isInLayout:
             self.adjustSize()
 
-    def setVehicleData(self, vehicle_data):
+    def setVehicleData(self, vehicle_data, updated_data):
         """Called by the tab every loop.  DO NOT OVERRIDE"""
         self.vehicleData = vehicle_data
-        self.updateData(vehicle_data)
+        self.updated_data_dictionary = updated_data
+        self.updateData(vehicle_data, updated_data)
 
-    def updateData(self, vehicle_data):
+    def updateData(self, vehicle_data, updated_data):
         """Called every loop with new vehicle database dictionary"""
         pass
 
@@ -156,6 +158,14 @@ class CustomQWidgetBase(QWidget):
             return value_type(return_value)
         except TypeError:
             return default_value
+
+    def isDictValueUpdated(self, internal_key_id):
+        dictionary_key = self.sourceList[internal_key_id].key_name
+
+        if dictionary_key in self.updated_data_dictionary:
+            return self.updated_data_dictionary[dictionary_key]
+        else:
+            return False
 
     def updateDictKeyTarget(self, internal_key_id, new_key):
         self.sourceList[internal_key_id].key_name = new_key

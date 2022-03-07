@@ -77,6 +77,8 @@ class ThreadedModuleCore(threading.Thread):
 
     def getDataDictionary(self):
         if self.enabled:
-            return self.data_dictionary
+            temporary_dict = self.data_dictionary.copy()
+            self.data_dictionary = {}
+            return temporary_dict
         else:
             return {}

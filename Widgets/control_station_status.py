@@ -28,7 +28,7 @@ class ControlStationStatus(custom_q_widget_base.CustomQWidgetBase):
         layout.addWidget(self.DiskStatus, 1, 4)
         self.setLayout(layout)
 
-    def updateData(self, vehicle_data):
+    def updateData(self, vehicle_data, updated_data):
         battery = float(get_value_from_dictionary(vehicle_data, Constants.laptop_battery_percent_key, -1))
         ram = float(get_value_from_dictionary(vehicle_data, Constants.laptop_ram_usage_key, -1))
         cpu = float(get_value_from_dictionary(vehicle_data, Constants.laptop_cpu_usage_key, -1))

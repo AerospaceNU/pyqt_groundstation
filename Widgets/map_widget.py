@@ -34,7 +34,7 @@ class MapWidget(CustomQWidgetBase):
 
         self.oldPoints = []
 
-    def updateData(self, vehicle_data):
+    def updateData(self, vehicle_data, updated_data):
         if "paths" not in vehicle_data:
             paths = {}
         else:

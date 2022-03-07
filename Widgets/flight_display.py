@@ -97,7 +97,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.setMaximumHeight(self.scale * v_scale_factor + 40)
         self.setMaximumWidth(int(self.scale * 2 + 40))
 
-    def updateData(self, vehicle_data):
+    def updateData(self, vehicle_data, updated_data):
         roll = self.getDictValueUsingSourceKey("roll")
         pitch = self.getDictValueUsingSourceKey("pitch")
         yaw = self.getDictValueUsingSourceKey("yaw")

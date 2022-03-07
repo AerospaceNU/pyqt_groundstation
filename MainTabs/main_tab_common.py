@@ -20,17 +20,20 @@ class TabCommon(object):
 
         self.colors = []
 
-    def update(self, data, console_data):
+    def update(self, data, console_data, updated_data):
         """The update function that should not be overridden"""
         if isinstance(data, dict):
             vehicleData = data
         else:
             vehicleData = {}
 
+        if not isinstance(updated_data, dict):
+            updated_data = {}
+
         callbacks = []
 
         for widget in self.widgetList:
-            widget.setVehicleData(vehicleData)
+            widget.setVehicleData(vehicleData, updated_data)
             widget.updateConsole(console_data)
             widget.coreUpdate()
             callbacks += widget.getCallbackEvents()

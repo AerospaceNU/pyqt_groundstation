@@ -48,6 +48,7 @@ class DPFGUI():
 
         # This could use some restructuring
         self.database_dictionary = {}
+        self.updated_data_dictionary = {}  # Tracks which keys are new since the last GUI loop
         self.ConsoleData = [[]]
         self.callbackFunctions = {}
         self.callback_queue = []
@@ -190,7 +191,7 @@ class DPFGUI():
 
         # Get data from interfaces
         for interface in self.module_dictionary:
-            self.database_dictionary.update(self.module_dictionary[interface].getDataDictionary().copy())
+            self.updateDatabaseDictionary(self.module_dictionary[interface].getDataDictionary().copy())
 
         # Send full database dictionary back to the data interfaces
         for interface in self.module_dictionary:
@@ -202,7 +203,7 @@ class DPFGUI():
 
         # Update tabs
         for tab in self.tabObjects:
-            self.callback_queue += tab.update(self.database_dictionary, self.ConsoleData)
+            self.callback_queue += tab.update(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary)
 
         # set window title
         tabIndex = self.tabHolderWidget.currentIndex()
@@ -211,6 +212,15 @@ class DPFGUI():
 
         # Process callbacks
         self.processCallbacks()
+
+        # Set every field as not-updated
+        for key in self.updated_data_dictionary:
+            self.updated_data_dictionary[key] = False
+
+    def updateDatabaseDictionary(self, new_dict):
+        for key in new_dict:
+            self.database_dictionary[key] = new_dict[key]
+            self.updated_data_dictionary[key] = True
 
     def createWidgetFromName(self, widgetName, parent=None):
         """Will create any widget from its file name!"""
@@ -312,10 +322,6 @@ class DPFGUI():
 
         for tab in self.tabObjects:
             tab.setTheme(self.backgroundColor, self.widgetBackgroundColor, self.textColor, self.headerTextColor, self.borderColor)
-
-    def updateVehicleData(self, keyName, data):
-        """Called in the main thread"""
-        self.database_dictionary[keyName] = data
 
     def updateConsole(self, value, level):
         self.ConsoleData = ([[value, level]] + self.ConsoleData)[:40]

@@ -43,7 +43,7 @@ class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
         self.menuItems = []
         self.setMenuItems(["No data"])
 
-    def updateData(self, vehicle_data):
+    def updateData(self, vehicle_data, updated_data):
         if self.source not in vehicle_data:
             self.setMinimumSize(5, 5)
             return

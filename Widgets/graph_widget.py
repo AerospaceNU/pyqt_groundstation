@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QWidget, QGridLayout
 from pyqtgraph import PlotWidget
 
 from data_helpers import get_qcolor_from_string
+from constants import Constants
 
 from Widgets.custom_q_widget_base import CustomQWidgetBase
 
@@ -48,6 +49,7 @@ class GraphWidget(CustomQWidgetBase):
 
         self.data_dictionary = {}  # Stores the history for each data field we
         self.time_dictionary = {}  # Stores the times we've taken data at (the x axis) for each field we track
+        self.last_update_time_dictionary = {}
         self.plot_line_dictionary = {}  # Stores the plot line objects
         self.start_time = time.time()
         self.last_update_time = time.time()
@@ -65,10 +67,12 @@ class GraphWidget(CustomQWidgetBase):
 
         self.show()
 
-    def updateData(self, vehicle_data):
+    def updateData(self, vehicle_data, updated_data):
         if time.time() - self.last_update_time < self.update_interval:
             return
         self.last_update_time = time.time()
+
+        # message_age = time.time() - vehicle_data[Constants.message_time_key]
 
         for source in self.sourceList:
             value = self.getDictValueUsingSourceKey(source)
@@ -76,8 +80,10 @@ class GraphWidget(CustomQWidgetBase):
             if source not in self.data_dictionary:
                 self.data_dictionary[source] = []
                 self.time_dictionary[source] = []
-            self.data_dictionary[source].append(value)
-            self.time_dictionary[source].append(time.time() - self.start_time)
+
+            if self.isDictValueUpdated(source):
+                self.data_dictionary[source].append(value)
+                self.time_dictionary[source].append(time.time() - self.start_time)
 
         self.updatePlot()
 
