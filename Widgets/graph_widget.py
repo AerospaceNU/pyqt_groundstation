@@ -1,5 +1,6 @@
 import os
 import time
+import math
 import sys
 import pyqtgraph
 
@@ -9,8 +10,7 @@ if sys.platform == "linux":  # I don't even know anymore
 from PyQt5.QtWidgets import QWidget, QGridLayout
 from pyqtgraph import PlotWidget
 
-from data_helpers import get_qcolor_from_string
-from constants import Constants
+from data_helpers import get_qcolor_from_string, first_index_in_list_larger_than
 
 from Widgets.custom_q_widget_base import CustomQWidgetBase
 
@@ -39,6 +39,8 @@ class GraphWidget(CustomQWidgetBase):
         self.graphWidget.addLegend()
         self.title = title
         self.update_interval = 0.01
+        self.min_x = None
+        self.max_x = None
 
         if title is not None:
             self.graphWidget.setTitle(title)
@@ -72,17 +74,26 @@ class GraphWidget(CustomQWidgetBase):
             return
         self.last_update_time = time.time()
 
-        # message_age = time.time() - vehicle_data[Constants.message_time_key]
-
         for source in self.sourceList:
             value = self.getDictValueUsingSourceKey(source)
 
             if source not in self.data_dictionary:
-                self.data_dictionary[source] = []
-                self.time_dictionary[source] = []
+                self.data_dictionary[source] = [float('nan')]
+                self.time_dictionary[source] = [float('nan')]
 
-            if self.isDictValueUpdated(source):
+            # <sarcasm> This logic makes perfect sense </sarcasm>
+            # The base goal is to make the last value in the array a nan when the data isn't updated so the graph x axis keeps updating
+            # We need 4 cases because we don't want to overwrite any data, and we don't want NaNs anywhere other than the last spot
+            if self.isDictValueUpdated(source) and math.isnan(self.data_dictionary[source][-1]):
+                self.data_dictionary[source][-1] = value
+                self.time_dictionary[source][-1] = time.time() - self.start_time
+            elif self.isDictValueUpdated(source):
                 self.data_dictionary[source].append(value)
+                self.time_dictionary[source].append(time.time() - self.start_time)
+            elif math.isnan(self.data_dictionary[source][-1]):
+                self.time_dictionary[source][-1] = time.time() - self.start_time
+            else:
+                self.data_dictionary[source].append(float('nan'))
                 self.time_dictionary[source].append(time.time() - self.start_time)
 
         self.updatePlot()
@@ -98,7 +109,22 @@ class GraphWidget(CustomQWidgetBase):
                 del self.plot_line_dictionary[data_name]
                 self.plot_line_dictionary[data_name] = self.graphWidget.plot(self.time_dictionary[data_name], self.data_dictionary[data_name], name=data_label, pen=get_pen_from_line_number(len(self.plot_line_dictionary)))
 
-            self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name], self.data_dictionary[data_name])
+            # Connect=finite allows NaN values to be skipped
+            if self.min_x is None and self.max_x is None:
+                self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name], self.data_dictionary[data_name], connect="finite")
+            elif self.min_x is None:
+                max_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.max_x)
+                self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][0:max_index], self.data_dictionary[data_name][0:max_index], connect="finite")
+            elif self.max_x is None:
+                min_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.min_x)
+                self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][min_index:], self.data_dictionary[data_name][min_index:], connect="finite")
+            else:
+                max_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.max_x)
+                min_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.min_x)
+                # print(min_index, max_index)
+                # print(self.min_x, self.max_x)
+
+                self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][min_index:max_index], self.data_dictionary[data_name][min_index:max_index], connect="finite")
 
     def addCustomMenuItems(self, menu):
         menu.addAction("Clear graph", self.clearGraph)
@@ -112,6 +138,33 @@ class GraphWidget(CustomQWidgetBase):
         self.time_dictionary = {}
         self.data_dictionary = {}
         self.start_time = time.time()
+
+    def getNumberOfLines(self):
+        return len(self.data_dictionary)
+
+    def setXAxisBounds(self, min_value, max_value):
+        self.min_x = min_value
+        self.max_x = max_value
+
+    def getLargestTime(self):
+        time_val = -1
+        for key in self.time_dictionary:
+            largest_time = self.time_dictionary[key][-1]
+            if time_val == -1:
+                time_val = largest_time
+            else:
+                time_val = max(time_val, largest_time)
+        return time_val
+
+    def getSmallestTime(self):
+        time_val = -1
+        for key in self.time_dictionary:
+            smallest_time = self.time_dictionary[key][0]
+            if time_val == -1:
+                time_val = smallest_time
+            else:
+                time_val = min(time_val, smallest_time)
+        return time_val
 
     def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         self.graphWidget.setStyleSheet(widget_background_string)

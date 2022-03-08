@@ -5,7 +5,7 @@ Widget for buttons
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton
 from PyQt5.QtCore import Qt
-from qtrangeslider import QLabeledRangeSlider
+from qtrangeslider import QRangeSlider
 
 from Widgets import custom_q_widget_base
 
@@ -14,9 +14,9 @@ class GraphTabControl(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, widget: QWidget = None):
         super().__init__(widget)
         self.resetGraphButton = QPushButton()
-        self.rangeSlider = QLabeledRangeSlider(Qt.Horizontal)
-        self.rangeSlider.setRange(0, 1)
-        self.rangeSlider.setSliderPosition([0, 1])
+        self.rangeSlider = QRangeSlider(Qt.Horizontal)
+        self.rangeSlider.setRange(0, 1000)
+        self.rangeSlider.setSliderPosition([0, 1000])
 
         self.slider_min = 0
         self.slider_max = 1

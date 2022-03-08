@@ -107,6 +107,24 @@ def make_stylesheet_string(target, rgbString):
     return "{0}: {1}; ".format(target, rgbString)
 
 
+def first_in_list_larger_than(data_list: list, threshold):
+    if len(data_list) != 0:
+        for element in data_list:
+            if element > threshold:
+                return element
+
+    return None
+
+
+def first_index_in_list_larger_than(data_list: list, threshold):
+    value = first_in_list_larger_than(data_list, threshold)
+
+    if value is not None:
+        return data_list.index(value)
+    else:
+        return None
+
+
 def round_to_string(value: float, characters: int):
     """
     Creates a nicely formatted string of a specific length from a number
