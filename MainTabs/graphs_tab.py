@@ -49,6 +49,8 @@ class GraphsTab(TabCommon):
         self.slider_max = data[1]
 
     def customUpdate(self, data):
+        graphs_enabled = self.graphControlWidget.graphsEnabled()
+
         largest_time_list = []
         smallest_time_list = []
 
@@ -73,3 +75,4 @@ class GraphsTab(TabCommon):
         for widget in self.widgetList:
             if type(widget) == GraphWidget:
                 widget.setXAxisBounds(graph_min, graph_max)
+                widget.setEnabled(graphs_enabled)

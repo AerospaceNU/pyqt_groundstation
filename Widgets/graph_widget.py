@@ -42,6 +42,8 @@ class GraphWidget(CustomQWidgetBase):
         self.min_x = None
         self.max_x = None
 
+        self.record_new_data = True
+
         if title is not None:
             self.graphWidget.setTitle(title)
 
@@ -74,27 +76,28 @@ class GraphWidget(CustomQWidgetBase):
             return
         self.last_update_time = time.time()
 
-        for source in self.sourceList:
-            value = self.getDictValueUsingSourceKey(source)
+        if self.record_new_data:
+            for source in self.sourceList:
+                value = self.getDictValueUsingSourceKey(source)
 
-            if source not in self.data_dictionary:
-                self.data_dictionary[source] = [float('nan')]
-                self.time_dictionary[source] = [float('nan')]
+                if source not in self.data_dictionary:
+                    self.data_dictionary[source] = [float('nan')]
+                    self.time_dictionary[source] = [float('nan')]
 
-            # <sarcasm> This logic makes perfect sense </sarcasm>
-            # The base goal is to make the last value in the array a nan when the data isn't updated so the graph x axis keeps updating
-            # We need 4 cases because we don't want to overwrite any data, and we don't want NaNs anywhere other than the last spot
-            if self.isDictValueUpdated(source) and math.isnan(self.data_dictionary[source][-1]):
-                self.data_dictionary[source][-1] = value
-                self.time_dictionary[source][-1] = time.time() - self.start_time
-            elif self.isDictValueUpdated(source):
-                self.data_dictionary[source].append(value)
-                self.time_dictionary[source].append(time.time() - self.start_time)
-            elif math.isnan(self.data_dictionary[source][-1]):
-                self.time_dictionary[source][-1] = time.time() - self.start_time
-            else:
-                self.data_dictionary[source].append(float('nan'))
-                self.time_dictionary[source].append(time.time() - self.start_time)
+                # <sarcasm> This logic makes perfect sense </sarcasm>
+                # The base goal is to make the last value in the array a nan when the data isn't updated so the graph x axis keeps updating
+                # We need 4 cases because we don't want to overwrite any data, and we don't want NaNs anywhere other than the last spot
+                if self.isDictValueUpdated(source) and math.isnan(self.data_dictionary[source][-1]):
+                    self.data_dictionary[source][-1] = value
+                    self.time_dictionary[source][-1] = time.time() - self.start_time
+                elif self.isDictValueUpdated(source):
+                    self.data_dictionary[source].append(value)
+                    self.time_dictionary[source].append(time.time() - self.start_time)
+                elif math.isnan(self.data_dictionary[source][-1]):
+                    self.time_dictionary[source][-1] = time.time() - self.start_time
+                else:
+                    self.data_dictionary[source].append(float('nan'))
+                    self.time_dictionary[source].append(time.time() - self.start_time)
 
         self.updatePlot()
 
@@ -110,21 +113,21 @@ class GraphWidget(CustomQWidgetBase):
                 self.plot_line_dictionary[data_name] = self.graphWidget.plot(self.time_dictionary[data_name], self.data_dictionary[data_name], name=data_label, pen=get_pen_from_line_number(len(self.plot_line_dictionary)))
 
             # Connect=finite allows NaN values to be skipped
-            if self.min_x is None and self.max_x is None:
+            if self.min_x is None and self.max_x is None:  # No restrictions
                 self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name], self.data_dictionary[data_name], connect="finite")
-            elif self.min_x is None:
+            elif self.min_x is None:  # No minimum, truncate maximum
                 max_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.max_x)
                 self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][0:max_index], self.data_dictionary[data_name][0:max_index], connect="finite")
-            elif self.max_x is None:
+            elif self.max_x is None:  # No maximum, truncate minimum
                 min_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.min_x)
                 self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][min_index:], self.data_dictionary[data_name][min_index:], connect="finite")
-            else:
+            else:  # Truncate both max and min
                 max_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.max_x)
                 min_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.min_x)
-                # print(min_index, max_index)
-                # print(self.min_x, self.max_x)
-
                 self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][min_index:max_index], self.data_dictionary[data_name][min_index:max_index], connect="finite")
+
+    def setEnabled(self, enabled):
+        self.record_new_data = enabled
 
     def addCustomMenuItems(self, menu):
         menu.addAction("Clear graph", self.clearGraph)
