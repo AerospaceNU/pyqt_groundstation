@@ -17,7 +17,7 @@ On linux I needed bluetooth-dev and espeak
 
 Then get python dependencies with Pip
 ~~~
-pip3 install pyserial opencv-python pyqt5==5.15.4 imutils navpy pyqtchart pyqtgraph pynmea2 pybluez psutil pyttsx3 qtrangeslider
+pip3 install pyserial opencv-python pyqt5==5.15.4 imutils navpy pyqtchart pyqtgraph pynmea2 pybluez psutil pyttsx3 qtrangeslider[pyqt5]
 ~~~
 
 ## Radio messages

@@ -177,10 +177,10 @@ class DPFGUI():
                 self.modules_menu.addAction("Enable {}".format(interfaceName), lambda targetInterface=interfaceName: self.enableDisableDataInterface(targetInterface))
 
     def refreshSerialPorts(self):
-        serial_ports = [comport.device for comport in serial.tools.list_ports.comports()]
+        serial_ports = [comport for comport in serial.tools.list_ports.comports()]
         self.serial_port_menu.clear()
         for port in serial_ports:
-            self.serial_port_menu.addAction(port, lambda portName=port: self.setActiveSerialPort(portName))
+            self.serial_port_menu.addAction("{0}: {1}".format(port.device, port.description), lambda portName=port.device: self.setActiveSerialPort(portName))
 
     def updateGUI(self):
         """Runs in GUI thread every 20ms"""
