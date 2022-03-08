@@ -22,6 +22,9 @@ class ThreadedModuleCore(threading.Thread):
         self.last_console_message = ""
         self.last_log_time = 0
 
+    def getCallbacksToAdd(self):
+        return [[]]
+
     def setConsoleCallback(self, callback):
         self.console_callback = callback
 

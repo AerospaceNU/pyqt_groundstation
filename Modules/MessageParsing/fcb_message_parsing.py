@@ -89,6 +89,10 @@ def parse_orientation_message(data, dictionary):
     dictionary[Constants.acceleration_y_key] = ay
     dictionary[Constants.acceleration_z_key] = az
 
+    dictionary[Constants.magnetometer_x_key] = bx
+    dictionary[Constants.magnetometer_y_key] = by
+    dictionary[Constants.magnetometer_z_key] = bz
+
     dictionary[Constants.orientation_quaternion_key] = [qw, qx, qy, qz]
     dictionary[Constants.orientation_rpy_key] = rpy
     dictionary[Constants.rotational_velocity_key] = [wx, wy, wz]

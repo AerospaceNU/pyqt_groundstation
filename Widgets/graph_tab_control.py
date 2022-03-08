@@ -3,7 +3,7 @@ Widget for buttons
 """
 
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton
+from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLineEdit, QLabel
 from PyQt5.QtCore import Qt
 from qtrangeslider import QRangeSlider
 
@@ -18,10 +18,13 @@ class GraphTabControl(custom_q_widget_base.CustomQWidgetBase):
         self.enableGraphButton = QPushButton()
         self.enableGraphButton.clicked.connect(self.onEnableButtonClick)
         self.enableGraphButton.setText("Disable Graph Updating")
+        self.historyLabelBox = QLabel()
+        self.historyTextBox = QLineEdit()
 
         self.rangeSlider = QRangeSlider(Qt.Horizontal)
         self.rangeSlider.setRange(0, 1000)
         self.rangeSlider.setSliderPosition([0, 1000])
+        self.historyTextBox.setMaximumWidth(100)
 
         self.graphs_enabled = True
 
@@ -29,15 +32,22 @@ class GraphTabControl(custom_q_widget_base.CustomQWidgetBase):
         layout.addWidget(self.resetGraphButton, 1, 1)
         layout.addWidget(self.enableGraphButton, 1, 2)
         layout.addWidget(self.rangeSlider, 1, 3)
+        layout.addWidget(self.historyLabelBox, 1, 4)
+        layout.addWidget(self.historyTextBox, 1, 5)
         self.setLayout(layout)
 
-        font = QFont("Monospace", 8)
+        font = QFont("Monospace", 10)
         self.resetGraphButton.setFont(font)
         self.enableGraphButton.setFont(font)
+        self.historyLabelBox.setFont(font)
         self.resetGraphButton.setText("Clear Graphs")
+        self.historyLabelBox.setText("History Length (seconds):")
 
     def setRange(self, min_value, max_value):
         self.rangeSlider.setRange(min_value, max_value)
+
+    def getHistoryBoxValue(self):
+        return self.historyTextBox.text()
 
     def onEnableButtonClick(self):
         self.graphs_enabled = not self.graphs_enabled
@@ -56,3 +66,5 @@ class GraphTabControl(custom_q_widget_base.CustomQWidgetBase):
         self.resetGraphButton.setStyleSheet(widget_background_string + text_string)
         self.enableGraphButton.setStyleSheet(widget_background_string + text_string)
         self.rangeSlider.setStyleSheet(text_string)
+        self.historyLabelBox.setStyleSheet(widget_background_string + text_string)
+        self.historyTextBox.setStyleSheet(border_string + widget_background_string + text_string)

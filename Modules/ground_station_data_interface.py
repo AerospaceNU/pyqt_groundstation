@@ -14,10 +14,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
     Reads data from the ground station hardware, and parses it
     """
 
-    def __init__(self, gui: DPFGUI):
+    def __init__(self):
         super().__init__()
-
-        self.gui_object = gui  # I'm not really sure if this is a good idea or not, but I need the functionality
 
         self.nextCheckTime = time.time()
         self.serial_port = "/dev/ttyACM0"
@@ -29,7 +27,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.raw_data_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%M-%d %H:%M:%S")))
         self.parsed_messages_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%M-%d %H:%M:%S")))
 
-        self.gui_object.addCallback("set_serial_port", self.changeActiveSerialPort)
+    def getCallbacksToAdd(self):
+        return [["set_serial_port", self.changeActiveSerialPort]]
 
     def changeActiveSerialPort(self, portName):
         self.serial_port = portName

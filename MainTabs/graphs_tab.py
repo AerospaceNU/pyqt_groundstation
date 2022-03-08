@@ -31,7 +31,7 @@ class GraphsTab(TabCommon):
         layout.addWidget(self.addWidget(GraphWidget(title="XYZ Rotational Velocities", source_list=[Constants.rotational_velocity_x_key, Constants.rotational_velocity_y_key, Constants.rotational_velocity_z_key])), 2, 2)
         layout.addWidget(self.addWidget(GraphWidget(title="XYZ Accelerations", source_list=[Constants.acceleration_x_key, Constants.acceleration_y_key, Constants.acceleration_z_key])), 2, 3)
         layout.addWidget(self.addWidget(GraphWidget(title="Ground Speed", source_list=[Constants.ground_speed_key])), 3, 1)
-        layout.addWidget(self.addWidget(GraphWidget()), 3, 2)
+        layout.addWidget(self.addWidget(GraphWidget(title="Magnetometer readings", source_list=[Constants.magnetometer_x_key, Constants.magnetometer_y_key, Constants.magnetometer_z_key])), 3, 2)
         layout.addWidget(self.addWidget(GraphWidget()), 3, 3)
         layout.addWidget(self.graphControlWidget, 4, 1, 1, 3)
         self.setLayout(layout)
@@ -50,6 +50,10 @@ class GraphsTab(TabCommon):
 
     def customUpdate(self, data):
         graphs_enabled = self.graphControlWidget.graphsEnabled()
+        try:
+            graphs_history = float(self.graphControlWidget.getHistoryBoxValue())
+        except (TypeError, ValueError):
+            graphs_history = 0
 
         largest_time_list = []
         smallest_time_list = []
@@ -76,3 +80,4 @@ class GraphsTab(TabCommon):
             if type(widget) == GraphWidget:
                 widget.setXAxisBounds(graph_min, graph_max)
                 widget.setEnabled(graphs_enabled)
+                widget.setHistoryLength(graphs_history)

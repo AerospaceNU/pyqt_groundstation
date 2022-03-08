@@ -9,7 +9,7 @@ class Constants:
     longitude_key = "longitude"
     gps_alt_key = "gps_alt"
     vertical_speed_key = "v_speed"
-    acceleration_key = "acceleration"
+    acceleration_key = "accel_z"
     fcb_state_key = "fcb_state"
     pyro_continuity = "pyro_continuity"
     software_version_key = "software_version"
@@ -40,6 +40,10 @@ class Constants:
     acceleration_x_key = "accel_x"
     acceleration_y_key = "accel_y"
     acceleration_z_key = "accel_z"
+
+    magnetometer_x_key = "magnetic_field_x"
+    magnetometer_y_key = "magnetic_field_y"
+    magnetometer_z_key = "magnetic_field_z"
 
     ground_station_latitude_key = "gs_lat"
     ground_station_longitude_key = "gs_lon"

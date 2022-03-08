@@ -27,7 +27,7 @@ def rgb_to_hex(rgb):
 
 
 class GraphWidget(CustomQWidgetBase):
-    def __init__(self, parent_widget: QWidget = None, source_list=None, title=None):
+    def __init__(self, parent_widget: QWidget = None, source_list=None, title=None, time_history=0):
         super().__init__(parent_widget)
 
         if source_list is None:
@@ -43,6 +43,7 @@ class GraphWidget(CustomQWidgetBase):
         self.max_x = None
 
         self.record_new_data = True
+        self.max_time_to_keep = time_history
 
         if title is not None:
             self.graphWidget.setTitle(title)
@@ -53,7 +54,6 @@ class GraphWidget(CustomQWidgetBase):
 
         self.data_dictionary = {}  # Stores the history for each data field we
         self.time_dictionary = {}  # Stores the times we've taken data at (the x axis) for each field we track
-        self.last_update_time_dictionary = {}
         self.plot_line_dictionary = {}  # Stores the plot line objects
         self.start_time = time.time()
         self.last_update_time = time.time()
@@ -99,6 +99,17 @@ class GraphWidget(CustomQWidgetBase):
                     self.data_dictionary[source].append(float('nan'))
                     self.time_dictionary[source].append(time.time() - self.start_time)
 
+                oldest_allowable_time = time.time() - self.start_time - self.max_time_to_keep
+                if math.isnan(self.time_dictionary[source][0]):
+                    check_index = 1
+                else:
+                    check_index = 0
+
+                if self.max_time_to_keep > 0 and self.time_dictionary[source][check_index] < oldest_allowable_time:
+                    slice_index = first_index_in_list_larger_than(self.time_dictionary[source], oldest_allowable_time)
+                    self.time_dictionary[source] = [oldest_allowable_time] + self.time_dictionary[source][slice_index:]
+                    self.data_dictionary[source] = [float('nan')] + self.data_dictionary[source][slice_index:]
+
         self.updatePlot()
 
     def updatePlot(self):
@@ -125,6 +136,9 @@ class GraphWidget(CustomQWidgetBase):
                 max_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.max_x)
                 min_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.min_x)
                 self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][min_index:max_index], self.data_dictionary[data_name][min_index:max_index], connect="finite")
+
+    def setHistoryLength(self, history_length):
+        self.max_time_to_keep = history_length
 
     def setEnabled(self, enabled):
         self.record_new_data = enabled

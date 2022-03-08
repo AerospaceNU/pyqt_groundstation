@@ -332,14 +332,26 @@ class DPFGUI():
     def addCallback(self, target, callback):
         self.callbackFunctions[target] = callback
 
-    def addModule(self, interface_name: str, interface_object: ThreadedModuleCore, enabled=True, hide_toggle=False):
-        self.module_dictionary[interface_name] = interface_object
-        interface_object.setConsoleCallback(self.updateConsole)
-        interface_object.setEnabled(enabled)
-        interface_object.start()
+    def addModule(self, interface_name: str, interface_class, enabled=True, hide_toggle=False):
+        try:
+            interface_object = interface_class()
+            self.module_dictionary[interface_name] = interface_object
+            interface_object.setConsoleCallback(self.updateConsole)
+            interface_object.setEnabled(enabled)
 
-        if hide_toggle:
-            self.hidden_modules.append(interface_name)
+            callbacks = interface_object.getCallbacksToAdd()
+            for callback in callbacks:
+                if len(callback) == 2:
+                    self.addCallback(callback[0], callback[1])
+
+            interface_object.start()
+
+            if hide_toggle:
+                self.hidden_modules.append(interface_name)
+        except Exception as e:  # Should catch a lot of errors loading in modules
+            error_string = "Could not load module {0} of type {1}: {2}".format(interface_name, interface_class, e)
+            print(error_string)
+            self.updateConsole(error_string, 2)
 
     def clearConsole(self, _):  # Need a empty arg to fit with callback system
         self.ConsoleData = [[]]
