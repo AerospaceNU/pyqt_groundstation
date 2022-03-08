@@ -47,7 +47,7 @@ class Constants:
 
     ground_station_latitude_key = "gs_lat"
     ground_station_longitude_key = "gs_lon"
-    ground_station_altitude_key = "gps_alt"
+    ground_station_altitude_key = "gs_alt"
     ground_station_pressure_key = "gs_baro"
     ground_station_temperature_key = "gs_temp"
 
@@ -72,6 +72,7 @@ class Constants:
     lqi_key = "lqi"
     crc_key = "crc"
     raw_message_data_key = "raw_message_data"
+    radio_id_key = "radio_id"
 
     invalid_fcb_state_name = "Invalid FCB State"
     fcb_state_names = ["Cli Calibrate",

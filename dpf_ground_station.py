@@ -74,17 +74,17 @@ class DPFGUI():
         self.serial_port_menu = QMenu()
         self.modules_menu = QMenu()
 
-        self.widgetClasses = {}
-        self.widgetClasses["Annunciator Panel"] = annunciator_panel.AnnunciatorPanel
-        self.widgetClasses["Control Station Status"] = control_station_status.ControlStationStatus
-        self.widgetClasses["Flight Display"] = flight_display.FlightDisplay
-        self.widgetClasses["Map Widget"] = map_widget.MapWidget
-        self.widgetClasses["Reconfigure"] = reconfigure_widget.ReconfigureWidget
-        self.widgetClasses["Simple Console"] = simple_console_widget.SimpleConsoleWidget
-        self.widgetClasses["Diagnostic Panel"] = text_box_drop_down_widget.TextBoxDropDownWidget
-        self.widgetClasses["Vehicle Status"] = vehicle_status_widget.VehicleStatusWidget
-        self.widgetClasses["Video Panel"] = video_widget.VideoWidget
-        self.widgetClasses["Graph Widget"] = graph_widget.GraphWidget
+        self.widgetClasses = {"Annunciator Panel": annunciator_panel.AnnunciatorPanel,
+                              "Control Station Status": control_station_status.ControlStationStatus,
+                              "Flight Display": flight_display.FlightDisplay,
+                              "Map Widget": map_widget.MapWidget,
+                              "Reconfigure": reconfigure_widget.ReconfigureWidget,
+                              "Simple Console": simple_console_widget.SimpleConsoleWidget,
+                              "Diagnostic Panel": text_box_drop_down_widget.TextBoxDropDownWidget,
+                              "Vehicle Status": vehicle_status_widget.VehicleStatusWidget,
+                              "Video Panel": video_widget.VideoWidget,
+                              "Graph Widget": graph_widget.GraphWidget,
+                              }  # List of classes of widgets that can be dynamically created
 
         self.application.setObjectName("Application")
         self.mainWindow.setObjectName("Main_Window")
@@ -332,10 +332,9 @@ class DPFGUI():
     def addCallback(self, target, callback):
         self.callbackFunctions[target] = callback
 
-    def addModule(self, interface_name: str, interface_class, enabled=True, hide_toggle=False):
+    def addModule(self, interface_name: str, interface_class: type(ThreadedModuleCore), enabled=True, hide_toggle=False):
         try:
             interface_object = interface_class()
-            self.module_dictionary[interface_name] = interface_object
             interface_object.setConsoleCallback(self.updateConsole)
             interface_object.setEnabled(enabled)
 
@@ -348,6 +347,8 @@ class DPFGUI():
 
             if hide_toggle:
                 self.hidden_modules.append(interface_name)
+
+            self.module_dictionary[interface_name] = interface_object  # Append last so it doesn't get appended if any errors pop up
         except Exception as e:  # Should catch a lot of errors loading in modules
             error_string = "Could not load module {0} of type {1}: {2}".format(interface_name, interface_class, e)
             print(error_string)

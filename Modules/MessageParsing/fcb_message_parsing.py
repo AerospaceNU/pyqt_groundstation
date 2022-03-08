@@ -1,6 +1,7 @@
 import struct
 import math
 import numpy
+import datetime
 
 from constants import Constants
 
@@ -57,6 +58,7 @@ def get_fcb_state_from_state_num(state_num):
 
 def parse_orientation_message(data, dictionary):
     """uint8 state, float qw, qx, qy, qz, wx, wy, wz, ax, ay, az, bx, by, bz;"""
+    data = data[0:53]
     unpacked_data = struct.unpack("<Bfffffffffffff", data)
 
     dictionary[Constants.fcb_state_key] = get_fcb_state_from_state_num(unpacked_data[0])
@@ -112,8 +114,8 @@ def parse_position_data_message(data, dictionary):
     dictionary[Constants.gps_alt_key] = unpacked_data[5]
     dictionary[Constants.fcb_battery_voltage] = unpacked_data[6]
     dictionary[Constants.ground_speed_key] = unpacked_data[7] * 0.514444  # fcb reports speed in kts
-    dictionary[Constants.course_over_ground_key] = compass_heading_deg_to_enu_rad(unpacked_data[8])  # GPS reports compass heading (NED and degrees)
-    dictionary[Constants.gps_time_key] = unpacked_data[9]
+    dictionary[Constants.course_over_ground_key] = unpacked_data[8]  # GPS reports compass heading (NED and degrees)
+    dictionary[Constants.gps_time_key] = datetime.datetime.fromtimestamp(unpacked_data[9])
     dictionary[Constants.gps_sats_key] = unpacked_data[10]
     dictionary[Constants.pyro_continuity] = parse_pyro_continuity_byte(unpacked_data[11])
     dictionary[Constants.fcb_state_key] = get_fcb_state_from_state_num(unpacked_data[12])
@@ -160,15 +162,39 @@ def parse_fcb_message(data):
     message_number = data[0]
 
     if message_number in MESSAGE_CALLBACKS:
-        # Get CRC, LQI, RSSI data from message (last two bytes)
-        fcb_data = data[0:-2]
-        radio_data = data[-2:]
-        unpacked_radio_status_data = struct.unpack('<bB', radio_data)
-        lqi = unpacked_radio_status_data[1] & 0b1111111  # The last 7 bits of the lqi byte are the lqi
-        crc = (unpacked_radio_status_data[1] & 0b10000000)  # And top is CRC
+        # Get CRC, LQI, RSSI data from message (First 4)
+        radio_data = data[-4:]
+        unpacked_radio_status_data = struct.unpack('<BB?B', radio_data)
+        # lqi = unpacked_radio_status_data[1] & 0b1111111  # The last 7 bits of the lqi byte are the lqi
+        # crc = (unpacked_radio_status_data[1] & 0b10000000)  # And top is CRC
+
+        # Add radio stuff
+        radio_id = unpacked_radio_status_data[0]
+        rssi = unpacked_radio_status_data[1]
+        crc = unpacked_radio_status_data[2]
+        lqi = unpacked_radio_status_data[3]
+
+        if rssi != -128:
+            rssi_text = "{} db".format(rssi - 50)
+        else:
+            rssi_text = "Invalid RSSI"
+
+        if radio_id == 0:
+            radio_id_string = "433 MHz Radio"
+        elif radio_id == 1:
+            radio_id_string = "915 MHz Radio"
+        else:
+            radio_id_string = "Invalid Radio ID"
+
         crc_str = "Good" if crc else "Bad"
 
+        dictionary[Constants.radio_id_key] = radio_id_string
+        dictionary[Constants.rssi_key] = rssi_text
+        dictionary[Constants.lqi_key] = lqi
+        dictionary[Constants.crc_key] = crc_str
+
         # Get the packet header
+        fcb_data = data[0:-4]
         header_data = fcb_data[0:14]
         unpacked_header = struct.unpack('<BBIBBBBBBBB', header_data)
         dictionary[Constants.software_version_key] = unpacked_header[1]
@@ -191,17 +217,6 @@ def parse_fcb_message(data):
         except struct.error as e:
             print(e)
             success = False
-
-        # Add radio stuff
-        rssi = unpacked_radio_status_data[0]
-        if rssi != -128:
-            rssi_text = "{} db".format(rssi - 50)
-        else:
-            rssi_text = "Invalid RSSI"
-
-        dictionary[Constants.rssi_key] = rssi_text
-        dictionary[Constants.lqi_key] = lqi
-        dictionary[Constants.crc_key] = crc_str
 
         return [success, dictionary, message_type, crc]
     elif message_number == 200:  # Ground station packet

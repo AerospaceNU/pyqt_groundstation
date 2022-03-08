@@ -18,6 +18,9 @@ class MapWidget(CustomQWidgetBase):
         self.decimals = 2
         self.paths = {}
 
+        if parent_widget is not None:
+            self.setMinimumSize(500, 500)
+
         self.pointsToKeep = points_to_keep
         self.newPointInterval = update_interval
         self.newPointSpacing = 10
