@@ -40,6 +40,7 @@ class CustomQWidgetBase(QWidget):
         self.tabName = ""
 
         self.vehicleData = {}
+        self.recordedData = {}
         self.updated_data_dictionary = {}  # Tracks which keys are new since the last GUI loop
         self.sourceList = {}
 
@@ -111,8 +112,9 @@ class CustomQWidgetBase(QWidget):
         if not self.isInLayout:
             self.adjustSize()
 
-    def setVehicleData(self, vehicle_data, updated_data):
+    def setVehicleData(self, vehicle_data, updated_data, recorded_data):
         """Called by the tab every loop.  DO NOT OVERRIDE"""
+        self.recordedData = recorded_data
         self.vehicleData = vehicle_data
         self.updated_data_dictionary = updated_data
         self.updateData(vehicle_data, updated_data)
@@ -158,6 +160,14 @@ class CustomQWidgetBase(QWidget):
             return value_type(return_value)
         except TypeError:
             return default_value
+
+    def getRecordedDictDataUsingSourceKey(self, internal_key_id):
+        dictionary_key = self.sourceList[internal_key_id].key_name
+
+        if dictionary_key in self.recordedData:
+            return self.recordedData[dictionary_key]
+        else:
+            return [], []
 
     def isDictValueUpdated(self, internal_key_id):
         dictionary_key = self.sourceList[internal_key_id].key_name

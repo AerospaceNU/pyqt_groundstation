@@ -15,6 +15,7 @@ class ThreadedModuleCore(threading.Thread):
         super().__init__()
         self.data_dictionary = {}
         self.gui_full_data_dictionary = {}
+        self.recorded_data_dictionary = {}
         self.should_be_running = True
         self.enabled = True
 
@@ -24,6 +25,12 @@ class ThreadedModuleCore(threading.Thread):
 
     def getCallbacksToAdd(self):
         return [[]]
+
+    def getRecordedDataDictionary(self):
+        return self.recorded_data_dictionary
+
+    def hasRecordedData(self):
+        return bool(self.recorded_data_dictionary)
 
     def setConsoleCallback(self, callback):
         self.console_callback = callback

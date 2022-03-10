@@ -44,6 +44,7 @@ class GraphWidget(CustomQWidgetBase):
 
         self.record_new_data = True
         self.max_time_to_keep = time_history
+        self.recorded_data_mode = False
 
         if title is not None:
             self.graphWidget.setTitle(title)
@@ -71,44 +72,58 @@ class GraphWidget(CustomQWidgetBase):
 
         self.show()
 
+    def setPlaybackMode(self, use_recorded_data):
+        self.recorded_data_mode = use_recorded_data
+
     def updateData(self, vehicle_data, updated_data):
         if time.time() - self.last_update_time < self.update_interval:
             return
         self.last_update_time = time.time()
 
-        if self.record_new_data:
+        if not self.recorded_data_mode:
+            if self.record_new_data:
+                for source in self.sourceList:
+                    value = self.getDictValueUsingSourceKey(source)
+
+                    if source not in self.data_dictionary:
+                        self.data_dictionary[source] = [float('nan')]
+                        self.time_dictionary[source] = [float('nan')]
+
+                    # <sarcasm> This logic makes perfect sense </sarcasm>
+                    # The base goal is to make the last value in the array a nan when the data isn't updated so the graph x axis keeps updating
+                    # We need 4 cases because we don't want to overwrite any data, and we don't want NaNs anywhere other than the last spot
+                    if self.isDictValueUpdated(source) and math.isnan(self.data_dictionary[source][-1]):
+                        self.data_dictionary[source][-1] = value
+                        self.time_dictionary[source][-1] = time.time() - self.start_time
+                    elif self.isDictValueUpdated(source):
+                        self.data_dictionary[source].append(value)
+                        self.time_dictionary[source].append(time.time() - self.start_time)
+                    elif math.isnan(self.data_dictionary[source][-1]):
+                        self.time_dictionary[source][-1] = time.time() - self.start_time
+                    else:
+                        self.data_dictionary[source].append(float('nan'))
+                        self.time_dictionary[source].append(time.time() - self.start_time)
+
+                    oldest_allowable_time = time.time() - self.start_time - self.max_time_to_keep
+                    if math.isnan(self.time_dictionary[source][0]):
+                        check_index = 1
+                    else:
+                        check_index = 0
+
+                    if self.max_time_to_keep > 0 and self.time_dictionary[source][check_index] < oldest_allowable_time:
+                        slice_index = first_index_in_list_larger_than(self.time_dictionary[source], oldest_allowable_time)
+                        self.time_dictionary[source] = [oldest_allowable_time] + self.time_dictionary[source][slice_index:]
+                        self.data_dictionary[source] = [float('nan')] + self.data_dictionary[source][slice_index:]
+        else:
             for source in self.sourceList:
-                value = self.getDictValueUsingSourceKey(source)
+                [data_series, time_series] = self.getRecordedDictDataUsingSourceKey(source)
 
-                if source not in self.data_dictionary:
+                if len(data_series) > 0 and len(data_series) == len(time_series):
+                    self.data_dictionary[source] = data_series
+                    self.time_dictionary[source] = time_series
+                else:
                     self.data_dictionary[source] = [float('nan')]
-                    self.time_dictionary[source] = [float('nan')]
-
-                # <sarcasm> This logic makes perfect sense </sarcasm>
-                # The base goal is to make the last value in the array a nan when the data isn't updated so the graph x axis keeps updating
-                # We need 4 cases because we don't want to overwrite any data, and we don't want NaNs anywhere other than the last spot
-                if self.isDictValueUpdated(source) and math.isnan(self.data_dictionary[source][-1]):
-                    self.data_dictionary[source][-1] = value
-                    self.time_dictionary[source][-1] = time.time() - self.start_time
-                elif self.isDictValueUpdated(source):
-                    self.data_dictionary[source].append(value)
-                    self.time_dictionary[source].append(time.time() - self.start_time)
-                elif math.isnan(self.data_dictionary[source][-1]):
-                    self.time_dictionary[source][-1] = time.time() - self.start_time
-                else:
-                    self.data_dictionary[source].append(float('nan'))
-                    self.time_dictionary[source].append(time.time() - self.start_time)
-
-                oldest_allowable_time = time.time() - self.start_time - self.max_time_to_keep
-                if math.isnan(self.time_dictionary[source][0]):
-                    check_index = 1
-                else:
-                    check_index = 0
-
-                if self.max_time_to_keep > 0 and self.time_dictionary[source][check_index] < oldest_allowable_time:
-                    slice_index = first_index_in_list_larger_than(self.time_dictionary[source], oldest_allowable_time)
-                    self.time_dictionary[source] = [oldest_allowable_time] + self.time_dictionary[source][slice_index:]
-                    self.data_dictionary[source] = [float('nan')] + self.data_dictionary[source][slice_index:]
+                    self.time_dictionary[source] = [0]
 
         self.updatePlot()
 
@@ -166,7 +181,7 @@ class GraphWidget(CustomQWidgetBase):
     def getLargestTime(self):
         time_val = -1
         for key in self.time_dictionary:
-            largest_time = self.time_dictionary[key][-1]
+            largest_time = max(self.time_dictionary[key])
             if time_val == -1:
                 time_val = largest_time
             else:
@@ -176,7 +191,7 @@ class GraphWidget(CustomQWidgetBase):
     def getSmallestTime(self):
         time_val = -1
         for key in self.time_dictionary:
-            smallest_time = self.time_dictionary[key][0]
+            smallest_time = min(self.time_dictionary[key])
             if time_val == -1:
                 time_val = smallest_time
             else:

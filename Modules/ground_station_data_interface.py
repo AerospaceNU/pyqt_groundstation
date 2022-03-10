@@ -24,8 +24,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.raw_data_file = open("raw_data.txt", "a+")
         self.parsed_messages_file = open("parsed_messages.txt", "a+")
 
-        self.raw_data_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%M-%d %H:%M:%S")))
-        self.parsed_messages_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%M-%d %H:%M:%S")))
+        self.raw_data_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        self.parsed_messages_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
     def getCallbacksToAdd(self):
         return [["set_serial_port", self.changeActiveSerialPort]]

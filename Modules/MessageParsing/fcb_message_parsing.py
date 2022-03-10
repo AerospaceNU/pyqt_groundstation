@@ -2,6 +2,7 @@ import struct
 import math
 import numpy
 import datetime
+from datetime import datetime
 
 from constants import Constants
 
@@ -115,7 +116,7 @@ def parse_position_data_message(data, dictionary):
     dictionary[Constants.fcb_battery_voltage] = unpacked_data[6]
     dictionary[Constants.ground_speed_key] = unpacked_data[7] * 0.514444  # fcb reports speed in kts
     dictionary[Constants.course_over_ground_key] = unpacked_data[8]  # GPS reports compass heading (NED and degrees)
-    dictionary[Constants.gps_time_key] = datetime.datetime.fromtimestamp(unpacked_data[9])
+    dictionary[Constants.gps_time_key] = str(datetime.datetime.fromtimestamp(unpacked_data[9])) # Convert to string so that we aren't passing datetime objects everywhere
     dictionary[Constants.gps_sats_key] = unpacked_data[10]
     dictionary[Constants.pyro_continuity] = parse_pyro_continuity_byte(unpacked_data[11])
     dictionary[Constants.fcb_state_key] = get_fcb_state_from_state_num(unpacked_data[12])

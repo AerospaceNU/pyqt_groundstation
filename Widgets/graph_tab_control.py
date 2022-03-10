@@ -3,7 +3,7 @@ Widget for buttons
 """
 
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLineEdit, QLabel
+from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLineEdit, QLabel, QComboBox
 from PyQt5.QtCore import Qt
 from qtrangeslider import QRangeSlider
 
@@ -17,6 +17,7 @@ class GraphTabControl(custom_q_widget_base.CustomQWidgetBase):
 
         self.enableGraphButton = QPushButton()
         self.enableGraphButton.clicked.connect(self.onEnableButtonClick)
+        self.recordedDataModeSelect = QComboBox()
         self.enableGraphButton.setText("Disable Graph Updating")
         self.historyLabelBox = QLabel()
         self.historyTextBox = QLineEdit()
@@ -31,20 +32,26 @@ class GraphTabControl(custom_q_widget_base.CustomQWidgetBase):
         layout = QGridLayout()
         layout.addWidget(self.resetGraphButton, 1, 1)
         layout.addWidget(self.enableGraphButton, 1, 2)
-        layout.addWidget(self.rangeSlider, 1, 3)
-        layout.addWidget(self.historyLabelBox, 1, 4)
-        layout.addWidget(self.historyTextBox, 1, 5)
+        layout.addWidget(self.recordedDataModeSelect, 1, 3)
+        layout.addWidget(self.rangeSlider, 1, 4)
+        layout.addWidget(self.historyLabelBox, 1, 5)
+        layout.addWidget(self.historyTextBox, 1, 6)
         self.setLayout(layout)
 
         font = QFont("Monospace", 10)
         self.resetGraphButton.setFont(font)
         self.enableGraphButton.setFont(font)
         self.historyLabelBox.setFont(font)
+        self.recordedDataModeSelect.setFont(font)
         self.resetGraphButton.setText("Clear Graphs")
         self.historyLabelBox.setText("History Length (seconds):")
+        self.recordedDataModeSelect.addItems(["Live Data", "Playback"])
 
     def setRange(self, min_value, max_value):
         self.rangeSlider.setRange(min_value, max_value)
+
+    def playbackEnabled(self):
+        return self.recordedDataModeSelect.currentText().lower() == "playback"
 
     def getHistoryBoxValue(self):
         return self.historyTextBox.text()
@@ -68,3 +75,4 @@ class GraphTabControl(custom_q_widget_base.CustomQWidgetBase):
         self.rangeSlider.setStyleSheet(text_string)
         self.historyLabelBox.setStyleSheet(widget_background_string + text_string)
         self.historyTextBox.setStyleSheet(border_string + widget_background_string + text_string)
+        self.recordedDataModeSelect.setStyleSheet(widget_background_string + text_string)

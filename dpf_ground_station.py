@@ -187,9 +187,14 @@ class DPFGUI():
         if self.GUIStopCommanded:
             self.stop()
 
+        recorded_data_dict = {}
+
         # Get data from interfaces
         for interface in self.module_dictionary:
-            self.updateDatabaseDictionary(self.module_dictionary[interface].getDataDictionary().copy())
+            interface_object = self.module_dictionary[interface]
+            if interface_object.hasRecordedData():  # TODO: Have some sort of select for this
+                recorded_data_dict = interface_object.getRecordedDataDictionary()
+            self.updateDatabaseDictionary(interface_object.getDataDictionary().copy())
 
         # Send full database dictionary back to the data interfaces
         for interface in self.module_dictionary:
@@ -201,7 +206,7 @@ class DPFGUI():
 
         # Update tabs
         for tab in self.tabObjects:
-            self.callback_queue += tab.updateVehicleData(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary)
+            self.callback_queue += tab.updateVehicleData(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary, recorded_data_dict)
 
         # set window title
         tabIndex = self.tabHolderWidget.currentIndex()

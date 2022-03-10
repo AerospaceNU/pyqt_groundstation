@@ -55,6 +55,8 @@ class GraphsTab(TabCommon):
         except (TypeError, ValueError):
             graphs_history = 0
 
+        recorded_data_enabled = self.graphControlWidget.playbackEnabled()
+
         largest_time_list = []
         smallest_time_list = []
 
@@ -81,3 +83,4 @@ class GraphsTab(TabCommon):
                 widget.setXAxisBounds(graph_min, graph_max)
                 widget.setEnabled(graphs_enabled)
                 widget.setHistoryLength(graphs_history)
+                widget.setPlaybackMode(recorded_data_enabled)

@@ -20,6 +20,14 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
     def runOnEnableAndDisable(self):
         self.reader.setPacketIndex(0)
 
+        if not self.reader.parsedToFullHistory():
+            self.reader.parseIntoIndividualLists()
+
+        if self.enabled:
+            for key in self.reader.getRecordedDataKeys():
+                [data_series, time_series] = self.reader.getFullHistoryForKey(key)
+                self.recorded_data_dictionary[key] = [data_series, time_series]
+
     def spin(self):
         self.good_fcb_data = True
         self.connected = True

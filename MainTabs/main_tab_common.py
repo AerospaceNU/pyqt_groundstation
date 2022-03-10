@@ -20,7 +20,7 @@ class TabCommon(QWidget):
 
         self.colors = []
 
-    def updateVehicleData(self, data, console_data, updated_data):
+    def updateVehicleData(self, data, console_data, updated_data, recorded_data):
         """The update function that should not be overridden"""
         if isinstance(data, dict):
             vehicleData = data
@@ -33,7 +33,7 @@ class TabCommon(QWidget):
         callbacks = []
 
         for widget in self.widgetList:
-            widget.setVehicleData(vehicleData, updated_data)
+            widget.setVehicleData(vehicleData, updated_data, recorded_data)
             widget.updateConsole(console_data)
             widget.coreUpdate()
             callbacks += widget.getCallbackEvents()
