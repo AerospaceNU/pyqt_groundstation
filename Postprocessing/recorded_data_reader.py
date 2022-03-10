@@ -2,6 +2,7 @@
 Class to read recorded data
 """
 
+import time
 import navpy
 import datetime
 
@@ -10,7 +11,7 @@ from data_helpers import vector_length
 
 
 class RecordedDataReader(object):
-    def __init__(self, file_name="parsed_messages.txt"):
+    def __init__(self, file_name="parsed_messages.txt", load_slower=False):
         file = open(file_name)
         data = file.readlines()
 
@@ -59,10 +60,18 @@ class RecordedDataReader(object):
                 self.data_struct.append(packet_data)
                 self.packet_types.append(packet_type)
 
+            if load_slower:
+                time.sleep(0.000000001)  # This many 0s probably don't help, but this sleep keeps the file indexing from taking all the CPU resources
+
         self.fields = list(packet_data.keys())
         self.packetIndex = 0
 
     def parseIntoIndividualLists(self):
+        if len(self.data_struct) == 0:
+            return
+        if "timestamp" not in self.data_struct[0]:
+            return
+
         first_time = datetime.datetime.fromisoformat(self.data_struct[0]["timestamp"])
         run_number = 0
 

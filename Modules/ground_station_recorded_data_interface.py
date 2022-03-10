@@ -16,7 +16,8 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
         super().__init__()
 
     def startUp(self):
-        self.reader = RecordedDataReader()
+        self.reader = RecordedDataReader(load_slower=True)
+        self.logToConsole("Done indexing recorded data", 0, override_disabled_check=True)
 
     def runOnEnableAndDisable(self):
         self.reader.setPacketIndex(0)

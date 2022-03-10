@@ -7,6 +7,7 @@ Has all the thread control for the GUI
 import copy
 import random
 import sys
+import time
 import serial.tools.list_ports
 
 from PyQt5.QtCore import QTimer
@@ -53,6 +54,7 @@ class DPFGUI():
         self.callbackFunctions = {}
         self.callback_queue = []
         self.module_dictionary = {}
+        self.module_load_time_dictionary = {}
         self.hidden_modules = []
         self.playback_data_sources = []
         self.current_playback_source = ""
@@ -353,6 +355,8 @@ class DPFGUI():
 
     def addModule(self, interface_name: str, interface_class: type(ThreadedModuleCore), enabled=True, hide_toggle=False):
         try:
+            start_time = time.time()
+
             interface_object = interface_class()
             interface_object.setConsoleCallback(self.updateConsole)
             interface_object.setEnabled(enabled)
@@ -368,6 +372,9 @@ class DPFGUI():
                 self.hidden_modules.append(interface_name)
 
             self.module_dictionary[interface_name] = interface_object  # Append last so it doesn't get appended if any errors pop up
+
+            delta_time = time.time() - start_time
+            self.module_load_time_dictionary[interface_name] = delta_time
         except Exception as e:  # Should catch a lot of errors loading in modules
             error_string = "Could not load module {0} of type {1}: {2}".format(interface_name, interface_class, e)
             print(error_string)
