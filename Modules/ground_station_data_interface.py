@@ -101,3 +101,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
 
     def logMessageToFile(self, message_type, parsed_message):
         self.parsed_messages_file.write("{0}: {1} {2}\n".format(time.strftime("%H:%M:%S"), message_type, str(parsed_message)))
+
+    def closeOut(self):
+        self.raw_data_file.close()
+        self.parsed_messages_file.close()

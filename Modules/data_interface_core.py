@@ -76,6 +76,11 @@ class ThreadedModuleCore(threading.Thread):
             if self.enabled:
                 self.spin()
             time.sleep(0.01)  # Keep python from locking the database objects all the time
+        self.closeOut()
+
+    def closeOut(self):
+        """Called when the module shuts down"""
+        pass
 
     def stop(self):
         self.should_be_running = False
