@@ -54,6 +54,8 @@ class DPFGUI():
         self.callback_queue = []
         self.module_dictionary = {}
         self.hidden_modules = []
+        self.playback_data_sources = []
+        self.current_playback_source = ""
 
         self.tabNames = []
         self.placeHolderList = []
@@ -73,6 +75,7 @@ class DPFGUI():
 
         self.serial_port_menu = QMenu()
         self.modules_menu = QMenu()
+        self.playback_source_menu = QMenu()
 
         self.widgetClasses = {"Annunciator Panel": annunciator_panel.AnnunciatorPanel,
                               "Control Station Status": control_station_status.ControlStationStatus,
@@ -157,6 +160,9 @@ class DPFGUI():
         self.modules_menu = menuBar.addMenu("Modules")
         self.modules_menu.aboutToShow.connect(self.refreshDataInterfaces)
 
+        self.playback_source_menu = menuBar.addMenu("Playback Options")
+        self.playback_source_menu.aboutToShow.connect(self.playbackOptionsMenu)
+
     def setActiveSerialPort(self, portName):
         self.callback_queue.append(["set_serial_port", portName])
 
@@ -182,6 +188,14 @@ class DPFGUI():
         for port in serial_ports:
             self.serial_port_menu.addAction("{0}: {1}".format(port.device, port.description), lambda portName=port.device: self.setActiveSerialPort(portName))
 
+    def playbackOptionsMenu(self):
+        self.playback_source_menu.clear()
+        for option in self.playback_data_sources:
+            self.playback_source_menu.addAction(option, lambda option_name=option: self.setCurrentPlaybackOption(option_name))
+
+    def setCurrentPlaybackOption(self, option):
+        self.current_playback_source = option
+
     def updateGUI(self):
         """Runs in GUI thread every 20ms"""
         if self.GUIStopCommanded:
@@ -192,9 +206,15 @@ class DPFGUI():
         # Get data from interfaces
         for interface in self.module_dictionary:
             interface_object = self.module_dictionary[interface]
-            if interface_object.hasRecordedData():  # TODO: Have some sort of select for this
-                recorded_data_dict = interface_object.getRecordedDataDictionary()
+            if interface_object.hasRecordedData():
+                interface_runs = ["{0} | {1}".format(interface, run) for run in interface_object.getRunNames()]
+                self.playback_data_sources = list(set(self.playback_data_sources + interface_runs))
+                self.playback_data_sources.sort()
             self.updateDatabaseDictionary(interface_object.getDataDictionary().copy())
+
+            if self.current_playback_source.split(" | ")[0] == interface:
+                run_name = self.current_playback_source.split(" | ")[1]
+                recorded_data_dict = interface_object.getSpecificRun(run_name)
 
         # Send full database dictionary back to the data interfaces
         for interface in self.module_dictionary:

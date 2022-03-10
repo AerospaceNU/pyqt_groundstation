@@ -15,7 +15,7 @@ class ThreadedModuleCore(threading.Thread):
         super().__init__()
         self.data_dictionary = {}
         self.gui_full_data_dictionary = {}
-        self.recorded_data_dictionary = {}
+        self.recorded_data_dictionary = {}  # {run_name: {run_dict}}
         self.should_be_running = True
         self.enabled = True
 
@@ -26,8 +26,14 @@ class ThreadedModuleCore(threading.Thread):
     def getCallbacksToAdd(self):
         return [[]]
 
-    def getRecordedDataDictionary(self):
-        return self.recorded_data_dictionary
+    def getSpecificRun(self, run_name):
+        if run_name in self.recorded_data_dictionary:
+            return self.recorded_data_dictionary[run_name]
+        else:
+            return {}
+
+    def getRunNames(self):
+        return list(self.recorded_data_dictionary.keys())
 
     def hasRecordedData(self):
         return bool(self.recorded_data_dictionary)

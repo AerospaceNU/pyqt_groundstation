@@ -24,9 +24,13 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
             self.reader.parseIntoIndividualLists()
 
         if self.enabled:
-            for key in self.reader.getRecordedDataKeys():
-                [data_series, time_series] = self.reader.getFullHistoryForKey(key)
-                self.recorded_data_dictionary[key] = [data_series, time_series]
+            for run in self.reader.getRuns():
+                if run not in self.recorded_data_dictionary:
+                    self.recorded_data_dictionary[run] = {}
+
+                for key in self.reader.getRecordedDataKeys(run):
+                    [data_series, time_series] = self.reader.getFullHistoryForKey(run, key)
+                    self.recorded_data_dictionary[run][key] = [data_series, time_series]
 
     def spin(self):
         self.good_fcb_data = True

@@ -16,13 +16,14 @@ class RecordedDataReader(object):
 
         self.data_struct = []
         self.packet_types = []
-        self.full_history_data_struct = {}
+        self.full_history_data_struct = {}  # {run_name: {run_dict}}
         self.parsed_to_full_history = False
         has_first_point = False
         first_point = []
 
         packet_data = {}
         data_date = datetime.datetime.fromtimestamp(0).date()
+        run_number = 0
 
         for line in data:
             if len(line.strip()) == 0:
@@ -30,6 +31,7 @@ class RecordedDataReader(object):
             elif "RUN START" in line:
                 timestamp_string = line.split("RUN START")[1].strip()
                 data_date = datetime.datetime.fromisoformat(timestamp_string).date()
+                run_number += 1
             else:
                 try:
                     timestamp = line.split(" ")[0][0:-1]
@@ -39,6 +41,7 @@ class RecordedDataReader(object):
 
                     timestamp_string = "{0} {1}".format(str(data_date), timestamp)
                     packet_data["timestamp"] = timestamp_string
+                    packet_data["run_number"] = run_number
                 except Exception as e:
                     print(e)
                     continue
@@ -61,32 +64,47 @@ class RecordedDataReader(object):
 
     def parseIntoIndividualLists(self):
         first_time = datetime.datetime.fromisoformat(self.data_struct[0]["timestamp"])
+        run_number = 0
 
         for packet in self.data_struct:
+            if "run_number" in packet:
+                run_number = packet["run_number"]
+
+            run_name = "run_{}".format(run_number)
             for key in packet:
-                if key not in self.full_history_data_struct:
-                    self.full_history_data_struct[key] = ([], [])
+                if run_name not in self.full_history_data_struct:
+                    self.full_history_data_struct[run_name] = {}
+                if key not in self.full_history_data_struct[run_name]:
+                    self.full_history_data_struct[run_name][key] = ([], [])
 
                 data_time = datetime.datetime.fromisoformat(packet["timestamp"])
-                delta_time = data_time-first_time
+                delta_time = data_time - first_time
 
-                self.full_history_data_struct[key][0].append(packet[key])
-                self.full_history_data_struct[key][1].append(delta_time.seconds)
+                self.full_history_data_struct[run_name][key][0].append(packet[key])
+                self.full_history_data_struct[run_name][key][1].append(delta_time.seconds)
 
         self.parsed_to_full_history = True
 
-    def getRecordedDataKeys(self):
+    def getRuns(self):
         return list(self.full_history_data_struct.keys())
 
-    def getFullHistoryForKey(self, key):
+    def getRecordedDataKeys(self, run):
+        if run in self.full_history_data_struct:
+            return list(self.full_history_data_struct[run].keys())
+        else:
+            return []
+
+    def getFullHistoryForKey(self, run, key):
         """
         Returns (data_series, time_series)
         """
 
-        if key not in self.full_history_data_struct:
+        if run not in self.full_history_data_struct:
+            return [], []
+        if key not in self.full_history_data_struct[run]:
             return [], []
         else:
-            return self.full_history_data_struct[key]
+            return self.full_history_data_struct[run][key]
 
     def parsedToFullHistory(self):
         return self.parsed_to_full_history
