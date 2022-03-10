@@ -1,5 +1,5 @@
 """
-Code to define widget layout to drive warpauv
+Settings tab.  Pretty useless right now
 """
 
 from MainTabs.main_tab_common import TabCommon

@@ -73,6 +73,12 @@ class DPFGUI():
         self.mainWindow = QMainWindow()
         self.tabHolderWidget = QTabWidget()
 
+        # Set up main window
+        self.mainWindow.show()
+        self.mainWindow.setCentralWidget(self.tabHolderWidget)
+        self.mainWindow.setWindowTitle(self.title)
+        self.mainWindow.resize(1920, 1080)
+
         self.serial_port_menu = QMenu()
         self.modules_menu = QMenu()
         self.playback_source_menu = QMenu()
@@ -95,12 +101,10 @@ class DPFGUI():
         self.tabHolderWidget.setObjectName("Tab_Holder")
         self.tabHolderWidget.tabBar().setObjectName("Tab_Bar")
 
-    def run(self):
-        # Add tabs to GUI
-        self.addTabByTabType("settings", "Settings")
-        self.addTabByTabType("rocket_primary", "Primary")
-        self.addTabByTabType("diagnostic", "Diagnostic")
-        self.addTabByTabType("graph", "Graphs")
+        # Generate a random title from this list
+        # I don't know why I did this
+        titles = ["DPF Ground Station", "Make sure the pointy end is facing up", "This title intentionally left blank", "Don't crash the rocket"]
+        self.title = random.choice(titles)
 
         # Add callback to clear console
         self.addCallback("clear_console", self.clearConsole)
@@ -109,23 +113,13 @@ class DPFGUI():
         self.setThemeByName("Dark")
         self.setUpMenuBar()
 
-        # Generate a random title from this list
-        # I don't know why I did this
-        titles = ["DPF Ground Station", "Make sure the pointy end is facing up", "This title intentionally left blank", "Don't crash the rocket"]
-        self.title = random.choice(titles)
-
-        # Set up main window
-        self.mainWindow.setCentralWidget(self.tabHolderWidget)
-        self.mainWindow.setWindowTitle(self.title)
-        self.mainWindow.resize(1920, 1080)
-
+    def run(self):
         # QTimer to run the update method
         timer = QTimer()
         timer.timeout.connect(self.updateGUI)
         timer.start(20)
 
         # Run (blocks until GUI closes)
-        self.mainWindow.show()
         self.application.exec_()
 
         # This happens after the GUI closes
@@ -363,12 +357,12 @@ class DPFGUI():
             interface_object.setConsoleCallback(self.updateConsole)
             interface_object.setEnabled(enabled)
 
+            interface_object.start()
+
             callbacks = interface_object.getCallbacksToAdd()
             for callback in callbacks:
                 if len(callback) == 2:
                     self.addCallback(callback[0], callback[1])
-
-            interface_object.start()
 
             if hide_toggle:
                 self.hidden_modules.append(interface_name)

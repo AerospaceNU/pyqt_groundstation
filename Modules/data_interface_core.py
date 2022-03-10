@@ -18,6 +18,7 @@ class ThreadedModuleCore(threading.Thread):
         self.recorded_data_dictionary = {}  # {run_name: {run_dict}}
         self.should_be_running = True
         self.enabled = True
+        self.was_enabled = True
 
         self.console_callback = None
         self.last_console_message = ""
@@ -60,23 +61,34 @@ class ThreadedModuleCore(threading.Thread):
 
     def setEnabled(self, enabled):
         self.enabled = enabled
-        self.runOnEnableAndDisable()
 
     def toggleEnabled(self):
         self.setEnabled(not self.enabled)
-
-    def runOnEnableAndDisable(self):
-        pass
 
     def run(self):
         """
         Runs in thread when start() is called
         """
+        self.startUp()
         while self.should_be_running:
+            if self.enabled != self.was_enabled:  # If the enabled state changes, run the method for that
+                self.runOnEnableAndDisable()
+                self.was_enabled = self.enabled
+
             if self.enabled:
                 self.spin()
             time.sleep(0.01)  # Keep python from locking the database objects all the time
         self.closeOut()
+
+    def startUp(self):
+        """Runs once the thread starts before anything else"""
+        pass
+
+    def runOnEnableAndDisable(self):
+        pass
+
+    def spin(self):
+        pass
 
     def closeOut(self):
         """Called when the module shuts down"""
@@ -84,9 +96,6 @@ class ThreadedModuleCore(threading.Thread):
 
     def stop(self):
         self.should_be_running = False
-
-    def spin(self):
-        pass
 
     def setFullDataDictionary(self, data_dict):
         """

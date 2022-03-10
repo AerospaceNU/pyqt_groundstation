@@ -1,5 +1,5 @@
 """
-Code to define widget layout to drive warpauv
+Blank tab with diagnostic boxes
 """
 
 from Widgets import text_box_drop_down_widget

@@ -69,6 +69,7 @@ class Constants:
     message_age_key = "message_age"
     message_time_key = "message_time"
     rssi_key = "rssi"
+    rssi_val_key = "rssi_val"  # The float val
     lqi_key = "lqi"
     crc_key = "crc"
     raw_message_data_key = "raw_message_data"

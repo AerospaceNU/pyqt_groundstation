@@ -65,6 +65,15 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
                 dictionary[Constants.ground_station_latitude_key] = new_lat
                 dictionary[Constants.ground_station_longitude_key] = new_lon
 
+            if Constants.rssi_key in dictionary:
+                rssi_val = str(dictionary[Constants.rssi_key])
+                if " db" in rssi_val:
+                    rssi_val = rssi_val.strip(" db")
+                    try:
+                        dictionary[Constants.rssi_val_key] = float(rssi_val)
+                    except:
+                        pass
+
             self.data_dictionary.update(dictionary)
 
             if not fcb_message_parsing.is_ground_station_message(message_type):

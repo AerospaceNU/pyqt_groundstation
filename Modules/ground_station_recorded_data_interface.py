@@ -15,6 +15,7 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
     def __init__(self):
         super().__init__()
 
+    def startUp(self):
         self.reader = RecordedDataReader()
 
     def runOnEnableAndDisable(self):
