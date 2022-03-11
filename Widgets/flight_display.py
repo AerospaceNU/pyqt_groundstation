@@ -142,6 +142,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.VSpeedTextBox.setStyleSheet(text_string)
         self.AltitudeTextBox.setStyleSheet(text_string)
         self.TerrainTextBox.setStyleSheet(text_string)
+        self.HUDWidget.setStyleSheet(text_string)
 
         if self.compass_and_text:
             self.CompassWidget.setCompassColor(text_string)

@@ -131,39 +131,39 @@ class DPFGUI():
         """Create menu bar"""
 
         # Get main menu bar object
-        menuBar = self.mainWindow.menuBar()
-        fileMenu = menuBar.addMenu("File")
-        fileMenu.addAction("Quit", self.stop)
+        menu_bar = self.mainWindow.menuBar()
+        file_menu = menu_bar.addMenu("File")
+        file_menu.addAction("Quit", self.stop)
 
         # Menu bar to add new widgets
-        widgetMenu = menuBar.addMenu("Add")
+        widget_menu = menu_bar.addMenu("Add")
 
         for item in self.widgetClasses:
-            widgetMenu.addAction(item, lambda name=item: self.makeNewWidgetInCurrentTab(name))
-        widgetMenu.addSeparator()
+            widget_menu.addAction(item, lambda name=item: self.makeNewWidgetInCurrentTab(name))
+        widget_menu.addSeparator()
 
         # Menu bar to change theme
-        themeMenu = menuBar.addMenu("Theme")
+        theme_menu = menu_bar.addMenu("Theme")
         for theme in THEMES:
-            themeMenu.addAction(theme, lambda themeName=theme: self.setThemeByName(themeName))
+            theme_menu.addAction(theme, lambda theme_name=theme: self.setThemeByName(theme_name))
 
         # Menu bar to set serial port
         # Because the available serial ports and data interfaces change after this class is created, we run a method every time we create the menu
-        self.serial_port_menu = menuBar.addMenu("Serial Port")
+        self.serial_port_menu = menu_bar.addMenu("Serial Port")
         self.serial_port_menu.aboutToShow.connect(self.refreshSerialPorts)  # aboutToShow runs before the menu is created
 
         # Menu bar to enable/disable data interfaces
-        self.modules_menu = menuBar.addMenu("Modules")
+        self.modules_menu = menu_bar.addMenu("Modules")
         self.modules_menu.aboutToShow.connect(self.refreshDataInterfaces)
 
-        self.playback_source_menu = menuBar.addMenu("Playback Options")
+        self.playback_source_menu = menu_bar.addMenu("Playback Options")
         self.playback_source_menu.aboutToShow.connect(self.playbackOptionsMenu)
 
-    def setActiveSerialPort(self, portName):
-        self.callback_queue.append(["set_serial_port", portName])
+    def setActiveSerialPort(self, port_name):
+        self.callback_queue.append(["set_serial_port", port_name])
 
-    def enableDisableDataInterface(self, interfaceName):
-        interface = self.module_dictionary[interfaceName]
+    def enableDisableDataInterface(self, interface_name):
+        interface = self.module_dictionary[interface_name]
         interface.toggleEnabled()
 
     def refreshDataInterfaces(self):
@@ -174,9 +174,9 @@ class DPFGUI():
             if interfaceName in self.hidden_modules:
                 pass
             elif interface.enabled:
-                self.modules_menu.addAction("Disable {}".format(interfaceName), lambda targetInterface=interfaceName: self.enableDisableDataInterface(targetInterface))
+                self.modules_menu.addAction("Disable {}".format(interfaceName), lambda target_interface=interfaceName: self.enableDisableDataInterface(target_interface))
             else:
-                self.modules_menu.addAction("Enable {}".format(interfaceName), lambda targetInterface=interfaceName: self.enableDisableDataInterface(targetInterface))
+                self.modules_menu.addAction("Enable {}".format(interfaceName), lambda target_interface=interfaceName: self.enableDisableDataInterface(target_interface))
 
     def refreshSerialPorts(self):
         serial_ports = [comport for comport in serial.tools.list_ports.comports()]
@@ -225,9 +225,9 @@ class DPFGUI():
             self.callback_queue += tab.updateVehicleData(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary, recorded_data_dict)
 
         # set window title
-        tabIndex = self.tabHolderWidget.currentIndex()
-        activeTab = self.tabHolderWidget.tabText(tabIndex)
-        self.mainWindow.setWindowTitle("[{0}] - {1}".format(activeTab, self.title))
+        tab_index = self.tabHolderWidget.currentIndex()
+        active_tab = self.tabHolderWidget.tabText(tab_index)
+        self.mainWindow.setWindowTitle("[{0}] - {1}".format(active_tab, self.title))
 
         # Process callbacks
         self.processCallbacks()
@@ -241,16 +241,16 @@ class DPFGUI():
             self.database_dictionary[key] = new_dict[key]
             self.updated_data_dictionary[key] = True
 
-    def createWidgetFromName(self, widgetName, parent=None):
+    def createWidgetFromName(self, widget_name, parent=None):
         """Will create any widget from its file name!"""
-        if widgetName not in self.widgetClasses:
-            print("No widget of type {}".format(widgetName))
+        if widget_name not in self.widgetClasses:
+            print("No widget of type {}".format(widget_name))
             return QWidget(parent)  # Kind of a hack
         try:
-            widget = self.widgetClasses[widgetName](parent)
+            widget = self.widgetClasses[widget_name](parent)
             return widget
         except all as e:
-            print("Dynamically creating {} type widgets is not supported yet".format(widgetName))
+            print("Dynamically creating {} type widgets is not supported yet".format(widget_name))
             print(e)
             return QWidget(parent)
 
@@ -264,32 +264,32 @@ class DPFGUI():
             print("No widget named {}".format(name))
 
     def getActiveTabObject(self) -> TabCommon:
-        tabIndex = self.tabHolderWidget.currentIndex()
-        activeTab = self.tabHolderWidget.tabText(tabIndex)
+        tab_index = self.tabHolderWidget.currentIndex()
+        active_tab = self.tabHolderWidget.tabText(tab_index)
 
-        if activeTab in self.tabNames:
-            return self.tabObjects[self.tabNames.index(activeTab)]
+        if active_tab in self.tabNames:
+            return self.tabObjects[self.tabNames.index(active_tab)]
         else:
             return None
 
-    def addTabByTabType(self, tabType: str, tabName: str):
-        if tabType == "settings":
-            self.addVehicleTab(SettingsTab, tabName)
-        elif tabType == "diagnostic":
-            self.addVehicleTab(DiagnosticTab, tabName)
-        elif tabType == "rocket_primary":
-            self.addVehicleTab(RocketPrimaryTab, tabName)
-        elif tabType == "graph":
-            self.addVehicleTab(GraphsTab, tabName)
+    def addTabByTabType(self, tab_type: str, tab_name: str):
+        if tab_type == "settings":
+            self.addVehicleTab(SettingsTab, tab_name)
+        elif tab_type == "diagnostic":
+            self.addVehicleTab(DiagnosticTab, tab_name)
+        elif tab_type == "rocket_primary":
+            self.addVehicleTab(RocketPrimaryTab, tab_name)
+        elif tab_type == "graph":
+            self.addVehicleTab(GraphsTab, tab_name)
         else:
-            print("Don't have tab configuration for vehicle type {}".format(tabType))
+            print("Don't have tab configuration for vehicle type {}".format(tab_type))
 
-    def addVehicleTab(self, tab, vehicleName: str):
-        new_tab_object = tab(vehicleName)
+    def addVehicleTab(self, tab, vehicle_name: str):
+        new_tab_object = tab(vehicle_name)
 
         self.tabObjects.append(new_tab_object)
-        self.tabHolderWidget.addTab(new_tab_object, vehicleName)
-        self.tabNames.append(vehicleName)
+        self.tabHolderWidget.addTab(new_tab_object, vehicle_name)
+        self.tabNames.append(vehicle_name)
 
         self.placeHolderList.append(placeholder.Placeholder(new_tab_object))  # Something needs to be updating for the GUI to function, so we make a silly thing to always do that
 
@@ -304,33 +304,34 @@ class DPFGUI():
         else:
             print("No Theme named {}".format(name))
 
-    def setTheme(self, background: str, widgetBackground: str, text: str, headerText: str, border: str):
+    def setTheme(self, background: str, widget_background: str, text: str, header_text: str, border: str):
         """
         Sets theme from given color strings.  Currently the only accpted format for color strings is rgb(red,green,blue), but I'm going to add more at some point.
 
         :param background: Background color for the GUI
-        :param widgetBackground: Widget color
+        :param widget_background: Widget color
         :param text: Primary text color
-        :param headerText: Header text color
+        :param header_text: Header text color
         :param border: Widget border color
         """
 
         self.backgroundColor = get_well_formatted_rgb_string(background)
-        self.widgetBackgroundColor = get_well_formatted_rgb_string(widgetBackground)
+        self.widgetBackgroundColor = get_well_formatted_rgb_string(widget_background)
         self.textColor = get_well_formatted_rgb_string(text)
-        self.headerTextColor = get_well_formatted_rgb_string(headerText)
+        self.headerTextColor = get_well_formatted_rgb_string(header_text)
         self.borderColor = get_well_formatted_rgb_string(border)
 
         [red, green, blue] = get_rgb_from_string(background)
-        slightlyDarkerColor = format_rgb_string(max(red - 10, 0), max(green - 10, 0), max(blue - 10, 0))
+        slightly_darker_color = format_rgb_string(max(red - 10, 0), max(green - 10, 0), max(blue - 10, 0))
 
-        self.mainWindow.setStyleSheet("QWidget#" + self.mainWindow.objectName() + "{" + make_stylesheet_string("background", slightlyDarkerColor) + make_stylesheet_string("color", self.textColor) + "}")
+        self.mainWindow.setStyleSheet("QWidget#" + self.mainWindow.objectName() + "{" + make_stylesheet_string("background", slightly_darker_color) + make_stylesheet_string("color", self.textColor) + "}")
         self.tabHolderWidget.setStyleSheet("QWidget#" + self.tabHolderWidget.objectName() + "{" + make_stylesheet_string("background", self.backgroundColor) + make_stylesheet_string("color", self.textColor) + "}")
-        self.mainWindow.menuBar().setStyleSheet("QWidget#" + self.mainWindow.menuBar().objectName() + "{" + make_stylesheet_string("background", slightlyDarkerColor) + make_stylesheet_string("color", self.textColor) + "}")
-        self.tabHolderWidget.tabBar().setStyleSheet("QWidget#" + self.tabHolderWidget.tabBar().objectName() + "{" + make_stylesheet_string("background", slightlyDarkerColor) + make_stylesheet_string("color", self.textColor) + "}")
+        self.mainWindow.menuBar().setStyleSheet("QWidget#" + self.mainWindow.menuBar().objectName() + "{" + make_stylesheet_string("background", slightly_darker_color) + make_stylesheet_string("color", self.textColor) + "}")
+        self.tabHolderWidget.tabBar().setStyleSheet("QWidget#" + self.tabHolderWidget.tabBar().objectName() + "{" + make_stylesheet_string("background", slightly_darker_color) + make_stylesheet_string("color", self.textColor) + "}")
 
         if sys.platform == "win32":
             self.tabHolderWidget.tabBar().setStyleSheet("QTabBar::tab{ background: " + get_well_formatted_rgb_string(background) + "; color: " + get_well_formatted_rgb_string(text) + "}")  # Seems to sort of fix tab bar coloring issues on windows
+            self.tabHolderWidget.setStyleSheet("background: " + get_well_formatted_rgb_string(background) + ";border: " + get_well_formatted_rgb_string(background))
 
         for tab in self.tabObjects:
             tab.setTheme(self.backgroundColor, self.widgetBackgroundColor, self.textColor, self.headerTextColor, self.borderColor)
