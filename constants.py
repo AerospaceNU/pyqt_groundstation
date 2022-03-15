@@ -22,6 +22,7 @@ class Constants:
     climb_rate_key = "climb_rate"
     gps_sats_key = "gps_sats"
     bluetooth_connection_key = "ble_client"
+    status_source = "status"
 
     orientation_quaternion_key = "orientation_quaternion"
     orientation_rpy_key = "orientation_rpy"
@@ -74,6 +75,7 @@ class Constants:
     crc_key = "crc"
     raw_message_data_key = "raw_message_data"
     radio_id_key = "radio_id"
+    loop_time_key = "gui_loop_time"
 
     invalid_fcb_state_name = "Invalid FCB State"
     fcb_state_names = ["Cli Calibrate",

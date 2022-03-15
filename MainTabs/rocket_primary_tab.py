@@ -50,7 +50,7 @@ class RocketPrimaryTab(TabCommon):
         layout.setColumnStretch(1, 0)
         self.setLayout(layout)
 
-    def customUpdate(self, data):
+    def customUpdateVehicleData(self, data):
         self.ButtonPanel.setMaximumWidth(max(self.FlightDisplay.width() - self.Annunciator.width() - 6, 5))
 
         selectedVideo = self.ButtonPanel.getSelectedVideo()

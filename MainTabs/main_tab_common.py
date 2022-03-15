@@ -14,11 +14,15 @@ class TabCommon(QWidget):
         self.setObjectName("tab_{}".format(tab_name))
 
         self.vehicleName = tab_name
-        self.widgetsCreated = 0
+        self.isActiveTab = False
 
+        self.widgetsCreated = 0
         self.widgetList = []
 
         self.colors = []
+
+    def setIsActiveTab(self, is_active):
+        self.isActiveTab = is_active
 
     def updateVehicleData(self, data, console_data, updated_data, recorded_data):
         """The update function that should not be overridden"""
@@ -36,14 +40,19 @@ class TabCommon(QWidget):
             widget.setVehicleData(vehicle_data, updated_data, recorded_data)
             widget.updateConsole(console_data)
             widget.coreUpdate()
+
+            if self.isActiveTab:
+                widget.updateInFocus()
+
             callbacks += widget.getCallbackEvents()
+
+        self.customUpdateVehicleData(data)
 
         self.update()
 
-        self.customUpdate(data)
         return callbacks
 
-    def customUpdate(self, data):
+    def customUpdateVehicleData(self, data):
         """The update function that should be overridden"""
         pass
 

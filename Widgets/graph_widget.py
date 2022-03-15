@@ -82,7 +82,7 @@ class GraphWidget(CustomQWidgetBase):
 
         if not self.recorded_data_mode:
             if self.record_new_data:
-                for source in self.sourceList:
+                for source in self.sourceDictionary:
                     value = self.getDictValueUsingSourceKey(source)
 
                     if source not in self.data_dictionary:
@@ -115,7 +115,7 @@ class GraphWidget(CustomQWidgetBase):
                         self.time_dictionary[source] = [oldest_allowable_time] + self.time_dictionary[source][slice_index:]
                         self.data_dictionary[source] = [float('nan')] + self.data_dictionary[source][slice_index:]
         else:
-            for source in self.sourceList:
+            for source in self.sourceDictionary:
                 [data_series, time_series] = self.getRecordedDictDataUsingSourceKey(source)
 
                 if len(data_series) > 0 and len(data_series) == len(time_series):
@@ -125,12 +125,14 @@ class GraphWidget(CustomQWidgetBase):
                     self.data_dictionary[source] = [float('nan')]
                     self.time_dictionary[source] = [0]
 
+    def updateInFocus(self):
+        """Only re-draw graph if we're looking at it"""
         self.updatePlot()
 
     def updatePlot(self):
         """Actually updates lines on plot"""
         for data_name in self.data_dictionary:
-            data_label = self.sourceList[data_name].key_name
+            data_label = self.sourceDictionary[data_name].key_name
             if data_name not in self.plot_line_dictionary:
                 self.plot_line_dictionary[data_name] = self.graphWidget.plot(self.time_dictionary[data_name], self.data_dictionary[data_name], name=data_label, pen=get_pen_from_line_number(len(self.plot_line_dictionary)))
             if self.plot_line_dictionary[data_name].name() != data_label:
@@ -163,7 +165,7 @@ class GraphWidget(CustomQWidgetBase):
         menu.addAction("Add Line", self.addLineToPlot)
 
     def addLineToPlot(self):
-        num_keys = len(self.sourceList.keys())
+        num_keys = len(self.sourceDictionary.keys())
         self.addSourceKey("line {}".format(num_keys), float, "", default_value=0)
 
     def clearGraph(self):

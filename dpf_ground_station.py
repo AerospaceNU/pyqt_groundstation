@@ -34,6 +34,7 @@ from Widgets import video_widget
 from Widgets import graph_widget
 
 from data_helpers import get_rgb_from_string, get_well_formatted_rgb_string, format_rgb_string, make_stylesheet_string
+from constants import Constants
 
 # Background, Widget Background, Text, Header Text, Border
 THEMES = {}
@@ -197,6 +198,8 @@ class DPFGUI():
         if self.GUIStopCommanded:
             self.stop()
 
+        start_time = time.time()
+
         recorded_data_dict = {}
 
         # Get data from interfaces
@@ -221,7 +224,9 @@ class DPFGUI():
             widget.update()
 
         # Update tabs
+        active_tab = self.getActiveTabObject()
         for tab in self.tabObjects:
+            tab.setIsActiveTab(tab == active_tab)
             self.callback_queue += tab.updateVehicleData(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary, recorded_data_dict)
 
         # set window title
@@ -235,6 +240,9 @@ class DPFGUI():
         # Set every field as not-updated
         for key in self.updated_data_dictionary:
             self.updated_data_dictionary[key] = False
+
+        self.database_dictionary[Constants.loop_time_key] = time.time() - start_time
+        self.updated_data_dictionary[Constants.loop_time_key] = True
 
     def updateDatabaseDictionary(self, new_dict):
         for key in new_dict:

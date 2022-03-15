@@ -17,10 +17,11 @@ from data_helpers import make_stylesheet_string, get_rgb_from_string, clamp, get
 class SourceKeyData(object):
     """Data structure to hold info about a source key thingy"""
 
-    def __init__(self, key_name, value_type, default_value):
+    def __init__(self, key_name, value_type, default_value, hide_drop_down):
         self.key_name = key_name
         self.value_type = value_type
         self.default_value = default_value
+        self.hide_drop_down = hide_drop_down
 
 
 class CustomQWidgetBase(QWidget):
@@ -42,7 +43,7 @@ class CustomQWidgetBase(QWidget):
         self.vehicleData = {}
         self.recordedData = {}
         self.updated_data_dictionary = {}  # Tracks which keys are new since the last GUI loop
-        self.sourceList = {}
+        self.sourceDictionary = {}
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.rightClickMenu)
@@ -72,16 +73,17 @@ class CustomQWidgetBase(QWidget):
             menu.addAction("Delete", self.hide)
             menu.addSeparator()
 
-        for source in self.sourceList:
-            submenu = menu.addMenu(source)
-            available_sources = self.getAvailableSourceOptions(source)
-            available_sources.sort()
+        for source in self.sourceDictionary:
+            if not self.sourceDictionary[source].hide_drop_down:
+                submenu = menu.addMenu(source)
+                available_sources = self.getAvailableSourceOptions(source)
+                available_sources.sort()
 
-            for option in available_sources:
-                if self.sourceList[source].key_name == option:
-                    submenu.addAction("--- {} ---".format(option), lambda a=source, b=option: self.updateDictKeyTarget(a, b))  # If its the currently selected
-                else:
-                    submenu.addAction("    {}".format(option), lambda a=source, b=option: self.updateDictKeyTarget(a, b))
+                for option in available_sources:
+                    if self.sourceDictionary[source].key_name == option:
+                        submenu.addAction("--- {} ---".format(option), lambda a=source, b=option: self.updateDictKeyTarget(a, b))  # If its the currently selected
+                    else:
+                        submenu.addAction("    {}".format(option), lambda a=source, b=option: self.updateDictKeyTarget(a, b))
 
         menu.addSeparator()
         self.addCustomMenuItems(menu)
@@ -111,6 +113,10 @@ class CustomQWidgetBase(QWidget):
     def coreUpdate(self):
         if not self.isInLayout:
             self.adjustSize()
+
+    def updateInFocus(self):
+        """Called only when widget is being looked at"""
+        pass
 
     def setVehicleData(self, vehicle_data, updated_data, recorded_data):
         """Called by the tab every loop.  DO NOT OVERRIDE"""
@@ -147,13 +153,13 @@ class CustomQWidgetBase(QWidget):
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.isClicked = False
 
-    def addSourceKey(self, internal_id: str, value_type, default_key: str, default_value=None):
-        self.sourceList[internal_id] = SourceKeyData(default_key, value_type, default_value)
+    def addSourceKey(self, internal_id: str, value_type, default_key: str, default_value=None, hide_drop_down=False):
+        self.sourceDictionary[internal_id] = SourceKeyData(default_key, value_type, default_value, hide_drop_down)
 
     def getDictValueUsingSourceKey(self, internal_key_id):
-        dictionary_key = self.sourceList[internal_key_id].key_name
-        default_value = self.sourceList[internal_key_id].default_value
-        value_type = self.sourceList[internal_key_id].value_type
+        dictionary_key = self.sourceDictionary[internal_key_id].key_name
+        default_value = self.sourceDictionary[internal_key_id].default_value
+        value_type = self.sourceDictionary[internal_key_id].value_type
 
         return_value = get_value_from_dictionary(self.vehicleData, dictionary_key, default_value)
         try:
@@ -162,7 +168,7 @@ class CustomQWidgetBase(QWidget):
             return default_value
 
     def getRecordedDictDataUsingSourceKey(self, internal_key_id):
-        dictionary_key = self.sourceList[internal_key_id].key_name
+        dictionary_key = self.sourceDictionary[internal_key_id].key_name
 
         if dictionary_key in self.recordedData:
             return self.recordedData[dictionary_key]
@@ -170,7 +176,7 @@ class CustomQWidgetBase(QWidget):
             return [], []
 
     def isDictValueUpdated(self, internal_key_id):
-        dictionary_key = self.sourceList[internal_key_id].key_name
+        dictionary_key = self.sourceDictionary[internal_key_id].key_name
 
         if dictionary_key in self.updated_data_dictionary:
             return self.updated_data_dictionary[dictionary_key]
@@ -178,10 +184,10 @@ class CustomQWidgetBase(QWidget):
             return False
 
     def updateDictKeyTarget(self, internal_key_id, new_key):
-        self.sourceList[internal_key_id].key_name = new_key
+        self.sourceDictionary[internal_key_id].key_name = new_key
 
     def getAvailableSourceOptions(self, source):
-        value_type = self.sourceList[source].value_type
+        value_type = self.sourceDictionary[source].value_type
         option_list = []
 
         for key in self.vehicleData:
