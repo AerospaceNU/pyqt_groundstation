@@ -17,10 +17,11 @@ from data_helpers import make_stylesheet_string, get_rgb_from_string, clamp, get
 class SourceKeyData(object):
     """Data structure to hold info about a source key thingy"""
 
-    def __init__(self, key_name, value_type, default_value):
+    def __init__(self, key_name, value_type, default_value, hide_in_drop_down):
         self.key_name = key_name
         self.value_type = value_type
         self.default_value = default_value
+        self.hide_in_drop_down = hide_in_drop_down
 
 
 class CustomQWidgetBase(QWidget):
@@ -73,15 +74,16 @@ class CustomQWidgetBase(QWidget):
             menu.addSeparator()
 
         for source in self.sourceList:
-            submenu = menu.addMenu(source)
-            available_sources = self.getAvailableSourceOptions(source)
-            available_sources.sort()
+            if not self.sourceList[source].hide_in_drop_down:
+                submenu = menu.addMenu(source)
+                available_sources = self.getAvailableSourceOptions(source)
+                available_sources.sort()
 
-            for option in available_sources:
-                if self.sourceList[source].key_name == option:
-                    submenu.addAction("--- {} ---".format(option), lambda a=source, b=option: self.updateDictKeyTarget(a, b))  # If its the currently selected
-                else:
-                    submenu.addAction("    {}".format(option), lambda a=source, b=option: self.updateDictKeyTarget(a, b))
+                for option in available_sources:
+                    if self.sourceList[source].key_name == option:
+                        submenu.addAction("--- {} ---".format(option), lambda a=source, b=option: self.updateDictKeyTarget(a, b))  # If its the currently selected
+                    else:
+                        submenu.addAction("    {}".format(option), lambda a=source, b=option: self.updateDictKeyTarget(a, b))
 
         menu.addSeparator()
         self.addCustomMenuItems(menu)
@@ -147,8 +149,8 @@ class CustomQWidgetBase(QWidget):
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.isClicked = False
 
-    def addSourceKey(self, internal_id: str, value_type, default_key: str, default_value=None):
-        self.sourceList[internal_id] = SourceKeyData(default_key, value_type, default_value)
+    def addSourceKey(self, internal_id: str, value_type, default_key: str, default_value=None, hide_in_drop_down=False):
+        self.sourceList[internal_id] = SourceKeyData(default_key, value_type, default_value, hide_in_drop_down)
 
     def getDictValueUsingSourceKey(self, internal_key_id):
         dictionary_key = self.sourceList[internal_key_id].key_name
@@ -176,6 +178,13 @@ class CustomQWidgetBase(QWidget):
             return self.updated_data_dictionary[dictionary_key]
         else:
             return False
+
+    def getValueIfUpdatedUsingSourceKey(self, internal_key_id):
+        if self.isDictValueUpdated(internal_key_id):
+            return self.getDictValueUsingSourceKey(internal_key_id)
+        else:
+            default_value = self.sourceList[internal_key_id].default_value
+            return default_value
 
     def updateDictKeyTarget(self, internal_key_id, new_key):
         self.sourceList[internal_key_id].key_name = new_key

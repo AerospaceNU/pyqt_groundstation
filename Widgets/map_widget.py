@@ -21,6 +21,14 @@ class MapWidget(CustomQWidgetBase):
         if parent_widget is not None:
             self.setMinimumSize(500, 500)
 
+        self.addSourceKey("vehicle_lat", float, Constants.latitude_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("vehicle_lon", float, Constants.longitude_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("groundstation_lat", float, Constants.ground_station_latitude_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("groundstation_lon", float, Constants.ground_station_longitude_key, default_value=0, hide_in_drop_down=True)
+
+        self.use_ground_station_position = False
+        self.gs_lat = 0
+        self.gs_lon = 0
         self.pointsToKeep = points_to_keep
         self.newPointInterval = update_interval
         self.newPointSpacing = 10
@@ -46,13 +54,18 @@ class MapWidget(CustomQWidgetBase):
         self.paths = paths
 
         self.heading = float(get_value_from_dictionary(vehicle_data, "yaw", 0))
-        latitude = float(get_value_from_dictionary(vehicle_data, Constants.latitude_key, 0))
-        longitude = float(get_value_from_dictionary(vehicle_data, Constants.longitude_key, 0))
-        gs_lat = float(get_value_from_dictionary(vehicle_data, Constants.ground_station_latitude_key, 0))
-        gs_lon = float(get_value_from_dictionary(vehicle_data, Constants.ground_station_longitude_key, 0))
+        latitude = self.getDictValueUsingSourceKey("vehicle_lat")
+        longitude = self.getDictValueUsingSourceKey("vehicle_lon")
+        gs_lat = self.getValueIfUpdatedUsingSourceKey("groundstation_lat")
+        gs_lon = self.getValueIfUpdatedUsingSourceKey("groundstation_lon")
 
-        if latitude != 0 and longitude != 0 and gs_lat != 0 and gs_lon != 0:  # If we have rocket lat-lon and gs lat-lon, use that
-            ned = navpy.lla2ned(latitude, longitude, 0, gs_lat, gs_lon, 0)
+        if gs_lat != 0 and gs_lon != 0:  # Only update the ground station positions when we actually get new data
+            self.use_ground_station_position = True
+            self.gs_lat = gs_lat
+            self.gs_lon = gs_lon
+
+        if latitude != 0 and longitude != 0 and self.use_ground_station_position:  # If we have rocket lat-lon and gs lat-lon, use that
+            ned = navpy.lla2ned(latitude, longitude, 0, self.gs_lat, self.gs_lon, 0)
             self.setXY(ned[1], ned[0])
         elif latitude != 0 and longitude != 0:  # If not, use the first rocket position as the datum
             if not self.has_datum:
@@ -208,3 +221,4 @@ class MapWidget(CustomQWidgetBase):
     def resetDatum(self):
         self.has_datum = False
         self.clearMap()
+        self.use_ground_station_position = False

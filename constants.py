@@ -58,6 +58,7 @@ class Constants:
     laptop_battery_charging_key = "laptop_charging"
 
     barometer_pressure_key = "barometer_pressure"
+    barometer_pressure_2_key = "baro_2_pressure"
 
     fcb_battery_voltage = "fcb_battery_voltage"
     fcb_memory_usage = "fcb_memory"
@@ -83,21 +84,20 @@ class Constants:
                        "Cli Main",
                        "Cli Offload",
                        "Cli Sense",
-                       "Coast Ascent",
+                       "Ascent",
                        "Drogue Descent N",
                        "Initialize",
                        "Main Descent",
                        "Post Flight",
-                       "Powered Ascent",
                        "Pre Flight",
                        "Shutdown",
                        "NUM_STATES",
                        "UNKNOWN"]
 
     PREFLIGHT_STATE_INDEX = 13
-    POWERED_ASCENT_STATE_INDEX = 12
+    POWERED_ASCENT_STATE_INDEX = 7
     COAST_TO_APOGEE_INDEX = 7
     DROGUE_DESCENT_INDEX = 8
     MAIN_DESCENT_INDEX = 10
-    END_STATE_INDEX = 14
+    END_STATE_INDEX = 11
     UNKNOWN_STATE_INDEX = 16

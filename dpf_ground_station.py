@@ -197,6 +197,8 @@ class DPFGUI():
         if self.GUIStopCommanded:
             self.stop()
 
+        start_time = time.time()
+
         recorded_data_dict = {}
 
         # Get data from interfaces
@@ -235,6 +237,9 @@ class DPFGUI():
         # Set every field as not-updated
         for key in self.updated_data_dictionary:
             self.updated_data_dictionary[key] = False
+
+        loop_time = time.time() - start_time
+        # print(loop_time)
 
     def updateDatabaseDictionary(self, new_dict):
         for key in new_dict:

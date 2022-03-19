@@ -104,7 +104,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         altitude = self.getDictValueUsingSourceKey("altitude")
         ground_speed = self.getDictValueUsingSourceKey("speed")
         v_speed = self.getDictValueUsingSourceKey("vspeed")
-        acceleration = self.getDictValueUsingSourceKey("accel")
+        acceleration = self.getDictValueUsingSourceKey("accel") / 9.8  # m/s^2 to g
 
         self.HUDWidget.setRollPitch(roll, pitch)
         self.AltitudeWidget.setValue(altitude)
