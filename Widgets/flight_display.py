@@ -27,13 +27,13 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.vSpeedScale = 1
         self.accelerationScale = 10
 
-        self.addSourceKey("pitch", float, Constants.pitch_position_key, default_value=0, hide_drop_down=True)
-        self.addSourceKey("roll", float, Constants.roll_position_key, default_value=0, hide_drop_down=True)
-        self.addSourceKey("yaw", float, Constants.yaw_position_key, default_value=0, hide_drop_down=True)
-        self.addSourceKey("altitude", float, Constants.altitude_key, default_value=0, hide_drop_down=True)
-        self.addSourceKey("speed", float, Constants.ground_speed_key, default_value=0, hide_drop_down=True)
-        self.addSourceKey("vspeed", float, Constants.vertical_speed_key, default_value=0, hide_drop_down=True)
-        self.addSourceKey("accel", float, Constants.acceleration_key, default_value=0, hide_drop_down=True)
+        self.addSourceKey("pitch", float, Constants.pitch_position_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("roll", float, Constants.roll_position_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("yaw", float, Constants.yaw_position_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("altitude", float, Constants.altitude_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("speed", float, Constants.ground_speed_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("vspeed", float, Constants.vertical_speed_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("accel", float, Constants.acceleration_key, default_value=0, hide_in_drop_down=True)
 
         self.SpeedTextBox = QLabel()
         self.VSpeedTextBox = QLabel()

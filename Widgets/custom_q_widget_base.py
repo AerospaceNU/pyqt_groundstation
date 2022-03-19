@@ -153,8 +153,8 @@ class CustomQWidgetBase(QWidget):
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.isClicked = False
 
-    def addSourceKey(self, internal_id: str, value_type, default_key: str, default_value=None, hide_drop_down=False):
-        self.sourceDictionary[internal_id] = SourceKeyData(default_key, value_type, default_value, hide_drop_down)
+    def addSourceKey(self, internal_id: str, value_type, default_key: str, default_value=None, hide_in_drop_down=False):
+        self.sourceDictionary[internal_id] = SourceKeyData(default_key, value_type, default_value, hide_in_drop_down)
 
     def getDictValueUsingSourceKey(self, internal_key_id):
         dictionary_key = self.sourceDictionary[internal_key_id].key_name
@@ -187,7 +187,7 @@ class CustomQWidgetBase(QWidget):
         if self.isDictValueUpdated(internal_key_id):
             return self.getDictValueUsingSourceKey(internal_key_id)
         else:
-            default_value = self.sourceList[internal_key_id].default_value
+            default_value = self.sourceDictionary[internal_key_id].default_value
             return default_value
 
     def updateDictKeyTarget(self, internal_key_id, new_key):
