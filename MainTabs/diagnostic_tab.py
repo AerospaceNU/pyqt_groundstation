@@ -9,8 +9,8 @@ from MainTabs.main_tab_common import TabCommon
 
 
 class DiagnosticTab(TabCommon):
-    def __init__(self, vehicleName):
-        super().__init__(vehicleName)
+    def __init__(self, tab_name):
+        super().__init__(tab_name)
         self.addWidget(text_box_drop_down_widget.TextBoxDropDownWidget(self))
         self.addWidget(text_box_drop_down_widget.TextBoxDropDownWidget(self))
         self.addWidget(simple_console_widget.SimpleConsoleWidget(self))

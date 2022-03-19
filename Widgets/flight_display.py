@@ -27,13 +27,13 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.vSpeedScale = 1
         self.accelerationScale = 10
 
-        self.addSourceKey("pitch", float, Constants.pitch_position_key, default_value=0)
-        self.addSourceKey("roll", float, Constants.roll_position_key, default_value=0)
-        self.addSourceKey("yaw", float, Constants.yaw_position_key, default_value=0)
-        self.addSourceKey("altitude", float, Constants.altitude_key, default_value=0)
-        self.addSourceKey("speed", float, Constants.ground_speed_key, default_value=0)
-        self.addSourceKey("vspeed", float, Constants.vertical_speed_key, default_value=0)
-        self.addSourceKey("accel", float, Constants.acceleration_key, default_value=0)
+        self.addSourceKey("pitch", float, Constants.pitch_position_key, default_value=0, hide_drop_down=True)
+        self.addSourceKey("roll", float, Constants.roll_position_key, default_value=0, hide_drop_down=True)
+        self.addSourceKey("yaw", float, Constants.yaw_position_key, default_value=0, hide_drop_down=True)
+        self.addSourceKey("altitude", float, Constants.altitude_key, default_value=0, hide_drop_down=True)
+        self.addSourceKey("speed", float, Constants.ground_speed_key, default_value=0, hide_drop_down=True)
+        self.addSourceKey("vspeed", float, Constants.vertical_speed_key, default_value=0, hide_drop_down=True)
+        self.addSourceKey("accel", float, Constants.acceleration_key, default_value=0, hide_drop_down=True)
 
         self.SpeedTextBox = QLabel()
         self.VSpeedTextBox = QLabel()
@@ -97,7 +97,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.setMaximumHeight(self.scale * v_scale_factor + 40)
         self.setMaximumWidth(int(self.scale * 2 + 40))
 
-    def updateData(self, vehicle_data, updated_data):
+    def updateInFocus(self):
         roll = self.getDictValueUsingSourceKey("roll")
         pitch = self.getDictValueUsingSourceKey("pitch")
         yaw = self.getDictValueUsingSourceKey("yaw")
@@ -142,6 +142,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.VSpeedTextBox.setStyleSheet(text_string)
         self.AltitudeTextBox.setStyleSheet(text_string)
         self.TerrainTextBox.setStyleSheet(text_string)
+        self.HUDWidget.setStyleSheet(text_string)
 
         if self.compass_and_text:
             self.CompassWidget.setCompassColor(text_string)

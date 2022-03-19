@@ -50,7 +50,18 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.font = None
         self.fontSize = None
 
-        self.statusSource = "status"
+        self.addSourceKey("status_source", int, Constants.status_source, 3, hide_drop_down=True)
+        self.addSourceKey("fcb_state", str, Constants.fcb_state_key, "No Data", hide_drop_down=True)
+        self.addSourceKey("altitude", float, Constants.altitude_key, -1, hide_drop_down=True)
+        self.addSourceKey("rssi", str, Constants.rssi_key, "No Data", hide_drop_down=True)
+        self.addSourceKey("message_age", float, Constants.message_age_key, -1, hide_drop_down=True)
+        self.addSourceKey("v_speed", float, Constants.vertical_speed_key, -1, hide_drop_down=True)
+        self.addSourceKey("acceleration", float, Constants.acceleration_key, -1, hide_drop_down=True)
+        self.addSourceKey("fcb_voltage", float, Constants.fcb_battery_voltage, -1, hide_drop_down=True)
+        self.addSourceKey("prop_voltage", float, Constants.prop_battery_voltage, -1, hide_drop_down=True)
+        self.addSourceKey("lc1_voltage", float, Constants.line_cutter_1_voltage, -1, hide_drop_down=True)
+        self.addSourceKey("lc2_voltage", float, Constants.line_cutter_2_voltage, -1, hide_drop_down=True)
+        self.addSourceKey("fcb_mem", float, Constants.fcb_memory_usage, -1, hide_drop_down=True)
 
         self.statusBox.setFont(QFont("Monospace", self.widgetSize))
         self.statusBox.setAlignment(QtCore.Qt.AlignCenter)
@@ -67,20 +78,19 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         for box in [self.rssi_box, self.message_age_box, self.v_speed_box, self.acceleration_box]:
             box.setFont(QFont("Monospace", self.widgetSize * 0.4))
 
-    def updateData(self, vehicle_data, updated_data):
-        fault_status = int(float(get_value_from_dictionary(vehicle_data, self.statusSource, 3)))
-        fcb_state = str(get_value_from_dictionary(vehicle_data, Constants.fcb_state_key, "No Data"))
-        altitude = float(get_value_from_dictionary(vehicle_data, Constants.altitude_key, -1))
-        rssi = str(get_value_from_dictionary(vehicle_data, Constants.rssi_key, "No Data"))
-        message_age = float(get_value_from_dictionary(vehicle_data, Constants.message_age_key, -1))
-        v_speed = float(get_value_from_dictionary(vehicle_data, Constants.vertical_speed_key, -1))
-        acceleration = float(get_value_from_dictionary(vehicle_data, Constants.acceleration_key, -1))
-
-        fcb_voltage = get_value_from_dictionary(vehicle_data, Constants.fcb_battery_voltage, -1)
-        prop_voltage = get_value_from_dictionary(vehicle_data, Constants.prop_battery_voltage, -1)
-        lc1_voltage = get_value_from_dictionary(vehicle_data, Constants.line_cutter_1_voltage, -1)
-        lc2_voltage = get_value_from_dictionary(vehicle_data, Constants.line_cutter_2_voltage, -1)
-        fcb_mem = get_value_from_dictionary(vehicle_data, Constants.fcb_memory_usage, -1)
+    def updateInFocus(self):
+        fault_status = self.getDictValueUsingSourceKey("status_source")
+        fcb_state = self.getDictValueUsingSourceKey("fcb_state")
+        altitude = self.getDictValueUsingSourceKey("altitude")
+        rssi = self.getDictValueUsingSourceKey("rssi")
+        message_age = self.getDictValueUsingSourceKey("message_age")
+        v_speed = self.getDictValueUsingSourceKey("v_speed")
+        acceleration = self.getDictValueUsingSourceKey("acceleration")
+        fcb_voltage = self.getDictValueUsingSourceKey("fcb_voltage")
+        prop_voltage = self.getDictValueUsingSourceKey("prop_voltage")
+        lc1_voltage = self.getDictValueUsingSourceKey("lc1_voltage")
+        lc2_voltage = self.getDictValueUsingSourceKey("lc2_voltage")
+        fcb_mem = self.getDictValueUsingSourceKey("fcb_mem")
 
         if fault_status == 2:
             self.statusBox.setStyleSheet("color: red")

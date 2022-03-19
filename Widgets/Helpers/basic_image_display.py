@@ -18,6 +18,7 @@ class BasicImageDisplay(object):
         self.theta = 0
 
         self.setGeometry(targetWidth, x, y)
+        self.rootWidget.setStyleSheet("color: black; background: transparent")
 
     def setGeometry(self, targetWidth, x=None, y=None):
         windowWidth = self.rootWidget.width()
