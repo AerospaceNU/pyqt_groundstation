@@ -8,36 +8,36 @@ from PyQt5 import QtGui
 
 
 class BasicImageDisplay(object):
-    def __init__(self, rootWidget: QLabel, image, targetWidth, x=None, y=None):
+    def __init__(self, root_widget: QLabel, image, target_width, x=None, y=None):
         """Makes a widget and puts an image in it.  Used to eliminate boilerplate code"""
-        self.rootWidget = rootWidget
-        self.imageWidget = QLabel(rootWidget)
+        self.rootWidget = root_widget
+        self.imageWidget = QLabel(root_widget)
         self.rawImage = image
         self.image = None
 
         self.theta = 0
 
-        self.setGeometry(targetWidth, x, y)
-        self.rootWidget.setStyleSheet("color: black; background: transparent")
+        self.setGeometry(target_width, x, y)
+        self.imageWidget.setStyleSheet("color: black; background: transparent")
 
-    def setGeometry(self, targetWidth, x=None, y=None):
-        windowWidth = self.rootWidget.width()
-        windowHeight = self.rootWidget.height()
+    def setGeometry(self, target_width, x=None, y=None):
+        window_width = self.rootWidget.width()
+        window_height = self.rootWidget.height()
 
-        self.image = imutils.resize(self.rawImage, width=int(targetWidth))
+        self.image = imutils.resize(self.rawImage, width=int(target_width))
         height, width, channels = self.image.shape
 
         if x is None:
-            xOffset = int((windowWidth - width) / 2)
+            x_offset = int((window_width - width) / 2)
         else:
-            xOffset = int(x)
+            x_offset = int(x)
 
         if y is None:
-            yOffset = int((windowHeight - height) / 2)
+            y_offset = int((window_height - height) / 2)
         else:
-            yOffset = int(y)
+            y_offset = int(y)
 
-        self.imageWidget.setGeometry(xOffset, yOffset, width, height)
+        self.imageWidget.setGeometry(x_offset, y_offset, width, height)
 
         self.updateImage(self.image)
 
@@ -55,7 +55,7 @@ class BasicImageDisplay(object):
         self.updateImage(self.image)
 
     def updateImage(self, img):
-        convertToQtFormat = QtGui.QImage(img.data, img.shape[1], img.shape[0], QtGui.QImage.Format_ARGB32)
-        convertToQtFormat = QtGui.QPixmap.fromImage(convertToQtFormat)
-        pixmap = QPixmap(convertToQtFormat)
+        convert_to_qt_format = QtGui.QImage(img.data, img.shape[1], img.shape[0], QtGui.QImage.Format_ARGB32)
+        convert_to_qt_format = QtGui.QPixmap.fromImage(convert_to_qt_format)
+        pixmap = QPixmap(convert_to_qt_format)
         self.imageWidget.setPixmap(pixmap)
