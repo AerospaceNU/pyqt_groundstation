@@ -50,6 +50,8 @@ class ReconfigureLine(QWidget):
             self.type = lineType
 
     def setValue(self, value, force=False):
+        value = str(value)
+
         if value != self.value or force:
             self.entryBox.setText(value)
             if self.type == "enum":

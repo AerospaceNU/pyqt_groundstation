@@ -27,7 +27,15 @@ class ReconfigurePage(object):
             line = self.reconfigure_lines[i]
 
             if len(line) > 0 and line[0] == text:
-                self.reconfigure_lines[line] = [text, line_type, current_value, description, config]
+                if len(self.reconfigure_lines) != 5:
+                    self.reconfigure_lines[i] = [text, line_type, current_value, description, config]
+                else:
+                    self.reconfigure_lines[i][0] = text
+                    self.reconfigure_lines[i][1] = line_type
+                    if current_value != "": self.reconfigure_lines[i][2] = current_value
+                    if description != "": self.reconfigure_lines[i][3] = description
+                    if config != "": self.reconfigure_lines[i][4] = config
+
                 found_reconfigure_line = True
 
         if not found_reconfigure_line:
