@@ -16,6 +16,7 @@ class ThreadedModuleCore(threading.Thread):
         self.data_dictionary = {}
         self.gui_full_data_dictionary = {}
         self.recorded_data_dictionary = {}  # {run_name: {run_dict}}
+        self.callbacks_to_add = [[]]
         self.should_be_running = True
         self.enabled = True
         self.was_enabled = True
@@ -24,8 +25,13 @@ class ThreadedModuleCore(threading.Thread):
         self.last_console_message = ""
         self.last_log_time = 0
 
+        self.reconfigure_options_dictionary = {}
+
     def getCallbacksToAdd(self):
-        return [[]]
+        return self.callbacks_to_add
+
+    def getReconfigureDictionary(self):
+        return self.reconfigure_options_dictionary
 
     def getSpecificRun(self, run_name):
         if run_name in self.recorded_data_dictionary:

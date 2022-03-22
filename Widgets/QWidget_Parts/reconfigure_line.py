@@ -53,9 +53,10 @@ class ReconfigureLine(QWidget):
         if value != self.value or force:
             self.entryBox.setText(value)
             if self.type == "enum":
-                index = self.enumValues.index(value)
-                self.dropDown.setCurrentIndex(index)
-                self.currentIndex = index
+                if value in self.enumValues:
+                    index = self.enumValues.index(value)
+                    self.dropDown.setCurrentIndex(index)
+                    self.currentIndex = index
 
             self.value = value
 

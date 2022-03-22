@@ -74,9 +74,13 @@ class Constants:
     rssi_val_key = "rssi_val"  # The float val
     lqi_key = "lqi"
     crc_key = "crc"
-    raw_message_data_key = "raw_message_data"
     radio_id_key = "radio_id"
+    radio_id_string = "radio_name"
     loop_time_key = "gui_loop_time"
+
+    primary_annunciator = "annunciator_1"
+    primary_reconfigure = "primary_reconfigure"
+    raw_message_data_key = "raw_message_data"
 
     invalid_fcb_state_name = "Invalid FCB State"
     fcb_state_names = ["Cli Calibrate",

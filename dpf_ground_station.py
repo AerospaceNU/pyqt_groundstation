@@ -218,6 +218,7 @@ class DPFGUI():
         # Send full database dictionary back to the data interfaces
         for interface in self.module_dictionary:
             self.module_dictionary[interface].setFullDataDictionary(copy.deepcopy(self.database_dictionary))
+            self.updateReconfigureOptions(Constants.primary_reconfigure, self.module_dictionary[interface].getReconfigureDictionary())
 
         # Update placeholder widgets
         for widget in self.placeHolderList:
@@ -243,6 +244,12 @@ class DPFGUI():
 
         self.database_dictionary[Constants.loop_time_key] = time.time() - start_time
         self.updated_data_dictionary[Constants.loop_time_key] = True
+
+    def updateReconfigureOptions(self, database_dict_target, new_data):
+        if database_dict_target not in self.database_dictionary:
+            self.database_dictionary[database_dict_target] = {}
+
+        self.database_dictionary[database_dict_target].update(new_data)
 
     def updateDatabaseDictionary(self, new_dict):
         for key in new_dict:
@@ -353,14 +360,19 @@ class DPFGUI():
 
         for callback in callbacks:
             if callback[0] in self.callbackFunctions:
-                self.callbackFunctions[callback[0]](callback[1])  # <sarcasm>What amazingly clean code</sarcasm>
+                callback_list = self.callbackFunctions[callback[0]]
+                for callback_function in callback_list:
+                    callback_function(callback[1])  # <sarcasm>What amazingly clean code</sarcasm>
             else:
                 pass
                 # print("{} isn't a valid callback".format(callback[0]))  # Debugging code
                 # print(self.callbackFunctions.keys())
 
     def addCallback(self, target, callback):
-        self.callbackFunctions[target] = callback
+        if target not in self.callbackFunctions:
+            self.callbackFunctions[target] = []
+
+        self.callbackFunctions[target].append(callback)
 
     def addModule(self, interface_name: str, interface_class: type(ThreadedModuleCore), enabled=True, hide_toggle=False):
         try:

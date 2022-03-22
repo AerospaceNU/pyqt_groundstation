@@ -188,7 +188,8 @@ def parse_fcb_message(data):
 
         crc_str = "Good" if crc else "Bad"
 
-        dictionary[Constants.radio_id_key] = radio_id_string
+        dictionary[Constants.radio_id_key] = radio_id
+        dictionary[Constants.radio_id_string] = radio_id_string
         dictionary[Constants.rssi_key] = rssi_text
         dictionary[Constants.lqi_key] = lqi
         dictionary[Constants.crc_key] = crc_str

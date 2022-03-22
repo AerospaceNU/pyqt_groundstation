@@ -8,6 +8,7 @@ from Widgets import custom_q_widget_base
 
 from Widgets.QWidget_Parts import reconfigure_line
 from data_helpers import get_value_from_list
+from constants import Constants
 
 
 class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
@@ -30,7 +31,7 @@ class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
         layout.addWidget(header)
         self.setLayout(layout)
 
-        self.source = "reconfigure"
+        self.source = Constants.primary_reconfigure
         self.selectedTarget = ""
         self.widgetBackgroundString = ""
         self.textString = ""
@@ -101,10 +102,10 @@ class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
 
     def resetCallback(self):
         self.resetNeeded = True
-        self.callbackEvents.append(["{}_reconfigure_reset".format(self.tabName), True])
+        self.callbackEvents.append(["{}_reset".format(self.source), True])
 
     def textEntryCallback(self, name, value):
-        self.callbackEvents.append(["{}_reconfigure_set_new".format(self.tabName), "{0}:{1}:{2}".format(self.selectedTarget, name, value)])
+        self.callbackEvents.append(["{}_set_new".format(self.source), "{0}:{1}:{2}".format(self.selectedTarget, name, value)])
 
     def setMenuItems(self, menu_item_list):
         if len(menu_item_list) > 0:
