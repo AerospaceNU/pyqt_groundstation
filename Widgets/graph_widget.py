@@ -38,7 +38,7 @@ class GraphWidget(CustomQWidgetBase):
         self.graphWidget.showGrid(x=True, y=True)
         self.graphWidget.addLegend()
         self.title = title
-        self.update_interval = 0.01
+        self.update_interval = 0.05
         self.min_x = None
         self.max_x = None
 
@@ -76,10 +76,6 @@ class GraphWidget(CustomQWidgetBase):
         self.recorded_data_mode = use_recorded_data
 
     def updateData(self, vehicle_data, updated_data):
-        if time.time() - self.last_update_time < self.update_interval:
-            return
-        self.last_update_time = time.time()
-
         if not self.recorded_data_mode:
             if self.record_new_data:
                 for source in self.sourceDictionary:
@@ -131,6 +127,11 @@ class GraphWidget(CustomQWidgetBase):
 
     def updatePlot(self):
         """Actually updates lines on plot"""
+
+        if time.time() - self.last_update_time < self.update_interval:  # Don't re-draw graphs to quickly
+            return
+        self.last_update_time = time.time()
+
         for data_name in self.data_dictionary:
             data_label = self.sourceDictionary[data_name].key_name
             if data_name not in self.plot_line_dictionary:
