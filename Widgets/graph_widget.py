@@ -3,6 +3,7 @@ import time
 import math
 import sys
 import pyqtgraph
+from PyQt5.QtCore import QPoint
 
 if sys.platform == "linux":  # I don't even know anymore
     if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:
@@ -27,6 +28,10 @@ def rgb_to_hex(rgb):
     return '%02x%02x%02x' % rgb
 
 
+def empty_function(a):
+    pass
+
+
 class GraphWidget(CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None, source_list=None, title=None, time_history=0):
         super().__init__(parent_widget)
@@ -34,10 +39,13 @@ class GraphWidget(CustomQWidgetBase):
         if source_list is None:
             source_list = []
 
-        self.graphWidget = PlotWidget(enable_menu=False)
+        self.graphWidget = PlotWidget(enableMenu=True)
         self.graphWidget.setLabel('bottom', "Time (s)")
         self.graphWidget.showGrid(x=True, y=True)
         self.graphWidget.addLegend()
+        self.graphWidget.getPlotItem().vb.raiseContextMenu = empty_function  # Reach deep into the graph widget and disable its ability to make a context menu
+        # Because I need that menu to be displayed the way I want
+
         self.title = title
         self.update_interval = 0.05
         self.min_x = None
@@ -167,6 +175,7 @@ class GraphWidget(CustomQWidgetBase):
         menu.addAction("Add Line", self.addLineToPlot)
         remove_line_menu = menu.addMenu("Remove line")
         menu.addSeparator()
+        menu.addMenu(self.graphWidget.getPlotItem().vb.menu)
         menu.addMenu(self.graphWidget.getPlotItem().ctrlMenu)
 
         for key in self.sourceDictionary:
