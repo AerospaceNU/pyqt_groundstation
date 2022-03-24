@@ -18,28 +18,39 @@ class PyroWidget(CustomQWidgetBase):
         self.xBuffer = 0
         self.yBuffer = 0
 
-        self.title = "Pyro Cont"
+        self.title = "Pyro Continuity Status"
 
         layout = QGridLayout()
         self.titleWidget = QLabel()
         self.titleWidget.setText(self.title)
         self.titleWidget.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
-        # layout.addWidget(self.titleWidget, 0, 0, 1, self.columns)
+        self.titleWidget.setStyleSheet("background: black; color: white")
+        layout.addWidget(self.titleWidget, 0, 0, 1, 6)
+
+        width = 50
+        height = 30
 
         self.annunciatorWidgets = []
         self.titleWidgets = []
         for column in range(Constants.MAX_PYROS):
             titleLabel = QLabel()
             titleLabel.setText(f"{column + 1}")
-            layout.addWidget(titleLabel, 0, column)
+            layout.addWidget(titleLabel, 1, column)
             titleLabel.setStyleSheet("background: black; color: white")
+            titleLabel.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+            titleLabel.setMinimumWidth(width)
+            titleLabel.setMaximumWidth(width)
+            titleLabel.setMaximumHeight(height)
+            titleLabel.setMinimumHeight(height)
             self.titleWidgets.append(titleLabel)
 
             self.annunciatorWidgets.append(QLabel())
-            self.annunciatorWidgets[-1].setMaximumWidth(100)
-            self.annunciatorWidgets[-1].setMaximumHeight(20)
-            self.annunciatorWidgets[-1].setMinimumWidth(70)
-            layout.addWidget(self.annunciatorWidgets[-1], 1, column)
+            self.annunciatorWidgets[-1].setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+            self.annunciatorWidgets[-1].setMaximumWidth(width)
+            self.annunciatorWidgets[-1].setMaximumHeight(height)
+            self.annunciatorWidgets[-1].setMinimumHeight(height)
+            self.annunciatorWidgets[-1].setMinimumWidth(width)
+            layout.addWidget(self.annunciatorWidgets[-1], 2, column)
 
         self.setLayout(layout)
 

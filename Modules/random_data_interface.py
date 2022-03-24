@@ -53,6 +53,8 @@ class RandomDataInterface(ThreadedModuleCore):
         self.data_dictionary["status"] = int((float(self.i) / 360.0) * 3)
         self.data_dictionary["fcb_battery_voltage"] = ((float(self.i) / 360.0) * 5) + 13
 
+        self.data_dictionary["pyro_continuity"] = "{0:b}".format(random.randrange(0,0b111111,1))
+
         # Generate some state machine state names
         if self.i < 180:
             self.data_dictionary[Constants.fcb_state_key] = "Pre Launch :("
