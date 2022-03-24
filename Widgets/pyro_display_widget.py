@@ -49,10 +49,13 @@ class PyroWidget(CustomQWidgetBase):
             return
 
         pyro_cont = vehicle_data[Constants.pyro_continuity]
-        pyro_cont = '1100'
+        if not pyro_cont.isdigit():
+            pyro_cont = "0"
+        
+        pyro_cont = int(pyro_cont, 2)
 
-        for i in range(len(pyro_cont)):
-            has_cont_b = pyro_cont[i] == '1'
+        for i in range(Constants.MAX_PYROS):
+            has_cont_b = (pyro_cont & 1 << i) > 0
             has_cont = "Yes" if has_cont_b else "No"
 
             if i >= len(self.annunciatorWidgets):
@@ -67,10 +70,10 @@ class PyroWidget(CustomQWidgetBase):
             else:
                 self.annunciatorWidgets[i].setStyleSheet("background: red; color: black")
 
-        for i in range(len(pyro_cont), len(self.annunciatorWidgets)):  # Make the rest red, no data or disconnected
-            self.annunciatorWidgets[i].setText(" ")
-            self.annunciatorWidgets[i].setStyleSheet("background: red; color: black")
-            self.annunciatorWidgets[i].setText("No")
+        # for i in range(len(pyro_cont), len(self.annunciatorWidgets)):  # Make the rest red, no data or disconnected
+        #     self.annunciatorWidgets[i].setText(" ")
+        #     self.annunciatorWidgets[i].setStyleSheet("background: red; color: black")
+        #     self.annunciatorWidgets[i].setText("No")
 
         if self.width() < self.annunciatorWidgets[0].width() * 2:  # Kind of a hack to force it to adjust properly when we have data
             self.setMaximumWidth(1000)
