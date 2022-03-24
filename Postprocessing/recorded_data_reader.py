@@ -11,7 +11,7 @@ from data_helpers import vector_length
 
 
 class RecordedDataReader(object):
-    def __init__(self, file_name="parsed_messages.txt", load_slower=False, logging_callback=None):
+    def __init__(self, file_name="parsed_messages.txt", load_slower=False, logging_callback=None, logging_interval=5):
         file = open(file_name)
         data = file.readlines()
 
@@ -64,7 +64,7 @@ class RecordedDataReader(object):
             if load_slower:
                 time.sleep(0.000000001)  # This many 0s probably don't help, but this sleep keeps the file indexing from taking all the CPU resources
 
-            if logging_callback is not None and time.time() - last_logging_time > 5:
+            if logging_callback is not None and time.time() - last_logging_time > logging_interval:
                 logging_callback("Indexing recorded dat: {0:.2f}% done".format(100 * data.index(line) / len(data)))
                 last_logging_time = time.time()
 
