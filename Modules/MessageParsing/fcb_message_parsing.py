@@ -212,7 +212,7 @@ def parse_fcb_message(data):
         for i in range(4, 11):
             if chr(unpacked_header[i]).isalnum():
                 callsign += chr(unpacked_header[i])
-        dictionary[Constants.callisgn_key] = callsign.strip()
+        dictionary[Constants.callsign_key] = callsign.strip()
 
         # Get the rest of the packet
         raw_packet = fcb_data[15:]

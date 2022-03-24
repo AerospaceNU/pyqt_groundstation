@@ -24,7 +24,6 @@ class PyroWidget(CustomQWidgetBase):
         self.titleWidget = QLabel()
         self.titleWidget.setText(self.title)
         self.titleWidget.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
-        self.titleWidget.setStyleSheet("background: black; color: white")
         layout.addWidget(self.titleWidget, 0, 0, 1, 6)
 
         width = 50
@@ -36,12 +35,7 @@ class PyroWidget(CustomQWidgetBase):
             titleLabel = QLabel()
             titleLabel.setText(f"{column + 1}")
             layout.addWidget(titleLabel, 1, column)
-            titleLabel.setStyleSheet("background: black; color: white")
             titleLabel.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
-            titleLabel.setMinimumWidth(width)
-            titleLabel.setMaximumWidth(width)
-            titleLabel.setMaximumHeight(height)
-            titleLabel.setMinimumHeight(height)
             self.titleWidgets.append(titleLabel)
 
             self.annunciatorWidgets.append(QLabel())
@@ -61,7 +55,7 @@ class PyroWidget(CustomQWidgetBase):
         pyro_cont = vehicle_data[Constants.pyro_continuity]
         if not pyro_cont.isdigit():
             pyro_cont = "0"
-        
+
         pyro_cont = int(pyro_cont, 2)
 
         for i in range(Constants.MAX_PYROS):
@@ -90,3 +84,10 @@ class PyroWidget(CustomQWidgetBase):
         self.adjustSize()
         self.setMaximumWidth(self.width())
         self.setMaximumHeight(self.height())
+
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        self.setStyleSheet("QWidget#" + self.objectName() + " {" + widget_background_string + text_string + border_string + "}")
+        self.titleWidget.setStyleSheet(widget_background_string + header_text_string)
+
+        for widget in self.titleWidgets:
+            widget.setStyleSheet(widget_background_string + text_string)

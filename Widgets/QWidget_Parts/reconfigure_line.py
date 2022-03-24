@@ -12,6 +12,7 @@ class ReconfigureLine(QWidget):
         layout.addWidget(self.textBox, 0, 0)
         layout.addWidget(self.entryBox, 0, 1)
         layout.addWidget(self.dropDown, 0, 1)
+        layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
         self.dropDown.hide()

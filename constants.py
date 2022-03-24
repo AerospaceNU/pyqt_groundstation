@@ -15,7 +15,7 @@ class Constants:
     software_version_key = "software_version"
     serial_number_key = "board_serial_number"
     timestamp_ms_key = "time_stamp_ms"
-    callisgn_key = "callsign"
+    callsign_key = "callsign"
     temperature_key = "temperature"
     gps_time_key = "gps_time"
     ground_speed_key = "ground_speed"

@@ -25,8 +25,17 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
         if not self.reader.parsedToFullHistory():
             self.reader.parseIntoIndividualLists()
 
+        # Only use runs where we got packets with the rssi field (meaning that data came in over the radio)
+        runs_to_use = []
         if self.enabled:
             for run in self.reader.getRuns():
+                [data_series, _] = self.reader.getFullHistoryForKey(run, Constants.rssi_key)
+                if len(data_series) > 0 and run not in runs_to_use:
+                    runs_to_use.append(run)
+
+        # Put this data in the right spot so we can view it later
+        if self.enabled:
+            for run in runs_to_use:
                 if run not in self.recorded_data_dictionary:
                     self.recorded_data_dictionary[run] = {}
 
