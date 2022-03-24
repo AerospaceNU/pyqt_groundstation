@@ -108,3 +108,5 @@ class Constants:
     MAIN_DESCENT_INDEX = 10
     END_STATE_INDEX = 11
     UNKNOWN_STATE_INDEX = 16
+
+    MAX_PYROS = 6
