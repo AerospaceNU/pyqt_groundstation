@@ -82,6 +82,8 @@ class Constants:
     primary_annunciator = "annunciator_1"
     primary_reconfigure = "primary_reconfigure"
     raw_message_data_key = "raw_message_data"
+    cli_interface_key = "cli_interface"
+    cli_string_key = "cli_string"
 
     invalid_fcb_state_name = "Invalid FCB State"
     fcb_state_names = ["Cli Calibrate",

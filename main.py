@@ -29,7 +29,7 @@ if __name__ == '__main__':
     GUI.addModule("Laptop Status Monitor", LaptopStatusMonitor, hide_toggle=True)
     GUI.addModule("Ground Station Recorded Data", GroundStationRecordedDataInterface, enabled=False)
     GUI.addModule("Fake Flight", FakeFlight, enabled=False)
-    GUI.addModule("Random Data for Debugging", RandomDataInterface, enabled=False, hide_toggle=True)
+    GUI.addModule("Random Data for Debugging", RandomDataInterface, enabled=False, hide_toggle=False)
 
     GUI.run()
     print("Good Bye")

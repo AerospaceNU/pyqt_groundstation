@@ -4,9 +4,10 @@ import serial
 import serial.tools.list_ports
 
 from Modules.MessageParsing import fcb_message_parsing
-from Modules.MessageParsing.fcb_message_generation import createRadioBandCommandMessage
+from Modules.MessageParsing.fcb_message_generation import createRadioBandCommandMessage, createCLICommandMessage
 from Modules.fcb_data_interface_core import FCBDataInterfaceCore
 from Modules.DataInterfaceTools.reconfigure_helper import ReconfigurePage
+from Modules.DataInterfaceTools.comms_console_helper import CommsConsoleHelper
 
 from dpf_ground_station import DPFGUI
 from constants import Constants
@@ -41,6 +42,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.parsed_messages_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
         self.callbacks_to_add.append(["set_serial_port", self.changeActiveSerialPort])
+        self.callbacks_to_add.append([Constants.cli_interface_key, self.cliCommand])
 
         self.radio_reconfigure_page = ReconfigurePage("Serial Ground Station Config")
         self.radio_reconfigure_page.addEnumOption("radio_types", "433 MHz", RADIO_433)
@@ -53,9 +55,15 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         for callback in radio_reconfigure_callbacks:
             self.callbacks_to_add.append([callback, radio_reconfigure_callbacks[callback]])
 
+        self.cliConsole = CommsConsoleHelper()
+
     def changeActiveSerialPort(self, portName):
         self.serial_port = portName
         self.connected = False
+
+    def cliCommand(self, data):
+        self.cliConsole.addEntry(data)
+        self.outgoing_serial_queue.append(createCLICommandMessage(self.active_radio, data))
 
     def onBandSwitch(self, data):
         try:
@@ -133,6 +141,9 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
             if Constants.radio_id_key in dictionary and dictionary[Constants.radio_id_key] != self.active_radio:  # Data coming in over the wrong radio
                 return
 
+            if Constants.cli_string_key in dictionary:
+                self.cliConsole.autoAddEntry(dictionary[Constants.cli_string_key], from_remote=True)
+
             if not success:
                 self.logToConsole("Could not parse message: {0}".format(message_type), 1)
                 self.good_fcb_data = False
@@ -162,6 +173,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         super(GroundStationDataInterface, self).updateEveryLoop()
 
         self.reconfigure_options_dictionary[self.radio_reconfigure_page.getPageName()] = self.radio_reconfigure_page.getDataStructure()
+        self.data_dictionary[Constants.cli_interface_key] = self.cliConsole.getList()
 
     def logMessageToFile(self, message_type, parsed_message):
         self.parsed_messages_file.write("{0}: {1} {2}\n".format(time.strftime("%H:%M:%S"), message_type, str(parsed_message)))

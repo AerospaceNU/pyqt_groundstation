@@ -132,6 +132,11 @@ def parse_ground_station_gps(data, dictionary):
     dictionary[Constants.ground_station_temperature_key] = unpacked_data[5]
 
 
+def parse_cli_message(data: bytes, dictionary):
+    """The payload is the string"""
+    dictionary[Constants.cli_string_key] = data.decode()
+
+
 def parse_test_message(data, dictionary):
     """Parses the test message"""
     unpacked_data = struct.unpack("<ffffffdBB", data)
@@ -150,6 +155,7 @@ def parse_test_message(data, dictionary):
 # Dictionary {[message_number]: [[name], [callback]]}
 MESSAGE_CALLBACKS = {2: ["Orientation", parse_orientation_message],
                      3: ["Position Data", parse_position_data_message],
+                     5: ["CLI Data", parse_cli_message],
                      }
 # -1: ["Old transmit stuff", parse_test_message]} #Not used anymore
 

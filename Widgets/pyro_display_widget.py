@@ -56,7 +56,6 @@ class PyroWidget(CustomQWidgetBase):
 
     def updateData(self, vehicle_data, updated_data):
         if Constants.pyro_continuity not in vehicle_data:
-            self.setMaximumWidth(100)
             return
 
         pyro_cont = vehicle_data[Constants.pyro_continuity]

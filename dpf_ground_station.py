@@ -28,10 +28,12 @@ from Widgets import flight_display
 from Widgets import map_widget
 from Widgets import reconfigure_widget
 from Widgets import simple_console_widget
+from Widgets import complete_console_widget
 from Widgets import text_box_drop_down_widget
 from Widgets import vehicle_status_widget
 from Widgets import video_widget
 from Widgets import graph_widget
+from Widgets import pyro_display_widget
 
 from data_helpers import get_rgb_from_string, get_well_formatted_rgb_string, format_rgb_string, make_stylesheet_string
 from constants import Constants
@@ -91,11 +93,13 @@ class DPFGUI():
                               "Flight Display": flight_display.FlightDisplay,
                               "Map Widget": map_widget.MapWidget,
                               "Reconfigure": reconfigure_widget.ReconfigureWidget,
-                              "Simple Console": simple_console_widget.SimpleConsoleWidget,
+                              "Console": simple_console_widget.SimpleConsoleWidget,
+                              "CLI Console": complete_console_widget.CompleteConsoleWidget,
                               "Diagnostic Panel": text_box_drop_down_widget.TextBoxDropDownWidget,
                               "Vehicle Status": vehicle_status_widget.VehicleStatusWidget,
                               "Video Panel": video_widget.VideoWidget,
                               "Graph Widget": graph_widget.GraphWidget,
+                              "Pyro Display": pyro_display_widget.PyroWidget,
                               }  # List of classes of widgets that can be dynamically created
 
         self.application.setObjectName("Application")
