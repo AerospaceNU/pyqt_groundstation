@@ -196,19 +196,20 @@ def parse_fcb_message(data):
 
         # Get the packet header
         fcb_data = data[0:-4]
-        header_data = fcb_data[0:14]
-        unpacked_header = struct.unpack('<BBIBBBBBBBB', header_data)
+        header_data = fcb_data[0:15]
+        unpacked_header = struct.unpack('<BBBIBBBBBBBB', header_data)
         dictionary[Constants.software_version_key] = unpacked_header[1]
-        dictionary[Constants.timestamp_ms_key] = unpacked_header[2]
+        dictionary[Constants.software_version_key] = unpacked_header[2]
+        dictionary[Constants.timestamp_ms_key] = unpacked_header[3]
 
         callsign = ""
-        for i in range(3, 10):
+        for i in range(4, 11):
             if chr(unpacked_header[i]).isalnum():
                 callsign += chr(unpacked_header[i])
         dictionary[Constants.callisgn_key] = callsign.strip()
 
         # Get the rest of the packet
-        raw_packet = fcb_data[14:]
+        raw_packet = fcb_data[15:]
         message_type = MESSAGE_CALLBACKS[message_number][0]  # Get message type
 
         # Parse message
