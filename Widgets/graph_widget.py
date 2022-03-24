@@ -170,13 +170,15 @@ class GraphWidget(CustomQWidgetBase):
     def setEnabled(self, enabled):
         self.record_new_data = enabled
 
-    def addCustomMenuItems(self, menu):
+    def addCustomMenuItems(self, menu, e):
         menu.addAction("Clear graph", self.clearGraph)
         menu.addAction("Add Line", self.addLineToPlot)
         remove_line_menu = menu.addMenu("Remove line")
         menu.addSeparator()
         menu.addMenu(self.graphWidget.getPlotItem().vb.menu)
         menu.addMenu(self.graphWidget.getPlotItem().ctrlMenu)
+        self.graphWidget.getPlotItem().vb.scene().contextMenuItem = self.graphWidget.getPlotItem().getAxis('left')
+        menu.addAction(self.graphWidget.getPlotItem().vb.scene().contextMenu[0])
 
         for key in self.sourceDictionary:
             remove_line_menu.addAction(self.sourceDictionary[key].key_name, lambda name=key: self.removeLineFromPlot(name))

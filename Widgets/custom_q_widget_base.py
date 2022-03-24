@@ -86,10 +86,10 @@ class CustomQWidgetBase(QWidget):
                         submenu.addAction("    {}".format(option), lambda a=source, b=option: self.updateDictKeyTarget(a, b))
 
         menu.addSeparator()
-        self.addCustomMenuItems(menu)
+        self.addCustomMenuItems(menu, e)
         menu.exec_(self.mapToGlobal(e))
 
-    def addCustomMenuItems(self, menu: QMenu):
+    def addCustomMenuItems(self, menu: QMenu, e):
         pass
 
     def requestCallback(self, callback_name, callback_data):
