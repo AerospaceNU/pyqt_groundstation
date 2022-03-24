@@ -156,6 +156,9 @@ class CustomQWidgetBase(QWidget):
     def addSourceKey(self, internal_id: str, value_type, default_key: str, default_value=None, hide_in_drop_down=False):
         self.sourceDictionary[internal_id] = SourceKeyData(default_key, value_type, default_value, hide_in_drop_down)
 
+    def removeSourceKey(self, internal_key_id):
+        del self.sourceDictionary[internal_key_id]
+
     def getDictValueUsingSourceKey(self, internal_key_id):
         dictionary_key = self.sourceDictionary[internal_key_id].key_name
         default_value = self.sourceDictionary[internal_key_id].default_value

@@ -7,7 +7,7 @@ import pyqtgraph
 if sys.platform == "linux":  # I don't even know anymore
     os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")  # https://stackoverflow.com/questions/63829991/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it
 
-from PyQt5.QtWidgets import QWidget, QGridLayout
+from PyQt5.QtWidgets import QWidget, QGridLayout, QMenu
 from pyqtgraph import PlotWidget
 
 from data_helpers import get_qcolor_from_string, first_index_in_list_larger_than
@@ -33,7 +33,7 @@ class GraphWidget(CustomQWidgetBase):
         if source_list is None:
             source_list = []
 
-        self.graphWidget = PlotWidget()
+        self.graphWidget = PlotWidget(enable_menu=False)
         self.graphWidget.setLabel('bottom', "Time (s)")
         self.graphWidget.showGrid(x=True, y=True)
         self.graphWidget.addLegend()
@@ -164,10 +164,23 @@ class GraphWidget(CustomQWidgetBase):
     def addCustomMenuItems(self, menu):
         menu.addAction("Clear graph", self.clearGraph)
         menu.addAction("Add Line", self.addLineToPlot)
+        remove_line_menu = menu.addMenu("Remove line")
+        menu.addSeparator()
+        menu.addMenu(self.graphWidget.getPlotItem().ctrlMenu)
+
+        for key in self.sourceDictionary:
+            remove_line_menu.addAction(self.sourceDictionary[key].key_name, lambda name=key: self.removeLineFromPlot(name))
 
     def addLineToPlot(self):
         num_keys = len(self.sourceDictionary.keys())
         self.addSourceKey("line {}".format(num_keys), float, "", default_value=0)
+
+    def removeLineFromPlot(self, line_name):
+        self.removeSourceKey(line_name)
+        self.graphWidget.getPlotItem().removeItem(self.plot_line_dictionary[line_name])
+        self.plot_line_dictionary[line_name].clear()
+        del self.data_dictionary[line_name]
+        del self.plot_line_dictionary[line_name]
 
     def clearGraph(self):
         self.time_dictionary = {}
