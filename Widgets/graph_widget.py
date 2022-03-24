@@ -5,7 +5,8 @@ import sys
 import pyqtgraph
 
 if sys.platform == "linux":  # I don't even know anymore
-    os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")  # https://stackoverflow.com/questions/63829991/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it
+    if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:
+        os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")  # https://stackoverflow.com/questions/63829991/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it
 
 from PyQt5.QtWidgets import QWidget, QGridLayout, QMenu
 from pyqtgraph import PlotWidget
