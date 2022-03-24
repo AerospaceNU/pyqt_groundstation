@@ -199,7 +199,7 @@ def parse_fcb_message(data):
         header_data = fcb_data[0:15]
         unpacked_header = struct.unpack('<BBBIBBBBBBBB', header_data)
         dictionary[Constants.software_version_key] = unpacked_header[1]
-        dictionary[Constants.software_version_key] = unpacked_header[2]
+        dictionary[Constants.serial_number_key] = unpacked_header[2]
         dictionary[Constants.timestamp_ms_key] = unpacked_header[3]
 
         callsign = ""

@@ -13,6 +13,7 @@ class Constants:
     fcb_state_key = "fcb_state"
     pyro_continuity = "pyro_continuity"
     software_version_key = "software_version"
+    serial_number_key = "board_serial_number"
     timestamp_ms_key = "time_stamp_ms"
     callisgn_key = "callsign"
     temperature_key = "temperature"
