@@ -28,6 +28,7 @@ class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         painter.setPen(QColor(self.borderColor[0], self.borderColor[1], self.borderColor[2]))
         painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
 
+        self.maxLineWidth = 0
         font_height = self.fontInfo().pixelSize()
         for i in range(len(self.data)):
             line = self.data[i]

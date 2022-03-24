@@ -37,6 +37,11 @@ class CustomQWidgetBase(QWidget):
         self.borderColor = [0, 0, 0]
         self.backgroundColor = [0, 0, 0]
         self.textColor = [0, 0, 0]
+        self.borderColorString = ""
+        self.backgroundColorString = ""
+        self.textColorString = ""
+        self.headerTextColorString = ""
+
         self.callbackEvents = []
         self.tabName = ""
 
@@ -50,15 +55,15 @@ class CustomQWidgetBase(QWidget):
 
     def setTheme(self, widgetBackground, text, headerText, border):
         """I implemented my own theme code instead of using the QT stuff, because this does what I want"""
-        widget_background_string = make_stylesheet_string("background", widgetBackground)
-        text_string = make_stylesheet_string("color", text)
-        header_text_string = make_stylesheet_string("color", headerText)
-        border_string = "border: {0}px solid {1};".format(1, border)
+        self.backgroundColorString = make_stylesheet_string("background", widgetBackground)
+        self.textColorString = make_stylesheet_string("color", text)
+        self.headerTextColorString = make_stylesheet_string("color", headerText)
+        self.borderColorString = "border: {0}px solid {1};".format(1, border)
 
         self.borderColor = get_rgb_from_string(border)
         self.backgroundColor = get_rgb_from_string(widgetBackground)
         self.textColor = get_rgb_from_string(text)
-        self.setWidgetColors(widget_background_string, text_string, header_text_string, border_string)
+        self.setWidgetColors(self.backgroundColorString, self.textColorString, self.headerTextColorString, self.borderColorString)
 
     def rightClickMenu(self, e: QPoint):
         menu = QMenu()
