@@ -3,7 +3,7 @@ Text box widget
 """
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QLabel, QGridLayout, QLineEdit
-from PyQt5.QtGui import QKeyEvent
+from PyQt5.QtGui import QKeyEvent, QFont
 
 from data_helpers import get_value_from_dictionary
 from constants import Constants
@@ -40,6 +40,7 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
 
         self.titleBox.setText(self.title)
         self.titleBox.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+        self.textBoxWidget.setFont(QFont("monospace", 10))
 
         self.commandHistory = []
         self.commandHistoryIndex = -1
@@ -82,7 +83,9 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
 
         outString = ""
         for line in data:
-            outString = outString + line + "\n"
+            outString = outString + line
+            if outString[-1] != "\n":
+                outString += "\n"
 
         self.textBoxWidget.setText(outString[:-1])
         self.adjustSize()

@@ -65,7 +65,6 @@ def parse_orientation_message(data, dictionary):
     """uint8 state, int8 qw, qx, qy, qz, float wx, wy, wz, ax, ay, az, bx, by, bz;"""
     data = data[0:41]
     unpacked_data = struct.unpack("<Bbbbbfffffffff", data)
-    print(unpacked_data)
 
     dictionary[Constants.fcb_state_key] = get_fcb_state_from_state_num(unpacked_data[0])
 
@@ -151,7 +150,21 @@ def parse_ground_station_gps(data, dictionary):
 
 def parse_cli_message(data: bytes, dictionary):
     """The payload is the string"""
-    dictionary[Constants.cli_string_key] = data.decode()
+
+    # print(data)
+    length = data[0]
+    trimmed_data = data[1:length + 1]
+    # print(trimmed_data)
+
+    try:
+        string = trimmed_data.decode()
+
+        if string.strip() != "":
+            print(string)
+
+        dictionary[Constants.cli_string_key] = string
+    except Exception as e:
+        print(e)
 
 
 def parse_test_message(data, dictionary):

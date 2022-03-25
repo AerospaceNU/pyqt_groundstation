@@ -19,5 +19,5 @@ def createRadioBandCommandMessage(destination, target_radio, channel):
 def createCLICommandMessage(destination, command: str):
     command = command.strip() + "\n"
     command_bytes = command.encode()
-    return struct.pack("<BB", destination, len(command_bytes)) + command_bytes
+    return struct.pack("<BH", destination, len(command_bytes)) + command_bytes
 

@@ -62,7 +62,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.connected = False
 
     def cliCommand(self, data):
-        self.cliConsole.addEntry(data)
+        self.cliConsole.manualAddEntry(data)
         self.outgoing_serial_queue.append(createCLICommandMessage(self.active_radio, data))
 
     def onBandSwitch(self, data):
