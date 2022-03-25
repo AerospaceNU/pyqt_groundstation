@@ -62,16 +62,17 @@ def get_fcb_state_from_state_num(state_num):
 
 
 def parse_orientation_message(data, dictionary):
-    """uint8 state, float qw, qx, qy, qz, wx, wy, wz, ax, ay, az, bx, by, bz;"""
-    data = data[0:53]
-    unpacked_data = struct.unpack("<Bfffffffffffff", data)
+    """uint8 state, int8 qw, qx, qy, qz, float wx, wy, wz, ax, ay, az, bx, by, bz;"""
+    data = data[0:41]
+    unpacked_data = struct.unpack("<Bbbbbfffffffff", data)
+    print(unpacked_data)
 
     dictionary[Constants.fcb_state_key] = get_fcb_state_from_state_num(unpacked_data[0])
 
-    qw = unpacked_data[1]  # Orientation
-    qx = unpacked_data[2]
-    qy = unpacked_data[3]
-    qz = unpacked_data[4]
+    qw = unpacked_data[1] / 100.0  # Orientation, [-100, 100x]
+    qx = unpacked_data[2] / 100.0
+    qy = unpacked_data[3] / 100.0
+    qz = unpacked_data[4] / 100.0
     wx = unpacked_data[5]  # Rotational velocity
     wy = unpacked_data[6]
     wz = unpacked_data[7]
@@ -105,6 +106,17 @@ def parse_orientation_message(data, dictionary):
     dictionary[Constants.rotational_velocity_key] = [wx, wy, wz]
     dictionary[Constants.acceleration_vector_key] = [ax, ay, az]
     dictionary[Constants.magnetic_vector_key] = [bx, by, bz]
+
+
+def parse_altitude_info(data, dictionary):
+    data = data[0:24]
+    unpacked_data = struct.unpack("<ffffff", data)
+    dictionary[Constants.press1_key] = unpacked_data[0]
+    dictionary[Constants.press2_key] = unpacked_data[1]
+    dictionary[Constants.press_ref_key] = unpacked_data[2]
+    dictionary[Constants.ground_elevation_key] = unpacked_data[3]
+    dictionary[Constants.ground_temp_key] = unpacked_data[4]
+    dictionary[Constants.main_cut_alt_key] = unpacked_data[5]
 
 
 def parse_position_data_message(data, dictionary):
@@ -161,6 +173,7 @@ def parse_test_message(data, dictionary):
 MESSAGE_CALLBACKS = {2: ["Orientation", parse_orientation_message],
                      3: ["Position Data", parse_position_data_message],
                      5: ["CLI Data", parse_cli_message],
+                     6: ["Alt Info & Cfg", parse_altitude_info],
                      }
 # -1: ["Old transmit stuff", parse_test_message]} #Not used anymore
 

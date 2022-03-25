@@ -47,6 +47,13 @@ class Constants:
     magnetometer_y_key = "magnetic_field_y"
     magnetometer_z_key = "magnetic_field_z"
 
+    press1_key = "baro_1_pres"
+    press2_key = "baro_2_pres"
+    press_ref_key = "press_ref"
+    ground_elevation_key = "ground_elev"
+    ground_temp_key = "ground_temp"
+    main_cut_alt_key = "Main Alt (m)"
+
     ground_station_latitude_key = "gs_lat"
     ground_station_longitude_key = "gs_lon"
     ground_station_altitude_key = "gs_alt"
