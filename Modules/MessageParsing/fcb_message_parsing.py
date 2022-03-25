@@ -46,7 +46,12 @@ def lat_lon_decimal_minutes_to_decimal_degrees(min):
 
 
 def parse_pyro_continuity_byte(pyro_cont):
-    return bin(pyro_cont).lstrip('0b')
+    pyro_list = []
+    for i in range(Constants.MAX_PYROS):
+        has_cont_b = (pyro_cont & 1 << i) > 0
+        pyro_list.append(has_cont_b)
+
+    return pyro_list
 
 
 def get_fcb_state_from_state_num(state_num):

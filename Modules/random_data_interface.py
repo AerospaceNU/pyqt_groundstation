@@ -35,7 +35,7 @@ class RandomDataInterface(ThreadedModuleCore):
         self.data_dictionary["pitch"] = 10
         self.data_dictionary["yaw"] = self.i
         self.data_dictionary[Constants.altitude_key] = float(self.i) / 80.0 - 10
-        self.data_dictionary["groundSpeed"] = float(self.i)/10.0
+        self.data_dictionary["groundSpeed"] = float(self.i) / 10.0
         self.data_dictionary["verticalSpeed"] = (self.i / 15) - 10
         self.data_dictionary["acceleration"] = (self.i / 60) - 5
         self.data_dictionary["j"] = self.j
@@ -53,7 +53,7 @@ class RandomDataInterface(ThreadedModuleCore):
         self.data_dictionary["status"] = int((float(self.i) / 360.0) * 3)
         self.data_dictionary["fcb_battery_voltage"] = ((float(self.i) / 360.0) * 5) + 13
 
-        self.data_dictionary["pyro_continuity"] = "{0:b}".format(random.randrange(0,0b111111,1))
+        self.data_dictionary["pyro_continuity"] = [False, False, True, True, False, True]
 
         # Generate some state machine state names
         if self.i < 180:

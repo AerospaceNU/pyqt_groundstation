@@ -3,7 +3,6 @@ import time
 import math
 import sys
 import pyqtgraph
-from PyQt5.QtCore import QPoint
 
 if sys.platform == "linux":  # I don't even know anymore
     if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:
@@ -146,9 +145,12 @@ class GraphWidget(CustomQWidgetBase):
             if data_name not in self.plot_line_dictionary:
                 self.plot_line_dictionary[data_name] = self.graphWidget.plot(self.time_dictionary[data_name], self.data_dictionary[data_name], name=data_label, pen=get_pen_from_line_number(len(self.plot_line_dictionary)))
             if self.plot_line_dictionary[data_name].name() != data_label:
-                self.graphWidget.getPlotItem().removeItem(self.plot_line_dictionary[data_name])
-                del self.plot_line_dictionary[data_name]
-                self.plot_line_dictionary[data_name] = self.graphWidget.plot(self.time_dictionary[data_name], self.data_dictionary[data_name], name=data_label, pen=get_pen_from_line_number(len(self.plot_line_dictionary)))
+                index = list(self.plot_line_dictionary.keys()).index(data_name)  # The index of the line that we're working on
+
+                self.plot_line_dictionary[data_name].opts['name'] = data_label  # Force change the name of the line
+                self.graphWidget.getPlotItem().legend.items[index][1].setText(data_label)  # Change the name of the legend item
+                self.data_dictionary[data_name] = [float('nan')]  # Reset the data history
+                self.time_dictionary[data_name] = [0]
 
             # Connect=finite allows NaN values to be skipped
             if self.min_x is None and self.max_x is None:  # No restrictions

@@ -5,10 +5,11 @@ Displays pyro continuity
 import PyQt5.QtCore as QtCore
 
 from PyQt5.QtWidgets import QLabel, QGridLayout
-from matplotlib.pyplot import title
+
+from data_helpers import get_value_from_dictionary
+from constants import Constants
 
 from Widgets.custom_q_widget_base import CustomQWidgetBase
-from constants import Constants
 
 
 class PyroWidget(CustomQWidgetBase):
@@ -49,18 +50,11 @@ class PyroWidget(CustomQWidgetBase):
         self.setLayout(layout)
 
     def updateData(self, vehicle_data, updated_data):
-        if Constants.pyro_continuity not in vehicle_data:
-            return
+        pyro_cont_list = get_value_from_dictionary(vehicle_data, Constants.pyro_continuity, [])
 
-        pyro_cont = vehicle_data[Constants.pyro_continuity]
-        if not pyro_cont.isdigit():
-            pyro_cont = "0"
-
-        pyro_cont = int(pyro_cont, 2)
-
-        for i in range(Constants.MAX_PYROS):
-            has_cont_b = (pyro_cont & 1 << i) > 0
-            has_cont = "Yes" if has_cont_b else "No"
+        for i in range(len(pyro_cont_list)):
+            pyro = pyro_cont_list[i]
+            has_cont = "Yes" if pyro else "No"
 
             if i >= len(self.annunciatorWidgets):
                 break
@@ -69,15 +63,10 @@ class PyroWidget(CustomQWidgetBase):
             self.annunciatorWidgets[i].setToolTip(f"If pyro {i} has data")
             self.annunciatorWidgets[i].setToolTipDuration(5000)
 
-            if has_cont_b:
+            if pyro:
                 self.annunciatorWidgets[i].setStyleSheet("background: green; color: black")
             else:
                 self.annunciatorWidgets[i].setStyleSheet("background: red; color: black")
-
-        # for i in range(len(pyro_cont), len(self.annunciatorWidgets)):  # Make the rest red, no data or disconnected
-        #     self.annunciatorWidgets[i].setText(" ")
-        #     self.annunciatorWidgets[i].setStyleSheet("background: red; color: black")
-        #     self.annunciatorWidgets[i].setText("No")
 
         if self.width() < self.annunciatorWidgets[0].width() * 2:  # Kind of a hack to force it to adjust properly when we have data
             self.setMaximumWidth(1000)

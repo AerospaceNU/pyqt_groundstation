@@ -164,8 +164,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
     def writeData(self):
         if len(self.outgoing_serial_queue) > 0:
             try:
-                # print("Writing data to serial port: {}".format(self.outgoing_serial_queue[-1]))
-                self.serial.write(self.outgoing_serial_queue.pop())
+                # print("Writing data to serial port: {}".format(self.outgoing_serial_queue[0]))
+                self.serial.write(self.outgoing_serial_queue.pop(0))
             except Exception as e:
                 print(e)
 
