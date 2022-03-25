@@ -47,8 +47,8 @@ class Constants:
     magnetometer_y_key = "magnetic_field_y"
     magnetometer_z_key = "magnetic_field_z"
 
-    press1_key = "baro_1_pres"
-    press2_key = "baro_2_pres"
+    barometer_pressure_key = "barometer_pressure"
+    barometer_pressure_2_key = "barometer_2_pressure"
     press_ref_key = "press_ref"
     ground_elevation_key = "ground_elev"
     ground_temp_key = "ground_temp"
@@ -65,9 +65,6 @@ class Constants:
     laptop_ram_usage_key = "laptop_ram"
     laptop_battery_percent_key = "laptop_battery_percent"
     laptop_battery_charging_key = "laptop_charging"
-
-    barometer_pressure_key = "barometer_pressure"
-    barometer_pressure_2_key = "baro_2_pressure"
 
     fcb_battery_voltage = "fcb_battery_voltage"
     fcb_memory_usage = "fcb_memory"

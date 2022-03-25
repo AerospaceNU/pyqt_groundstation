@@ -111,8 +111,8 @@ def parse_orientation_message(data, dictionary):
 def parse_altitude_info(data, dictionary):
     data = data[0:24]
     unpacked_data = struct.unpack("<ffffff", data)
-    dictionary[Constants.press1_key] = unpacked_data[0]
-    dictionary[Constants.press2_key] = unpacked_data[1]
+    dictionary[Constants.barometer_pressure_key] = unpacked_data[0]
+    dictionary[Constants.barometer_pressure_2_key] = unpacked_data[1]
     dictionary[Constants.press_ref_key] = unpacked_data[2]
     dictionary[Constants.ground_elevation_key] = unpacked_data[3]
     dictionary[Constants.ground_temp_key] = unpacked_data[4]
