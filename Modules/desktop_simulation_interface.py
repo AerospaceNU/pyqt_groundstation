@@ -1,35 +1,36 @@
-
-import struct
-import sys
 import socket
 from Modules.ground_station_data_interface import GroundStationDataInterface
-from constants import Constants
+
 HOST = "127.0.0.1"  # The server's hostname or IP address
 PORT = 8080  # The port used by the server
 
 
 class LocalSimulationFlightInterface(GroundStationDataInterface):
     """
-    Generates random data for testing
+    Reads data from a local fcb simulation over tcp
     """
 
     def __init__(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect((HOST, PORT))
-
         super().__init__()
-
-    def recv_size(self):
-        the_socket = self.socket
-
-        # 4 bytes appended to 128
-        ret = the_socket.recv(132)
-
-        return ret
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def runOnEnableAndDisable(self):
         if self.enabled:
-            pass
+            try:
+                self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Connects the socket when module is enabled
+                self.socket.connect((HOST, PORT))
+                self.logToConsole("Connected to local simulation at {0}:{1}".format(HOST, PORT), 1)
+            except Exception as e:
+                self.logToConsole("Could not connect to local simulation at {0}:{1}.  {2}".format(HOST, PORT, e), 2)
+                self.enabled = False
+        else:
+            self.socket.close()
+
+    def recv_size(self):
+        # 4 bytes appended to 128
+        ret = self.socket.recv(132)
+
+        return ret
 
     def spin(self):
         self.good_fcb_data = True
@@ -38,15 +39,11 @@ class LocalSimulationFlightInterface(GroundStationDataInterface):
         self.has_data = True
 
         data = self.recv_size()
-        self.parseData(data)
 
-        # [packet_type, parsed_packet] = self.reader.getNextPacket()
+        try:
+            self.parseData(data)
+        except Exception as e:
+            self.logToConsole("Couldn't parse local simulation message: {0}, closing connection".format(e), 2)
+            self.enabled = False
 
-        # self.logToConsole("New [{0}] message".format(packet_type), 0)
-
-        # # We changed how crc is logged at some point, so this is needed to look at old data
-        # if Constants.crc_key in parsed_packet and parsed_packet[Constants.crc_key] == "1":
-        #     parsed_packet[Constants.crc_key] = "Good"
-
-        # self.handleParsedData(packet_type, parsed_packet)
         self.updateEveryLoop()

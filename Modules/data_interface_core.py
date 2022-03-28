@@ -20,6 +20,7 @@ class ThreadedModuleCore(threading.Thread):
         self.should_be_running = True
         self.enabled = True
         self.was_enabled = True
+        self.primary_module = False  # Only one module with this set to true should run at a time
 
         self.console_callback = None
         self.last_console_message = ""

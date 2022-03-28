@@ -115,19 +115,18 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
             while self.connected and self.should_be_running and self.enabled:
                 self.readData()
                 self.writeData()
-                time.sleep(0.01)
+                self.updateEveryLoop()
                 if time.time() - self.last_data_time > 5:  # Timeout checks on any data, not just good data
                     self.logToConsoleAndCheck("Ground station on port {} timed out".format(self.serial_port), 2)
                     self.has_data = False
                     self.good_fcb_data = False
-                self.updateEveryLoop()
+                time.sleep(0.01)
             self.logToConsole("Disconnected from ground station on port {}".format(self.serial_port), 2)
         except IOError:
             self.logToConsole("Lost connection to ground station on port {}".format(self.serial_port), 2)
             self.connected = False
 
     def parseData(self, raw_bytes):
-
         try:
             [success, dictionary, message_type, crc] = fcb_message_parsing.parse_fcb_message(raw_bytes)
 
@@ -155,7 +154,6 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
             self.logToConsole("Can't parse message (length: {2} bytes):\n{1}".format(raw_bytes, e, len(raw_bytes)), 1)
 
     def readData(self):
-
         raw_bytes = self.serial.read(1000)  # Read in bytes
         if len(raw_bytes) == 0:  # If it didn't send a message, we don't parse
             return
@@ -163,9 +161,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.raw_data_file.write("{0}: {1}\n".format(time.strftime("%H:%M:%S"), str(raw_bytes)))
 
         self.last_data_time = time.time()
-        
-        self.parseData(raw_bytes)
 
+        self.parseData(raw_bytes)
 
     def writeData(self):
         if len(self.outgoing_serial_queue) > 0:
