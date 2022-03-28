@@ -7,6 +7,7 @@ Main file to run the GUI
 from dpf_ground_station import DPFGUI
 from Modules.random_data_interface import RandomDataInterface
 from Modules.ground_station_data_interface import GroundStationDataInterface
+from Modules.desktop_simulation_interface import LocalSimulationFlightInterface
 from Modules.ground_station_recorded_data_interface import GroundStationRecordedDataInterface
 from Modules.android_phone_bluetooth_interface import AndroidPhoneBluetoothInterface
 from Modules.laptop_status_monitor import LaptopStatusMonitor
@@ -27,7 +28,8 @@ if __name__ == '__main__':
     GUI.addModule("Android Phone Bluetooth", AndroidPhoneBluetoothInterface)
     GUI.addModule("Text To Speech", TextToSpeech, enabled=False)
     GUI.addModule("Laptop Status Monitor", LaptopStatusMonitor, hide_toggle=True)
-    GUI.addModule("Ground Station Recorded Data", GroundStationRecordedDataInterface, enabled=False)
+    GUI.addModule("Local simulation", LocalSimulationFlightInterface, enabled=True)
+    # GUI.addModule("Ground Station Recorded Data", GroundStationRecordedDataInterface, enabled=False)
     GUI.addModule("Fake Flight", FakeFlight, enabled=False)
     GUI.addModule("Random Data for Debugging", RandomDataInterface, enabled=False, hide_toggle=False)
 

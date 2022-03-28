@@ -126,14 +126,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
             self.logToConsole("Lost connection to ground station on port {}".format(self.serial_port), 2)
             self.connected = False
 
-    def readData(self):
-        raw_bytes = self.serial.read(1000)  # Read in bytes
-        if len(raw_bytes) == 0:  # If it didn't send a message, we don't parse
-            return
-
-        self.raw_data_file.write("{0}: {1}\n".format(time.strftime("%H:%M:%S"), str(raw_bytes)))
-
-        self.last_data_time = time.time()
+    def parseData(self, raw_bytes):
 
         try:
             [success, dictionary, message_type, crc] = fcb_message_parsing.parse_fcb_message(raw_bytes)
@@ -160,6 +153,19 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 self.has_data = True
         except struct.error as e:
             self.logToConsole("Can't parse message (length: {2} bytes):\n{1}".format(raw_bytes, e, len(raw_bytes)), 1)
+
+    def readData(self):
+
+        raw_bytes = self.serial.read(1000)  # Read in bytes
+        if len(raw_bytes) == 0:  # If it didn't send a message, we don't parse
+            return
+
+        self.raw_data_file.write("{0}: {1}\n".format(time.strftime("%H:%M:%S"), str(raw_bytes)))
+
+        self.last_data_time = time.time()
+        
+        self.parseData(raw_bytes)
+
 
     def writeData(self):
         if len(self.outgoing_serial_queue) > 0:
