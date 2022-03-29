@@ -173,6 +173,12 @@ class DPFGUI():
         interface = self.module_dictionary[interface_name]
         interface.toggleEnabled()
 
+        # If we just enabled module that should be by itself, disable the others
+        if interface.primary_module and interface.enabled:
+            for module_name in self.module_dictionary:
+                if module_name != interface_name and self.module_dictionary[module_name].primary_module:
+                    self.module_dictionary[module_name].setEnabled(False)
+
     def refreshDataInterfaces(self):
         self.modules_menu.clear()
 

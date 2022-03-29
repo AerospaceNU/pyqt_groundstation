@@ -18,6 +18,7 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
 
     def __init__(self):
         super().__init__()
+        self.primary_module = True
 
         self.connected = False
         self.has_data = False

@@ -16,6 +16,8 @@ class RandomDataInterface(ThreadedModuleCore):
 
     def __init__(self):
         super().__init__()
+        self.primary_module = True
+
         self.i = 0
         self.j = 0
 
