@@ -52,8 +52,12 @@ and when I say "PyQt widgets", I mean widget classes from PyQt.
 
 ## Structure
 
+### File locations
+The dpf_ground_station.py file is the main class that has most of the high level control of the GUI. 
+This handles the creation of tabs, the data updating, and managing modules.
+
 ### Database dictionary
-All the data in the gui lives inside the main database dictionary. 
+All the data in the gui lives inside the main database dictionary.
 This dictionary is updated from the Data Interfaces, and sent to each widget every update cycle. 
 
 ### Widgets
@@ -77,8 +81,11 @@ I'm going to try to fix it some, but I don't want to spend a huge amount of time
 To add a custom tab, extend `main_tab_common.py` and call `self.addWidget` to add widgets to the call list.
 Look at `primary_tab.py` for a nice example.
 
-### Data Interfaces
-The data interfaces are how the GUI actually gets data from radios or log files or whatever.
+### Modules
+This framework was designed to make it simpler to add new features to the GUI. 
+Anything that provides data to the GUI should be a module, and anything that uses the data for any reason other than to drive visuals (for example the text to speech).
+
+The modules are how the GUI actually gets data from radios or log files or whatever.
 `data_interface_core.py` spins up a thread, and calls `spin()` in a loop at a maximum of 100hz.
 `spin()` runs in a thread, so your implementation can hang the thread, but maybe don't hang forever, because the thread might not close down correctly.
 Like other things, to add a new one, extend `data_interface_core.py`, and overwrite the `spin()` function. 
@@ -93,6 +100,6 @@ sudo chmod o+rw /var/run/sdp
 In basically anything simple you'd need to add, you'll just extend the base class, and overwrite a few functions.
 
 - For widgets, everything should happen automatically from there.
-- For Data interfaces, you'll need to add a line to main.py to register it.
+- For modules, you'll need to add a line to main.py to register it.
 - For Tabs, you'll need to add a line to `gui_core.py` in the `addTabByTabType` function, that takes the string name and string type of your tab, and calls `self.addVehicleTab([TabType], tabName)`. 
 You'll also need to add a line to the `run` function in `dpf_ground_station.py` that calls `self.addTab()` with the string name and string type from above.

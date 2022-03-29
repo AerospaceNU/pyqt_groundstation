@@ -1,5 +1,7 @@
 """
-Base data interface
+Base class for a module
+
+All modules added to the GUI NEED to extend this class (or one of its subclasses) in order to function.
 """
 
 import threading
@@ -8,7 +10,13 @@ import time
 
 class ThreadedModuleCore(threading.Thread):
     """
-    Spins up module in its own thread, and handles all cross-thread data transfer
+    Base class for a module.  All modules added to the GUI NEED to extend this class (or one of its subclasses) in order to function.
+    This class spins up a new thread to run the module code in, and handles cross-thread data transfer so callbacks are called in the correct thread (I think)
+
+    The two most important methods here to override for new modules are the runOnEnableAndDisable() method and the spin() method.
+    runOnEnableAndDisable() runs whenever the module is enabled or disabled, and spin runs once every .01 seconds at maximum.
+
+    This class also provides an interface for supplying pre-recorded time-series data to the GUI.
     """
 
     def __init__(self):
@@ -29,6 +37,7 @@ class ThreadedModuleCore(threading.Thread):
         self.reconfigure_options_dictionary = {}
 
     def getCallbacksToAdd(self):
+        """DO NOT OVERRIDE.  Provides a list of callbacks to DPFGUI"""
         return self.callbacks_to_add
 
     def getReconfigureDictionary(self):
