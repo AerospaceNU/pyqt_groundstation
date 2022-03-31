@@ -1,7 +1,9 @@
 import time
 import navpy
+import os
+import cv2
 
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QPolygon
 from PyQt5.QtCore import Qt, QPoint
 
@@ -13,11 +15,6 @@ from constants import Constants
 class MapWidget(CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None, points_to_keep=200, update_interval=3):
         super().__init__(parent_widget)
-        self.padding = 20
-        self.originSize = 20
-        self.decimals = 2
-        self.paths = {}
-
         if parent_widget is not None:
             self.setMinimumSize(500, 500)
 
@@ -29,40 +26,36 @@ class MapWidget(CustomQWidgetBase):
         self.use_ground_station_position = False
         self.gs_lat = 0
         self.gs_lon = 0
-        self.pointsToKeep = points_to_keep
-        self.newPointInterval = update_interval
-        self.newPointSpacing = 10
-        self.lastPointTime = 0
 
-        self.x_position = 0
-        self.y_position = 0
-        self.heading = 0
+        self.map_draw_widget = MapDrawWidget(update_interval)
+
+        layout = QGridLayout()
+        layout.setContentsMargins(1, 1, 1, 1)
+        layout.addWidget(self.map_draw_widget, 1, 1, 1, 1)
+        self.setLayout(layout)
+
+        self.datum = []
         self.has_datum = False
-        self.datum = [0, 0]
 
-        self.maxAxis = 0.1
-        self.minAxis = -0.1
+        self.map_tile_manager = None
 
-        self.oldPoints = []
+        self.last_image_request_time = time.time()
 
     def updateData(self, vehicle_data, updated_data):
-        if "paths" not in vehicle_data:
-            paths = {}
-        else:
-            paths = vehicle_data["paths"]
-
-        self.paths = paths
-
-        self.heading = float(get_value_from_dictionary(vehicle_data, "yaw", 0))
+        heading = float(get_value_from_dictionary(vehicle_data, "yaw", 0))
         latitude = self.getDictValueUsingSourceKey("vehicle_lat")
         longitude = self.getDictValueUsingSourceKey("vehicle_lon")
         gs_lat = self.getValueIfUpdatedUsingSourceKey("groundstation_lat")
         gs_lon = self.getValueIfUpdatedUsingSourceKey("groundstation_lon")
 
+        if Constants.map_tile_manager_key in vehicle_data and self.map_tile_manager is None:
+            self.map_tile_manager = vehicle_data[Constants.map_tile_manager_key]
+
         if gs_lat != 0 and gs_lon != 0:  # Only update the ground station positions when we actually get new data
             self.use_ground_station_position = True
             self.gs_lat = gs_lat
             self.gs_lon = gs_lon
+            self.datum = [gs_lat, gs_lon]
 
         if latitude != 0 and longitude != 0 and self.use_ground_station_position:  # If we have rocket lat-lon and gs lat-lon, use that
             ned = navpy.lla2ned(latitude, longitude, 0, self.gs_lat, self.gs_lon, 0)
@@ -76,6 +69,61 @@ class MapWidget(CustomQWidgetBase):
             self.setXY(ned[1], ned[0])  # ned to enu
         else:  # Otherwise, we're at 0,0
             self.setXY(0, 0)
+
+        self.map_draw_widget.setHeading(heading)
+
+    def updateInFocus(self):
+        if len(self.datum) > 0 and time.time() > self.last_image_request_time + 1 and self.map_tile_manager is not None:
+            self.last_image_request_time = time.time()
+
+            lower_left_coordinates = self.map_draw_widget.drawLocationToPoint(0, self.map_draw_widget.height()) + [0]
+            upper_right_coordinates = self.map_draw_widget.drawLocationToPoint(self.map_draw_widget.width(), 0) + [0]
+
+            lower_left_lla = navpy.ned2lla(lower_left_coordinates, self.datum[0], self.datum[1], 0)
+            upper_right_lla = navpy.ned2lla(upper_right_coordinates, self.datum[0], self.datum[1], 0)
+
+            self.map_tile_manager.request_new_tile(lower_left_lla, upper_right_lla)
+
+    def clearMap(self):
+        self.map_draw_widget.clearMap()
+
+    def resetDatum(self):
+        self.has_datum = False
+        self.clearMap()
+        self.use_ground_station_position = False
+
+    def setXY(self, x, y):
+        self.map_draw_widget.setXY(x, y)
+
+
+class MapImageBackground(QLabel):
+    def __init__(self):
+        super().__init__()
+
+
+class MapDrawWidget(QWidget):
+    def __init__(self, update_interval):
+        """Widget that draws the arrows and lines on top of the map"""
+        super().__init__()
+        self.padding = 20
+        self.originSize = 20
+
+        self.min_axis_value = -0.1
+        self.max_axis_value = 0.1
+
+        self.oldPoints = []
+        self.paths = {}
+
+        self.x_position = 0
+        self.y_position = 0
+        self.heading = 0
+
+        self.decimals = 0
+
+        self.lastPointTime = time.time()
+
+        self.newPointInterval = update_interval
+        self.newPointSpacing = 10
 
     def paintEvent(self, e):
         painter = QPainter(self)  # Blue background
@@ -169,21 +217,24 @@ class MapWidget(CustomQWidgetBase):
         """Converts a point in the real world to a position on the screen"""
         size_ratio = self.height() / self.width()
 
-        out_x = interpolate(x, self.minAxis / size_ratio, self.maxAxis / size_ratio, self.padding + 10, self.width() - self.padding)
-        out_y = interpolate(y, self.minAxis, self.maxAxis, self.height() - (self.padding + 10), self.padding)
+        out_x = interpolate(x, self.min_axis_value / size_ratio, self.max_axis_value / size_ratio, self.padding + 10, self.width() - self.padding)
+        out_y = interpolate(y, self.min_axis_value, self.max_axis_value, self.height() - (self.padding + 10), self.padding)
         return [int(out_x), int(out_y)]
 
     def drawLocationToPoint(self, x, y):
         """Should be the opposite of the function above"""
         size_ratio = self.height() / self.width()
 
-        out_x = interpolate(x, self.padding + 10, self.width() - self.padding, self.minAxis / size_ratio, self.maxAxis / size_ratio)
-        out_y = interpolate(y, self.height() - (self.padding + 10), self.padding, self.minAxis, self.maxAxis)
+        out_x = interpolate(x, self.padding + 10, self.width() - self.padding, self.min_axis_value / size_ratio, self.max_axis_value / size_ratio)
+        out_y = interpolate(y, self.height() - (self.padding + 10), self.padding, self.min_axis_value, self.max_axis_value)
         return [out_x, out_y]
 
+    def setHeading(self, heading):
+        self.heading = heading
+
     def setXY(self, x, y):
-        self.maxAxis = max(self.maxAxis, x, y)
-        self.minAxis = min(self.minAxis, x, y)
+        self.min_axis_value = min(self.min_axis_value, x, y)
+        self.max_axis_value = max(self.max_axis_value, x, y)
 
         self.x_position = x
         self.y_position = y
@@ -203,7 +254,7 @@ class MapWidget(CustomQWidgetBase):
                 self.oldPoints = ([[x, y]] + self.oldPoints)  # [:self.pointsToKeep] We keep all the points now
                 self.lastPointTime = time.time()
 
-        real_axis_size = self.maxAxis - self.minAxis
+        real_axis_size = self.max_axis_value - self.min_axis_value
 
         if real_axis_size < 1:
             self.decimals = 2
@@ -214,11 +265,4 @@ class MapWidget(CustomQWidgetBase):
 
     def clearMap(self):
         self.oldPoints = []
-        self.maxAxis = 0.1
-        self.minAxis = -0.1
         self.paths = {}
-
-    def resetDatum(self):
-        self.has_datum = False
-        self.clearMap()
-        self.use_ground_station_position = False

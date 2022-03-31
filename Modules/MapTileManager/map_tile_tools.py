@@ -3,7 +3,7 @@ import urllib.request
 
 from urllib.request import Request
 
-from tile_convert import bbox_to_xyz, tile_edges
+from Modules.MapTileManager.tile_convert import bbox_to_xyz, tile_edges
 
 
 def download_tile(x, y, z):
@@ -29,11 +29,19 @@ def download_and_save_tile(x, y, z):
     f.close()
 
 
-if __name__ == '__main__':
-    zoom = 7
+def download_everything_in_bounding_box(lower_left, upper_right, zoom):
+    lat_min = lower_left[0]
+    lon_min = lower_left[1]
+    lat_max = upper_right[0]
+    lon_max = upper_right[1]
 
-    [x_min, x_max, y_min, y_max] = bbox_to_xyz(-72, -71, 42, 43, zoom)
+    [x_min, x_max, y_min, y_max] = bbox_to_xyz(lon_min, lon_max, lat_min, lat_max, zoom)
 
     for x in range(x_min, x_max + 1):
         for y in range(y_min, y_max + 1):
             download_and_save_tile(x, y, zoom)
+            print(x, y)
+
+
+if __name__ == '__main__':
+    download_everything_in_bounding_box([42, -72], [43, -71], 7)

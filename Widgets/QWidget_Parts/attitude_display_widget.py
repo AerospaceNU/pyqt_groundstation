@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QLabel, QWidget
 from PyQt5.QtGui import QPainter, QPen, QBrush, QPolygon, QColor, QFont, QRegion
 from PyQt5.QtCore import Qt, QPoint
 
-from Widgets.Helpers import basic_image_display
+from Widgets.QWidget_Parts import basic_image_display
 
 
 class AttitudeDisplayWidget(QLabel):
@@ -26,9 +26,9 @@ class AttitudeDisplayWidget(QLabel):
         self.rollIndicator = cv2.imread("{}/Assets/roll_dial_1.png".format(dir_name), cv2.IMREAD_UNCHANGED)
 
         # Cross-hair
-        self.crossHairImage = basic_image_display.BasicImageDisplay(self, self.crossHair, int(self.size * 0.7))
-        self.rollPointerImage = basic_image_display.BasicImageDisplay(self, self.rollPointer, self.size * 0.05, y=10)
-        self.rollIndicatorImage = basic_image_display.BasicImageDisplay(self, self.rollIndicator, self.size * 0.9)
+        self.crossHairImage = basic_image_display.BasicImageDisplay(self.crossHair, int(self.size * 0.7), parent=self)
+        self.rollPointerImage = basic_image_display.BasicImageDisplay(self.rollPointer, self.size * 0.05, y=10, parent=self)
+        self.rollIndicatorImage = basic_image_display.BasicImageDisplay(self.rollIndicator, self.size * 0.9, parent=self)
 
         self.refreshMask()
 
@@ -43,9 +43,9 @@ class AttitudeDisplayWidget(QLabel):
         self.setMaximumHeight(size)
         self.refreshMask()
 
-        self.crossHairImage.setGeometry(size * 0.7)
-        self.rollPointerImage.setGeometry(size * 0.05, y=10)
-        self.rollIndicatorImage.setGeometry(size * 0.9)
+        self.crossHairImage.setTargetWidth(size * 0.7)
+        self.rollPointerImage.setTargetWidth(size * 0.05, y=10)
+        self.rollIndicatorImage.setTargetWidth(size * 0.9)
 
     def refreshMask(self):
         # Set up octagonal mask for painter

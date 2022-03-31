@@ -116,3 +116,5 @@ class Constants:
     UNKNOWN_STATE_INDEX = 16
 
     MAX_PYROS = 6
+
+    map_tile_manager_key = "map_tile_manager"
