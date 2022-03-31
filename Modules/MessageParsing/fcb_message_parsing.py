@@ -125,8 +125,8 @@ def parse_position_data_message(data, dictionary):
     dictionary[Constants.temperature_key] = unpacked_data[0]
     dictionary[Constants.altitude_key] = unpacked_data[1]
     dictionary[Constants.vertical_speed_key] = unpacked_data[2]
-    dictionary[Constants.latitude_key] = unpacked_data[3]
-    dictionary[Constants.longitude_key] = unpacked_data[4]
+    dictionary[Constants.latitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[3])
+    dictionary[Constants.longitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[4])
     dictionary[Constants.gps_alt_key] = unpacked_data[5]
     dictionary[Constants.fcb_battery_voltage] = unpacked_data[6]
     dictionary[Constants.ground_speed_key] = unpacked_data[7] * 0.514444  # fcb reports speed in kts
@@ -135,6 +135,7 @@ def parse_position_data_message(data, dictionary):
     dictionary[Constants.gps_sats_key] = unpacked_data[10]
     dictionary[Constants.pyro_continuity] = parse_pyro_continuity_byte(unpacked_data[11])
     dictionary[Constants.fcb_state_key] = get_fcb_state_from_state_num(unpacked_data[12])
+    dictionary[Constants.fcb_state_number_key] = unpacked_data[12]
     dictionary[Constants.bluetooth_connection_key] = unpacked_data[13]  # TODO: Parse this better
 
 

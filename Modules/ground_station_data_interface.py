@@ -95,6 +95,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
             try:
                 self.serial = serial.Serial(self.serial_port, self.baud_rate, timeout=0.01)  # Set the serial port timeout really small, so we only get one message at a time
                 self.connected = True
+                self.onRadioSwitch(self.active_radio)
+                self.onBandSwitch(0)
                 self.connectedLoop()
                 self.nextCheckTime = time.time() + 1
                 self.serial.close()
