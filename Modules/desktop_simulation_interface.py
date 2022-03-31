@@ -13,6 +13,7 @@ class LocalSimulationFlightInterface(GroundStationDataInterface):
     def __init__(self):
         super().__init__()
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.callbacks_to_add = []  # Don't add callbacks for radio and band switching (Kind of a hack)
 
     def runOnEnableAndDisable(self):
         if self.enabled:
