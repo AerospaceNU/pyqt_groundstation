@@ -34,8 +34,11 @@ class FakeFlight(FCBDataInterfaceCore):
         self.boost_duration = 2
 
         # Fixed parameters and flight variables
-        self.initial_latitude = 37.2431
-        self.initial_longitude = -115.7930
+        # self.initial_latitude = 37.2431
+        # self.initial_longitude = -115.7930
+
+        self.initial_latitude = 42.3601
+        self.initial_longitude = -71.0589
         self.latitude = self.initial_latitude
         self.longitude = self.initial_longitude
         self.altitude = 0

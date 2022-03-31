@@ -4,6 +4,7 @@ Central GUI sequencer
 Has all the thread control for the GUI
 """
 
+import os
 import copy
 import random
 import sys
@@ -37,6 +38,10 @@ from Widgets import pyro_display_widget
 
 from data_helpers import get_rgb_from_string, get_well_formatted_rgb_string, format_rgb_string, make_stylesheet_string
 from constants import Constants
+
+if sys.platform == "linux":  # I don't even know anymore
+    if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:
+        os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")  # https://stackoverflow.com/questions/63829991/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it
 
 # Background, Widget Background, Text, Header Text, Border
 THEMES = {}

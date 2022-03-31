@@ -1,10 +1,12 @@
 import time
+import math
 import navpy
-import os
+import imutils
 import cv2
+from PyQt5 import QtGui
 
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
-from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QPolygon
+from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QPolygon, QPixmap
 from PyQt5.QtCore import Qt, QPoint
 
 from Widgets.custom_q_widget_base import CustomQWidgetBase
@@ -28,9 +30,11 @@ class MapWidget(CustomQWidgetBase):
         self.gs_lon = 0
 
         self.map_draw_widget = MapDrawWidget(update_interval)
+        self.map_background_widget = MapImageBackground(self)
 
         layout = QGridLayout()
         layout.setContentsMargins(1, 1, 1, 1)
+        # layout.addWidget(self.map_background_widget, 1, 1, 1, 1)
         layout.addWidget(self.map_draw_widget, 1, 1, 1, 1)
         self.setLayout(layout)
 
@@ -73,7 +77,11 @@ class MapWidget(CustomQWidgetBase):
         self.map_draw_widget.setHeading(heading)
 
     def updateInFocus(self):
-        if len(self.datum) > 0 and time.time() > self.last_image_request_time + 1 and self.map_tile_manager is not None:
+        """Currently handles drawing the background only, but I should move more stuff into here"""
+        if len(self.datum) == 0:  # Can't draw a map if we don't know our lat and lon
+            return
+
+        if time.time() > self.last_image_request_time + 1 and self.map_tile_manager is not None:  # Do we need a new map?
             self.last_image_request_time = time.time()
 
             lower_left_coordinates = self.map_draw_widget.drawLocationToPoint(0, self.map_draw_widget.height()) + [0]
@@ -83,6 +91,22 @@ class MapWidget(CustomQWidgetBase):
             upper_right_lla = navpy.ned2lla(upper_right_coordinates, self.datum[0], self.datum[1], 0)
 
             self.map_tile_manager.request_new_tile(lower_left_lla, upper_right_lla)
+
+        if self.map_tile_manager.hasNewMap():  # Check for and get new map if it exists
+            map_tile = self.map_tile_manager.getLastTile()
+
+            lower_left_lla = map_tile.lower_left
+            upper_right_lla = map_tile.upper_right
+
+            lower_left_coordinates = navpy.lla2ned(lower_left_lla[0], lower_left_lla[1], 0, self.datum[0], self.datum[1], 0)
+            upper_right_coordinates = navpy.lla2ned(upper_right_lla[0], upper_right_lla[1], 0, self.datum[0], self.datum[1], 0)
+
+            self.map_background_widget.setMapBackground(map_tile.map_image, lower_left_coordinates[0:2], upper_right_coordinates[0:2])
+            self.map_draw_widget.setOpaqueBackground(False)
+
+        map_window_lower_left = self.map_draw_widget.drawLocationToPoint(0, self.map_draw_widget.height())
+        map_window_upper_right = self.map_draw_widget.drawLocationToPoint(self.map_draw_widget.width(), 0)
+        self.map_background_widget.updateBoundCoordinatesMeters(map_window_lower_left, map_window_upper_right)
 
     def clearMap(self):
         self.map_draw_widget.clearMap()
@@ -97,8 +121,55 @@ class MapWidget(CustomQWidgetBase):
 
 
 class MapImageBackground(QLabel):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        """Widget that draws the map image background"""
+        super().__init__(parent)
+
+        self.map_image = None
+        self.map_image_bottom_left = [0, 0]
+        self.map_image_top_right = [0, 0]
+
+        self.window_bottom_left = [0, 0]
+        self.window_top_right = [0, 0]
+
+    def setMapBackground(self, map_image, bottom_left, upper_right):
+        self.map_image = map_image
+        self.map_image_bottom_left = bottom_left
+        self.map_image_top_right = upper_right
+
+    def updateBoundCoordinatesMeters(self, bottom_left, upper_right, update_background=True):
+        self.window_bottom_left = bottom_left
+        self.window_top_right = upper_right
+
+        if update_background and self.map_image is not None:
+            self.updateImage()
+
+    def updateImage(self):
+        map_image_width = self.map_image.shape[1]
+        map_image_height = self.map_image.shape[0]
+
+        window_width = self.parent().width() - 5
+        window_height = self.parent().height() - 5
+
+        image_x_min = math.floor(interpolate(self.window_bottom_left[0], self.map_image_bottom_left[0], self.map_image_top_right[0], 0, map_image_width))
+        image_x_max = math.ceil(interpolate(self.window_top_right[0], self.map_image_bottom_left[0], self.map_image_top_right[0], 0, map_image_width))
+        image_y_min = math.floor(interpolate(self.window_bottom_left[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))
+        image_y_max = math.ceil(interpolate(self.window_top_right[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))
+
+        subset = self.map_image[image_y_max:image_y_min, image_x_min:image_x_max]  # Y Max to min because matrix rows are numbered top down
+
+        # If the width isn't a multiple of four, bad things happen
+        image_width = 4 * round(window_width / 4)
+        image_height = window_height
+
+        self.setMaximumSize(image_width, image_height)
+        self.setMinimumSize(image_width, image_height)
+
+        frame = cv2.resize(subset, (int(image_width), int(image_height)))
+        rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        convert_to_qt_format = QtGui.QImage(rgb_image.data, rgb_image.shape[1], rgb_image.shape[0], QtGui.QImage.Format_RGB888)
+        convert_to_qt_format = QtGui.QPixmap.fromImage(convert_to_qt_format)
+        self.setPixmap(convert_to_qt_format)
 
 
 class MapDrawWidget(QWidget):
@@ -108,11 +179,12 @@ class MapDrawWidget(QWidget):
         self.padding = 20
         self.originSize = 20
 
-        self.min_axis_value = -0.1
-        self.max_axis_value = 0.1
+        self.min_axis_value = -10
+        self.max_axis_value = 10
 
         self.oldPoints = []
         self.paths = {}
+        self.opaque_background = True
 
         self.x_position = 0
         self.y_position = 0
@@ -125,11 +197,15 @@ class MapDrawWidget(QWidget):
         self.newPointInterval = update_interval
         self.newPointSpacing = 10
 
+    def setOpaqueBackground(self, enabled):
+        self.opaque_background = enabled
+
     def paintEvent(self, e):
         painter = QPainter(self)  # Blue background
-        painter.setPen(QPen(QColor(30, 144, 255), 0, Qt.SolidLine))
-        painter.setBrush(QBrush(QColor(30, 144, 255), Qt.SolidPattern))
-        painter.drawRect(0, 0, self.width(), self.height())
+        if self.opaque_background:
+            painter.setPen(QPen(QColor(30, 144, 255), 0, Qt.SolidLine))
+            painter.setBrush(QBrush(QColor(30, 144, 255), Qt.SolidPattern))
+            painter.drawRect(0, 0, self.width(), self.height())
 
         # Draw paths
         painter.setPen(QPen(QColor(180, 235, 52), 3, Qt.SolidLine))
