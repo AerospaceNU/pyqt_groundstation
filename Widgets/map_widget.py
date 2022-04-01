@@ -87,8 +87,8 @@ class MapWidget(CustomQWidgetBase):
             lower_left_coordinates = self.map_draw_widget.drawLocationToPoint(0, self.map_draw_widget.height()) + [0]
             upper_right_coordinates = self.map_draw_widget.drawLocationToPoint(self.map_draw_widget.width(), 0) + [0]
 
-            upper_right_coordinates[0] += 10
-            upper_right_coordinates[1] += 10
+            # upper_right_coordinates[0] += 10
+            # upper_right_coordinates[1] += 10
 
             lower_left_lla = navpy.ned2lla(lower_left_coordinates, self.datum[0], self.datum[1], 0)
             upper_right_lla = navpy.ned2lla(upper_right_coordinates, self.datum[0], self.datum[1], 0)
@@ -140,8 +140,6 @@ class MapImageBackground(QLabel):
         self.map_image_bottom_left = bottom_left
         self.map_image_top_right = upper_right
 
-        cv2.imwrite("test.jpg", map_image)
-
     def updateBoundCoordinatesMeters(self, bottom_left, upper_right, update_background=True):
         self.window_bottom_left = bottom_left
         self.window_top_right = upper_right
@@ -150,8 +148,8 @@ class MapImageBackground(QLabel):
             self.updateImage()
 
     def updateImage(self):
-        map_image_width = self.map_image.shape[0]
-        map_image_height = self.map_image.shape[1]
+        map_image_width = self.map_image.shape[1]
+        map_image_height = self.map_image.shape[0]
 
         window_width = self.parent().width()
         window_height = self.parent().height()
@@ -162,6 +160,8 @@ class MapImageBackground(QLabel):
         image_x_max = math.ceil(interpolate(self.window_top_right[0], self.map_image_bottom_left[0], self.map_image_top_right[0], 0, map_image_width))
         image_y_max = math.floor(interpolate(self.window_bottom_left[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))  # Y Max to min because matrix rows are numbered top down
         image_y_min = math.ceil(interpolate(self.window_top_right[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))
+
+        # min_max_ratio = (image_x_max - image_x_min) / (image_x_max - image_y_min)
 
         columns_to_add_left = 0
         columns_to_add_right = 0
@@ -184,6 +184,10 @@ class MapImageBackground(QLabel):
 
         subset = self.map_image[image_y_min:image_y_max, image_x_min:image_x_max]
 
+        ratio = float(subset.shape[1]) / float(subset.shape[0])
+
+        # print(min_max_ratio, ratio)
+
         if ros_to_add_top > 0:
             extra_rows_top = numpy.zeros((ros_to_add_top, subset.shape[1], subset.shape[2]), dtype=numpy.uint8)
             subset = numpy.concatenate((extra_rows_top, subset), axis=0)
@@ -197,7 +201,9 @@ class MapImageBackground(QLabel):
             extra_rows_right = numpy.zeros((subset.shape[0], columns_to_add_right, subset.shape[2]), dtype=numpy.uint8)
             subset = numpy.concatenate((extra_rows_right, subset), axis=1)
 
-        aspect_ratio = float(subset.shape[0]) / float(subset.shape[1])
+        aspect_ratio = float(subset.shape[1]) / float(subset.shape[0])
+
+        # print(ratio, aspect_ratio)
 
         # If the width isn't a multiple of four, bad things happen
         image_width = 4 * round(window_width / 4)
