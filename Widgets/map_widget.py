@@ -1,7 +1,7 @@
 import time
 import math
 import navpy
-import imutils
+import numpy
 import cv2
 from PyQt5 import QtGui
 
@@ -82,10 +82,13 @@ class MapWidget(CustomQWidgetBase):
             return
 
         if time.time() > self.last_image_request_time + 1 and self.map_tile_manager is not None:  # Do we need a new map?
-            self.last_image_request_time = time.time()
+            self.last_image_request_time = time.time() + 10
 
             lower_left_coordinates = self.map_draw_widget.drawLocationToPoint(0, self.map_draw_widget.height()) + [0]
             upper_right_coordinates = self.map_draw_widget.drawLocationToPoint(self.map_draw_widget.width(), 0) + [0]
+
+            upper_right_coordinates[0] += 10
+            upper_right_coordinates[1] += 10
 
             lower_left_lla = navpy.ned2lla(lower_left_coordinates, self.datum[0], self.datum[1], 0)
             upper_right_lla = navpy.ned2lla(upper_right_coordinates, self.datum[0], self.datum[1], 0)
@@ -137,6 +140,8 @@ class MapImageBackground(QLabel):
         self.map_image_bottom_left = bottom_left
         self.map_image_top_right = upper_right
 
+        cv2.imwrite("test.jpg", map_image)
+
     def updateBoundCoordinatesMeters(self, bottom_left, upper_right, update_background=True):
         self.window_bottom_left = bottom_left
         self.window_top_right = upper_right
@@ -145,22 +150,58 @@ class MapImageBackground(QLabel):
             self.updateImage()
 
     def updateImage(self):
-        map_image_width = self.map_image.shape[1]
-        map_image_height = self.map_image.shape[0]
+        map_image_width = self.map_image.shape[0]
+        map_image_height = self.map_image.shape[1]
 
-        window_width = self.parent().width() - 5
-        window_height = self.parent().height() - 5
+        window_width = self.parent().width()
+        window_height = self.parent().height()
+
+        self.move(0, 0)
 
         image_x_min = math.floor(interpolate(self.window_bottom_left[0], self.map_image_bottom_left[0], self.map_image_top_right[0], 0, map_image_width))
         image_x_max = math.ceil(interpolate(self.window_top_right[0], self.map_image_bottom_left[0], self.map_image_top_right[0], 0, map_image_width))
-        image_y_min = math.floor(interpolate(self.window_bottom_left[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))
-        image_y_max = math.ceil(interpolate(self.window_top_right[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))
+        image_y_max = math.floor(interpolate(self.window_bottom_left[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))  # Y Max to min because matrix rows are numbered top down
+        image_y_min = math.ceil(interpolate(self.window_top_right[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))
 
-        subset = self.map_image[image_y_max:image_y_min, image_x_min:image_x_max]  # Y Max to min because matrix rows are numbered top down
+        columns_to_add_left = 0
+        columns_to_add_right = 0
+        ros_to_add_top = 0
+        rows_to_add_bottom = 0
+
+        if image_y_min < 0:
+            ros_to_add_top = -image_y_min
+            image_y_min = 0
+        if image_y_max > map_image_height:
+            rows_to_add_bottom = image_y_max - map_image_height
+            image_y_max = 0
+
+        if image_x_min < 0:
+            columns_to_add_right = -image_x_min
+            image_x_min = 0
+        if image_x_max > map_image_width:
+            columns_to_add_left = image_x_max - map_image_width
+            image_x_max = map_image_width
+
+        subset = self.map_image[image_y_min:image_y_max, image_x_min:image_x_max]
+
+        if ros_to_add_top > 0:
+            extra_rows_top = numpy.zeros((ros_to_add_top, subset.shape[1], subset.shape[2]), dtype=numpy.uint8)
+            subset = numpy.concatenate((extra_rows_top, subset), axis=0)
+        if rows_to_add_bottom > 0:
+            extra_rows_bottom = numpy.zeros((rows_to_add_bottom, subset.shape[1], subset.shape[2]), dtype=numpy.uint8)
+            subset = numpy.concatenate((subset, extra_rows_bottom), axis=0)
+        if columns_to_add_left > 0:
+            extra_rows_left = numpy.zeros((subset.shape[0], columns_to_add_left, subset.shape[2]), dtype=numpy.uint8)
+            subset = numpy.concatenate((subset, extra_rows_left), axis=1)
+        if columns_to_add_right > 0:
+            extra_rows_right = numpy.zeros((subset.shape[0], columns_to_add_right, subset.shape[2]), dtype=numpy.uint8)
+            subset = numpy.concatenate((extra_rows_right, subset), axis=1)
+
+        aspect_ratio = float(subset.shape[0]) / float(subset.shape[1])
 
         # If the width isn't a multiple of four, bad things happen
         image_width = 4 * round(window_width / 4)
-        image_height = window_height
+        image_height = window_height  # int(float(image_width) * aspect_ratio)
 
         self.setMaximumSize(image_width, image_height)
         self.setMinimumSize(image_width, image_height)
