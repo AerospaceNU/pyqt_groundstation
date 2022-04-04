@@ -119,6 +119,7 @@ class DPFGUI():
 
         # Add callback to clear console
         self.addCallback("clear_console", self.clearConsole)
+        self.addCallback("enable_module", self.enableModuleCallback)
 
         # Other setup tasks
         self.setThemeByName("Dark")
@@ -171,15 +172,25 @@ class DPFGUI():
     def setActiveSerialPort(self, port_name):
         self.callback_queue.append(["set_serial_port", port_name])
 
-    def enableDisableDataInterface(self, interface_name):
-        interface = self.module_dictionary[interface_name]
-        interface.toggleEnabled()
+    def toggleModuleEnabledState(self, module_name):
+        if module_name in self.module_dictionary:
+            interface = self.module_dictionary[module_name]
+            self.enableOrDisableModule(module_name, not interface.enabled)
+        else:
+            self.updateConsole("Module {} does not exist".format(module_name), 2)
 
-        # If we just enabled module that should be by itself, disable the others
-        if interface.primary_module and interface.enabled:
-            for module_name in self.module_dictionary:
-                if module_name != interface_name and self.module_dictionary[module_name].primary_module:
-                    self.module_dictionary[module_name].setEnabled(False)
+    def enableOrDisableModule(self, module_name, enabled):
+        if module_name in self.module_dictionary:
+            interface = self.module_dictionary[module_name]
+            interface.setEnabled(enabled)
+
+            # If we just enabled module that should be by itself, disable the others
+            if interface.primary_module and interface.enabled:
+                for target_module_name in self.module_dictionary:
+                    if target_module_name != module_name and self.module_dictionary[target_module_name].primary_module:
+                        self.module_dictionary[target_module_name].setEnabled(False)
+        else:
+            self.updateConsole("Module {} does not exist".format(module_name), 2)
 
     def refreshDataInterfaces(self):
         self.modules_menu.clear()
@@ -189,9 +200,9 @@ class DPFGUI():
             if interfaceName in self.hidden_modules:
                 pass
             elif interface.enabled:
-                self.modules_menu.addAction("Disable {}".format(interfaceName), lambda target_interface=interfaceName: self.enableDisableDataInterface(target_interface))
+                self.modules_menu.addAction("Disable {}".format(interfaceName), lambda target_interface=interfaceName: self.toggleModuleEnabledState(target_interface))
             else:
-                self.modules_menu.addAction("Enable {}".format(interfaceName), lambda target_interface=interfaceName: self.enableDisableDataInterface(target_interface))
+                self.modules_menu.addAction("Enable {}".format(interfaceName), lambda target_interface=interfaceName: self.toggleModuleEnabledState(target_interface))
 
     def refreshSerialPorts(self):
         serial_ports = [comport for comport in serial.tools.list_ports.comports()]
@@ -367,6 +378,12 @@ class DPFGUI():
 
     def updateConsole(self, value, level):
         self.ConsoleData = ([[value, level]] + self.ConsoleData)[:40]
+
+    def enableModuleCallback(self, data):
+        data = data.split(",")
+        module_name = data[0]
+        module_enabled = data[1].lower() == "true"
+        self.enableOrDisableModule(module_name, module_enabled)
 
     def processCallbacks(self):
         callbacks = copy.deepcopy(self.callback_queue)

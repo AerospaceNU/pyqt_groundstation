@@ -61,14 +61,14 @@ class LocalSimWidget(CustomQWidgetBase):
             layout.addWidget(path, idx + 1, 2, 1, 2)
             layout.addWidget(button, idx + 1, 4, 1, 2)
 
-        goButton = QPushButton()
-        goButton.setText("Launch Sim")
-        goButton.clicked.connect(lambda: self.launchSim())
-        layout.addWidget(goButton, idx + 2, 0, 1, 3)
-        killButton = QPushButton()
-        killButton.setText("Kill Sim")
-        killButton.clicked.connect(lambda: self.killSim())
-        layout.addWidget(killButton, idx + 2, 3, 1, 3)
+        self.goButton = QPushButton()
+        self.goButton.setText("Launch Sim")
+        self.goButton.clicked.connect(lambda: self.launchSim())
+        layout.addWidget(self.goButton, idx + 2, 0, 1, 3)
+        self.killButton = QPushButton()
+        self.killButton.setText("Kill Sim")
+        self.killButton.clicked.connect(lambda: self.killSim())
+        layout.addWidget(self.killButton, idx + 2, 3, 1, 3)
 
         self.setLayout(layout)
 
@@ -82,7 +82,7 @@ class LocalSimWidget(CustomQWidgetBase):
                 self.paths[idx].setText(oldPath)
             else:
                 self.paths[idx].setText(self.defaults[idx])
-            
+
     def savePath(self, idx):
         ConfigSaver.save("SimWidget", self.pathNames[idx].replace(" ", "_"), self.paths[idx].text())
 
@@ -92,7 +92,7 @@ class LocalSimWidget(CustomQWidgetBase):
 
     def buttonPressHandler(self, idx: int, name: str):
         file, check = QFileDialog.getOpenFileName(None, f"Select {name}",
-                                               "", "All Files (*);;CSV Files (*.csv)")
+                                                  "", "All Files (*);;CSV Files (*.csv)")
         if check:
             idx = self.pathNames.index(name)
             self.paths[idx].setText(file)
@@ -102,7 +102,7 @@ class LocalSimWidget(CustomQWidgetBase):
         self.simProcess = subprocess.Popen(" ".join(map(lambda x: x.text(), self.paths)), shell=True)
         self.saveAll()
         print("Launched sim")
-        # TODO have this enable the local simulation data interface
+        self.callbackEvents.append(["enable_module", "Local Simulation,True"])
 
     def killSim(self):
         # process = psutil.Process(self.simProcess)
@@ -115,10 +115,18 @@ class LocalSimWidget(CustomQWidgetBase):
         # os.killpg(os.getpgid(self.simProcess.pid), signal.SIGTERM)
         # subprocess.kill(self.simProcess)
 
-
     def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         self.setStyleSheet("QWidget#" + self.objectName() + " {" + widget_background_string + text_string + border_string + "}")
         self.titleWidget.setStyleSheet(widget_background_string + header_text_string)
 
         for widget in self.titleWidgets:
             widget.setStyleSheet(widget_background_string + text_string)
+
+        for widget in self.paths:
+            widget.setStyleSheet(widget_background_string + text_string)
+
+        for widget in self.buttons:
+            widget.setStyleSheet(widget_background_string + text_string)
+
+        self.goButton.setStyleSheet(widget_background_string + text_string)
+        self.killButton.setStyleSheet(widget_background_string + text_string)
