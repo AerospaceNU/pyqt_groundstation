@@ -18,6 +18,7 @@ class LocalSimWidget(CustomQWidgetBase):
 
         self.xBuffer = 0
         self.yBuffer = 0
+        self.isSimRunning = False
 
         self.title = "Local Simulation"
         self.pathNames = ["Executable", "Flight CSV", "External Flash", "Internal Flash"]
@@ -99,21 +100,20 @@ class LocalSimWidget(CustomQWidgetBase):
             self.savePath(idx)
 
     def launchSim(self):
-        self.simProcess = subprocess.Popen(" ".join(map(lambda x: x.text(), self.paths)), shell=True)
-        self.saveAll()
-        print("Launched sim")
+        if not self.isSimRunning:
+            self.isSimRunning = True
+            self.simProcess = subprocess.Popen(" ".join(map(lambda x: x.text(), self.paths)), shell=True)
+            self.saveAll()
+            print("Launched sim")
+
         self.callbackEvents.append(["enable_module", "Local Simulation,True"])
 
     def killSim(self):
-        # process = psutil.Process(self.simProcess)
-        # for proc in process.children(recursive=True):
-        #     proc.kill()
-        # process.kill()
-        # self.simProcess.kill()
-        import os, signal
-        os.kill(self.simProcess.pid, signal.SIGTERM)
-        # os.killpg(os.getpgid(self.simProcess.pid), signal.SIGTERM)
-        # subprocess.kill(self.simProcess)
+        process = psutil.Process(self.simProcess.pid)
+        for proc in process.children(recursive=True):
+            proc.kill()
+        process.kill()
+        self.isSimRunning = False
 
     def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         self.setStyleSheet("QWidget#" + self.objectName() + " {" + widget_background_string + text_string + border_string + "}")

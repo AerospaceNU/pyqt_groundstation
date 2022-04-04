@@ -1,4 +1,5 @@
 import socket
+import time
 from Modules.ground_station_data_interface import GroundStationDataInterface
 
 HOST = "127.0.0.1"  # The server's hostname or IP address
@@ -18,6 +19,8 @@ class LocalSimulationFlightInterface(GroundStationDataInterface):
     def runOnEnableAndDisable(self):
         if self.enabled:
             try:
+                self.logToConsole("Attempting to connect to local simulation at {0}:{1}".format(HOST, PORT), 1)
+                time.sleep(0.5)  # Sometimes we get enabled before the sim process is up
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Connects the socket when module is enabled
                 self.socket.connect((HOST, PORT))
                 self.logToConsole("Connected to local simulation at {0}:{1}".format(HOST, PORT), 1)
