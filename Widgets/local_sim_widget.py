@@ -99,7 +99,24 @@ class LocalSimWidget(CustomQWidgetBase):
             self.savePath(idx)
 
     def launchSim(self):
-        self.simProcess = subprocess.Popen(" ".join(map(lambda x: x.text(), self.paths)), shell=True)
+        args = []
+        from sys import platform
+        if(platform == "win32"):
+            import os
+            import platform
+            import subprocess
+
+            is32bit = (platform.architecture()[0] == '32bit')
+            system32 = os.path.join(os.environ['SystemRoot'], 
+                                    'SysNative' if is32bit else 'System32')
+            bash = os.path.join(system32, 'wsl.exe')
+
+            args.append(bash)
+
+        args += list(map(lambda x: x.text(), self.paths))
+        args = " ".join(args)
+        print(args)
+        self.simProcess = subprocess.Popen(args, shell=True)
         self.saveAll()
         print("Launched sim")
         self.callbackEvents.append(["enable_module", "Local Simulation,True"])
