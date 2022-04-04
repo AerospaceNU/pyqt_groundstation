@@ -9,6 +9,8 @@ from PyQt5.QtWidgets import QLabel, QGridLayout, QLineEdit, QPushButton, QFileDi
 import subprocess, psutil
 
 from Widgets.custom_q_widget_base import CustomQWidgetBase
+from config import ConfigSaver
+
 
 class LocalSimWidget(CustomQWidgetBase):
     def __init__(self, parent_widget=None):
@@ -18,6 +20,7 @@ class LocalSimWidget(CustomQWidgetBase):
         self.yBuffer = 0
 
         self.title = "Local Simulation"
+        self.pathNames = ["Executable", "Flight CSV", "External Flash", "Internal Flash"]
 
         '''
         ---- Local Sim ---- (6 cols)
@@ -34,25 +37,23 @@ class LocalSimWidget(CustomQWidgetBase):
         self.titleWidget.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
         layout.addWidget(self.titleWidget, 0, 0, 1, 6)
 
-        width = 300
-        height = 30
-
         self.titleWidgets = []
         self.paths = []
         self.buttons = []
-        defaults = ["~/Documents/github/stm32-avionics/build/desktop-simulator/desktop_sim", "~/Downloads/super-guppy-4-2-output-post.csv", "external_flash.dat", "internal_flash.dat"]
-        for idx, name in enumerate(["Executable", "Flight CSV", "External Flash", "Internal Flash"]):
+        self.defaults = ["~/Documents/github/stm32-avionics/build/desktop-simulator/desktop_sim", "~/Downloads/super-guppy-4-2-output-post.csv", "external_flash.dat", "internal_flash.dat"]
+        for idx, name in enumerate(self.pathNames):
             label = QLabel()
             label.setText(f"{name}:")
             self.titleWidgets.append(label)
 
             path = QLineEdit()
-            path.setText(defaults[idx])
+            path.setText(self.defaults[idx])
             # path.setMinimumWidth(width)
             self.paths.append(path)
+            path.returnPressed.connect(lambda idx=idx: self.savePath(idx))
 
             button = QPushButton()
-            button.clicked.connect(self.makeButtonHandler(idx, name))
+            button.clicked.connect(lambda idx=idx, name=name: self.buttonPressHandler(idx, name))
             button.setText("Pick")
             self.buttons.append(button)
 
@@ -69,20 +70,37 @@ class LocalSimWidget(CustomQWidgetBase):
         killButton.clicked.connect(lambda: self.killSim())
         layout.addWidget(killButton, idx + 2, 3, 1, 3)
 
-
         self.setLayout(layout)
 
-    def makeButtonHandler(self, idx, name):
-        return lambda : self.buttonPressHandler(idx, name)
+        self.loadFromConfig()
+        self.saveAll()
+
+    def loadFromConfig(self):
+        for idx, name in enumerate(self.pathNames):
+            oldPath = ConfigSaver.get("SimWidget", name.replace(" ", "_"))
+            if oldPath is not None and oldPath != "":
+                self.paths[idx].setText(oldPath)
+            else:
+                self.paths[idx].setText(self.defaults[idx])
+            
+    def savePath(self, idx):
+        ConfigSaver.save("SimWidget", self.pathNames[idx].replace(" ", "_"), self.paths[idx].text())
+
+    def saveAll(self):
+        for i in range(len(self.pathNames)):
+            self.savePath(i)
 
     def buttonPressHandler(self, idx: int, name: str):
         file, check = QFileDialog.getOpenFileName(None, f"Select {name}",
                                                "", "All Files (*);;CSV Files (*.csv)")
         if check:
+            idx = self.pathNames.index(name)
             self.paths[idx].setText(file)
+            self.savePath(idx)
 
     def launchSim(self):
         self.simProcess = subprocess.Popen(" ".join(map(lambda x: x.text(), self.paths)), shell=True)
+        self.saveAll()
         print("Launched sim")
         # TODO have this enable the local simulation data interface
 
