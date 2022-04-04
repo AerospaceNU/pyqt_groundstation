@@ -18,7 +18,6 @@ class LocalSimWidget(CustomQWidgetBase):
 
         self.xBuffer = 0
         self.yBuffer = 0
-        self.isSimRunning = False
 
         self.title = "Local Simulation"
         self.pathNames = ["Executable", "Flight CSV", "External Flash", "Internal Flash"]
@@ -100,20 +99,43 @@ class LocalSimWidget(CustomQWidgetBase):
             self.savePath(idx)
 
     def launchSim(self):
-        if not self.isSimRunning:
-            self.isSimRunning = True
-            self.simProcess = subprocess.Popen(" ".join(map(lambda x: x.text(), self.paths)), shell=True)
-            self.saveAll()
-            print("Launched sim")
+        self.killSim()
 
+        args = []
+        from sys import platform
+        import subprocess
+        if(platform == "win32"):
+            import os
+            import platform
+
+            is32bit = (platform.architecture()[0] == '32bit')
+            system32 = os.path.join(os.environ['SystemRoot'], 
+                                    'SysNative' if is32bit else 'System32')
+            bash = os.path.join(system32, 'wsl.exe')
+
+            args.append(bash)
+
+        args += list(map(lambda x: x.text(), self.paths))
+        args = " ".join(args)
+        print(args)
+        self.simProcess = subprocess.Popen(args, shell=True)
+        self.saveAll()
+        print("Launched sim")
         self.callbackEvents.append(["enable_module", "Local Simulation,True"])
 
     def killSim(self):
-        process = psutil.Process(self.simProcess.pid)
-        for proc in process.children(recursive=True):
-            proc.kill()
-        process.kill()
-        self.isSimRunning = False
+        import signal
+        try:
+            from sys import platform
+            if(platform == "win32"):
+                self.simProcess.send_signal(signal.CTRL_C_EVENT)
+            else:
+                # TODO test on Linux
+                self.simProcess.send_signal(signal.SIGTERM)
+                self.simProcess.send_signal(signal.SIGINT)
+                self.simProcess.send_signal(signal.SIGKILL)
+        except Exception:
+            print("Error killing simulated flight")
 
     def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         self.setStyleSheet("QWidget#" + self.objectName() + " {" + widget_background_string + text_string + border_string + "}")
