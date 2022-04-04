@@ -99,12 +99,14 @@ class LocalSimWidget(CustomQWidgetBase):
             self.savePath(idx)
 
     def launchSim(self):
+        self.killSim()
+
         args = []
         from sys import platform
+        import subprocess
         if(platform == "win32"):
             import os
             import platform
-            import subprocess
 
             is32bit = (platform.architecture()[0] == '32bit')
             system32 = os.path.join(os.environ['SystemRoot'], 
@@ -131,6 +133,7 @@ class LocalSimWidget(CustomQWidgetBase):
                 # TODO test on Linux
                 self.simProcess.send_signal(signal.SIGTERM)
                 self.simProcess.send_signal(signal.SIGINT)
+                self.simProcess.send_signal(signal.SIGKILL)
         except Exception:
             print("Error killing simulated flight")
 
