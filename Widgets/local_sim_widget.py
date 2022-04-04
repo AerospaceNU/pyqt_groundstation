@@ -2,6 +2,11 @@
 Displays pyro continuity
 """
 
+import os
+import platform
+from sys import platform
+import subprocess
+
 import PyQt5.QtCore as QtCore
 
 from PyQt5.QtWidgets import QLabel, QGridLayout, QLineEdit, QPushButton, QFileDialog
@@ -102,22 +107,16 @@ class LocalSimWidget(CustomQWidgetBase):
         self.killSim()
 
         args = []
-        from sys import platform
-        import subprocess
-        if(platform == "win32"):
-            import os
-            import platform
 
+        if platform == "win32":
             is32bit = (platform.architecture()[0] == '32bit')
-            system32 = os.path.join(os.environ['SystemRoot'], 
-                                    'SysNative' if is32bit else 'System32')
+            system32 = os.path.join(os.environ['SystemRoot'], 'SysNative' if is32bit else 'System32')
             bash = os.path.join(system32, 'wsl.exe')
-
             args.append(bash)
 
         args += list(map(lambda x: x.text(), self.paths))
         args = " ".join(args)
-        print(args)
+
         self.simProcess = subprocess.Popen(args, shell=True)
         self.saveAll()
         print("Launched sim")
@@ -127,13 +126,13 @@ class LocalSimWidget(CustomQWidgetBase):
         import signal
         try:
             from sys import platform
-            if(platform == "win32"):
+            if platform == "win32":
                 self.simProcess.send_signal(signal.CTRL_C_EVENT)
             else:
-                # TODO test on Linux
-                self.simProcess.send_signal(signal.SIGTERM)
-                self.simProcess.send_signal(signal.SIGINT)
-                self.simProcess.send_signal(signal.SIGKILL)
+                process = psutil.Process(self.simProcess.pid)
+                for proc in process.children(recursive=True):
+                    proc.kill()
+                process.kill()
         except Exception:
             print("Error killing simulated flight")
 
