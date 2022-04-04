@@ -34,6 +34,7 @@ from Widgets import vehicle_status_widget
 from Widgets import video_widget
 from Widgets import graph_widget
 from Widgets import pyro_display_widget
+from Widgets import local_sim_widget
 
 from data_helpers import get_rgb_from_string, get_well_formatted_rgb_string, format_rgb_string, make_stylesheet_string
 from constants import Constants
@@ -102,6 +103,7 @@ class DPFGUI():
                               "Video Panel": video_widget.VideoWidget,
                               "Graph Widget": graph_widget.GraphWidget,
                               "Pyro Display": pyro_display_widget.PyroWidget,
+                              "Local Sim Helper": local_sim_widget.LocalSimWidget,
                               }  # List of classes of widgets that can be dynamically created
 
         self.application.setObjectName("Application")
