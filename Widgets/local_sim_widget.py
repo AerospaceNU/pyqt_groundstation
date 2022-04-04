@@ -122,16 +122,15 @@ class LocalSimWidget(CustomQWidgetBase):
         self.callbackEvents.append(["enable_module", "Local Simulation,True"])
 
     def killSim(self):
-        import os, signal
+        import signal
         try:
-            os.kill(self.simProcess.pid, signal.SIGTERM)
-            os.kill(self.simProcess.pid, signal.SIGINT)
-            self.simProcess.send_signal(signal.SIGTERM)
-            self.simProcess.send_signal(signal.SIGINT)
-
             from sys import platform
             if(platform == "win32"):
                 self.simProcess.send_signal(signal.CTRL_C_EVENT)
+            else:
+                # TODO test on Linux
+                self.simProcess.send_signal(signal.SIGTERM)
+                self.simProcess.send_signal(signal.SIGINT)
         except Exception:
             print("Error killing simulated flight")
 
