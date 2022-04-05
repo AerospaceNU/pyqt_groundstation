@@ -78,6 +78,11 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         for box in [self.rssi_box, self.message_age_box, self.v_speed_box, self.acceleration_box]:
             box.setFont(QFont("Monospace", self.widgetSize * 0.4))
 
+        self.statusBox.adjustSize()
+        self.fcb_state_box.adjustSize()
+        self.modeBox.adjustSize()
+        self.setMaximumHeight(self.modeBox.height() * 2 + 20)
+
     def updateInFocus(self):
         fault_status = self.getDictValueUsingSourceKey("status_source")
         fcb_state = self.getDictValueUsingSourceKey("fcb_state")
@@ -112,11 +117,6 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.message_age_box.setText("Message age: {} s".format(message_age))
         self.v_speed_box.setText("Vertical Speed: {} m/s".format(round_to_string(v_speed, 6)))
         self.acceleration_box.setText("Acceleration: {} m/s^2".format(round_to_string(acceleration, 6)))
-
-        self.statusBox.adjustSize()
-        self.fcb_state_box.adjustSize()
-        self.modeBox.adjustSize()
-        self.setMaximumHeight(self.modeBox.height() * 2 + 20)
 
         self.fcb_battery_graph.fixWidth(0.7)
         self.prop_battery_graph.fixWidth(0.7)

@@ -72,7 +72,6 @@ class SimpleBarGraphWidget(QLabel):
         topY = 2 * padding + fontHeight
         startX = int(self.width() * 0.1)
 
-
         rectangleHeight = int(self.height() - 2 * topY)
         rectangleWidth = int(self.width() - 2 * startX)
 
@@ -97,8 +96,11 @@ class SimpleBarGraphWidget(QLabel):
             self.textColor = QColor(textColor)
 
     def fixWidth(self, scaleFactor=1):
-        self.setMaximumWidth(int(self.height()*scaleFactor))
-        self.setMinimumWidth(int(self.height()*scaleFactor))
+        target_width = int(self.height() * scaleFactor)
+
+        if self.width() != target_width:
+            self.setMaximumWidth(target_width)
+            self.setMinimumWidth(target_width)
 
     @staticmethod
     def getType():
