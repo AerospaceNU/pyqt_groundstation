@@ -10,7 +10,8 @@ class Constants:
     gps_alt_key = "gps_alt"
     vertical_speed_key = "v_speed"
     acceleration_key = "accel_z"
-    fcb_state_key = "fcb_state"
+    fcb_state_key = "fcb_state_text"
+    fcb_state_number_key = "fcb_state_number"
     pyro_continuity = "pyro_continuity"
     software_version_key = "software_version"
     serial_number_key = "board_serial_number"
@@ -107,13 +108,13 @@ class Constants:
                        "NUM_STATES",
                        "UNKNOWN"]
 
-    PREFLIGHT_STATE_INDEX = 13
+    PREFLIGHT_STATE_INDEX = 12
     POWERED_ASCENT_STATE_INDEX = 7
     COAST_TO_APOGEE_INDEX = 7
     DROGUE_DESCENT_INDEX = 8
     MAIN_DESCENT_INDEX = 10
     END_STATE_INDEX = 11
-    UNKNOWN_STATE_INDEX = 16
+    UNKNOWN_STATE_INDEX = 15
 
     MAX_PYROS = 6
 

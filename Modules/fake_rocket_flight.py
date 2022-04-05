@@ -140,7 +140,7 @@ class FakeFlight(FCBDataInterfaceCore):
         packet[Constants.ground_station_latitude_key] = self.initial_latitude
         packet[Constants.ground_station_longitude_key] = self.initial_longitude
 
-        packet[Constants.fcb_state_key] = Constants.fcb_state_names[fcb_state]
+        packet[Constants.fcb_state_number_key] = fcb_state
 
         self.handleParsedData("Sim flight packet", packet)
 

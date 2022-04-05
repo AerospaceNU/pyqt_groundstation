@@ -6,7 +6,12 @@ from Modules.data_interface_core import ThreadedModuleCore
 from Modules.DataInterfaceTools.annunciator_helper import AnnunciatorHelper
 from Modules.DataInterfaceTools.diagnostics_box_helper import DiagnosticsBoxHelper
 from Modules.DataInterfaceTools.gps_position_filter import GPSPositionFilter
-from Modules.MessageParsing import fcb_message_parsing
+from Modules.DataInterfaceTools.median_filter import MedianFilter
+from Modules.MessageParsing.fcb_message_parsing import get_fcb_state_from_state_num, is_ground_station_message
+
+KEYS_TO_FILTER = [Constants.altitude_key,
+                  Constants.vertical_speed_key,
+                  Constants.fcb_battery_voltage]
 
 
 class FCBDataInterfaceCore(ThreadedModuleCore):
@@ -34,6 +39,11 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
         self.diagnostics_box_helper = DiagnosticsBoxHelper()
         self.vehicle_position_filter = GPSPositionFilter("FCB")
         self.ground_station_position_filter = GPSPositionFilter("Ground Station")
+        self.fcb_state_filter = MedianFilter()
+
+        self.filter_dictionary = {}  # Add a filter for each key that we want to filter
+        for key in KEYS_TO_FILTER:
+            self.filter_dictionary[key] = MedianFilter()
 
     def spin(self):
         self.connected = False
@@ -43,11 +53,17 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
         self.updateEveryLoop()
 
     def handleParsedData(self, message_type, dictionary, update_on_bad_crc=True):
+        # Set the fcb state text
+        # This needs to be here so that the fcb state text shows up in the diagnostics box
+        if Constants.fcb_state_number_key in dictionary:
+            dictionary[Constants.fcb_state_key] = get_fcb_state_from_state_num(dictionary[Constants.fcb_state_number_key])
+
         self.diagnostics_box_helper.updatePanel(message_type, dictionary)  # Update the diagnostics box with the unfiltered data
 
         if Constants.crc_key in dictionary:
             self.good_radio_crc = str(dictionary[Constants.crc_key]).lower() == "good"
 
+        # Most of this data only updates if we have a good crc
         if self.good_radio_crc or update_on_bad_crc:
             # Special parse operations to deal with filtering lat and lon data
             if Constants.latitude_key in dictionary and Constants.longitude_key in dictionary:  # If dictionary contains vehicle gps position, filter it
@@ -66,6 +82,20 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
                 dictionary[Constants.ground_station_latitude_key] = new_lat
                 dictionary[Constants.ground_station_longitude_key] = new_lon
 
+            # Loop through the dictionary of median filters, and filter each data point if it exists
+            for key_to_filter in self.filter_dictionary:
+                if key_to_filter in dictionary:
+                    filter_object = self.filter_dictionary[key_to_filter]
+                    filter_object.new_data(dictionary[key_to_filter])
+                    dictionary[key_to_filter] = filter_object.get_filtered_data_output()
+
+            # Filter the FCB state, and update the FCB state text
+            if Constants.fcb_state_number_key in dictionary:
+                self.fcb_state_filter.new_data(dictionary[Constants.fcb_state_number_key])
+                dictionary[Constants.fcb_state_number_key] = int(self.fcb_state_filter.get_filtered_data_output())
+                dictionary[Constants.fcb_state_key] = get_fcb_state_from_state_num(dictionary[Constants.fcb_state_number_key])
+
+            # We want a rssi value without the "db" text at the end for plotting
             if Constants.rssi_key in dictionary:
                 rssi_val = str(dictionary[Constants.rssi_key])
                 if " db" in rssi_val:
@@ -77,7 +107,7 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
 
             self.data_dictionary.update(dictionary)
 
-            if not fcb_message_parsing.is_ground_station_message(message_type):
+            if not is_ground_station_message(message_type):
                 self.last_good_data_time = time.time()
                 self.good_fcb_data = True
 

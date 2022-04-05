@@ -66,7 +66,7 @@ def parse_orientation_message(data, dictionary):
     data = data[0:41]
     unpacked_data = struct.unpack("<Bbbbbfffffffff", data)
 
-    dictionary[Constants.fcb_state_key] = get_fcb_state_from_state_num(unpacked_data[0])
+    dictionary[Constants.fcb_state_number_key] = unpacked_data[0]
 
     qw = unpacked_data[1] / 100.0  # Orientation, [-100, 100x]
     qx = unpacked_data[2] / 100.0
@@ -125,8 +125,8 @@ def parse_position_data_message(data, dictionary):
     dictionary[Constants.temperature_key] = unpacked_data[0]
     dictionary[Constants.altitude_key] = unpacked_data[1]
     dictionary[Constants.vertical_speed_key] = unpacked_data[2]
-    dictionary[Constants.latitude_key] = unpacked_data[3]
-    dictionary[Constants.longitude_key] = unpacked_data[4]
+    dictionary[Constants.latitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[3])
+    dictionary[Constants.longitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[4])
     dictionary[Constants.gps_alt_key] = unpacked_data[5]
     dictionary[Constants.fcb_battery_voltage] = unpacked_data[6]
     dictionary[Constants.ground_speed_key] = unpacked_data[7] * 0.514444  # fcb reports speed in kts
@@ -134,7 +134,7 @@ def parse_position_data_message(data, dictionary):
     dictionary[Constants.gps_time_key] = str(datetime.datetime.fromtimestamp(unpacked_data[9]))  # Convert to string so that we aren't passing datetime objects everywhere
     dictionary[Constants.gps_sats_key] = unpacked_data[10]
     dictionary[Constants.pyro_continuity] = parse_pyro_continuity_byte(unpacked_data[11])
-    dictionary[Constants.fcb_state_key] = get_fcb_state_from_state_num(unpacked_data[12])
+    dictionary[Constants.fcb_state_number_key] = unpacked_data[12]
     dictionary[Constants.bluetooth_connection_key] = unpacked_data[13]  # TODO: Parse this better
 
 
@@ -179,7 +179,7 @@ def parse_test_message(data, dictionary):
     dictionary[Constants.barometer_pressure_key] = unpacked_data[5]
     dictionary[Constants.fcb_battery_voltage] = unpacked_data[6]
     dictionary[Constants.pyro_continuity] = parse_pyro_continuity_byte(unpacked_data[7])
-    dictionary[Constants.fcb_state_key] = get_fcb_state_from_state_num(unpacked_data[8])
+    dictionary[Constants.fcb_state_number_key] = unpacked_data[8]
 
 
 # Dictionary {[message_number]: [[name], [callback]]}
@@ -201,7 +201,7 @@ def parse_fcb_message(data):
     if message_number in MESSAGE_CALLBACKS:
         # Get CRC, LQI, RSSI data from message (First 4)
         radio_data = data[-4:]
-        unpacked_radio_status_data = struct.unpack('<BB?B', radio_data)
+        unpacked_radio_status_data = struct.unpack('<Bb?B', radio_data)
         # lqi = unpacked_radio_status_data[1] & 0b1111111  # The last 7 bits of the lqi byte are the lqi
         # crc = (unpacked_radio_status_data[1] & 0b10000000)  # And top is CRC
 

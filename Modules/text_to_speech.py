@@ -25,7 +25,8 @@ class TextToSpeech(ThreadedModuleCore):
 
         self.last_state = ""
         self.last_speech_time = 0
-        self.speech_interval_seconds = 10
+        self.ascent_speech_interval_seconds = 5
+        self.descent_interval_seconds = 10
 
     def spin(self):
         state = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.fcb_state_key, "")
@@ -39,18 +40,19 @@ class TextToSpeech(ThreadedModuleCore):
             if self.last_state == Constants.fcb_state_names[Constants.PREFLIGHT_STATE_INDEX]:  # If we're going out of preflight (happens when launch is detected)
                 self.last_speech_time = time.time()
 
-            self.engine.say(state)
-            self.engine.runAndWait()
+            self.speak_message(state)
             self.last_state = state
 
-        if time.time() - self.speech_interval_seconds > self.last_speech_time:
-            if state in ASCENT_LOGGING_STATES:
-                log_message = "Altitude: {} meters".format(int(altitude))
-            elif state in DESCENT_LOGGING_STATES:
-                log_message = "Altitude: {0} meters, Descent rate: {1} meters per second".format(int(altitude), abs(int(v_speed)))
-            else:
-                return
+        if state in ASCENT_LOGGING_STATES and time.time() - self.ascent_speech_interval_seconds > self.last_speech_time:
+            log_message = "Altitude: {} meters".format(int(altitude))
+            self.speak_message(log_message)
+        elif state in DESCENT_LOGGING_STATES and time.time() - self.descent_interval_seconds > self.last_speech_time:
+            log_message = "Altitude: {0} meters, Descent rate: {1} meters per second".format(int(altitude), abs(int(v_speed)))
+            self.speak_message(log_message)
+        else:
+            return
 
-            self.engine.say(log_message)
-            self.engine.runAndWait()
-            self.last_speech_time = time.time()
+    def speak_message(self, message):
+        self.engine.say(message)
+        self.engine.runAndWait()
+        self.last_speech_time = time.time()
