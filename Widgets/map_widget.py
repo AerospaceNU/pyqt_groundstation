@@ -164,13 +164,6 @@ class MapImageBackground(QLabel):
         image_y_max = math.floor(interpolate(self.window_bottom_left[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))  # Y Max to min because matrix rows are numbered top down
         image_y_min = math.ceil(interpolate(self.window_top_right[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))
 
-        tile_aspect_ratio_meters = (self.map_image_bottom_left[0] - self.map_image_top_right[0]) / (self.map_image_bottom_left[1] - self.map_image_top_right[1])
-        tile_aspect_ratio_pixels = float(map_image_width) / float(map_image_height)
-
-        # print(tile_aspect_ratio_meters, tile_aspect_ratio_pixels)
-
-        # min_max_ratio = (image_x_max - image_x_min) / (image_x_max - image_y_min)
-
         columns_to_add_left = 0
         columns_to_add_right = 0
         ros_to_add_top = 0
@@ -192,10 +185,6 @@ class MapImageBackground(QLabel):
 
         subset = self.map_image[image_y_min:image_y_max, image_x_min:image_x_max]
 
-        # ratio = float(subset.shape[1]) / float(subset.shape[0])
-
-        # print(min_max_ratio, ratio)
-
         if ros_to_add_top > 0:
             extra_rows_top = numpy.zeros((ros_to_add_top, subset.shape[1], subset.shape[2]), dtype=numpy.uint8)
             subset = numpy.concatenate((extra_rows_top, subset), axis=0)
@@ -208,10 +197,6 @@ class MapImageBackground(QLabel):
         if columns_to_add_right > 0:
             extra_rows_right = numpy.zeros((subset.shape[0], columns_to_add_right, subset.shape[2]), dtype=numpy.uint8)
             subset = numpy.concatenate((extra_rows_right, subset), axis=1)
-
-        aspect_ratio = float(subset.shape[1]) / float(subset.shape[0])
-
-        # print(ratio, aspect_ratio)
 
         # If the width isn't a multiple of four, bad things happen
         image_width = 4 * round(window_width / 4)
