@@ -13,6 +13,8 @@ from Widgets.custom_q_widget_base import CustomQWidgetBase
 from data_helpers import interpolate, get_value_from_dictionary, distance_between_points
 from constants import Constants
 
+BACKGROUND_COLOR = (255, 144, 30)  # BGR for OpenCV
+
 
 class MapWidget(CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None, points_to_keep=200, update_interval=3):
@@ -121,6 +123,9 @@ class MapWidget(CustomQWidgetBase):
         self.has_datum = False
         self.clearMap()
         self.use_ground_station_position = False
+        self.map_background_widget.removeMapBackground()
+        self.map_draw_widget.setOpaqueBackground(True)
+        self.last_image_request_time = 0  # Request new map now
 
     def setXY(self, x, y):
         self.map_draw_widget.setXY(x, y)
@@ -143,6 +148,14 @@ class MapImageBackground(QLabel):
         self.map_image_bottom_left = bottom_left
         self.map_image_top_right = upper_right
 
+    def removeMapBackground(self):
+        self.map_image = None
+        self.map_image_bottom_left = [0, 0]
+        self.map_image_top_right = [0, 0]
+
+        self.window_bottom_left = [0, 0]
+        self.window_top_right = [0, 0]
+
     def updateBoundCoordinatesMeters(self, bottom_left, upper_right, update_background=True):
         self.window_bottom_left = bottom_left
         self.window_top_right = upper_right
@@ -159,18 +172,35 @@ class MapImageBackground(QLabel):
 
         self.move(0, 0)
 
+        # Make sure the map actually goes on the screen
+        if self.map_image_bottom_left[0] > self.window_top_right[0]:
+            print("A")
+            return
+        elif self.map_image_top_right[0] < self.window_bottom_left[0]:
+            print("B")
+            return
+        elif self.map_image_bottom_left[1] > self.window_top_right[1]:
+            print("C")
+            return
+        elif self.map_image_top_right[1] < self.window_bottom_left[1]:
+            print("D")
+            return
+
         image_x_min = math.floor(interpolate(self.window_bottom_left[0], self.map_image_bottom_left[0], self.map_image_top_right[0], 0, map_image_width))
         image_x_max = math.ceil(interpolate(self.window_top_right[0], self.map_image_bottom_left[0], self.map_image_top_right[0], 0, map_image_width))
         image_y_max = math.floor(interpolate(self.window_bottom_left[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))  # Y Max to min because matrix rows are numbered top down
         image_y_min = math.ceil(interpolate(self.window_top_right[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))
 
+        subset_width_pixels = image_x_max - image_x_min
+        width_ratio = self.width() / subset_width_pixels
+
         columns_to_add_left = 0
         columns_to_add_right = 0
-        ros_to_add_top = 0
+        rows_to_add_top = 0
         rows_to_add_bottom = 0
 
         if image_y_min < 0:
-            ros_to_add_top = -image_y_min
+            rows_to_add_top = -image_y_min
             image_y_min = 0
         if image_y_max > map_image_height:
             rows_to_add_bottom = image_y_max - map_image_height
@@ -183,23 +213,42 @@ class MapImageBackground(QLabel):
             columns_to_add_left = image_x_max - map_image_width
             image_x_max = map_image_width
 
+        # Do the resize before we add extra pixels
         subset = self.map_image[image_y_min:image_y_max, image_x_min:image_x_max]
 
-        if ros_to_add_top > 0:
-            extra_rows_top = numpy.zeros((ros_to_add_top, subset.shape[1], subset.shape[2]), dtype=numpy.uint8)
-            subset = numpy.concatenate((extra_rows_top, subset), axis=0)
-        if rows_to_add_bottom > 0:
-            extra_rows_bottom = numpy.zeros((rows_to_add_bottom, subset.shape[1], subset.shape[2]), dtype=numpy.uint8)
-            subset = numpy.concatenate((subset, extra_rows_bottom), axis=0)
-        if columns_to_add_left > 0:
-            extra_rows_left = numpy.zeros((subset.shape[0], columns_to_add_left, subset.shape[2]), dtype=numpy.uint8)
-            subset = numpy.concatenate((subset, extra_rows_left), axis=1)
-        if columns_to_add_right > 0:
-            extra_rows_right = numpy.zeros((subset.shape[0], columns_to_add_right, subset.shape[2]), dtype=numpy.uint8)
-            subset = numpy.concatenate((extra_rows_right, subset), axis=1)
+        new_width = int(subset.shape[1] * width_ratio)
+        new_height = int(subset.shape[0] * width_ratio)
+
+        if new_width > 0 and new_height > 0:
+            subset = cv2.resize(subset, (new_width, new_height))
+
+            ros_to_add_top = int(rows_to_add_top * width_ratio)
+            rows_to_add_bottom = int(rows_to_add_bottom * width_ratio)
+            columns_to_add_left = int(columns_to_add_left * width_ratio)
+            columns_to_add_right = int(columns_to_add_right * width_ratio)
+
+            if ros_to_add_top > 0:
+                extra_rows_top = numpy.zeros((ros_to_add_top, subset.shape[1], subset.shape[2]), dtype=numpy.uint8)
+                extra_rows_top[:] = BACKGROUND_COLOR
+                subset = numpy.concatenate((extra_rows_top, subset), axis=0)
+            if rows_to_add_bottom > 0:
+                extra_rows_bottom = numpy.zeros((rows_to_add_bottom, subset.shape[1], subset.shape[2]), dtype=numpy.uint8)
+                extra_rows_bottom[:] = BACKGROUND_COLOR
+                subset = numpy.concatenate((subset, extra_rows_bottom), axis=0)
+            if columns_to_add_left > 0:
+                extra_rows_left = numpy.zeros((subset.shape[0], columns_to_add_left, subset.shape[2]), dtype=numpy.uint8)
+                extra_rows_left[:] = BACKGROUND_COLOR
+                subset = numpy.concatenate((subset, extra_rows_left), axis=1)
+            if columns_to_add_right > 0:
+                extra_rows_right = numpy.zeros((subset.shape[0], columns_to_add_right, subset.shape[2]), dtype=numpy.uint8)
+                extra_rows_right[:] = BACKGROUND_COLOR
+                subset = numpy.concatenate((extra_rows_right, subset), axis=1)
+        else:
+            subset = numpy.zeros((100, 100, 3), dtype=numpy.uint8)
+            subset[:] = BACKGROUND_COLOR
 
         # If the width isn't a multiple of four, bad things happen
-        image_width = 4 * round(window_width / 4)
+        image_width = 4 * round((window_width - 1) / 4)
         image_height = window_height  # int(float(image_width) * aspect_ratio)
 
         self.setMaximumSize(image_width, image_height)
@@ -382,3 +431,5 @@ class MapDrawWidget(QWidget):
     def clearMap(self):
         self.oldPoints = []
         self.paths = {}
+        self.min_axis_value = -10
+        self.max_axis_value = 10
