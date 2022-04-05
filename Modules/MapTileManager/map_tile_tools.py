@@ -1,6 +1,7 @@
 import cv2
 import navpy
 import numpy
+import time
 import urllib.request
 
 from urllib.request import Request
@@ -9,7 +10,8 @@ from Modules.MapTileManager.tile_convert import bbox_to_xyz, tile_edges
 
 
 def download_tile(x, y, z):
-    url = "https://a.tile.openstreetmap.org/{0}/{1}/{2}.png".format(z, x, y)
+    # url = "https://a.tile.openstreetmap.org/{0}/{1}/{2}.png".format(z, x, y)
+    url = "http://mt1.google.com/vt/lyrs=y&x={0}&y={1}&z={2}".format(x, y, z)
 
     header_text = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -58,6 +60,7 @@ def get_all_tiles_in_box(bounding_box, zoom):
         column = None
         for y in range(y_min, y_max + 1):
             tile = download_tile_as_cv2(x, y, zoom)
+            time.sleep(0.01) # Space out url requests a bit
 
             if column is None:
                 column = tile

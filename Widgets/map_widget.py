@@ -109,6 +109,12 @@ class MapWidget(CustomQWidgetBase):
             lower_left_enu = [lower_left_coordinates[1], lower_left_coordinates[0]]
             upper_right_enu = [upper_right_coordinates[1], upper_right_coordinates[0]]
 
+            # Ask for more space so we don't go off the edge immediately
+            lower_left_enu[0] -= 100
+            lower_left_enu[1] -= 100
+            upper_right_enu[0] += 100
+            upper_right_enu[1] += 100
+
             self.map_background_widget.setMapBackground(map_tile.map_image, lower_left_enu, upper_right_enu)
             self.map_draw_widget.setOpaqueBackground(False)
 
