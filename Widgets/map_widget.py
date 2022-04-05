@@ -84,14 +84,14 @@ class MapWidget(CustomQWidgetBase):
         if time.time() > self.last_image_request_time + 1 and self.map_tile_manager is not None:  # Do we need a new map?
             self.last_image_request_time = time.time() + 10
 
-            lower_left_coordinates = self.map_draw_widget.drawLocationToPoint(0, self.map_draw_widget.height()) + [0]
-            upper_right_coordinates = self.map_draw_widget.drawLocationToPoint(self.map_draw_widget.width(), 0) + [0]
+            lower_left_coordinates = self.map_draw_widget.drawLocationToPoint(0, self.map_draw_widget.height())
+            upper_right_coordinates = self.map_draw_widget.drawLocationToPoint(self.map_draw_widget.width(), 0)
 
-            # upper_right_coordinates[0] += 10
-            # upper_right_coordinates[1] += 10
+            lower_left_ned = [lower_left_coordinates[1], lower_left_coordinates[0], 0]
+            upper_right_ned = [upper_right_coordinates[1], upper_right_coordinates[0], 0]
 
-            lower_left_lla = navpy.ned2lla(lower_left_coordinates, self.datum[0], self.datum[1], 0)
-            upper_right_lla = navpy.ned2lla(upper_right_coordinates, self.datum[0], self.datum[1], 0)
+            lower_left_lla = navpy.ned2lla(lower_left_ned, self.datum[0], self.datum[1], 0)
+            upper_right_lla = navpy.ned2lla(upper_right_ned, self.datum[0], self.datum[1], 0)
 
             self.map_tile_manager.request_new_tile(lower_left_lla, upper_right_lla)
 
