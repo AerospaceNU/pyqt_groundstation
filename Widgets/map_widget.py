@@ -104,7 +104,10 @@ class MapWidget(CustomQWidgetBase):
             lower_left_coordinates = navpy.lla2ned(lower_left_lla[0], lower_left_lla[1], 0, self.datum[0], self.datum[1], 0)
             upper_right_coordinates = navpy.lla2ned(upper_right_lla[0], upper_right_lla[1], 0, self.datum[0], self.datum[1], 0)
 
-            self.map_background_widget.setMapBackground(map_tile.map_image, lower_left_coordinates[0:2], upper_right_coordinates[0:2])
+            lower_left_enu = [lower_left_coordinates[1], lower_left_coordinates[0]]
+            upper_right_enu = [upper_right_coordinates[1], upper_right_coordinates[0]]
+
+            self.map_background_widget.setMapBackground(map_tile.map_image, lower_left_enu, upper_right_enu)
             self.map_draw_widget.setOpaqueBackground(False)
 
         map_window_lower_left = self.map_draw_widget.drawLocationToPoint(0, self.map_draw_widget.height())
@@ -161,6 +164,11 @@ class MapImageBackground(QLabel):
         image_y_max = math.floor(interpolate(self.window_bottom_left[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))  # Y Max to min because matrix rows are numbered top down
         image_y_min = math.ceil(interpolate(self.window_top_right[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))
 
+        tile_aspect_ratio_meters = (self.map_image_bottom_left[0] - self.map_image_top_right[0]) / (self.map_image_bottom_left[1] - self.map_image_top_right[1])
+        tile_aspect_ratio_pixels = float(map_image_width) / float(map_image_height)
+
+        # print(tile_aspect_ratio_meters, tile_aspect_ratio_pixels)
+
         # min_max_ratio = (image_x_max - image_x_min) / (image_x_max - image_y_min)
 
         columns_to_add_left = 0
@@ -184,7 +192,7 @@ class MapImageBackground(QLabel):
 
         subset = self.map_image[image_y_min:image_y_max, image_x_min:image_x_max]
 
-        ratio = float(subset.shape[1]) / float(subset.shape[0])
+        # ratio = float(subset.shape[1]) / float(subset.shape[0])
 
         # print(min_max_ratio, ratio)
 
