@@ -57,6 +57,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
 
         self.cliConsole = CommsConsoleHelper()
 
+        self.log_to_file = True
+
     def changeActiveSerialPort(self, portName):
         self.serial_port = portName
         self.connected = False
@@ -160,7 +162,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         if len(raw_bytes) == 0:  # If it didn't send a message, we don't parse
             return
 
-        self.raw_data_file.write("{0}: {1}\n".format(time.strftime("%H:%M:%S"), str(raw_bytes)))
+        if self.log_to_file:
+            self.raw_data_file.write("{0}: {1}\n".format(time.strftime("%H:%M:%S"), str(raw_bytes)))
 
         self.last_data_time = time.time()
 
@@ -181,7 +184,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.data_dictionary[Constants.cli_interface_key] = self.cliConsole.getList()
 
     def logMessageToFile(self, message_type, parsed_message):
-        self.parsed_messages_file.write("{0}: {1} {2}\n".format(time.strftime("%H:%M:%S"), message_type, str(parsed_message)))
+        if self.log_to_file:
+            self.parsed_messages_file.write("{0}: {1} {2}\n".format(time.strftime("%H:%M:%S"), message_type, str(parsed_message)))
 
     def closeOut(self):
         self.raw_data_file.close()
