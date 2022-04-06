@@ -20,6 +20,7 @@ class RandomDataInterface(ThreadedModuleCore):
 
         self.i = 0
         self.j = 0
+        self.t = 0
 
         self.vehicle_position_filter = GPSPositionFilter("random data")
 
@@ -44,8 +45,8 @@ class RandomDataInterface(ThreadedModuleCore):
         self.data_dictionary["slowSweep"] = 1 - float(self.j) / 180.0
 
         # Generate lat-lon coords
-        e = math.cos(math.radians(self.j)) * r
-        n = math.sin(math.radians(self.j)) * r
+        e = math.cos(math.radians(self.j)) * r * self.t
+        n = math.sin(math.radians(self.j)) * r * self.t
         lla = navpy.ned2lla([n, e, 0], 42.3601, 71.0589, 0)
         self.vehicle_position_filter.new_gps_coords(lla[0], lla[1])
         [new_lat, new_lon] = self.vehicle_position_filter.get_filtered_position_output()
@@ -73,3 +74,5 @@ class RandomDataInterface(ThreadedModuleCore):
             self.logToConsole(str(random.random()), int(random.random() * 3))
 
         time.sleep(0.02)
+
+        self.t = self.t + 0.3
