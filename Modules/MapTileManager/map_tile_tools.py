@@ -51,7 +51,32 @@ def get_bounding_box_tiles(lower_left, upper_right, zoom):
     return bbox_to_xyz(lon_min, lon_max, lat_min, lat_max, zoom)
 
 
-def get_all_tiles_in_box(bounding_box, zoom):
+def get_tile_name(x, y, zoom):
+    return "{0},{1},{2}".format(zoom, x, y)
+
+
+def get_all_tiles_in_box(bounding_box, zoom, exclude_list=None):
+    if exclude_list is None:
+        exclude_list = []
+
+    [x_min, x_max, y_min, y_max] = bounding_box
+
+    out_dict = {}
+
+    for x in range(x_min, x_max + 1):
+        for y in range(y_min, y_max + 1):
+            tile_name = get_tile_name(x, y, zoom)
+
+            if tile_name not in exclude_list:
+                tile = download_tile_as_cv2(x, y, zoom)
+                out_dict[tile_name] = tile
+
+                time.sleep(0.01)  # Space out url requests a bit
+
+    return out_dict
+
+
+def stitch_all_tiles_in_box(bounding_box, zoom, tile_database):
     [x_min, x_max, y_min, y_max] = bounding_box
 
     out_img = None
@@ -59,8 +84,12 @@ def get_all_tiles_in_box(bounding_box, zoom):
     for x in range(x_min, x_max + 1):
         column = None
         for y in range(y_min, y_max + 1):
-            tile = download_tile_as_cv2(x, y, zoom)
-            time.sleep(0.01)  # Space out url requests a bit
+            tile_name = get_tile_name(x, y, zoom)
+
+            if tile_name in tile_database:
+                tile = tile_database[tile_name]
+            else:
+                tile = numpy.zeros((256, 256, 3), dtype=numpy.uint8)
 
             if column is None:
                 column = tile
@@ -105,7 +134,7 @@ def get_edges_for_tile_set(tile_set, zoom):
 # https://wiki.openstreetmap.org/wiki/Zoom_levels
 # These are the meters/pixel numbers on the equator.
 # This won't be true anywhere else, but unless we operate REALLY far north, we won't notice
-ZOOM_LEVELS = [156412, 78206, 39103, 19551, 9776, 4888, 2444, 1222, 610.984, 305.492, 152.746, 76.373, 38.187, 19.093, 9.547, 4.773, 2.387, 1.193, 0.596, 0.298, 0.149]
+ZOOM_LEVELS = [156412, 78206, 39103, 19551, 9776, 4888, 2444, 1222, 610.984, 305.492, 152.746, 76.373, 38.187, 19.093, 9.547, 4.773, 2.387, 1.193, 0.596, 0.298]
 
 
 def get_zoom_level_from_pixels_per_meter(pixels_per_meter):
@@ -114,17 +143,3 @@ def get_zoom_level_from_pixels_per_meter(pixels_per_meter):
             return ZOOM_LEVELS.index(value)
 
     return 19  # Otherwise we return the highest zoom
-
-
-if __name__ == '__main__':
-    zoom = 19
-
-    origin = [42.3601, -71.0589]
-    coords_2 = navpy.ned2lla([100, 200, 0], origin[0], origin[1], 0)[0:2]
-    print(origin, coords_2)
-
-    bbox = get_bounding_box_tiles(origin, coords_2, zoom)
-    img = get_all_tiles_in_box(bbox, zoom)
-
-    cv2.imshow("test", img)
-    cv2.waitKey(0)

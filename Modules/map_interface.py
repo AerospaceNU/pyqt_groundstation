@@ -22,7 +22,9 @@ class MapInterface(ThreadedModuleCore):
         self.data_dictionary[Constants.map_tile_manager_key] = self.tile_manager
 
     def spin(self):
-        try:
-            self.tile_manager.process_requests()
-        except Exception as e:
-            print("Error getting map tiles {}".format(e))
+        self.tile_manager.process_requests()
+
+        # try:
+        #     self.tile_manager.process_requests()
+        # except Exception as e:
+        #     print("Error getting map tiles {}".format(e))

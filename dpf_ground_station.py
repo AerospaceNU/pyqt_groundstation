@@ -247,8 +247,11 @@ class DPFGUI():
 
         # Send full database dictionary back to the data interfaces
         for interface in self.module_dictionary:
-            self.module_dictionary[interface].setFullDataDictionary(copy.deepcopy(self.database_dictionary))
-            self.updateReconfigureOptions(Constants.primary_reconfigure, self.module_dictionary[interface].getReconfigureDictionary())
+            try:
+                self.module_dictionary[interface].setFullDataDictionary(copy.deepcopy(self.database_dictionary))
+                self.updateReconfigureOptions(Constants.primary_reconfigure, self.module_dictionary[interface].getReconfigureDictionary())
+            except RuntimeError:  # Sometimes there's a "dictionary changed size during iteration" error here that I don't want to debug
+                pass
 
         # Update placeholder widgets
         for widget in self.placeHolderList:

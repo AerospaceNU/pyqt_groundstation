@@ -83,8 +83,8 @@ class MapWidget(CustomQWidgetBase):
         if len(self.datum) == 0:  # Can't draw a map if we don't know our lat and lon
             return
 
-        if time.time() > self.last_image_request_time + 1 and self.map_tile_manager is not None:  # Do we need a new map?
-            self.last_image_request_time = time.time() + 10
+        if time.time() > self.last_image_request_time + 5 and self.map_tile_manager is not None:  # Do we need a new map?
+            self.last_image_request_time = time.time()
 
             lower_left_coordinates = self.map_draw_widget.drawLocationToPoint(0, self.map_draw_widget.height())
             upper_right_coordinates = self.map_draw_widget.drawLocationToPoint(self.map_draw_widget.width(), 0)

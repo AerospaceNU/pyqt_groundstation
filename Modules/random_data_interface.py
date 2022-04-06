@@ -47,7 +47,7 @@ class RandomDataInterface(ThreadedModuleCore):
         # Generate lat-lon coords
         e = math.cos(math.radians(self.j)) * r * self.t
         n = math.sin(math.radians(self.j)) * r * self.t
-        lla = navpy.ned2lla([n, e, 0], 42.3601, 71.0589, 0)
+        lla = navpy.ned2lla([n, e, 0], 42.3601, -71.0589, 0)
         self.vehicle_position_filter.new_gps_coords(lla[0], lla[1])
         [new_lat, new_lon] = self.vehicle_position_filter.get_filtered_position_output()
         self.data_dictionary[Constants.latitude_key] = new_lat
