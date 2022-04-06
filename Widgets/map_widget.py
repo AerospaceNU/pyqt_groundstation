@@ -97,7 +97,7 @@ class MapWidget(CustomQWidgetBase):
 
             self.map_tile_manager.request_new_tile(lower_left_lla, upper_right_lla, self.width())
 
-        if self.map_tile_manager.hasNewMap():  # Check for and get new map if it exists
+        if self.map_tile_manager is not None and self.map_tile_manager.hasNewMap():  # Check for and get new map if it exists
             map_tile = self.map_tile_manager.getLastTile()
 
             lower_left_lla = map_tile.lower_left
@@ -136,6 +136,7 @@ class MapImageBackground(QLabel):
         """Widget that draws the map image background"""
         super().__init__(parent)
 
+        self.has_new_map_image = True
         self.map_image = None
         self.map_image_bottom_left = [0, 0]
         self.map_image_top_right = [0, 0]
@@ -143,10 +144,16 @@ class MapImageBackground(QLabel):
         self.window_bottom_left = [0, 0]
         self.window_top_right = [0, 0]
 
+        self.last_map_bl = [0, 0]
+        self.last_map_ur = [0, 0]
+        self.last_window_bl = [0, 0]
+        self.last_window_ur = [0, 0]
+
     def setMapBackground(self, map_image, bottom_left, upper_right):
         self.map_image = map_image
         self.map_image_bottom_left = bottom_left
         self.map_image_top_right = upper_right
+        self.has_new_map_image = True
 
     def removeMapBackground(self):
         self.map_image = None
@@ -163,7 +170,26 @@ class MapImageBackground(QLabel):
         if update_background and self.map_image is not None:
             self.updateImage()
 
+    def isMapSameAsLast(self):
+        map_ur_same = self.last_map_ur == self.map_image_top_right
+        map_bl_same = self.last_map_bl == self.map_image_bottom_left
+        win_ur_same = self.last_window_ur == self.window_top_right
+        win_bl_same = self.last_window_bl == self.window_bottom_left
+
+        is_map_same = map_ur_same and map_bl_same and win_ur_same and win_bl_same and not self.has_new_map_image
+
+        self.has_new_map_image = False
+        self.last_map_ur = self.map_image_top_right
+        self.last_map_bl = self.map_image_bottom_left
+        self.last_window_ur = self.window_top_right
+        self.last_window_bl = self.window_bottom_left
+
+        return is_map_same
+
     def updateImage(self):
+        if self.isMapSameAsLast():
+            return
+
         map_image_width = self.map_image.shape[1]
         map_image_height = self.map_image.shape[0]
 
