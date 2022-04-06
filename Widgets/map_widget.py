@@ -95,7 +95,7 @@ class MapWidget(CustomQWidgetBase):
             lower_left_lla = navpy.ned2lla(lower_left_ned, self.datum[0], self.datum[1], 0)
             upper_right_lla = navpy.ned2lla(upper_right_ned, self.datum[0], self.datum[1], 0)
 
-            self.map_tile_manager.request_new_tile(lower_left_lla, upper_right_lla)
+            self.map_tile_manager.request_new_tile(lower_left_lla, upper_right_lla, self.width())
 
         if self.map_tile_manager.hasNewMap():  # Check for and get new map if it exists
             map_tile = self.map_tile_manager.getLastTile()
@@ -108,12 +108,6 @@ class MapWidget(CustomQWidgetBase):
 
             lower_left_enu = [lower_left_coordinates[1], lower_left_coordinates[0]]
             upper_right_enu = [upper_right_coordinates[1], upper_right_coordinates[0]]
-
-            # Ask for more space so we don't go off the edge immediately
-            lower_left_enu[0] -= 100
-            lower_left_enu[1] -= 100
-            upper_right_enu[0] += 100
-            upper_right_enu[1] += 100
 
             self.map_background_widget.setMapBackground(map_tile.map_image, lower_left_enu, upper_right_enu)
             self.map_draw_widget.setOpaqueBackground(False)
@@ -180,16 +174,12 @@ class MapImageBackground(QLabel):
 
         # Make sure the map actually goes on the screen
         if self.map_image_bottom_left[0] > self.window_top_right[0]:
-            print("A")
             return
         elif self.map_image_top_right[0] < self.window_bottom_left[0]:
-            print("B")
             return
         elif self.map_image_bottom_left[1] > self.window_top_right[1]:
-            print("C")
             return
         elif self.map_image_top_right[1] < self.window_bottom_left[1]:
-            print("D")
             return
 
         image_x_min = math.floor(interpolate(self.window_bottom_left[0], self.map_image_bottom_left[0], self.map_image_top_right[0], 0, map_image_width))
@@ -210,7 +200,7 @@ class MapImageBackground(QLabel):
             image_y_min = 0
         if image_y_max > map_image_height:
             rows_to_add_bottom = image_y_max - map_image_height
-            image_y_max = 0
+            image_y_max = map_image_height
 
         if image_x_min < 0:
             columns_to_add_right = -image_x_min
@@ -222,8 +212,8 @@ class MapImageBackground(QLabel):
         # Do the resize before we add extra pixels
         subset = self.map_image[image_y_min:image_y_max, image_x_min:image_x_max]
 
-        new_width = int(subset.shape[1] * width_ratio)
-        new_height = int(subset.shape[0] * width_ratio)
+        new_width = int(float(subset.shape[1]) * width_ratio)
+        new_height = int(float(subset.shape[0]) * width_ratio)
 
         if new_width > 0 and new_height > 0:
             subset = cv2.resize(subset, (new_width, new_height))

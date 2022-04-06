@@ -60,7 +60,7 @@ def get_all_tiles_in_box(bounding_box, zoom):
         column = None
         for y in range(y_min, y_max + 1):
             tile = download_tile_as_cv2(x, y, zoom)
-            time.sleep(0.01) # Space out url requests a bit
+            time.sleep(0.01)  # Space out url requests a bit
 
             if column is None:
                 column = tile
@@ -100,6 +100,20 @@ def get_edges_for_tile_set(tile_set, zoom):
                 upper_right[1] = max(upper_right[1], max_lon)
 
     return lower_left, upper_right
+
+
+# https://wiki.openstreetmap.org/wiki/Zoom_levels
+# These are the meters/pixel numbers on the equator.
+# This won't be true anywhere else, but unless we operate REALLY far north, we won't notice
+ZOOM_LEVELS = [156412, 78206, 39103, 19551, 9776, 4888, 2444, 1222, 610.984, 305.492, 152.746, 76.373, 38.187, 19.093, 9.547, 4.773, 2.387, 1.193, 0.596, 0.298, 0.149]
+
+
+def get_zoom_level_from_pixels_per_meter(pixels_per_meter):
+    for value in ZOOM_LEVELS:
+        if value < pixels_per_meter:
+            return ZOOM_LEVELS.index(value)
+
+    return 19  # Otherwise we return the highest zoom
 
 
 if __name__ == '__main__':

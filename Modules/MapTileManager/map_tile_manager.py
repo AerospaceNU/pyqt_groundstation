@@ -2,7 +2,8 @@
 Handles loading and processing of map tiles
 """
 
-from Modules.MapTileManager.map_tile_tools import get_bounding_box_tiles, get_all_tiles_in_box, get_edges_for_tile_set
+import navpy
+from Modules.MapTileManager.map_tile_tools import get_bounding_box_tiles, get_all_tiles_in_box, get_edges_for_tile_set, get_zoom_level_from_pixels_per_meter
 
 
 class MapTile(object):
@@ -35,12 +36,22 @@ class MapTileManager(object):
         if len(self.request_queue) == 0:
             return
 
+        # Break out data
         request = self.request_queue.pop()
         lower_left = request[0][0:2]
         upper_right = request[1][0:2]
-        zoom = 19
+        pixel_width = request[2]
 
-        tile_set = get_bounding_box_tiles(lower_left, upper_right, zoom)
+        # Calculate meters per pixel and then zoom level
+        meter_width = abs(navpy.lla2ned(lower_left[0], lower_left[1], 0, upper_right[0], upper_right[1], 0)[1])
+        meters_per_pixel = float(meter_width) / float(pixel_width)
+        zoom = get_zoom_level_from_pixels_per_meter(meters_per_pixel)
+
+        # Add some padding
+        new_lower_left = navpy.ned2lla([-100, -100, 0], lower_left[0], lower_left[1], 0)[0:2]
+        new_upper_right = navpy.ned2lla([100, 100, 0], upper_right[0], upper_right[1], 0)[0:2]
+
+        tile_set = get_bounding_box_tiles(new_lower_left, new_upper_right, zoom)
 
         if self.last_tile_set == tile_set:  # If we're getting the same data again, skip it
             return
@@ -53,5 +64,5 @@ class MapTileManager(object):
         self.has_new_map = True
         self.last_tile_set = tile_set
 
-    def request_new_tile(self, lower_left_lla, upper_right_lla):
-        self.request_queue.append([lower_left_lla, upper_right_lla])
+    def request_new_tile(self, lower_left_lla, upper_right_lla, pixel_width):
+        self.request_queue.append([lower_left_lla, upper_right_lla, pixel_width])
