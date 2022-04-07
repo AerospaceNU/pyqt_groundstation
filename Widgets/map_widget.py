@@ -6,7 +6,7 @@ import cv2
 from PyQt5 import QtGui
 
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
-from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QPolygon, QPixmap
+from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QPolygon, QPixmap, QMouseEvent
 from PyQt5.QtCore import Qt, QPoint
 
 from Widgets.custom_q_widget_base import CustomQWidgetBase
@@ -129,6 +129,9 @@ class MapWidget(CustomQWidgetBase):
 
     def setXY(self, x, y):
         self.map_draw_widget.setXY(x, y)
+
+    def resetOrigin(self):
+        self.map_draw_widget.resetOrigin()
 
 
 class MapImageBackground(QLabel):
@@ -295,6 +298,8 @@ class MapDrawWidget(QWidget):
         self.min_axis_value = -10
         self.max_axis_value = 10
 
+        self.origin_offset_meters = [0, 0]
+
         self.oldPoints = []
         self.paths = {}
         self.opaque_background = True
@@ -310,8 +315,35 @@ class MapDrawWidget(QWidget):
         self.newPointInterval = update_interval
         self.newPointSpacing = 10
 
+        self.isClicked = False
+        self.activeOffset = [0, 0]
+
     def setOpaqueBackground(self, enabled):
         self.opaque_background = enabled
+
+    def wheelEvent(self, event):
+        scroll_distance = -event.angleDelta().y()
+        delta_meters = (self.max_axis_value - self.min_axis_value) / 10
+
+        self.min_axis_value = min(self.min_axis_value - (delta_meters * scroll_distance / 120.0), -10)  # 120 is a magic number based on how far the mouse goes
+        self.max_axis_value = max(self.max_axis_value + (delta_meters * scroll_distance / 120.0), 10)
+
+    def mousePressEvent(self, e: QMouseEvent):
+        """Determines if we clicked on a widget"""
+        self.isClicked = True
+        self.activeOffset = [e.screenPos().x(), e.screenPos().y()]
+
+    def mouseMoveEvent(self, e: QMouseEvent):
+        """Moves the active widget to the position of the mouse if we are currently clicked"""
+        meters_per_pixel = (self.max_axis_value - self.min_axis_value) / self.height()
+
+        if self.isClicked:
+            self.origin_offset_meters[0] += (e.screenPos().x() - self.activeOffset[0]) * meters_per_pixel
+            self.origin_offset_meters[1] -= (e.screenPos().y() - self.activeOffset[1]) * meters_per_pixel
+            self.activeOffset = [e.screenPos().x(), e.screenPos().y()]
+
+    def mouseReleaseEvent(self, a0: QtGui.QMouseEvent) -> None:
+        self.isClicked = False
 
     def paintEvent(self, e):
         painter = QPainter(self)  # Blue background
@@ -406,34 +438,38 @@ class MapDrawWidget(QWidget):
         """Converts a point in the real world to a position on the screen"""
         size_ratio = self.height() / self.width()
 
-        out_x = interpolate(x, self.min_axis_value / size_ratio, self.max_axis_value / size_ratio, self.padding + 10, self.width() - self.padding)
-        out_y = interpolate(y, self.min_axis_value, self.max_axis_value, self.height() - (self.padding + 10), self.padding)
+        out_x = interpolate(x, (self.min_axis_value / size_ratio) - self.origin_offset_meters[0], (self.max_axis_value / size_ratio) - self.origin_offset_meters[0], self.padding + 10, self.width() - self.padding)
+        out_y = interpolate(y, self.min_axis_value - self.origin_offset_meters[1], self.max_axis_value - self.origin_offset_meters[1], self.height() - (self.padding + 10), self.padding)
         return [int(out_x), int(out_y)]
 
     def drawLocationToPoint(self, x, y):
         """Should be the opposite of the function above"""
         size_ratio = self.height() / self.width()
 
-        out_x = interpolate(x, self.padding + 10, self.width() - self.padding, self.min_axis_value / size_ratio, self.max_axis_value / size_ratio)
-        out_y = interpolate(y, self.height() - (self.padding + 10), self.padding, self.min_axis_value, self.max_axis_value)
+        out_x = interpolate(x, self.padding + 10, self.width() - self.padding, (self.min_axis_value / size_ratio) - self.origin_offset_meters[0], (self.max_axis_value / size_ratio) - self.origin_offset_meters[0])
+        out_y = interpolate(y, self.height() - (self.padding + 10), self.padding, self.min_axis_value - self.origin_offset_meters[1], self.max_axis_value - self.origin_offset_meters[1])
         return [out_x, out_y]
 
     def setHeading(self, heading):
         self.heading = heading
 
     def setXY(self, x, y):
+        # Track smallest and largest value ever seen
         self.min_axis_value = min(self.min_axis_value, x, y)
         self.max_axis_value = max(self.max_axis_value, x, y)
 
+        # Update current position of vehicle
         self.x_position = x
         self.y_position = y
 
+        # Get distance to last point in history
         if len(self.oldPoints) > 0:
             last_point_in_list = self.oldPoints[0]
             distance = distance_between_points(self.x_position, self.y_position, last_point_in_list[0], last_point_in_list[1])
         else:
             distance = 0
 
+        # Update history if we need to
         if x == 0:
             return
         if len(self.oldPoints) == 0:
@@ -443,6 +479,7 @@ class MapDrawWidget(QWidget):
                 self.oldPoints = ([[x, y]] + self.oldPoints)  # [:self.pointsToKeep] We keep all the points now
                 self.lastPointTime = time.time()
 
+        # Figure out how many decimals to use on the axis scales
         real_axis_size = self.max_axis_value - self.min_axis_value
 
         if real_axis_size < 1:
@@ -457,3 +494,8 @@ class MapDrawWidget(QWidget):
         self.paths = {}
         self.min_axis_value = -10
         self.max_axis_value = 10
+
+        self.origin_offset_meters = [0, 0]
+
+    def resetOrigin(self):
+        self.origin_offset_meters = [0, 0]

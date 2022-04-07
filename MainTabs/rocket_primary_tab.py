@@ -22,18 +22,22 @@ class RocketPrimaryTab(TabCommon):
     def __init__(self, tab_name):
         super().__init__(tab_name)
 
+        self.ButtonPanel = button_panel.ButtonPanel()
+        self.Map = map_widget.MapWidget()
+
         self.FlightDisplay = self.addWidget(flight_display.FlightDisplay(compass_and_text=False))
         self.StatusBar = self.addWidget(vehicle_status_widget.VehicleStatusWidget())
         self.VideoPanel = self.addWidget(video_widget.VideoWidget())
         self.Annunciator = self.addWidget(annunciator_panel.AnnunciatorPanel())
-        self.ButtonPanel = self.addWidget(button_panel.ButtonPanel())
+        self.addWidget(self.ButtonPanel)
         self.Console = self.addWidget(simple_console_widget.SimpleConsoleWidget())
-        self.Map = self.addWidget(map_widget.MapWidget())
+        self.addWidget(self.Map)
         self.AltitudeGraph = self.addWidget(graph_widget.GraphWidget(title="Altitude", source_list=[Constants.altitude_key]))
 
         self.ButtonPanel.clearMapButton.clicked.connect(self.Map.clearMap)  # This is a sketchy way to do this
         self.ButtonPanel.resetDatumButton.clicked.connect(self.Map.resetDatum)
         self.ButtonPanel.resetGraphButton.clicked.connect(self.AltitudeGraph.clearGraph)
+        self.ButtonPanel.resetOriginButton.clicked.connect(self.Map.resetOrigin)
 
         layout = QGridLayout()
         layout.addWidget(self.StatusBar, 1, 1, 1, 2)  # Upper right
