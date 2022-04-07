@@ -49,7 +49,7 @@ class MapTileManager(object):
         # Calculate meters per pixel and then zoom level
         meter_width = abs(navpy.lla2ned(lower_left[0], lower_left[1], 0, upper_right[0], upper_right[1], 0)[1])
         meters_per_pixel = float(meter_width) / float(pixel_width)
-        zoom = get_zoom_level_from_pixels_per_meter(meters_per_pixel) - 1
+        zoom = get_zoom_level_from_pixels_per_meter(meters_per_pixel)
 
         if zoom != self.last_zoom:
             self.tile_cache = {}
