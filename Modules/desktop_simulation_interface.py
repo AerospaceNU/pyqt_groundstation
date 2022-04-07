@@ -44,9 +44,8 @@ class LocalSimulationFlightInterface(GroundStationDataInterface):
         # self.active_radio = 1
         self.has_data = True
 
-        data = self.recv_size()
-
         try:
+            data = self.recv_size()
             self.parseData(data)
         except Exception as e:
             self.logToConsole("Couldn't parse local simulation message: {0}, closing connection".format(e), 2)

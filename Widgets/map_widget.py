@@ -5,7 +5,7 @@ import numpy
 import cv2
 from PyQt5 import QtGui
 
-from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
+from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QMenu
 from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QPolygon, QPixmap, QMouseEvent
 from PyQt5.QtCore import Qt, QPoint
 
@@ -46,6 +46,16 @@ class MapWidget(CustomQWidgetBase):
         self.map_tile_manager = None
 
         self.last_image_request_time = time.time()
+
+    def addCustomMenuItems(self, menu: QMenu, e):
+        menu.addAction("Clear Map", self.clearMap)
+        menu.addAction("Reset Datum", self.resetDatum)
+        menu.addAction("Reset Origin", self.resetOrigin)
+
+        if self.map_draw_widget.dragging_enabled:
+            menu.addAction("Disable Map Dragging", lambda enabled=False: self.map_draw_widget.setDraggingEnabled(enabled))
+        else:
+            menu.addAction("Enable Map Dragging", lambda enabled=True: self.map_draw_widget.setDraggingEnabled(enabled))
 
     def updateData(self, vehicle_data, updated_data):
         heading = float(get_value_from_dictionary(vehicle_data, "yaw", 0))
@@ -317,11 +327,19 @@ class MapDrawWidget(QWidget):
 
         self.isClicked = False
         self.activeOffset = [0, 0]
+        self.dragging_enabled = False
 
     def setOpaqueBackground(self, enabled):
         self.opaque_background = enabled
 
+    def setDraggingEnabled(self, enabled):
+        self.dragging_enabled = enabled
+
     def wheelEvent(self, event):
+        if not self.dragging_enabled:
+            super(MapDrawWidget, self).wheelEvent(event)
+            return
+
         scroll_distance = -event.angleDelta().y()
         delta_meters = (self.max_axis_value - self.min_axis_value) / 10
 
@@ -330,11 +348,19 @@ class MapDrawWidget(QWidget):
 
     def mousePressEvent(self, e: QMouseEvent):
         """Determines if we clicked on a widget"""
+        if not self.dragging_enabled:
+            super(MapDrawWidget, self).mousePressEvent(e)
+            return
+
         self.isClicked = True
         self.activeOffset = [e.screenPos().x(), e.screenPos().y()]
 
     def mouseMoveEvent(self, e: QMouseEvent):
         """Moves the active widget to the position of the mouse if we are currently clicked"""
+        if not self.dragging_enabled:
+            super().mouseMoveEvent(e)
+            return
+
         meters_per_pixel = (self.max_axis_value - self.min_axis_value) / self.height()
 
         if self.isClicked:
@@ -343,6 +369,10 @@ class MapDrawWidget(QWidget):
             self.activeOffset = [e.screenPos().x(), e.screenPos().y()]
 
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent) -> None:
+        if not self.dragging_enabled:
+            super().mouseReleaseEvent(a0)
+            return
+
         self.isClicked = False
 
     def paintEvent(self, e):
