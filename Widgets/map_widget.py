@@ -138,6 +138,7 @@ class MapImageBackground(QLabel):
 
         self.has_new_map_image = True
         self.map_image = None
+        self.initial_draw_passes = 0
         self.map_image_bottom_left = [0, 0]
         self.map_image_top_right = [0, 0]
 
@@ -148,6 +149,8 @@ class MapImageBackground(QLabel):
         self.last_map_ur = [0, 0]
         self.last_window_bl = [0, 0]
         self.last_window_ur = [0, 0]
+
+        self.setStyleSheet("color: black")
 
     def setMapBackground(self, map_image, bottom_left, upper_right):
         self.map_image = map_image
@@ -162,6 +165,8 @@ class MapImageBackground(QLabel):
 
         self.window_bottom_left = [0, 0]
         self.window_top_right = [0, 0]
+
+        self.initial_draw_passes = 0
 
     def updateBoundCoordinatesMeters(self, bottom_left, upper_right, update_background=True):
         self.window_bottom_left = bottom_left
@@ -187,7 +192,9 @@ class MapImageBackground(QLabel):
         return is_map_same
 
     def updateImage(self):
-        if self.isMapSameAsLast():
+        if self.initial_draw_passes < 2:  # We need to draw the map twice the first time for some reason
+            self.initial_draw_passes += 1
+        elif self.isMapSameAsLast():
             return
 
         map_image_width = self.map_image.shape[1]
@@ -269,16 +276,11 @@ class MapImageBackground(QLabel):
             subset = numpy.zeros((100, 100, 3), dtype=numpy.uint8)
             subset[:] = BACKGROUND_COLOR
 
-        # If the width isn't a multiple of four, bad things happen
-        image_width = 4 * round((window_width - 1) / 4)
-        image_height = window_height  # int(float(image_width) * aspect_ratio)
+        self.setMaximumSize(window_width, window_height)
+        self.setMinimumSize(window_width, window_height)
 
-        self.setMaximumSize(image_width, image_height)
-        self.setMinimumSize(image_width, image_height)
-
-        frame = cv2.resize(subset, (int(image_width), int(image_height)))
-        rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        convert_to_qt_format = QtGui.QImage(rgb_image.data, rgb_image.shape[1], rgb_image.shape[0], QtGui.QImage.Format_RGB888)
+        rgb_image = cv2.cvtColor(subset, cv2.COLOR_BGR2RGBA)
+        convert_to_qt_format = QtGui.QImage(rgb_image.data, rgb_image.shape[1], rgb_image.shape[0], QtGui.QImage.Format_RGBA8888)
         convert_to_qt_format = QtGui.QPixmap.fromImage(convert_to_qt_format)
         self.setPixmap(convert_to_qt_format)
 
