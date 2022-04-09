@@ -9,8 +9,6 @@ from urllib.request import Request
 from Modules.MapTileManager.tile_convert import bbox_to_xyz, tile_edges
 
 
-
-
 def download_tile(x, y, z):
     # url = "https://a.tile.openstreetmap.org/{0}/{1}/{2}.png".format(z, x, y)
     url = "http://mt1.google.com/vt/lyrs=y&x={0}&y={1}&z={2}".format(x, y, z)

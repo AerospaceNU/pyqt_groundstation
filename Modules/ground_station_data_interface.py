@@ -82,7 +82,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         try:
             data = int(data)
         except:
-            pass
+            return
 
         if data in RADIO_NAMES:
             self.active_radio = data
