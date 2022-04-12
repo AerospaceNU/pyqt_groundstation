@@ -51,9 +51,6 @@ class MapTileManager(object):
         meters_per_pixel = float(meter_width) / float(pixel_width)
         zoom = get_zoom_level_from_pixels_per_meter(meters_per_pixel)
 
-        if zoom != self.last_zoom:
-            self.tile_cache = {}
-
         # Add some padding
         new_lower_left = navpy.ned2lla([-100, -100, 0], lower_left[0], lower_left[1], 0)[0:2]
         new_upper_right = navpy.ned2lla([100, 100, 0], upper_right[0], upper_right[1], 0)[0:2]
