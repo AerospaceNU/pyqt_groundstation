@@ -196,21 +196,24 @@ class LineCutterMessage(BaseMessage):
     """uint8 number state uint32 timestamp float avgAlt avgDeltaAlt uint8 batt bool cut_1 cut_2 uint16 photoresistor"""
 
     def parseMessage(self, data):
-        data = data[0:19]
-        unpacked_data = struct.unpack("<BBIffB??H", data)
+        """We generate the message format after parsing which line cutter this data is for."""
+
+        data = data[0:1]
+        unpacked_data = struct.unpack("<B", data)  # Just get the first byte
         line_cutter_number = unpacked_data[0]
 
-        dictionary = {Constants.line_cutter_number_key: unpacked_data[0],
-                      Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_state_key): unpacked_data[1],
-                      Constants.makeLineCutterString(line_cutter_number, Constants.timestamp_ms_key): unpacked_data[2],
-                      Constants.makeLineCutterString(line_cutter_number, Constants.altitude_key): unpacked_data[3],
-                      Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key): unpacked_data[4],
-                      Constants.makeLineCutterString(line_cutter_number, Constants.battery_voltage_key): unpacked_data[5] * 0.05,
-                      Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_1): unpacked_data[6],
-                      Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_2): unpacked_data[7],
-                      Constants.makeLineCutterString(line_cutter_number, Constants.photoresistor_key): unpacked_data[8]}
+        self.messageData = [['B', Constants.line_cutter_number_key],
+                            ['B', Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_state_key)],
+                            ['I', Constants.makeLineCutterString(line_cutter_number, Constants.timestamp_ms_key)],
+                            ['f', Constants.makeLineCutterString(line_cutter_number, Constants.altitude_key)],
+                            ['f', Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key)],
+                            ['B', Constants.makeLineCutterString(line_cutter_number, Constants.battery_voltage_key), 0.05],
+                            ['?', Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_1)],
+                            ['?', Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_2)],
+                            ['H', Constants.makeLineCutterString(line_cutter_number, Constants.photoresistor_key)],
+                            ]
 
-        return dictionary
+        return super().parseMessage(data)  # Then call the parent parseMessage function like normal
 
 
 class CLIDataMessage(BaseMessage):
