@@ -3,6 +3,8 @@ import math
 import numpy
 import datetime
 
+from collections import OrderedDict
+
 from constants import Constants
 
 """
@@ -40,6 +42,11 @@ def lat_lon_decimal_minutes_to_decimal_degrees(min):
     FCB data comes in as ddmm.mmmmmm
     This converts to dd.dddddddd
     """
+
+    if min == float('nan'):
+        print("Found a NaN while parsing lat/lon data")
+        return 0
+
     abs_val = abs(min)
     sign = numpy.sign(min)
     return (math.trunc(float(abs_val) / 100.0) + (float(abs_val) % 100.0) / 60.0) * sign
@@ -69,115 +76,177 @@ def get_fcb_state_from_state_num(state_num):
         return Constants.invalid_fcb_state_name
 
 
-def parse_orientation_message(data, dictionary):
+class BaseMessage(object):
+    messageData = []
+
+    def __init__(self):
+        """
+        Base class for a message.
+        Contains all the generic logic needed to parse one into a dictionary
+        """
+
+        self.byteOrder = "<"  # Make the string to pass to the struct library
+        for data_point in self.messageData:
+            self.byteOrder += data_point[0]
+
+    def parseMessage(self, data):
+        """
+        Returns a dictionary of values from the binary data in the message
+        """
+
+        dictionary = {}
+
+        message_length = struct.calcsize(self.byteOrder)
+        data = data[0:message_length]
+        unpacked_data = struct.unpack(self.byteOrder, data)
+
+        if len(unpacked_data) != len(self.messageData):
+            print("length mismatch")
+
+        for i in range(len(self.messageData)):
+            message_line = self.messageData[i]
+
+            if len(message_line) == 2:
+                dictionary[message_line[1]] = unpacked_data[i]
+            else:
+                parse_type = message_line[2]
+                key = message_line[1]
+
+                # Various special options to parse
+                if type(parse_type) == int or type(parse_type) == float:  # If it's a number, just multiply
+                    dictionary[key] = unpacked_data[i] * parse_type
+                elif parse_type == "TIME":  # If its a time, make a time string
+                    dictionary[key] = str(datetime.datetime.fromtimestamp(unpacked_data[i]))
+                elif callable(parse_type):  # If its a function
+                    dictionary[key] = parse_type(unpacked_data[i])
+                else:
+                    print("Unknown parse type")
+
+        self.extraParseOptions(data, dictionary)
+
+        return dictionary
+
+    def extraParseOptions(self, data, dictionary):
+        """
+        Override this to add more functionality
+        """
+
+        pass
+
+
+class OrientationMessage(BaseMessage):
     """uint8 state, int8 qw, qx, qy, qz, float wx, wy, wz, ax, ay, az, bx, by, bz;"""
-    data = data[0:41]
-    unpacked_data = struct.unpack("<Bbbbbfffffffff", data)
 
-    dictionary[Constants.fcb_state_number_key] = unpacked_data[0]
+    messageData = [['B', Constants.fcb_state_number_key],
+                   ['b', "qw", 0.001],
+                   ['b', "qx", 0.001],
+                   ['b', "qy", 0.001],
+                   ['b', "qz", 0.001],
+                   ['f', Constants.rotational_velocity_x_key],
+                   ['f', Constants.rotational_velocity_y_key],
+                   ['f', Constants.rotational_velocity_z_key],
+                   ['f', Constants.acceleration_x_key],
+                   ['f', Constants.acceleration_y_key],
+                   ['f', Constants.acceleration_z_key],
+                   ['f', Constants.magnetometer_x_key],
+                   ['f', Constants.magnetometer_y_key],
+                   ['f', Constants.magnetometer_z_key],
+                   ]
 
-    qw = unpacked_data[1] / 100.0  # Orientation, [-100, 100x]
-    qx = unpacked_data[2] / 100.0
-    qy = unpacked_data[3] / 100.0
-    qz = unpacked_data[4] / 100.0
-    wx = unpacked_data[5]  # Rotational velocity
-    wy = unpacked_data[6]
-    wz = unpacked_data[7]
-    ax = unpacked_data[8]  # Acceleration
-    ay = unpacked_data[9]
-    az = unpacked_data[10]
-    bx = unpacked_data[11]  # Magnetic field
-    by = unpacked_data[12]
-    bz = unpacked_data[13]
+    def extraParseOptions(self, data, dictionary):
+        qx = dictionary.pop('qx')
+        qy = dictionary.pop("qy")
+        qz = dictionary.pop("qz")
+        qw = dictionary.pop("qw")
 
-    rpy = quaternion_to_euler_angle(qw, qx, qy, qz)
+        rpy = quaternion_to_euler_angle(qw, qx, qy, qz)
 
-    dictionary[Constants.roll_position_key] = rpy[0]
-    dictionary[Constants.pitch_position_key] = rpy[1]
-    dictionary[Constants.yaw_position_key] = rpy[2]
+        dictionary[Constants.roll_position_key] = rpy[0]
+        dictionary[Constants.pitch_position_key] = rpy[1]
+        dictionary[Constants.yaw_position_key] = rpy[2]
 
-    dictionary[Constants.rotational_velocity_x_key] = wx
-    dictionary[Constants.rotational_velocity_y_key] = wy
-    dictionary[Constants.rotational_velocity_z_key] = wz
+        dictionary[Constants.orientation_quaternion_key] = [qw, qx, qy, qz]
+        dictionary[Constants.orientation_rpy_key] = rpy
 
-    dictionary[Constants.acceleration_x_key] = ax
-    dictionary[Constants.acceleration_y_key] = ay
-    dictionary[Constants.acceleration_z_key] = az
-
-    dictionary[Constants.magnetometer_x_key] = bx
-    dictionary[Constants.magnetometer_y_key] = by
-    dictionary[Constants.magnetometer_z_key] = bz
-
-    dictionary[Constants.orientation_quaternion_key] = [qw, qx, qy, qz]
-    dictionary[Constants.orientation_rpy_key] = rpy
-    dictionary[Constants.rotational_velocity_key] = [wx, wy, wz]
-    dictionary[Constants.acceleration_vector_key] = [ax, ay, az]
-    dictionary[Constants.magnetic_vector_key] = [bx, by, bz]
+        # I don't use these
+        # dictionary[Constants.rotational_velocity_key] = [wx, wy, wz]
+        # dictionary[Constants.acceleration_vector_key] = [ax, ay, az]
+        # dictionary[Constants.magnetic_vector_key] = [bx, by, bz]
 
 
-def parse_altitude_info(data, dictionary):
-    data = data[0:20]
-    unpacked_data = struct.unpack("<fffff", data)
-    dictionary[Constants.barometer_pressure_key] = unpacked_data[0]
-    dictionary[Constants.barometer_pressure_2_key] = unpacked_data[1]
-    dictionary[Constants.press_ref_key] = unpacked_data[2]
-    dictionary[Constants.ground_elevation_key] = unpacked_data[3]
-    dictionary[Constants.ground_temp_key] = unpacked_data[4]
+class PositionDataMessage(BaseMessage):
+    messageData = [['f', Constants.temperature_key],
+                   ['f', Constants.altitude_key],
+                   ['f', Constants.vertical_speed_key],
+                   ['f', Constants.latitude_key, lat_lon_decimal_minutes_to_decimal_degrees],
+                   ['f', Constants.longitude_key, lat_lon_decimal_minutes_to_decimal_degrees],
+                   ['f', Constants.gps_alt_key],
+                   ['f', Constants.fcb_battery_voltage],
+                   ['f', Constants.ground_speed_key, 0.514444],  # fcb reports speed in kts
+                   ['f', Constants.course_over_ground_key],  # GPS reports compass heading (NED and degrees)
+                   ['I', Constants.gps_time_key, "TIME"],
+                   ['B', Constants.gps_sats_key],
+                   ['B', Constants.pyro_continuity, parse_pyro_continuity_byte],
+                   ['B', Constants.fcb_state_number_key],
+                   ['B', Constants.bluetooth_connection_key],
+                   ]
 
 
-def parse_position_data_message(data, dictionary):
-    data = data[0:43]
-    unpacked_data = struct.unpack("<fffffffffIBBB", data)
+class LineCutterMessage(BaseMessage):
+    """uint8 number state uint32 timestamp float avgAlt avgDeltaAlt uint8 batt bool cut_1 cut_2 uint16 photoresistor"""
 
-    dictionary[Constants.temperature_key] = unpacked_data[0]
-    dictionary[Constants.altitude_key] = unpacked_data[1]
-    dictionary[Constants.vertical_speed_key] = unpacked_data[2]
-    dictionary[Constants.latitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[3])
-    dictionary[Constants.longitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[4])
-    dictionary[Constants.gps_alt_key] = unpacked_data[5]
-    dictionary[Constants.fcb_battery_voltage] = unpacked_data[6]
-    dictionary[Constants.ground_speed_key] = unpacked_data[7] * 0.514444  # fcb reports speed in kts
-    dictionary[Constants.course_over_ground_key] = unpacked_data[8]  # GPS reports compass heading (NED and degrees)
-    dictionary[Constants.gps_time_key] = str(datetime.datetime.fromtimestamp(unpacked_data[9]))  # Convert to string so that we aren't passing datetime objects everywhere
-    dictionary[Constants.gps_sats_key] = unpacked_data[10]
-    dictionary[Constants.fcb_state_number_key] = unpacked_data[11]
-    dictionary[Constants.bluetooth_connection_key] = unpacked_data[12]  # TODO: Parse this better
+    def parseMessage(self, data):
+        data = data[0:19]
+        unpacked_data = struct.unpack("<BBIffB??H", data)
+        line_cutter_number = unpacked_data[0]
 
+        dictionary = {Constants.line_cutter_number_key: unpacked_data[0],
+                      Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_state_key): unpacked_data[1],
+                      Constants.makeLineCutterString(line_cutter_number, Constants.timestamp_ms_key): unpacked_data[2],
+                      Constants.makeLineCutterString(line_cutter_number, Constants.altitude_key): unpacked_data[3],
+                      Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key): unpacked_data[4],
+                      Constants.makeLineCutterString(line_cutter_number, Constants.battery_voltage_key): unpacked_data[5] * 0.05,
+                      Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_1): unpacked_data[6],
+                      Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_2): unpacked_data[7],
+                      Constants.makeLineCutterString(line_cutter_number, Constants.photoresistor_key): unpacked_data[8]}
 
-def parse_line_cutter_message(data, dictionary):
-    """
-    uint8 number
-    uint8 state
-    uint32 timestamp
-    float avgAlt
-    float avgDeltaAlt
-    uint8 batt
-    uint8 cut 1
-    uint8 cut 2
-    uint16 photoresistor
-    """
-
-    data = data[0:19]
-    unpacked_data = struct.unpack("<BBIffBBBH", data)
-    line_cutter_number = unpacked_data[0]
-
-    dictionary[Constants.line_cutter_number_key] = unpacked_data[0]
-    dictionary[Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_state_key)] = unpacked_data[1]
-    dictionary[Constants.makeLineCutterString(line_cutter_number, Constants.timestamp_ms_key)] = unpacked_data[2]
-    dictionary[Constants.makeLineCutterString(line_cutter_number, Constants.altitude_key)] = unpacked_data[3]
-    dictionary[Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key)] = unpacked_data[4]
-    dictionary[Constants.makeLineCutterString(line_cutter_number, Constants.battery_voltage_key)] = unpacked_data[5] * 0.05
-    dictionary[Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_1)] = unpacked_data[6] * 0.05
-    dictionary[Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_2)] = unpacked_data[7] * 0.05
-    dictionary[Constants.makeLineCutterString(line_cutter_number, Constants.photoresistor_key)] = unpacked_data[8]
+        return dictionary
 
 
-def parse_pyro_info(data, dictionary):
-    data = data[0:2]
-    unpacked_data = struct.unpack("<BB", data)
+class CLIDataMessage(BaseMessage):
+    """The payload is the string"""
 
-    dictionary[Constants.pyro_continuity] = parse_pyro_continuity_byte(unpacked_data[0])
-    dictionary[Constants.pyro_fire_status] = parse_pyro_fire_status(unpacked_data[1])
+    def parseMessage(self, data):
+        length = data[0]
+        trimmed_data = data[1:length + 1]
+        dictionary = {}
+
+        try:
+            string = trimmed_data.decode()
+
+            if string.strip() != "":
+                print(string)
+
+            dictionary[Constants.cli_string_key] = string
+        except Exception as e:
+            print(e)
+
+        return dictionary
+
+
+class AltitudeInfoMessage(BaseMessage):
+    messageData = [['f', Constants.barometer_pressure_key],
+                   ['f', Constants.barometer_pressure_2_key],
+                   ['f', Constants.press_ref_key],
+                   ['f', Constants.ground_elevation_key],
+                   ['f', Constants.ground_temp_key],
+                   ]
+
+
+class PyroInfoMessage(BaseMessage):
+    messageData = [['B', Constants.pyro_continuity, parse_pyro_continuity_byte],
+                   ['B', Constants.pyro_fire_status, parse_pyro_fire_status],
+                   ]
 
 
 def parse_ground_station_gps(data, dictionary):
@@ -189,32 +258,13 @@ def parse_ground_station_gps(data, dictionary):
     dictionary[Constants.ground_station_temperature_key] = unpacked_data[5]
 
 
-def parse_cli_message(data: bytes, dictionary):
-    """The payload is the string"""
-
-    # print(data)
-    length = data[0]
-    trimmed_data = data[1:length + 1]
-    # print(trimmed_data)
-
-    try:
-        string = trimmed_data.decode()
-
-        if string.strip() != "":
-            print(string)
-
-        dictionary[Constants.cli_string_key] = string
-    except Exception as e:
-        print(e)
-
-
 # Dictionary {[message_number]: [[name], [callback]]}
-MESSAGE_CALLBACKS = {2: ["Orientation", parse_orientation_message],
-                     3: ["Position Data", parse_position_data_message],
-                     4: ["Line Cutter ", parse_line_cutter_message],
-                     5: ["CLI Data", parse_cli_message],
-                     6: ["Alt Info & Cfg", parse_altitude_info],
-                     7: ["Pyro Info", parse_pyro_info]
+MESSAGE_CALLBACKS = {2: ["Orientation", OrientationMessage],
+                     3: ["Position Data", PositionDataMessage],
+                     4: ["Line Cutter ", LineCutterMessage],
+                     5: ["CLI Data", CLIDataMessage],
+                     6: ["Alt Info & Cfg", AltitudeInfoMessage],
+                     7: ["Pyro Info", PyroInfoMessage]
                      }
 # -1: ["Old transmit stuff", parse_test_message]} #Not used anymore
 
@@ -279,7 +329,8 @@ def parse_fcb_message(data):
 
         # Parse message
         try:
-            MESSAGE_CALLBACKS[message_number][1](raw_packet, dictionary)
+            message_object = MESSAGE_CALLBACKS[message_number][1]()  # Make instance of message class
+            dictionary.update(message_object.parseMessage(raw_packet))  # Run the parse method
             success = True
 
             if "line cutter" in message_type.lower() and Constants.line_cutter_number_key in dictionary:
