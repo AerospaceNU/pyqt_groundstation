@@ -127,6 +127,7 @@ class Constants:
     line_cutter_cut_1 = "cut_1"
     line_cutter_cut_2 = "cut_2"
     photoresistor_key = "photoresistor"
+    photoresistor_threshold_key = "photoresistor_threshold"
 
     @staticmethod
     def makeLineCutterString(line_cutter_number, line_cutter_key):

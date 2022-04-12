@@ -35,6 +35,7 @@ from Widgets import video_widget
 from Widgets import graph_widget
 from Widgets import pyro_display_widget
 from Widgets import local_sim_widget
+from Widgets import line_cutter_control
 
 from data_helpers import get_rgb_from_string, get_well_formatted_rgb_string, format_rgb_string, make_stylesheet_string
 from constants import Constants
@@ -104,6 +105,7 @@ class DPFGUI():
                               "Graph Widget": graph_widget.GraphWidget,
                               "Pyro Display": pyro_display_widget.PyroWidget,
                               "Local Sim Helper": local_sim_widget.LocalSimWidget,
+                              "Line Cutter Control": line_cutter_control.LineCutterControl,
                               }  # List of classes of widgets that can be dynamically created
 
         self.application.setObjectName("Application")
@@ -148,7 +150,9 @@ class DPFGUI():
         # Menu bar to add new widgets
         widget_menu = menu_bar.addMenu("Add")
 
-        for item in self.widgetClasses:
+        sorted_keys = list(self.widgetClasses.keys())
+        sorted_keys.sort()
+        for item in sorted_keys:
             widget_menu.addAction(item, lambda name=item: self.makeNewWidgetInCurrentTab(name))
         widget_menu.addSeparator()
 
