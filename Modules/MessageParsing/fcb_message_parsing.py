@@ -3,8 +3,6 @@ import math
 import numpy
 import datetime
 
-from collections import OrderedDict
-
 from constants import Constants
 
 """
@@ -252,15 +250,6 @@ class PyroInfoMessage(BaseMessage):
                    ]
 
 
-def parse_ground_station_gps(data, dictionary):
-    unpacked_data = struct.unpack("<Bfffdd", data)
-    dictionary[Constants.ground_station_latitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[1])
-    dictionary[Constants.ground_station_longitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[2])
-    dictionary[Constants.ground_station_altitude_key] = unpacked_data[3]
-    dictionary[Constants.ground_station_pressure_key] = unpacked_data[4]
-    dictionary[Constants.ground_station_temperature_key] = unpacked_data[5]
-
-
 # Dictionary {[message_number]: [[name], [callback]]}
 MESSAGE_CALLBACKS = {2: ["Orientation", OrientationMessage],
                      3: ["Position Data", PositionDataMessage],
@@ -269,7 +258,17 @@ MESSAGE_CALLBACKS = {2: ["Orientation", OrientationMessage],
                      6: ["Alt Info & Cfg", AltitudeInfoMessage],
                      7: ["Pyro Info", PyroInfoMessage]
                      }
-# -1: ["Old transmit stuff", parse_test_message]} #Not used anymore
+
+
+# Ground station messages
+def parse_ground_station_gps(data, dictionary):
+    unpacked_data = struct.unpack("<Bfffdd", data)
+    dictionary[Constants.ground_station_latitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[1])
+    dictionary[Constants.ground_station_longitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[2])
+    dictionary[Constants.ground_station_altitude_key] = unpacked_data[3]
+    dictionary[Constants.ground_station_pressure_key] = unpacked_data[4]
+    dictionary[Constants.ground_station_temperature_key] = unpacked_data[5]
+
 
 GROUND_STATION_MESSAGE_TYPES = ["Ground Station GPS"]
 
