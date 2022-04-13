@@ -63,9 +63,10 @@ class TabCommon(QWidget):
 
     def setTheme(self, background, widget_background, text, header_text, border):
         background_string = make_stylesheet_string("background", background)
-        color_string = make_stylesheet_string("color", text)
-        border_string = "border: 1px solid " + get_well_formatted_rgb_string("rgb[10,10,10]") + ";"
-        self.setStyleSheet("QWidget#" + self.objectName() + " {" + background_string + color_string + border_string + "}")
+        # color_string = make_stylesheet_string("color", text)
+        # border_string = "border: 1px solid " + get_well_formatted_rgb_string("rgb[10,10,10]") + ";"
+        # self.setStyleSheet("QWidget#" + self.objectName() + " {" + background_string + color_string + border_string + "}")
+        self.setStyleSheet(background_string)
 
         for widget in self.widgetList:
             widget.setTheme(widget_background, text, header_text, border)

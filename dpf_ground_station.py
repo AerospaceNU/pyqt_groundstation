@@ -21,7 +21,6 @@ from MainTabs.settings_tab import SettingsTab
 from MainTabs.diagnostic_tab import DiagnosticTab
 from MainTabs.rocket_primary_tab import RocketPrimaryTab
 from MainTabs.graphs_tab import GraphsTab
-from MainTabs.main_tab_common import TabCommon
 
 from Widgets import annunciator_panel
 from Widgets import control_station_status
@@ -368,6 +367,7 @@ class DPFGUI():
         else:
             new_tab_object = tab(vehicle_name)
             new_tab_object.show()
+            new_tab_object.setStyleSheet(data_helpers.make_stylesheet_string("background", self.backgroundColor))
 
         self.tabObjects.append(new_tab_object)
         self.tabNames.append(vehicle_name)
