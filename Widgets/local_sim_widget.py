@@ -4,7 +4,6 @@ Displays pyro continuity
 
 import os
 import platform
-from sys import platform
 import subprocess
 
 import PyQt5.QtCore as QtCore
@@ -103,12 +102,16 @@ class LocalSimWidget(CustomQWidgetBase):
             self.paths[idx].setText(file)
             self.savePath(idx)
 
+    def is_win(self):
+        from sys import platform
+        return platform == "win32"
+
     def launchSim(self):
         self.killSim()
 
         args = []
 
-        if platform == "win32":
+        if self.is_win():
             is32bit = (platform.architecture()[0] == '32bit')
             system32 = os.path.join(os.environ['SystemRoot'], 'SysNative' if is32bit else 'System32')
             bash = os.path.join(system32, 'wsl.exe')
