@@ -21,7 +21,8 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
         self.line_cutter_options = []
         self.active_line_cutter = 0
 
-        self.armed = False
+        self.cutter_enabled = False
+        self.cutter_armed = False
 
         self.select_box = QComboBox()
         self.refresh_button = QPushButton()
@@ -33,9 +34,10 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
         self.cut_2_label = QLabel()
         self.cut_1_box = QLabel()
         self.cut_2_box = QLabel()
-        self.armed_button = QPushButton()
+        self.cutting_enable_button = QPushButton()
         self.cut_1_button = QPushButton()
         self.cut_2_button = QPushButton()
+        self.arm_button = QPushButton()
 
         layout = QGridLayout()
 
@@ -56,9 +58,10 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
         indicator_box_layout.addWidget(self.cut_2_label, 1, 2)
         indicator_box_layout.addWidget(self.cut_1_box, 2, 1)
         indicator_box_layout.addWidget(self.cut_2_box, 2, 2)
-        indicator_box_layout.addWidget(self.armed_button, 3, 1, 1, 2)
+        indicator_box_layout.addWidget(self.cutting_enable_button, 3, 1, 1, 2)
         indicator_box_layout.addWidget(self.cut_1_button, 4, 1)
         indicator_box_layout.addWidget(self.cut_2_button, 4, 2)
+        indicator_box_layout.addWidget(self.arm_button, 5, 1, 1, 2)
         layout.addLayout(indicator_box_layout, 3, 1)
 
         self.setLayout(layout)
@@ -68,9 +71,10 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
         self.light_text_box.setText("Light:")
         self.cut_1_label.setText("Cut 1")
         self.cut_2_label.setText("Cut 2")
-        self.armed_button.setText("Arm")
+        self.cutting_enable_button.setText("Enable Commands")
         self.cut_1_button.setText("Cut Line 1")
         self.cut_2_button.setText("Cut Line 2")
+        self.arm_button.setText("Arm Line Cutter")
 
         self.cut_1_label.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
         self.cut_1_box.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
@@ -83,6 +87,31 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
 
         self.state_text_box.adjustSize()
         self.light_text_box.adjustSize()
+
+        self.cutting_enable_button.clicked.connect(self.onEnableButtonPress)
+        self.cut_1_button.clicked.connect(lambda: self.onCutButtonPressed(1))
+        self.cut_2_button.clicked.connect(lambda: self.onCutButtonPressed(2))
+        self.arm_button.clicked.connect(self.onArmButtonPressed)
+
+    def onEnableButtonPress(self):
+        self.cutter_enabled = not self.cutter_enabled
+        if self.cutter_enabled:
+            self.cutting_enable_button.setText("Disable Commands")
+        else:
+            self.cutting_enable_button.setText("Enable Commands")
+
+    def onCutButtonPressed(self, button_number):
+        if self.cutter_enabled:
+            self.callbackEvents.append([Constants.cli_interface_key, "--line_cutter {0} fire {1}".format(self.active_line_cutter, button_number)])  # Replace this with whatever fire command you want
+
+    def onArmButtonPressed(self):
+        self.cutter_armed = not self.cutter_armed
+        if self.cutter_armed:
+            self.arm_button.setText("Disarm Line Cutter")
+            self.callbackEvents.append([Constants.cli_interface_key, "--line_cutter {0} arm".format(self.active_line_cutter)])
+        else:
+            self.arm_button.setText("Arm Line Cutter")
+            self.callbackEvents.append([Constants.cli_interface_key, "--line_cutter {0} disarm".format(self.active_line_cutter)])
 
     def updateData(self, vehicle_data, updated_data):
         line_cutter_options = []
@@ -114,13 +143,13 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
         current_line_cutter = self.select_box.currentText()
         if current_line_cutter == "":
             return
-        current_line_cutter_num = int(current_line_cutter[-1])
+        self.active_line_cutter = int(current_line_cutter[-1])
 
-        state_key = Constants.makeLineCutterString(current_line_cutter_num, Constants.line_cutter_state_key)
-        light_key = Constants.makeLineCutterString(current_line_cutter_num, Constants.photoresistor_key)
-        light_threshold_key = Constants.makeLineCutterString(current_line_cutter_num, Constants.photoresistor_threshold_key)
-        cut_1_key = Constants.makeLineCutterString(current_line_cutter_num, Constants.line_cutter_cut_1)
-        cut_2_key = Constants.makeLineCutterString(current_line_cutter_num, Constants.line_cutter_cut_2)
+        state_key = Constants.makeLineCutterString(self.active_line_cutter, Constants.line_cutter_state_key)
+        light_key = Constants.makeLineCutterString(self.active_line_cutter, Constants.photoresistor_key)
+        light_threshold_key = Constants.makeLineCutterString(self.active_line_cutter, Constants.photoresistor_threshold_key)
+        cut_1_key = Constants.makeLineCutterString(self.active_line_cutter, Constants.line_cutter_cut_1)
+        cut_2_key = Constants.makeLineCutterString(self.active_line_cutter, Constants.line_cutter_cut_2)
 
         state = str(get_value_from_dictionary(vehicle_data, state_key, "No Data"))
         light = int(get_value_from_dictionary(vehicle_data, light_key, -1))
@@ -156,6 +185,7 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
 
         self.cut_1_label.setStyleSheet(widget_background_string + text_string)
         self.cut_2_label.setStyleSheet(widget_background_string + text_string)
-        self.armed_button.setStyleSheet(widget_background_string + text_string)
+        self.cutting_enable_button.setStyleSheet(widget_background_string + text_string)
         self.cut_1_button.setStyleSheet(widget_background_string + text_string)
         self.cut_2_button.setStyleSheet(widget_background_string + text_string)
+        self.arm_button.setStyleSheet(widget_background_string + text_string)

@@ -51,9 +51,10 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.radio_reconfigure_page.updateLine("Radio Band", "int", description="Which radio band to use")
         self.radio_reconfigure_page.bindCallback("Target Radio", self.onRadioSwitch)
         self.radio_reconfigure_page.bindCallback("Radio Band", self.onBandSwitch)
-        radio_reconfigure_callbacks = self.radio_reconfigure_page.getCallbackFunctions(Constants.primary_reconfigure)
-        for callback in radio_reconfigure_callbacks:
-            self.callbacks_to_add.append([callback, radio_reconfigure_callbacks[callback]])
+
+        reconfigure_callbacks = self.radio_reconfigure_page.getCallbackFunctions(Constants.primary_reconfigure)
+        for callback in reconfigure_callbacks:
+            self.callbacks_to_add.append([callback, reconfigure_callbacks[callback]])
 
         self.cliConsole = CommsConsoleHelper()
 
