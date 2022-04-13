@@ -94,24 +94,31 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
         self.arm_button.clicked.connect(self.onArmButtonPressed)
 
     def onEnableButtonPress(self):
-        self.cutter_enabled = not self.cutter_enabled
+        self.setCutterEnabledOrDisabled(not self.cutter_enabled)
+
+    def onCutButtonPressed(self, button_number):
+        if self.cutter_enabled:
+            self.callbackEvents.append([Constants.cli_interface_key, "--line_cutter -id {0} !fire {1}".format(self.active_line_cutter, button_number)])  # Replace this with whatever fire command you want
+        self.setCutterEnabledOrDisabled(False)
+
+    def onArmButtonPressed(self):
+        self.setArmOrDisarm(not self.cutter_armed)
+
+    def setCutterEnabledOrDisabled(self, enabled):
+        self.cutter_enabled = enabled
         if self.cutter_enabled:
             self.cutting_enable_button.setText("Disable Commands")
         else:
             self.cutting_enable_button.setText("Enable Commands")
 
-    def onCutButtonPressed(self, button_number):
-        if self.cutter_enabled:
-            self.callbackEvents.append([Constants.cli_interface_key, "--line_cutter {0} fire {1}".format(self.active_line_cutter, button_number)])  # Replace this with whatever fire command you want
-
-    def onArmButtonPressed(self):
-        self.cutter_armed = not self.cutter_armed
+    def setArmOrDisarm(self, armed):
+        self.cutter_armed = armed
         if self.cutter_armed:
             self.arm_button.setText("Disarm Line Cutter")
-            self.callbackEvents.append([Constants.cli_interface_key, "--line_cutter {0} arm".format(self.active_line_cutter)])
+            self.callbackEvents.append([Constants.cli_interface_key, "--line_cutter -id {0} !arm".format(self.active_line_cutter)])
         else:
             self.arm_button.setText("Arm Line Cutter")
-            self.callbackEvents.append([Constants.cli_interface_key, "--line_cutter {0} disarm".format(self.active_line_cutter)])
+            self.callbackEvents.append([Constants.cli_interface_key, "--line_cutter -id {0} !disarm".format(self.active_line_cutter)])
 
     def updateData(self, vehicle_data, updated_data):
         line_cutter_options = []
