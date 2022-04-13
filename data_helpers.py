@@ -107,6 +107,14 @@ def make_stylesheet_string(target, rgbString):
     return "{0}: {1}; ".format(target, rgbString)
 
 
+def generateDarkerColor(input_color, delta):
+    r_g_b = get_rgb_from_string(input_color)
+    r_g_b[0] = clamp(r_g_b[0] - delta, 0, 255)
+    r_g_b[1] = clamp(r_g_b[1] - delta, 0, 255)
+    r_g_b[2] = clamp(r_g_b[2] - delta, 0, 255)
+    return format_rgb_string(r_g_b[0], r_g_b[1], r_g_b[2])
+
+
 def first_in_list_larger_than(data_list: list, threshold):
     if len(data_list) != 0:
         for element in data_list:

@@ -38,7 +38,7 @@ from Widgets import pyro_display_widget
 from Widgets import local_sim_widget
 from Widgets import line_cutter_control
 
-from data_helpers import get_rgb_from_string, get_well_formatted_rgb_string, format_rgb_string, make_stylesheet_string
+import data_helpers
 from constants import Constants
 
 # Background, Widget Background, Text, Header Text, Border
@@ -393,23 +393,36 @@ class DPFGUI():
         :param border: Widget border color
         """
 
-        self.backgroundColor = get_well_formatted_rgb_string(background)
-        self.widgetBackgroundColor = get_well_formatted_rgb_string(widget_background)
-        self.textColor = get_well_formatted_rgb_string(text)
-        self.headerTextColor = get_well_formatted_rgb_string(header_text)
-        self.borderColor = get_well_formatted_rgb_string(border)
+        self.backgroundColor = data_helpers.get_well_formatted_rgb_string(background)
+        self.widgetBackgroundColor = data_helpers.get_well_formatted_rgb_string(widget_background)
+        self.textColor = data_helpers.get_well_formatted_rgb_string(text)
+        self.headerTextColor = data_helpers.get_well_formatted_rgb_string(header_text)
+        self.borderColor = data_helpers.get_well_formatted_rgb_string(border)
 
-        [red, green, blue] = get_rgb_from_string(background)
-        slightly_darker_color = format_rgb_string(max(red - 10, 0), max(green - 10, 0), max(blue - 10, 0))
+        [red, green, blue] = data_helpers.get_rgb_from_string(background)
+        slightly_darker_color = data_helpers.format_rgb_string(max(red - 10, 0), max(green - 10, 0), max(blue - 10, 0))
 
-        self.mainWindow.setStyleSheet("QWidget#" + self.mainWindow.objectName() + "{" + make_stylesheet_string("background", slightly_darker_color) + make_stylesheet_string("color", self.textColor) + "}")
-        self.tabHolderWidget.setStyleSheet("QWidget#" + self.tabHolderWidget.objectName() + "{" + make_stylesheet_string("background", self.backgroundColor) + make_stylesheet_string("color", self.textColor) + "}")
-        self.mainWindow.menuBar().setStyleSheet("QWidget#" + self.mainWindow.menuBar().objectName() + "{" + make_stylesheet_string("background", slightly_darker_color) + make_stylesheet_string("color", self.textColor) + "}")
-        self.tabHolderWidget.tabBar().setStyleSheet("QWidget#" + self.tabHolderWidget.tabBar().objectName() + "{" + make_stylesheet_string("background", slightly_darker_color) + make_stylesheet_string("color", self.textColor) + "}")
+        self.mainWindow.setStyleSheet("QWidget#" + self.mainWindow.objectName() + "{" + data_helpers.make_stylesheet_string("background", slightly_darker_color) + data_helpers.make_stylesheet_string("color", self.textColor) + "}")
+        self.mainWindow.menuBar().setStyleSheet("QWidget#" + self.mainWindow.menuBar().objectName() + "{" + data_helpers.make_stylesheet_string("background", slightly_darker_color) + data_helpers.make_stylesheet_string("color", self.textColor) + "}")
+
+        self.tabHolderWidget.setStyleSheet("QWidget#" + self.tabHolderWidget.objectName() + "{" + data_helpers.make_stylesheet_string("background", self.backgroundColor) + data_helpers.make_stylesheet_string("color", self.textColor) + "}")
+        self.tabHolderWidget.tabBar().setStyleSheet(
+            "QWidget#" + self.tabHolderWidget.tabBar().objectName() + "{" + data_helpers.make_stylesheet_string("background", slightly_darker_color) + data_helpers.make_stylesheet_string("color", self.textColor) + "}")
 
         if sys.platform == "win32":
-            self.tabHolderWidget.tabBar().setStyleSheet("QTabBar::tab{ background: " + get_well_formatted_rgb_string(background) + "; color: " + get_well_formatted_rgb_string(text) + "}")  # Seems to sort of fix tab bar coloring issues on windows
-            self.tabHolderWidget.setStyleSheet("background: " + get_well_formatted_rgb_string(background) + ";border: " + get_well_formatted_rgb_string(background))
+            darkerBackground = data_helpers.generateDarkerColor(self.backgroundColor, 10)
+            darkerDarkerBorder = data_helpers.generateDarkerColor(darkerBackground, 10)
+            newBorderColor = "rgb(50,50,50)"
+
+            stylesheet_string = "QTabWidget::pane { border: 1px solid " + newBorderColor + ";}" + \
+                                "QTabWidget::tab-bar {left: 0px; }" + \
+                                "QTabBar::tab {background: " + darkerBackground + "; color: " + self.textColor + ";border: 1px solid " + newBorderColor + \
+                                ";border-bottom-color: " + darkerDarkerBorder + "; border-top-left-radius: 2px;border-top-right-radius: 2px;min-width: 8ex;padding: 4px;}" + \
+                                "QTabBar::tab:selected, QTabBar::tab:hover {background: " + darkerBackground + "}" + \
+                                "QTabBar::tab:selected {border-color: " + newBorderColor + ";border-bottom-color: " + darkerDarkerBorder + "; }" + \
+                                "QTabBar::tab:!selected {margin-top: 2px;}"
+
+            self.tabHolderWidget.setStyleSheet(stylesheet_string)
 
         for tab in self.tabObjects:
             tab.setTheme(self.backgroundColor, self.widgetBackgroundColor, self.textColor, self.headerTextColor, self.borderColor)
