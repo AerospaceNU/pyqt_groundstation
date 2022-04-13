@@ -140,14 +140,17 @@ class FakeFlight(FCBDataInterfaceCore):
         packet[Constants.fcb_state_number_key] = fcb_state
 
         for cutter in [0, 1, 2]:
+            light = 1000 if self.state >= DROGUE else 12
+            light = light + random.randint(-5, 5)
+
             packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_number_key)] = cutter
             packet[Constants.makeLineCutterString(cutter, Constants.battery_voltage_key)] = 3
             packet[Constants.makeLineCutterString(cutter, Constants.altitude_key)] = self.altitude
             packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_state_key)] = fcb_state
-            packet[Constants.makeLineCutterString(cutter, Constants.photoresistor_key)] = self.altitude
+            packet[Constants.makeLineCutterString(cutter, Constants.photoresistor_key)] = light
             packet[Constants.makeLineCutterString(cutter, Constants.photoresistor_threshold_key)] = 500
-            packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_cut_1)] = self.altitude < 500
-            packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_cut_2)] = self.altitude < 1000
+            packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_cut_1)] = self.state < DROGUE or self.altitude > 500
+            packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_cut_2)] = self.state < DROGUE or self.altitude > 1000
 
         self.handleParsedData("Sim flight packet", packet)
 
