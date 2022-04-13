@@ -80,7 +80,7 @@ class DPFGUI():
 
         self.application = QApplication([])
         self.mainWindow = QMainWindow()
-        self.tabHolderWidget = QTabWidget()
+        self.tabHolderWidget = QTabWidget(self.mainWindow)
 
         # Set up main window
         self.mainWindow.show()
@@ -107,6 +107,12 @@ class DPFGUI():
                               "Local Sim Helper": local_sim_widget.LocalSimWidget,
                               "Line Cutter Control": line_cutter_control.LineCutterControl,
                               }  # List of classes of widgets that can be dynamically created
+
+        self.tabClasses = {"Settings": SettingsTab,
+                           "Diagnostic": DiagnosticTab,
+                           "Rocket Primary": RocketPrimaryTab,
+                           "Graph": GraphsTab,
+                           }  # List of tabs that can be dynamically created
 
         self.application.setObjectName("Application")
         self.mainWindow.setObjectName("Main_Window")
@@ -148,13 +154,27 @@ class DPFGUI():
         file_menu.addAction("Quit", self.stop)
 
         # Menu bar to add new widgets
-        widget_menu = menu_bar.addMenu("Add")
+        insert_menu = menu_bar.addMenu("Insert")
 
+        widget_menu = insert_menu.addMenu("Widget into current tab")
         sorted_keys = list(self.widgetClasses.keys())
         sorted_keys.sort()
         for item in sorted_keys:
             widget_menu.addAction(item, lambda name=item: self.makeNewWidgetInCurrentTab(name))
-        widget_menu.addSeparator()
+
+        widget_menu_2 = insert_menu.addMenu("Widget as own window")
+        for item in sorted_keys:
+            widget_menu_2.addAction(item, lambda name=item: self.makeNewWidgetInNewWindow(name))
+
+        tab_menu = insert_menu.addMenu("New Tab")
+        sorted_tabs = list(self.tabClasses.keys())
+        sorted_tabs.sort()
+        for item in sorted_tabs:
+            tab_menu.addAction(item, lambda name=item: self.addTabByTabType(name, None))
+
+        tab_menu = insert_menu.addMenu("New Tab as own window")
+        for item in sorted_tabs:
+            tab_menu.addAction(item, lambda name=item: self.addTabByTabType(name, None, own_window=True))
 
         # Menu bar to change theme
         theme_menu = menu_bar.addMenu("Theme")
@@ -256,7 +276,6 @@ class DPFGUI():
         # Update tabs
         active_tab = self.getActiveTabObject()
         for tab in self.tabObjects:
-            tab.setIsActiveTab(tab == active_tab)
             self.callback_queue += tab.updateVehicleData(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary, recorded_data_dict)
 
         # set window title
@@ -285,13 +304,16 @@ class DPFGUI():
             self.database_dictionary[key] = new_dict[key]
             self.updated_data_dictionary[key] = True
 
-    def createWidgetFromName(self, widget_name, parent=None):
+    def createWidgetFromName(self, widget_name, parent=None, in_new_window=False):
         """Will create any widget from its file name!"""
         if widget_name not in self.widgetClasses:
             print("No widget of type {}".format(widget_name))
             return QWidget(parent)  # Kind of a hack
         try:
-            widget = self.widgetClasses[widget_name](parent)
+            if in_new_window:
+                widget = self.widgetClasses[widget_name]()
+            else:
+                widget = self.widgetClasses[widget_name](parent)
             return widget
         except all as e:
             print("Dynamically creating {} type widgets is not supported yet".format(widget_name))
@@ -307,6 +329,15 @@ class DPFGUI():
         else:
             print("No widget named {}".format(name))
 
+    def makeNewWidgetInNewWindow(self, name):
+        if name in self.widgetClasses:
+            activeTab = self.getActiveTabObject()
+            if activeTab is not None:
+                activeTab.addWidget(self.createWidgetFromName(name, parent=activeTab, in_new_window=True))
+                activeTab.updateTheme()
+        else:
+            print("No widget named {}".format(name))
+
     def getActiveTabObject(self) -> TabCommon:
         tab_index = self.tabHolderWidget.currentIndex()
         active_tab = self.tabHolderWidget.tabText(tab_index)
@@ -316,30 +347,31 @@ class DPFGUI():
         else:
             return None
 
-    def addTabByTabType(self, tab_type: str, tab_name: str):
-        if tab_type == "settings":
-            self.addVehicleTab(SettingsTab, tab_name)
-        elif tab_type == "diagnostic":
-            self.addVehicleTab(DiagnosticTab, tab_name)
-        elif tab_type == "rocket_primary":
-            self.addVehicleTab(RocketPrimaryTab, tab_name)
-        elif tab_type == "graph":
-            self.addVehicleTab(GraphsTab, tab_name)
+    def addTabByTabType(self, tab_type: str, tab_name, own_window=False):
+        if tab_name is None:
+            tab_name = "{0} - {1}".format(tab_type, len(self.tabObjects))
+
+        if tab_type in self.tabClasses:
+            tab_class = self.tabClasses[tab_type]
+            self.addVehicleTab(tab_class, tab_name, own_window)
         else:
             print("Don't have tab configuration for vehicle type {}".format(tab_type))
 
-    def addVehicleTab(self, tab, vehicle_name: str):
-        new_tab_object = tab(vehicle_name)
+    def addVehicleTab(self, tab, vehicle_name: str, own_window=False):
+        if not own_window:
+            new_tab_object = tab(vehicle_name, parent=self.tabHolderWidget)
+            self.tabHolderWidget.addTab(new_tab_object, vehicle_name)
+            self.tabHolderWidget.setCurrentIndex(self.tabHolderWidget.count() - 1)
+            self.tabHolderWidget.setCurrentIndex(1)
+        else:
+            new_tab_object = tab(vehicle_name)
+            new_tab_object.show()
 
         self.tabObjects.append(new_tab_object)
-        self.tabHolderWidget.addTab(new_tab_object, vehicle_name)
         self.tabNames.append(vehicle_name)
 
         self.placeHolderList.append(placeholder.Placeholder(new_tab_object))  # Something needs to be updating for the GUI to function, so we make a silly thing to always do that
-
         new_tab_object.setTheme(self.backgroundColor, self.widgetBackgroundColor, self.textColor, self.headerTextColor, self.borderColor)
-        self.tabHolderWidget.setCurrentIndex(self.tabHolderWidget.count() - 1)
-        self.tabHolderWidget.setCurrentIndex(1)
 
     def setThemeByName(self, name: str):
         if name in THEMES:

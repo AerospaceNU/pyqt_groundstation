@@ -18,10 +18,10 @@ if __name__ == '__main__':
     GUI = DPFGUI()
 
     # Add tabs to GUI
-    GUI.addTabByTabType("settings", "Settings")
-    GUI.addTabByTabType("rocket_primary", "Primary")
-    GUI.addTabByTabType("diagnostic", "Diagnostic")
-    GUI.addTabByTabType("graph", "Graphs")
+    GUI.addTabByTabType("Settings", "Settings")
+    GUI.addTabByTabType("Rocket Primary", "Primary")
+    GUI.addTabByTabType("Diagnostic", "Diagnostic")
+    GUI.addTabByTabType("Graph", "Graphs")
 
     # Load in modules
     GUI.addModule("Serial Ground Station", GroundStationDataInterface, enabled=True)

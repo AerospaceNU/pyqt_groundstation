@@ -12,8 +12,8 @@ from MainTabs.main_tab_common import TabCommon
 
 
 class DiagnosticTab(TabCommon):
-    def __init__(self, tab_name):
-        super().__init__(tab_name)
+    def __init__(self, tab_name, parent=None):
+        super().__init__(tab_name, parent=parent)
         self.addWidget(text_box_drop_down_widget.TextBoxDropDownWidget(self))
         self.addWidget(text_box_drop_down_widget.TextBoxDropDownWidget(self))
         self.addWidget(simple_console_widget.SimpleConsoleWidget(self))

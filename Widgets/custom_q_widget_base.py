@@ -119,6 +119,9 @@ class CustomQWidgetBase(QWidget):
         if not self.isInLayout:
             self.adjustSize()
 
+        if self.isVisible():
+            self.updateInFocus()
+
     def updateInFocus(self):
         """Called only when widget is being looked at"""
         pass

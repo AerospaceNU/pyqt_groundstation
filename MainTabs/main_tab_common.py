@@ -9,8 +9,8 @@ from data_helpers import make_stylesheet_string, get_well_formatted_rgb_string
 
 
 class TabCommon(QWidget):
-    def __init__(self, tab_name: str):
-        super().__init__()
+    def __init__(self, tab_name: str, parent=None):
+        super().__init__(parent)
         self.setObjectName("tab_{}".format(tab_name))
 
         self.vehicleName = tab_name
@@ -40,9 +40,6 @@ class TabCommon(QWidget):
             widget.setVehicleData(vehicle_data, updated_data, recorded_data)
             widget.updateConsole(console_data)
             widget.coreUpdate()
-
-            if self.isActiveTab:
-                widget.updateInFocus()
 
             callbacks += widget.getCallbackEvents()
 

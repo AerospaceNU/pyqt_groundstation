@@ -19,8 +19,8 @@ from constants import Constants
 
 
 class RocketPrimaryTab(TabCommon):
-    def __init__(self, tab_name):
-        super().__init__(tab_name)
+    def __init__(self, tab_name, parent=None):
+        super().__init__(tab_name, parent=parent)
 
         self.FlightDisplay = self.addWidget(flight_display.FlightDisplay(compass_and_text=False))
         self.StatusBar = self.addWidget(vehicle_status_widget.VehicleStatusWidget())
