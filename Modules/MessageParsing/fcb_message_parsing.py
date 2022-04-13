@@ -74,6 +74,16 @@ def get_fcb_state_from_state_num(state_num):
         return Constants.invalid_fcb_state_name
 
 
+UINT_8_TYPE = 'B'
+INT_8_TYPE = 'b'
+BOOL_TYPE = '?'
+
+UINT_16_TYPE = 'H'
+UINT_32_TYPE = 'I'
+
+FLOAT_TYPE = 'f'
+
+
 class BaseMessage(object):
     messageData = []
 
@@ -135,20 +145,20 @@ class BaseMessage(object):
 class OrientationMessage(BaseMessage):
     """uint8 state, int8 qw, qx, qy, qz, float wx, wy, wz, ax, ay, az, bx, by, bz;"""
 
-    messageData = [['B', Constants.fcb_state_number_key],
-                   ['b', "qw", 0.001],
-                   ['b', "qx", 0.001],
-                   ['b', "qy", 0.001],
-                   ['b', "qz", 0.001],
-                   ['f', Constants.rotational_velocity_x_key],
-                   ['f', Constants.rotational_velocity_y_key],
-                   ['f', Constants.rotational_velocity_z_key],
-                   ['f', Constants.acceleration_x_key],
-                   ['f', Constants.acceleration_y_key],
-                   ['f', Constants.acceleration_z_key],
-                   ['f', Constants.magnetometer_x_key],
-                   ['f', Constants.magnetometer_y_key],
-                   ['f', Constants.magnetometer_z_key],
+    messageData = [[UINT_8_TYPE, Constants.fcb_state_number_key],
+                   [INT_8_TYPE, "qw", 0.001],
+                   [INT_8_TYPE, "qx", 0.001],
+                   [INT_8_TYPE, "qy", 0.001],
+                   [INT_8_TYPE, "qz", 0.001],
+                   [FLOAT_TYPE, Constants.rotational_velocity_x_key],
+                   [FLOAT_TYPE, Constants.rotational_velocity_y_key],
+                   [FLOAT_TYPE, Constants.rotational_velocity_z_key],
+                   [FLOAT_TYPE, Constants.acceleration_x_key],
+                   [FLOAT_TYPE, Constants.acceleration_y_key],
+                   [FLOAT_TYPE, Constants.acceleration_z_key],
+                   [FLOAT_TYPE, Constants.magnetometer_x_key],
+                   [FLOAT_TYPE, Constants.magnetometer_y_key],
+                   [FLOAT_TYPE, Constants.magnetometer_z_key],
                    ]
 
     def extraParseOptions(self, data, dictionary):
@@ -173,20 +183,20 @@ class OrientationMessage(BaseMessage):
 
 
 class PositionDataMessage(BaseMessage):
-    messageData = [['f', Constants.temperature_key],
-                   ['f', Constants.altitude_key],
-                   ['f', Constants.vertical_speed_key],
-                   ['f', Constants.latitude_key, lat_lon_decimal_minutes_to_decimal_degrees],
-                   ['f', Constants.longitude_key, lat_lon_decimal_minutes_to_decimal_degrees],
-                   ['f', Constants.gps_alt_key],
-                   ['f', Constants.fcb_battery_voltage],
-                   ['f', Constants.ground_speed_key, 0.514444],  # fcb reports speed in kts
-                   ['f', Constants.course_over_ground_key],  # GPS reports compass heading (NED and degrees)
-                   ['I', Constants.gps_time_key, "TIME"],
-                   ['B', Constants.gps_sats_key],
-                   ['B', Constants.pyro_continuity, parse_pyro_continuity_byte],
-                   ['B', Constants.fcb_state_number_key],
-                   ['B', Constants.bluetooth_connection_key],
+    messageData = [[FLOAT_TYPE, Constants.temperature_key],
+                   [FLOAT_TYPE, Constants.altitude_key],
+                   [FLOAT_TYPE, Constants.vertical_speed_key],
+                   [FLOAT_TYPE, Constants.latitude_key, lat_lon_decimal_minutes_to_decimal_degrees],
+                   [FLOAT_TYPE, Constants.longitude_key, lat_lon_decimal_minutes_to_decimal_degrees],
+                   [FLOAT_TYPE, Constants.gps_alt_key],
+                   [FLOAT_TYPE, Constants.fcb_battery_voltage],
+                   [FLOAT_TYPE, Constants.ground_speed_key, 0.514444],  # fcb reports speed in kts
+                   [FLOAT_TYPE, Constants.course_over_ground_key],  # GPS reports compass heading (NED and degrees)
+                   [UINT_32_TYPE, Constants.gps_time_key, "TIME"],
+                   [UINT_8_TYPE, Constants.gps_sats_key],
+                   [UINT_8_TYPE, Constants.pyro_continuity, parse_pyro_continuity_byte],
+                   [UINT_8_TYPE, Constants.fcb_state_number_key],
+                   [UINT_8_TYPE, Constants.bluetooth_connection_key],
                    ]
 
 
@@ -200,15 +210,15 @@ class LineCutterMessage(BaseMessage):
         unpacked_data = struct.unpack("<B", data)  # Just get the first byte
         line_cutter_number = unpacked_data[0]
 
-        self.messageData = [['B', Constants.line_cutter_number_key],
-                            ['B', Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_state_key)],
-                            ['I', Constants.makeLineCutterString(line_cutter_number, Constants.timestamp_ms_key)],
-                            ['f', Constants.makeLineCutterString(line_cutter_number, Constants.altitude_key)],
-                            ['f', Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key)],
-                            ['B', Constants.makeLineCutterString(line_cutter_number, Constants.battery_voltage_key), 0.05],
-                            ['?', Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_1)],
-                            ['?', Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_2)],
-                            ['H', Constants.makeLineCutterString(line_cutter_number, Constants.photoresistor_key)],
+        self.messageData = [[UINT_8_TYPE, Constants.line_cutter_number_key],
+                            [UINT_8_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_state_key)],
+                            [UINT_32_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.timestamp_ms_key)],
+                            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.altitude_key)],
+                            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key)],
+                            [UINT_8_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.battery_voltage_key), 0.05],
+                            [BOOL_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_1)],
+                            [BOOL_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_2)],
+                            [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.photoresistor_key)],
                             ]
 
         return super().parseMessage(data)  # Then call the parent parseMessage function like normal
@@ -236,17 +246,17 @@ class CLIDataMessage(BaseMessage):
 
 
 class AltitudeInfoMessage(BaseMessage):
-    messageData = [['f', Constants.barometer_pressure_key],
-                   ['f', Constants.barometer_pressure_2_key],
-                   ['f', Constants.press_ref_key],
-                   ['f', Constants.ground_elevation_key],
-                   ['f', Constants.ground_temp_key],
+    messageData = [[FLOAT_TYPE, Constants.barometer_pressure_key],
+                   [FLOAT_TYPE, Constants.barometer_pressure_2_key],
+                   [FLOAT_TYPE, Constants.press_ref_key],
+                   [FLOAT_TYPE, Constants.ground_elevation_key],
+                   [FLOAT_TYPE, Constants.ground_temp_key],
                    ]
 
 
 class PyroInfoMessage(BaseMessage):
-    messageData = [['B', Constants.pyro_continuity, parse_pyro_continuity_byte],
-                   ['B', Constants.pyro_fire_status, parse_pyro_fire_status],
+    messageData = [[UINT_8_TYPE, Constants.pyro_continuity, parse_pyro_continuity_byte],
+                   [UINT_8_TYPE, Constants.pyro_fire_status, parse_pyro_fire_status],
                    ]
 
 
