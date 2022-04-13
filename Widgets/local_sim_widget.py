@@ -108,8 +108,9 @@ class LocalSimWidget(CustomQWidgetBase):
 
         args = []
 
+        from sys import platform
         if platform == "win32":
-            is32bit = (platform.architecture()[0] == '32bit')
+            is32bit =True# (platform.architecture()[0] == '32bit')
             system32 = os.path.join(os.environ['SystemRoot'], 'SysNative' if is32bit else 'System32')
             bash = os.path.join(system32, 'wsl.exe')
             args.append(bash)
