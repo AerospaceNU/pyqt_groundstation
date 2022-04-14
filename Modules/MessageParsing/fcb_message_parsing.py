@@ -206,20 +206,29 @@ class LineCutterMessage(BaseMessage):
     def parseMessage(self, data):
         """We generate the message format after parsing which line cutter this data is for."""
 
-        data = data[0:1]
-        unpacked_data = struct.unpack("<B", data)  # Just get the first byte
+        unpacked_data = struct.unpack("<B", data[0:1])  # Just get the first byte
         line_cutter_number = unpacked_data[0]
 
         self.messageData = [[UINT_8_TYPE, Constants.line_cutter_number_key],
                             [UINT_8_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_state_key)],
                             [UINT_32_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.timestamp_ms_key)],
+                            [UINT_32_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.timestamp_ms_key)],
                             [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.altitude_key)],
                             [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key)],
-                            [UINT_8_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.battery_voltage_key), 0.05],
-                            [BOOL_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_1)],
-                            [BOOL_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_2)],
+                            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key)],
+                            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key)],
+                            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key)],
+                            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key)],
+                            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key)],
+                            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key)],
+                            [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.photoresistor_key)],
+                            [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.photoresistor_key)],
+                            [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.photoresistor_key)],
+                            [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.photoresistor_key)],
                             [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.photoresistor_key)],
                             ]
+
+        super().__init__()
 
         return super().parseMessage(data)  # Then call the parent parseMessage function like normal
 

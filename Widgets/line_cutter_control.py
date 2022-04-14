@@ -93,7 +93,7 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
 
     def onCutButtonPressed(self, button_number):
         if self.cutter_enabled:
-            self.callbackEvents.append([Constants.cli_interface_key, "--line_cutter -i {0} -c '!fire {1}'".format(self.active_line_cutter, button_number)])  # Replace this with whatever fire command you want
+            self.callbackEvents.append([Constants.cli_interface_key, "--linecutter -i {0} -c \"!cut {1}\"".format(self.active_line_cutter, button_number)])  # Replace this with whatever fire command you want
         self.setCutterEnabledOrDisabled(False)
 
     def onArmButtonPressed(self):
