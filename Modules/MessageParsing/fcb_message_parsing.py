@@ -243,10 +243,6 @@ class CLIDataMessage(BaseMessage):
 
         try:
             string = trimmed_data.decode()
-
-            if string.strip() != "":
-                print(string)
-
             dictionary[Constants.cli_string_key] = string
         except Exception as e:
             print(e)
@@ -357,8 +353,9 @@ def parse_fcb_message(data):
             if "line cutter" in message_type.lower() and Constants.line_cutter_number_key in dictionary:
                 line_cutter_number = dictionary[Constants.line_cutter_number_key]
                 message_type += str(line_cutter_number)
-        except struct.error as e:
-            print(e)
+        except Exception as e:
+            print("Could not parse message of type {0}: {1}".format(message_type, e))
+            print(raw_packet)
             success = False
 
         return [success, dictionary, message_type, crc]
