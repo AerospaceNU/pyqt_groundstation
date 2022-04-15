@@ -110,10 +110,10 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
         self.cutter_armed = armed
         if self.cutter_armed:
             self.arm_button.setText("Disarm Line Cutter")
-            self.callbackEvents.append([Constants.cli_interface_key, "--line_cutter -i {0} -c '!arm'".format(self.active_line_cutter)])
+            self.callbackEvents.append([Constants.cli_interface_key, "--linecutter -i {0} -c \"!arm\"".format(self.active_line_cutter)])
         else:
             self.arm_button.setText("Arm Line Cutter")
-            self.callbackEvents.append([Constants.cli_interface_key, "--line_cutter -i {0} -c '!disarm'".format(self.active_line_cutter)])
+            self.callbackEvents.append([Constants.cli_interface_key, "--linecutter -i {0} -c \"!disarm\"".format(self.active_line_cutter)])
 
     def updateData(self, vehicle_data, updated_data):
         line_cutter_options = []

@@ -126,6 +126,7 @@ class Constants:
     battery_voltage_key = "battery_voltage"
     line_cutter_cut_1 = "cut_1"
     line_cutter_cut_2 = "cut_2"
+    line_cutter_current_sense_key = "current_sense"
     photoresistor_key = "photoresistor"
     photoresistor_threshold_key = "photoresistor_threshold"
 
