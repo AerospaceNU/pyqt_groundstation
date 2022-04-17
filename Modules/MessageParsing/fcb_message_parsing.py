@@ -197,7 +197,6 @@ class PositionDataMessage(BaseMessage):
                    [FLOAT_TYPE, Constants.course_over_ground_key],  # GPS reports compass heading (NED and degrees)
                    [UINT_32_TYPE, Constants.gps_time_key, "TIME"],
                    [UINT_8_TYPE, Constants.gps_sats_key],
-                   [UINT_8_TYPE, Constants.pyro_continuity, parse_pyro_continuity_byte],
                    [UINT_8_TYPE, Constants.fcb_state_number_key],
                    [UINT_8_TYPE, Constants.bluetooth_connection_key],
                    ]
