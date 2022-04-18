@@ -9,7 +9,6 @@ from Modules.fcb_data_interface_core import FCBDataInterfaceCore
 from Modules.DataInterfaceTools.reconfigure_helper import ReconfigurePage
 from Modules.DataInterfaceTools.comms_console_helper import CommsConsoleHelper
 
-from dpf_ground_station import DPFGUI
 from constants import Constants
 
 RADIO_433 = 0

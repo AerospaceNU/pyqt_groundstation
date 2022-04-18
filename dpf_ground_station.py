@@ -187,6 +187,9 @@ class DPFGUI():
         self.serial_port_menu = menu_bar.addMenu("Serial Port")
         self.serial_port_menu.aboutToShow.connect(self.refreshSerialPorts)  # aboutToShow runs before the menu is created
 
+        self.egg_menu = menu_bar.addMenu("egg")
+        self.egg_menu.aboutToShow.connect(lambda: self.refreshSerialPorts(callback_name="set_egg_serial_port"))
+
         # Menu bar to enable/disable data interfaces
         self.modules_menu = menu_bar.addMenu("Modules")
         self.modules_menu.aboutToShow.connect(self.refreshDataInterfaces)
@@ -194,8 +197,11 @@ class DPFGUI():
         self.playback_source_menu = menu_bar.addMenu("Playback Options")
         self.playback_source_menu.aboutToShow.connect(self.playbackOptionsMenu)
 
-    def setActiveSerialPort(self, port_name):
-        self.callback_queue.append(["set_serial_port", port_name])
+    def setActiveSerialPort(self, port_name, callback_name=None):
+        if callback_name is None:
+            callback_name = "set_serial_port"
+
+        self.callback_queue.append([callback_name, port_name])
 
     def toggleModuleEnabledState(self, module_name):
         if module_name in self.module_dictionary:
@@ -229,11 +235,13 @@ class DPFGUI():
             else:
                 self.modules_menu.addAction("Enable {}".format(interfaceName), lambda target_interface=interfaceName: self.toggleModuleEnabledState(target_interface))
 
-    def refreshSerialPorts(self):
+    def refreshSerialPorts(self, callback_name=None):
         serial_ports = [comport for comport in serial.tools.list_ports.comports()]
         self.serial_port_menu.clear()
+        self.egg_menu.clear()
         for port in serial_ports:
-            self.serial_port_menu.addAction("{0}: {1}".format(port.device, port.description), lambda portName=port.device: self.setActiveSerialPort(portName))
+            self.serial_port_menu.addAction("{0}: {1}".format(port.device, port.description), lambda portName=port.device, call=callback_name: self.setActiveSerialPort(portName, call))
+            self.egg_menu.addAction("{0}: {1}".format(port.device, port.description), lambda portName=port.device, call=callback_name: self.setActiveSerialPort(portName, call))
 
     def playbackOptionsMenu(self):
         self.playback_source_menu.clear()
