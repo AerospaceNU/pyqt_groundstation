@@ -9,8 +9,8 @@ from data_helpers import make_stylesheet_string, get_well_formatted_rgb_string
 
 
 class TabCommon(QWidget):
-    def __init__(self, tab_name: str):
-        super().__init__()
+    def __init__(self, tab_name: str, parent=None):
+        super().__init__(parent)
         self.setObjectName("tab_{}".format(tab_name))
 
         self.vehicleName = tab_name
@@ -41,9 +41,6 @@ class TabCommon(QWidget):
             widget.updateConsole(console_data)
             widget.coreUpdate()
 
-            if self.isActiveTab:
-                widget.updateInFocus()
-
             callbacks += widget.getCallbackEvents()
 
         self.customUpdateVehicleData(data)
@@ -66,9 +63,10 @@ class TabCommon(QWidget):
 
     def setTheme(self, background, widget_background, text, header_text, border):
         background_string = make_stylesheet_string("background", background)
-        color_string = make_stylesheet_string("color", text)
-        border_string = "border: 1px solid " + get_well_formatted_rgb_string("rgb[10,10,10]") + ";"
-        self.setStyleSheet("QWidget#" + self.objectName() + " {" + background_string + color_string + border_string + "}")
+        # color_string = make_stylesheet_string("color", text)
+        # border_string = "border: 1px solid " + get_well_formatted_rgb_string("rgb[10,10,10]") + ";"
+        # self.setStyleSheet("QWidget#" + self.objectName() + " {" + background_string + color_string + border_string + "}")
+        self.setStyleSheet(background_string)
 
         for widget in self.widgetList:
             widget.setTheme(widget_background, text, header_text, border)

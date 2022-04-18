@@ -13,6 +13,7 @@ class Constants:
     fcb_state_key = "fcb_state_text"
     fcb_state_number_key = "fcb_state_number"
     pyro_continuity = "pyro_continuity"
+    pyro_fire_status = "pyro_status"
     software_version_key = "software_version"
     serial_number_key = "board_serial_number"
     timestamp_ms_key = "time_stamp_ms"
@@ -61,6 +62,10 @@ class Constants:
     ground_station_pressure_key = "gs_baro"
     ground_station_temperature_key = "gs_temp"
 
+    egg_finder_latitude = "egg_lat"
+    egg_finder_longitude = "egg_lon"
+    egg_finder_altitude = "egg_alt"
+
     laptop_disk_usage_key = "laptop_disk"
     laptop_cpu_usage_key = "laptop_cpu"
     laptop_ram_usage_key = "laptop_ram"
@@ -71,8 +76,6 @@ class Constants:
     fcb_memory_usage = "fcb_memory"
 
     prop_battery_voltage = "prop_battery_voltage"
-    line_cutter_1_voltage = "line_cutter_1_voltage"
-    line_cutter_2_voltage = "line_cutter_2_voltage"
 
     message_age_key = "message_age"
     message_time_key = "message_time"
@@ -119,3 +122,18 @@ class Constants:
     MAX_PYROS = 6
 
     map_tile_manager_key = "map_tile_manager"
+
+    # Line cutter stuff
+    line_cutter_number_key = "line_cutter_number"
+    line_cutter_state_key = "state"
+    delta_altitude_key = "delta_alt"
+    battery_voltage_key = "battery_voltage"
+    line_cutter_cut_1 = "cut_1"
+    line_cutter_cut_2 = "cut_2"
+    line_cutter_current_sense_key = "current_sense"
+    photoresistor_key = "photoresistor"
+    photoresistor_threshold_key = "photoresistor_threshold"
+
+    @staticmethod
+    def makeLineCutterString(line_cutter_number, line_cutter_key):
+        return "line_cutter_{0}_{1}".format(line_cutter_number, line_cutter_key)

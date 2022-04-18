@@ -25,8 +25,8 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
 
         self.fcb_battery_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="FCB Batt", minValue=11.1, maxValue=12.6)
         self.prop_battery_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="Prop Batt", minValue=0, maxValue=10)
-        self.line_cutter_batt_1_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="LC1 Batt", minValue=7.4, maxValue=8.2)
-        self.line_cutter_batt_2_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="LC2 Batt", minValue=7.4, maxValue=8.2)
+        self.line_cutter_batt_1_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="LC1 Batt", minValue=3.7, maxValue=4.2)
+        self.line_cutter_batt_2_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="LC2 Batt", minValue=3.7, maxValue=4.2)
         self.fcb_memory_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="FCB Mem", minValue=0, maxValue=1, barColor="rgb(255,0,0)")
 
         layout = QGridLayout()
@@ -59,8 +59,8 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.addSourceKey("acceleration", float, Constants.acceleration_key, -1, hide_in_drop_down=True)
         self.addSourceKey("fcb_voltage", float, Constants.fcb_battery_voltage, -1, hide_in_drop_down=True)
         self.addSourceKey("prop_voltage", float, Constants.prop_battery_voltage, -1, hide_in_drop_down=True)
-        self.addSourceKey("lc1_voltage", float, Constants.line_cutter_1_voltage, -1, hide_in_drop_down=True)
-        self.addSourceKey("lc2_voltage", float, Constants.line_cutter_2_voltage, -1, hide_in_drop_down=True)
+        self.addSourceKey("lc1_voltage", float, Constants.makeLineCutterString(0, Constants.battery_voltage_key), -1, hide_in_drop_down=False)
+        self.addSourceKey("lc2_voltage", float, Constants.makeLineCutterString(1, Constants.battery_voltage_key), -1, hide_in_drop_down=False)
         self.addSourceKey("fcb_mem", float, Constants.fcb_memory_usage, -1, hide_in_drop_down=True)
 
         self.statusBox.setFont(QFont("Monospace", self.widgetSize))

@@ -2,6 +2,7 @@
 Text box widget
 """
 from PyQt5 import QtCore
+from PyQt5.QtCore import QEvent
 from PyQt5.QtWidgets import QLabel, QGridLayout, QLineEdit
 from PyQt5.QtGui import QKeyEvent, QFont
 
@@ -30,7 +31,7 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         self.textEntryWidget.returnPressed.connect(self.returnPressed)
 
         self.oldKeyPress = self.textEntryWidget.keyPressEvent  # We want to use the old key press, but do our code first
-        self.textEntryWidget.keyPressEvent = self.keyPressEvent
+        self.textEntryWidget.keyPressEvent = self.textEntryKeyPressEvent
 
         self.xBuffer = 0
         self.yBuffer = 0
@@ -46,7 +47,7 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         self.commandHistoryIndex = -1
         self.currentCommand = ""
 
-    def keyPressEvent(self, eventQKeyEvent: QKeyEvent):
+    def textEntryKeyPressEvent(self, eventQKeyEvent: QKeyEvent):
         if eventQKeyEvent.key() == 16777235:  # UP
             if self.commandHistoryIndex == -1:  # If we're editing the newest command
                 self.currentCommand = self.textEntryWidget.text()

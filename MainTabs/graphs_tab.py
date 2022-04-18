@@ -14,8 +14,8 @@ from MainTabs.main_tab_common import TabCommon
 
 
 class GraphsTab(TabCommon):
-    def __init__(self, tab_name):
-        super().__init__(tab_name)
+    def __init__(self, tab_name, parent=None):
+        super().__init__(tab_name, parent=parent)
 
         self.graphControlWidget = GraphTabControl()
         self.addWidget(self.graphControlWidget)

@@ -14,18 +14,20 @@ from Modules.laptop_status_monitor import LaptopStatusMonitor
 from Modules.fake_rocket_flight import FakeFlight
 from Modules.text_to_speech import TextToSpeech
 from Modules.map_interface import MapInterface
+from Modules.egg_finder_radio_interface import EggFinderRadioInterface
 
 if __name__ == '__main__':
     GUI = DPFGUI()
 
     # Add tabs to GUI
-    GUI.addTabByTabType("settings", "Settings")
-    GUI.addTabByTabType("rocket_primary", "Primary")
-    GUI.addTabByTabType("diagnostic", "Diagnostic")
-    GUI.addTabByTabType("graph", "Graphs")
+    GUI.addTabByTabType("Settings", "Settings")
+    GUI.addTabByTabType("Rocket Primary", "Primary")
+    GUI.addTabByTabType("Diagnostic", "Diagnostic")
+    GUI.addTabByTabType("Graph", "Graphs")
 
     # Load in modules
     GUI.addModule("Serial Ground Station", GroundStationDataInterface, enabled=True)
+    GUI.addModule("Egg Finder Radio", EggFinderRadioInterface, enabled=True)
     GUI.addModule("Android Phone Bluetooth", AndroidPhoneBluetoothInterface)
     GUI.addModule("Text To Speech", TextToSpeech, enabled=False)
     GUI.addModule("Laptop Status Monitor", LaptopStatusMonitor, hide_toggle=True)

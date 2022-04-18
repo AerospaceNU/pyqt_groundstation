@@ -1,11 +1,10 @@
-import json, configparser
-
+import configparser
 
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-class ConfigSaver:
 
+class ConfigSaver:
 
     @staticmethod
     def save(section: str, key: str, data: str):
@@ -18,7 +17,7 @@ class ConfigSaver:
             config.write(configfile)
 
     @staticmethod
-    def get(section: str, key: str): 
+    def get(section: str, key: str):
         if section not in config:
             return None
 

@@ -51,7 +51,7 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
         out_string = ""
         longest_line = 0
         for line in data_to_print:
-            line[0] = line[0].replace("\t", "     ").rstrip()  # Do some formatting to convert tabs to spaces and ditch trailing spaces
+            line[0] = str(line[0]).replace("\t", "     ").rstrip()  # Do some formatting to convert tabs to spaces and ditch trailing spaces
             longest_line = max(longest_line, len(line[0]))
 
         for line in data_to_print:
