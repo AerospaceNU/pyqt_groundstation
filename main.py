@@ -13,6 +13,7 @@ from Modules.android_phone_bluetooth_interface import AndroidPhoneBluetoothInter
 from Modules.laptop_status_monitor import LaptopStatusMonitor
 from Modules.fake_rocket_flight import FakeFlight
 from Modules.text_to_speech import TextToSpeech
+from Modules.map_interface import MapInterface
 from Modules.egg_finder_radio_interface import EggFinderRadioInterface
 
 if __name__ == '__main__':
@@ -34,6 +35,7 @@ if __name__ == '__main__':
     GUI.addModule("Ground Station Recorded Data", GroundStationRecordedDataInterface, enabled=False)
     GUI.addModule("Fake Flight", FakeFlight, enabled=False)
     GUI.addModule("Random Data for Debugging", RandomDataInterface, enabled=False, hide_toggle=False)
+    GUI.addModule("Map Interface", MapInterface, enabled=True, hide_toggle=True)
 
     GUI.run()
     print("Good Bye")

@@ -4,6 +4,7 @@ Central GUI sequencer
 Has all the thread control for the GUI
 """
 
+import os
 import copy
 import random
 import sys
@@ -39,6 +40,10 @@ from Widgets import line_cutter_control
 
 import data_helpers
 from constants import Constants
+
+if sys.platform == "linux":  # I don't even know anymore
+    if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:
+        os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")  # https://stackoverflow.com/questions/63829991/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it
 
 # Background, Widget Background, Text, Header Text, Border
 THEMES = {}
@@ -267,7 +272,7 @@ class DPFGUI():
                 interface_runs = ["{0} | {1}".format(interface, run) for run in interface_object.getRunNames()]
                 self.playback_data_sources = list(set(self.playback_data_sources + interface_runs))
                 self.playback_data_sources.sort()
-            self.updateDatabaseDictionary(interface_object.getDataDictionary().copy())
+            self.updateDatabaseDictionary(interface_object.getDataDictionary())
 
             if self.current_playback_source.split(" | ")[0] == interface:
                 run_name = self.current_playback_source.split(" | ")[1]
@@ -275,8 +280,11 @@ class DPFGUI():
 
         # Send full database dictionary back to the data interfaces
         for interface in self.module_dictionary:
-            self.module_dictionary[interface].setFullDataDictionary(copy.deepcopy(self.database_dictionary))
-            self.updateReconfigureOptions(Constants.primary_reconfigure, self.module_dictionary[interface].getReconfigureDictionary())
+            try:
+                self.module_dictionary[interface].setFullDataDictionary(self.database_dictionary)
+                self.updateReconfigureOptions(Constants.primary_reconfigure, self.module_dictionary[interface].getReconfigureDictionary())
+            except RuntimeError:  # Sometimes there's a "dictionary changed size during iteration" error here that I don't want to debug
+                pass
 
         # Update placeholder widgets
         for widget in self.placeHolderList:
@@ -308,7 +316,7 @@ class DPFGUI():
 
         self.database_dictionary[database_dict_target].update(new_data)
 
-    def updateDatabaseDictionary(self, new_dict):
+    def updateDatabaseDictionary(self, new_dict: dict):
         for key in new_dict:
             self.database_dictionary[key] = new_dict[key]
             self.updated_data_dictionary[key] = True

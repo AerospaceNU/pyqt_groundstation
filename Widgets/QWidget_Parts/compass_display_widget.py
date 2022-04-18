@@ -3,7 +3,7 @@ import cv2
 
 from PyQt5.QtWidgets import QLabel, QWidget
 
-from Widgets.Helpers import basic_image_display
+from Widgets.QWidget_Parts import basic_image_display
 from data_helpers import get_rgb_from_string
 
 

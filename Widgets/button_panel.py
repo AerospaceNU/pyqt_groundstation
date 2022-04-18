@@ -15,6 +15,7 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
         self.resetGraphButton = QPushButton()
         self.clearMapButton = QPushButton()
         self.resetDatumButton = QPushButton()
+        self.resetOriginButton = QPushButton()
 
         self.menuItems = []
         self.acousticMode = 2
@@ -27,6 +28,8 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
         layout.addWidget(self.resetGraphButton, 2, 1)
         layout.addWidget(self.clearMapButton, 3, 1)
         layout.addWidget(self.resetDatumButton, 4, 1)
+        layout.addWidget(self.resetOriginButton, 5, 1)
+        layout.setContentsMargins(3, 5, 3, 5)
         self.setLayout(layout)
 
         font = QFont("Monospace", 8)
@@ -34,11 +37,13 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
         self.resetGraphButton.setFont(font)
         self.clearMapButton.setFont(font)
         self.resetDatumButton.setFont(font)
+        self.resetOriginButton.setFont(font)
 
         self.resetGraphButton.setText("Clear Graph")
         self.setVideoOptions(["No Video"])
         self.clearMapButton.setText("Clear Map")
         self.resetDatumButton.setText("Reset Datum")
+        self.resetOriginButton.setText("Reset Origin")
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
@@ -65,3 +70,4 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
         self.resetGraphButton.setStyleSheet(widget_background_string + text_string)
         self.clearMapButton.setStyleSheet(widget_background_string + text_string)
         self.resetDatumButton.setStyleSheet(widget_background_string + text_string)
+        self.resetOriginButton.setStyleSheet(widget_background_string + text_string)

@@ -25,17 +25,17 @@ class FakeFlight(FCBDataInterfaceCore):
 
         # Rocket parameters
         self.course_enu = 1  # Initial course
-        self.ground_speed_scale = 0.1
+        self.ground_speed_scale = 0.25
         self.boost_accel = 98
         self.gravity = -9.8
         self.main_deploy_accel = 50
         self.drogue_speed = -50
         self.main_speed = -5
-        self.boost_duration = 2
+        self.boost_duration = 3
 
         # Fixed parameters and flight variables
-        self.initial_latitude = 37.2431
-        self.initial_longitude = -115.7930
+        self.initial_latitude = 37.235900
+        self.initial_longitude = -115.819586
         self.latitude = self.initial_latitude
         self.longitude = self.initial_longitude
         self.altitude = 0
