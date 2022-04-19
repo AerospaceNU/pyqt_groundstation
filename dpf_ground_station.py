@@ -55,6 +55,10 @@ THEMES["High Contrast Dark"] = ["rgb[0, 0, 0]", "rgb[0, 0, 0]", "rgb[255,255,255
 THEMES["Don't click on this one"] = ["rgb[0, 0, 0]", "rgb[0, 0, 0]", "rgb[0, 0, 0]", "rgb[0, 0, 0]", "rgb[0, 0, 0]"]
 
 
+def serial_port_callback_name(device):
+    return "set_{}_serial_port".format(device)
+
+
 class DPFGUI():
     def __init__(self):
         self.GUIStopCommanded = False
@@ -93,9 +97,10 @@ class DPFGUI():
         self.mainWindow.setWindowTitle(self.title)
         self.mainWindow.resize(1920, 1080)
 
-        self.serial_port_menu = QMenu()
+        self.serial_devices_menu = QMenu()
         self.modules_menu = QMenu()
         self.playback_source_menu = QMenu()
+        self.serial_devices = []
 
         self.widgetClasses = {"Annunciator Panel": annunciator_panel.AnnunciatorPanel,
                               "Control Station Status": control_station_status.ControlStationStatus,
@@ -189,11 +194,8 @@ class DPFGUI():
 
         # Menu bar to set serial port
         # Because the available serial ports and data interfaces change after this class is created, we run a method every time we create the menu
-        self.serial_port_menu = menu_bar.addMenu("Serial Port")
-        self.serial_port_menu.aboutToShow.connect(self.refreshSerialPorts)  # aboutToShow runs before the menu is created
-
-        self.egg_menu = menu_bar.addMenu("egg")
-        self.egg_menu.aboutToShow.connect(lambda: self.refreshSerialPorts(callback_name="set_egg_serial_port"))
+        self.serial_devices_menu = menu_bar.addMenu("Serial Devices")
+        self.serial_devices_menu.aboutToShow.connect(self.refreshSerialDevices)  # aboutToShow runs before the menu is created
 
         # Menu bar to enable/disable data interfaces
         self.modules_menu = menu_bar.addMenu("Modules")
@@ -202,10 +204,8 @@ class DPFGUI():
         self.playback_source_menu = menu_bar.addMenu("Playback Options")
         self.playback_source_menu.aboutToShow.connect(self.playbackOptionsMenu)
 
-    def setActiveSerialPort(self, port_name, callback_name=None):
-        if callback_name is None:
-            callback_name = "set_serial_port"
-
+    def setActiveSerialPort(self, port_name, device_name):
+        callback_name = serial_port_callback_name(device_name)
         self.callback_queue.append([callback_name, port_name])
 
     def toggleModuleEnabledState(self, module_name):
@@ -240,13 +240,16 @@ class DPFGUI():
             else:
                 self.modules_menu.addAction("Enable {}".format(interfaceName), lambda target_interface=interfaceName: self.toggleModuleEnabledState(target_interface))
 
-    def refreshSerialPorts(self, callback_name=None):
+    def refreshSerialDevices(self):
         serial_ports = [comport for comport in serial.tools.list_ports.comports()]
-        self.serial_port_menu.clear()
-        self.egg_menu.clear()
-        for port in serial_ports:
-            self.serial_port_menu.addAction("{0}: {1}".format(port.device, port.description), lambda portName=port.device, call=callback_name: self.setActiveSerialPort(portName, call))
-            self.egg_menu.addAction("{0}: {1}".format(port.device, port.description), lambda portName=port.device, call=callback_name: self.setActiveSerialPort(portName, call))
+        self.serial_devices_menu.clear()
+
+        for device in self.serial_devices:
+            device_menu = self.serial_devices_menu.addMenu(device)
+
+            for port in serial_ports:
+                device_menu.addAction("{0}: {1}".format(port.device, port.description), lambda portName=port.device, device_name=device: self.setActiveSerialPort(portName, device_name))
+            device_menu.addAction("Disconnect", lambda portName="", device_name=device: self.setActiveSerialPort(portName, device_name))  # Kind of a hack
 
     def playbackOptionsMenu(self):
         self.playback_source_menu.clear()
@@ -486,6 +489,14 @@ class DPFGUI():
             for callback in callbacks:
                 if len(callback) == 2:
                     self.addCallback(callback[0], callback[1])
+
+            serial_devices = interface_object.getSerialDevices()
+            for device in serial_devices:
+                callback_name = serial_port_callback_name(device)
+                callback_function = serial_devices[device]
+                self.addCallback(callback_name, callback_function)
+                if device not in self.serial_devices:
+                    self.serial_devices.append(device)
 
             if hide_toggle:
                 self.hidden_modules.append(interface_name)

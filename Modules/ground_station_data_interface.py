@@ -40,7 +40,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.raw_data_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%m-%d %H:%M:%S")))
         self.parsed_messages_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
-        self.callbacks_to_add.append(["set_serial_port", self.changeActiveSerialPort])
+        self.serial_devices["Ground Station"] = self.changeActiveSerialPort
+
         self.callbacks_to_add.append([Constants.cli_interface_key, self.cliCommand])
 
         self.radio_reconfigure_page = ReconfigurePage("Serial Ground Station Config")

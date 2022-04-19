@@ -26,6 +26,8 @@ class MapWidget(CustomQWidgetBase):
         self.addSourceKey("vehicle_lon", float, Constants.longitude_key, default_value=0, hide_in_drop_down=True)
         self.addSourceKey("groundstation_lat", float, Constants.ground_station_latitude_key, default_value=0, hide_in_drop_down=True)
         self.addSourceKey("groundstation_lon", float, Constants.ground_station_longitude_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("egg_lat", float, Constants.egg_finder_latitude, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("egg_lon", float, Constants.egg_finder_longitude, default_value=0, hide_in_drop_down=True)
 
         self.use_ground_station_position = False
         self.gs_lat = 0
@@ -63,6 +65,8 @@ class MapWidget(CustomQWidgetBase):
         longitude = self.getDictValueUsingSourceKey("vehicle_lon")
         gs_lat = self.getValueIfUpdatedUsingSourceKey("groundstation_lat")
         gs_lon = self.getValueIfUpdatedUsingSourceKey("groundstation_lon")
+        egg_lat = self.getValueIfUpdatedUsingSourceKey("egg_lat")
+        egg_lon = self.getValueIfUpdatedUsingSourceKey("egg_lon")
 
         if Constants.map_tile_manager_key in vehicle_data and self.map_tile_manager is None:
             self.map_tile_manager = vehicle_data[Constants.map_tile_manager_key]
@@ -72,19 +76,24 @@ class MapWidget(CustomQWidgetBase):
             self.gs_lat = gs_lat
             self.gs_lon = gs_lon
             self.datum = [gs_lat, gs_lon]
+            self.has_datum = True
 
         if latitude != 0 and longitude != 0 and self.use_ground_station_position:  # If we have rocket lat-lon and gs lat-lon, use that
             ned = navpy.lla2ned(latitude, longitude, 0, self.gs_lat, self.gs_lon, 0)
-            self.setXY(ned[1], ned[0])
+            self.map_draw_widget.setXY(ned[1], ned[0])
         elif latitude != 0 and longitude != 0:  # If not, use the first rocket position as the datum
             if not self.has_datum:
                 self.datum = [latitude, longitude]
                 self.has_datum = True
 
             ned = navpy.lla2ned(latitude, longitude, 0, self.datum[0], self.datum[1], 0)
-            self.setXY(ned[1], ned[0])  # ned to enu
+            self.map_draw_widget.setXY(ned[1], ned[0])  # ned to enu
         else:  # Otherwise, we're at 0,0
-            self.setXY(0, 0)
+            self.map_draw_widget.setXY(0, 0)
+
+        if self.has_datum and egg_lat != 0 and egg_lon != 0:
+            ned = navpy.lla2ned(egg_lat, egg_lon, 0, self.datum[0], self.datum[1], 0)
+            self.map_draw_widget.setXY(ned[1], ned[0], position_name="egg")
 
         self.map_draw_widget.setHeading(heading)
 
@@ -136,9 +145,6 @@ class MapWidget(CustomQWidgetBase):
         self.map_background_widget.removeMapBackground()
         self.map_draw_widget.setOpaqueBackground(True)
         self.last_image_request_time = 0  # Request new map now
-
-    def setXY(self, x, y):
-        self.map_draw_widget.setXY(x, y)
 
     def resetOrigin(self):
         self.map_draw_widget.resetOrigin()
@@ -314,8 +320,8 @@ class MapDrawWidget(QWidget):
         self.paths = {}
         self.opaque_background = True
 
-        self.x_position = 0
-        self.y_position = 0
+        self.position_dict = {}
+
         self.heading = 0
 
         self.decimals = 0
@@ -404,24 +410,32 @@ class MapDrawWidget(QWidget):
             [oldX, oldY] = self.pointToDrawLocation(lastPoint[0], lastPoint[1])
             painter.drawLine(int(xPos), int(yPos), int(oldX), int(oldY))
 
-        # Draw current position
-        [xPos, yPos] = self.pointToDrawLocation(self.x_position, self.y_position)
+        # Draw current positions
 
-        if len(self.oldPoints) > 0:
-            lastPoint = self.oldPoints[0]
-            [oldX, oldY] = self.pointToDrawLocation(lastPoint[0], lastPoint[1])
-            painter.drawLine(int(xPos), int(yPos), int(oldX), int(oldY))
+        for position in self.position_dict:
+            [xPos, yPos] = self.pointToDrawLocation(self.position_dict[position][0], self.position_dict[position][1])
 
-        painter.setPen(QPen(QColor(255, 0, 0), 1, Qt.SolidLine))
-        painter.setBrush(QBrush(QColor(255, 0, 0), Qt.SolidPattern))
-        points = [QPoint(-6, 10), QPoint(6, 10), QPoint(0, -15)]  # Is a triangle
-        poly = QPolygon(points)
+            if len(self.oldPoints) > 0 and position == "default":
+                painter.setPen(QPen(QColor(10, 10, 10), 1, Qt.SolidLine))
+                lastPoint = self.oldPoints[0]
+                [oldX, oldY] = self.pointToDrawLocation(lastPoint[0], lastPoint[1])
+                painter.drawLine(int(xPos), int(yPos), int(oldX), int(oldY))
 
-        painter.translate(int(xPos), int(yPos))
-        painter.rotate(self.heading)
-        painter.drawPolygon(poly)
-        painter.rotate(-self.heading)
-        painter.translate(-int(xPos), -int(yPos))
+            if position == "default":
+                painter.setPen(QPen(QColor(255, 0, 0), 1, Qt.SolidLine))
+                painter.setBrush(QBrush(QColor(255, 0, 0), Qt.SolidPattern))
+            else:
+                painter.setPen(QPen(QColor(0, 255, 0), 1, Qt.SolidLine))
+                painter.setBrush(QBrush(QColor(0, 255, 0), Qt.SolidPattern))
+
+            points = [QPoint(-6, 10), QPoint(6, 10), QPoint(0, -15)]  # Is a triangle
+            poly = QPolygon(points)
+
+            painter.translate(int(xPos), int(yPos))
+            painter.rotate(self.heading)
+            painter.drawPolygon(poly)
+            painter.rotate(-self.heading)
+            painter.translate(-int(xPos), -int(yPos))
 
         # Draw origin axes
         painter.setPen(QPen(QColor(0, 0, 0), 2, Qt.SolidLine))
@@ -483,19 +497,21 @@ class MapDrawWidget(QWidget):
     def setHeading(self, heading):
         self.heading = heading
 
-    def setXY(self, x, y):
+    def setXY(self, x, y, position_name="default"):
         # Track smallest and largest value ever seen
         self.min_axis_value = min(self.min_axis_value, x, y)
         self.max_axis_value = max(self.max_axis_value, x, y)
 
         # Update current position of vehicle
-        self.x_position = x
-        self.y_position = y
+        self.position_dict[position_name] = [x, y]
+
+        if position_name != "default":
+            return
 
         # Get distance to last point in history
         if len(self.oldPoints) > 0:
             last_point_in_list = self.oldPoints[0]
-            distance = distance_between_points(self.x_position, self.y_position, last_point_in_list[0], last_point_in_list[1])
+            distance = distance_between_points(x, y, last_point_in_list[0], last_point_in_list[1])
         else:
             distance = 0
 

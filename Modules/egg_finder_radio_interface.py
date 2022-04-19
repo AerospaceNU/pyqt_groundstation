@@ -4,8 +4,6 @@ import serial.tools.list_ports
 import pynmea2
 
 from Modules.data_interface_core import ThreadedModuleCore
-from Modules.DataInterfaceTools.reconfigure_helper import ReconfigurePage
-from Modules.DataInterfaceTools.comms_console_helper import CommsConsoleHelper
 
 from constants import Constants
 
@@ -20,25 +18,15 @@ class EggFinderRadioInterface(ThreadedModuleCore):
 
         self.nextCheckTime = time.time()
         self.serial_port = "/dev/ttyACM0"
-        self.baud_rate = 9600  # 4800?
+        self.baud_rate = 9600
         self.last_data_time = time.time()
 
         self.connected = False
         self.has_data = False
 
-        self.callbacks_to_add.append(["set_egg_serial_port", self.changeActiveSerialPort])
+        self.data_buffer = ""
 
-        # self.radio_reconfigure_page = ReconfigurePage("Egg finder port config")
-        # self.radio_reconfigure_page.addEnumOption("radio_types", "433 MHz", RADIO_433)
-        # self.radio_reconfigure_page.addEnumOption("radio_types", "915 MHz", RADIO_915)
-        # self.radio_reconfigure_page.updateLine("Target Radio", "enum", "", "Which radio to use", "radio_types")
-        # self.radio_reconfigure_page.updateLine("Radio Band", "int", description="Which radio band to use")
-        # self.radio_reconfigure_page.bindCallback("Target Radio", self.onRadioSwitch)
-        # self.radio_reconfigure_page.bindCallback("Radio Band", self.onBandSwitch)
-
-        # reconfigure_callbacks = self.radio_reconfigure_page.getCallbackFunctions(Constants.primary_reconfigure)
-        # for callback in reconfigure_callbacks:
-        #     self.callbacks_to_add.append([callback, reconfigure_callbacks[callback]])
+        self.serial_devices["Egg Finder"] = self.changeActiveSerialPort
 
     def changeActiveSerialPort(self, portName):
         self.serial_port = portName
@@ -86,8 +74,18 @@ class EggFinderRadioInterface(ThreadedModuleCore):
 
         self.last_data_time = time.time()
 
-        data_string = raw_bytes.decode()
-        nmea_strings = data_string.split("\n")
+        try:
+            data_string = raw_bytes.decode()
+            self.data_buffer += data_string
+
+            if "\n" in self.data_buffer:
+                nmea_strings = self.data_buffer.split("\n")[0:-1]
+                self.data_buffer = self.data_buffer.split("\n")[-1]
+            else:
+                nmea_strings = []
+        except Exception as e:
+            print("Could not decode egg finder string: {0}".format(e))
+            return
 
         try:
             for nmea_string in nmea_strings:
@@ -102,7 +100,8 @@ class EggFinderRadioInterface(ThreadedModuleCore):
                         self.data_dictionary[Constants.egg_finder_altitude] = msg.altitude
 
         except Exception as e:
-            print(e)
+            pass
+            # print("Could not parse NMEA string: {0}".format(e))
 
     def updateEveryLoop(self):
         pass

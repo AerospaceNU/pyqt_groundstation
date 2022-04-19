@@ -25,6 +25,7 @@ class ThreadedModuleCore(threading.Thread):
         self.gui_full_data_dictionary = {}
         self.recorded_data_dictionary = {}  # {run_name: {run_dict}}
         self.callbacks_to_add = [[]]
+        self.serial_devices = {}
         self.should_be_running = True
         self.enabled = True
         self.was_enabled = True
@@ -39,6 +40,10 @@ class ThreadedModuleCore(threading.Thread):
     def getCallbacksToAdd(self):
         """DO NOT OVERRIDE.  Provides a list of callbacks to DPFGUI"""
         return self.callbacks_to_add
+
+    def getSerialDevices(self):
+        """Returns a dict that is {device_name: callback_function(str: portname)} that contains all the serial devices added by this module"""
+        return self.serial_devices
 
     def getReconfigureDictionary(self):
         return self.reconfigure_options_dictionary
