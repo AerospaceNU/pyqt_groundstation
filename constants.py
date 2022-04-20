@@ -4,9 +4,9 @@ String constants that are used throughout the code
 
 
 class Constants:
-    altitude_key = "altitude"
-    latitude_key = "latitude"
-    longitude_key = "longitude"
+    altitude_key = "fcb_altitude"
+    latitude_key = "fcb_latitude"
+    longitude_key = "fcb_longitude"
     gps_alt_key = "gps_alt"
     vertical_speed_key = "v_speed"
     acceleration_key = "accel_z"
@@ -62,9 +62,9 @@ class Constants:
     ground_station_pressure_key = "gs_baro"
     ground_station_temperature_key = "gs_temp"
 
-    egg_finder_latitude = "egg_lat"
-    egg_finder_longitude = "egg_lon"
-    egg_finder_altitude = "egg_alt"
+    egg_finder_latitude = "egg_finder_latitude"
+    egg_finder_longitude = "egg_finder_longitude"
+    egg_finder_altitude = "egg_finder_altitude"
 
     laptop_disk_usage_key = "laptop_disk"
     laptop_cpu_usage_key = "laptop_cpu"
@@ -98,13 +98,13 @@ class Constants:
                        "Cli Config",
                        "Cli Erase Flash",
                        "Cli Help",
+                       "CLI Pyro Fire",
                        "Cli Main",
                        "Cli Offload",
                        "Cli Sense",
                        "Ascent",
-                       "Drogue Descent N",
                        "Initialize",
-                       "Main Descent",
+                       "Descent",
                        "Post Flight",
                        "Pre Flight",
                        "Shutdown",
@@ -124,6 +124,8 @@ class Constants:
     map_tile_manager_key = "map_tile_manager"
 
     # Line cutter stuff
+    MAX_LINE_CUTTERS = 4
+
     line_cutter_number_key = "line_cutter_number"
     line_cutter_state_key = "state"
     delta_altitude_key = "delta_alt"

@@ -22,16 +22,13 @@ class RocketPrimaryTab(TabCommon):
     def __init__(self, tab_name, parent=None):
         super().__init__(tab_name, parent=parent)
 
-        self.ButtonPanel = button_panel.ButtonPanel()
-        self.Map = map_widget.MapWidget()
-
         self.FlightDisplay = self.addWidget(flight_display.FlightDisplay(compass_and_text=False))
         self.StatusBar = self.addWidget(vehicle_status_widget.VehicleStatusWidget())
         self.VideoPanel = self.addWidget(video_widget.VideoWidget())
         self.Annunciator = self.addWidget(annunciator_panel.AnnunciatorPanel())
-        self.addWidget(self.ButtonPanel)
+        self.ButtonPanel = self.addWidget(button_panel.ButtonPanel())
         self.Console = self.addWidget(simple_console_widget.SimpleConsoleWidget())
-        self.addWidget(self.Map)
+        self.Map = self.addWidget(map_widget.MapWidget())
         self.AltitudeGraph = self.addWidget(graph_widget.GraphWidget(title="Altitude", source_list=[Constants.altitude_key]))
 
         self.ButtonPanel.clearMapButton.clicked.connect(self.Map.clearMap)  # This is a sketchy way to do this

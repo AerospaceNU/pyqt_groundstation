@@ -22,10 +22,11 @@ class MapWidget(CustomQWidgetBase):
         if parent_widget is not None:
             self.setMinimumSize(500, 500)
 
-        self.addSourceKey("vehicle_lat", float, Constants.latitude_key, default_value=0, hide_in_drop_down=True)
-        self.addSourceKey("vehicle_lon", float, Constants.longitude_key, default_value=0, hide_in_drop_down=True)
         self.addSourceKey("groundstation_lat", float, Constants.ground_station_latitude_key, default_value=0, hide_in_drop_down=True)
         self.addSourceKey("groundstation_lon", float, Constants.ground_station_longitude_key, default_value=0, hide_in_drop_down=True)
+
+        self.addSourceKey("vehicle_lat", float, Constants.latitude_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("vehicle_lon", float, Constants.longitude_key, default_value=0, hide_in_drop_down=True)
         self.addSourceKey("egg_lat", float, Constants.egg_finder_latitude, default_value=0, hide_in_drop_down=True)
         self.addSourceKey("egg_lon", float, Constants.egg_finder_longitude, default_value=0, hide_in_drop_down=True)
 
@@ -60,11 +61,12 @@ class MapWidget(CustomQWidgetBase):
             menu.addAction("Enable Map Dragging", lambda enabled=True: self.map_draw_widget.setDraggingEnabled(enabled))
 
     def updateData(self, vehicle_data, updated_data):
-        heading = float(get_value_from_dictionary(vehicle_data, "yaw", 0))
-        latitude = self.getDictValueUsingSourceKey("vehicle_lat")
-        longitude = self.getDictValueUsingSourceKey("vehicle_lon")
+        heading = float(get_value_from_dictionary(vehicle_data, Constants.yaw_position_key, 0))
         gs_lat = self.getValueIfUpdatedUsingSourceKey("groundstation_lat")
         gs_lon = self.getValueIfUpdatedUsingSourceKey("groundstation_lon")
+
+        latitude = self.getDictValueUsingSourceKey("vehicle_lat")
+        longitude = self.getDictValueUsingSourceKey("vehicle_lon")
         egg_lat = self.getValueIfUpdatedUsingSourceKey("egg_lat")
         egg_lon = self.getValueIfUpdatedUsingSourceKey("egg_lon")
 

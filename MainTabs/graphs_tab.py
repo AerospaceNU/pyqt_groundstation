@@ -17,8 +17,7 @@ class GraphsTab(TabCommon):
     def __init__(self, tab_name, parent=None):
         super().__init__(tab_name, parent=parent)
 
-        self.graphControlWidget = GraphTabControl()
-        self.addWidget(self.graphControlWidget)
+        self.graphControlWidget = self.addWidget(GraphTabControl())
 
         self.slider_min = 0
         self.slider_max = 1000

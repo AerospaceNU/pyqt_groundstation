@@ -161,9 +161,6 @@ class OrientationMessage(BaseMessage):
                    [FLOAT_TYPE, Constants.magnetometer_z_key],
                    ]
 
-    def __init__(self):
-        super().__init__()
-
     def extraParseOptions(self, data, dictionary):
         qx = dictionary.pop('qx')
         qy = dictionary.pop("qy")
@@ -208,9 +205,11 @@ class LineCutterMessage(BaseMessage):
     def parseMessage(self, data):
         """We generate the message format after parsing which line cutter this data is for."""
 
-        # data = data[0:1]
         unpacked_data = struct.unpack("<B", data[0:1])  # Just get the first byte
         line_cutter_number = unpacked_data[0]
+
+        if line_cutter_number > Constants.MAX_LINE_CUTTERS:
+            return {}
 
         self.messageData = [[UINT_8_TYPE, Constants.line_cutter_number_key],
                             [UINT_8_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_state_key)],
@@ -296,8 +295,6 @@ def parse_fcb_message(data):
         # Get CRC, LQI, RSSI data from message (First 4)
         radio_data = data[-4:]
         unpacked_radio_status_data = struct.unpack('<Bb?B', radio_data)
-        # lqi = unpacked_radio_status_data[1] & 0b1111111  # The last 7 bits of the lqi byte are the lqi
-        # crc = (unpacked_radio_status_data[1] & 0b10000000)  # And top is CRC
 
         # Add radio stuff
         radio_id = unpacked_radio_status_data[0]
