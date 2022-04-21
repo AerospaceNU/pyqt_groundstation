@@ -15,6 +15,8 @@ from constants import Constants
 
 BACKGROUND_COLOR = (255, 144, 30)  # BGR for OpenCV
 
+EXTRA_POSITION_SOURCES = {"egg_finder": [Constants.egg_finder_latitude, Constants.egg_finder_longitude]}
+
 
 class MapWidget(CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None, points_to_keep=200, update_interval=3):
@@ -27,8 +29,10 @@ class MapWidget(CustomQWidgetBase):
 
         self.addSourceKey("vehicle_lat", float, Constants.latitude_key, default_value=0, hide_in_drop_down=True)
         self.addSourceKey("vehicle_lon", float, Constants.longitude_key, default_value=0, hide_in_drop_down=True)
-        self.addSourceKey("egg_lat", float, Constants.egg_finder_latitude, default_value=0, hide_in_drop_down=True)
-        self.addSourceKey("egg_lon", float, Constants.egg_finder_longitude, default_value=0, hide_in_drop_down=True)
+
+        for source in EXTRA_POSITION_SOURCES:
+            self.addSourceKey("{}_lat".format(source), float, EXTRA_POSITION_SOURCES[source][0], default_value=0, hide_in_drop_down=True)
+            self.addSourceKey("{}_lon".format(source), float, EXTRA_POSITION_SOURCES[source][1], default_value=0, hide_in_drop_down=True)
 
         self.use_ground_station_position = False
         self.gs_lat = 0
@@ -64,11 +68,8 @@ class MapWidget(CustomQWidgetBase):
         heading = float(get_value_from_dictionary(vehicle_data, Constants.yaw_position_key, 0))
         gs_lat = self.getValueIfUpdatedUsingSourceKey("groundstation_lat")
         gs_lon = self.getValueIfUpdatedUsingSourceKey("groundstation_lon")
-
         latitude = self.getDictValueUsingSourceKey("vehicle_lat")
         longitude = self.getDictValueUsingSourceKey("vehicle_lon")
-        egg_lat = self.getValueIfUpdatedUsingSourceKey("egg_lat")
-        egg_lon = self.getValueIfUpdatedUsingSourceKey("egg_lon")
 
         if Constants.map_tile_manager_key in vehicle_data and self.map_tile_manager is None:
             self.map_tile_manager = vehicle_data[Constants.map_tile_manager_key]
@@ -93,9 +94,13 @@ class MapWidget(CustomQWidgetBase):
         else:  # Otherwise, we're at 0,0
             self.map_draw_widget.setXY(0, 0)
 
-        if self.has_datum and egg_lat != 0 and egg_lon != 0:
-            ned = navpy.lla2ned(egg_lat, egg_lon, 0, self.datum[0], self.datum[1], 0)
-            self.map_draw_widget.setXY(ned[1], ned[0], position_name="egg")
+        for source in EXTRA_POSITION_SOURCES:
+            lat = self.getValueIfUpdatedUsingSourceKey("{}_lat".format(source))
+            lon = self.getValueIfUpdatedUsingSourceKey("{}_lon".format(source))
+
+            if self.has_datum and lat != 0 and lon != 0:
+                ned = navpy.lla2ned(lat, lon, 0, self.datum[0], self.datum[1], 0)
+                self.map_draw_widget.setXY(ned[1], ned[0], position_name=source)
 
         self.map_draw_widget.setHeading(heading)
 

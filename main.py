@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     # Load in modules
     GUI.addModule("Serial Ground Station", GroundStationDataInterface, enabled=True)
-    GUI.addModule("Egg Finder Radio", EggFinderRadioInterface, enabled=True)
+    GUI.addModule("Egg Finder Radio", EggFinderRadioInterface, enabled=False)
     GUI.addModule("Android Phone Bluetooth", AndroidPhoneBluetoothInterface)
     GUI.addModule("Text To Speech", TextToSpeech, enabled=False)
     GUI.addModule("Laptop Status Monitor", LaptopStatusMonitor, hide_toggle=True)
