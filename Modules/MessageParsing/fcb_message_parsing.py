@@ -9,6 +9,9 @@ from constants import Constants
 This file contains functions to parse all the messages coming over serial from the ground station
 """
 
+# Packet length in bytes
+PACKET_LENGTH = 132
+
 
 def quaternion_to_euler_angle(w, x, y, z):
     """Copied from stack overflow"""
@@ -217,7 +220,7 @@ class LineCutterMessage(BaseMessage):
                             [UINT_32_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.barometer_pressure_key)],
                             [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.altitude_key)],
                             [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key)],
-                            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.temperature_key)],
+                            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.temperature_key), 0.01],
                             [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.acceleration_key)],
                             [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.battery_voltage_key)],
                             [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_1)],
@@ -275,6 +278,8 @@ MESSAGE_CALLBACKS = {2: ["Orientation", OrientationMessage],
 
 # Ground station messages
 def parse_ground_station_gps(data, dictionary):
+    data = data[0:33]
+
     unpacked_data = struct.unpack("<Bfffdd", data)
     dictionary[Constants.ground_station_latitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[1])
     dictionary[Constants.ground_station_longitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[2])
@@ -291,7 +296,9 @@ def parse_fcb_message(data):
     dictionary = {}
     message_number = data[0]
 
-    if message_number in MESSAGE_CALLBACKS:
+    if len(data) < PACKET_LENGTH:
+        return [False, {}, "Packet too short: {0} of {1} bytes".format(len(data), PACKET_LENGTH), 1]
+    elif message_number in MESSAGE_CALLBACKS:
         # Get CRC, LQI, RSSI data from message (First 4)
         radio_data = data[-4:]
         unpacked_radio_status_data = struct.unpack('<Bb?B', radio_data)
@@ -350,8 +357,8 @@ def parse_fcb_message(data):
                 line_cutter_number = dictionary[Constants.line_cutter_number_key]
                 message_type += str(line_cutter_number)
         except Exception as e:
-            print("Could not parse message of type {0}: {1}".format(message_type, e))
-            print(raw_packet)
+            # print("Could not parse message of type {0}: {1}".format(message_type, e))
+            # print(raw_packet)
             success = False
 
         return [success, dictionary, message_type, crc]

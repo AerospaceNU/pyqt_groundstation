@@ -95,29 +95,24 @@ class Constants:
 
     invalid_fcb_state_name = "Invalid FCB State"
     fcb_state_names = ["Cli Calibrate",
-                       "Cli Config",
                        "Cli Erase Flash",
-                       "Cli Help",
-                       "CLI Pyro Fire",
-                       "Cli Main",
-                       "Cli Offload",
-                       "Cli Sense",
+                       "CLI Offload",
                        "Ascent",
                        "Initialize",
                        "Descent",
                        "Post Flight",
                        "Pre Flight",
-                       "Shutdown",
+                       "Sim Temp State",
                        "NUM_STATES",
                        "UNKNOWN"]
 
-    PREFLIGHT_STATE_INDEX = 12
-    POWERED_ASCENT_STATE_INDEX = 7
-    COAST_TO_APOGEE_INDEX = 7
-    DROGUE_DESCENT_INDEX = 8
-    MAIN_DESCENT_INDEX = 10
-    END_STATE_INDEX = 11
-    UNKNOWN_STATE_INDEX = 15
+    PREFLIGHT_STATE_INDEX = 7
+    POWERED_ASCENT_STATE_INDEX = 3
+    COAST_TO_APOGEE_INDEX = 3
+    DROGUE_DESCENT_INDEX = 5
+    MAIN_DESCENT_INDEX = 5
+    END_STATE_INDEX = 6
+    UNKNOWN_STATE_INDEX = 10
 
     MAX_PYROS = 6
 

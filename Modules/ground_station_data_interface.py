@@ -159,16 +159,20 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
             self.logToConsole("Can't parse message (length: {2} bytes):\n{1}".format(raw_bytes, e, len(raw_bytes)), 1)
 
     def readData(self):
-        raw_bytes = self.serial.read(1000)  # Read in bytes
+        raw_bytes = self.serial.read(fcb_message_parsing.PACKET_LENGTH)  # Read in bytes
         if len(raw_bytes) == 0:  # If it didn't send a message, we don't parse
             return
+
+        # self.parseData(raw_bytes)
+
+        for i in range(0, len(raw_bytes), fcb_message_parsing.PACKET_LENGTH):
+            self.parseData(raw_bytes[i:i + fcb_message_parsing.PACKET_LENGTH])
+        self.serial.flushInput()
 
         if self.log_to_file:
             self.raw_data_file.write("{0}: {1}\n".format(time.strftime("%H:%M:%S"), str(raw_bytes)))
 
         self.last_data_time = time.time()
-
-        self.parseData(raw_bytes)
 
     def writeData(self):
         if len(self.outgoing_serial_queue) > 0:
