@@ -31,7 +31,9 @@ class FakeFlight(FCBDataInterfaceCore):
         self.main_deploy_accel = 50
         self.drogue_speed = -50
         self.main_speed = -5
-        self.boost_duration = 3
+        self.boost_duration = 1
+
+        self.pyro_status = [False, False, False, False]
 
         # Fixed parameters and flight variables
         self.initial_latitude = 37.235900
@@ -100,6 +102,7 @@ class FakeFlight(FCBDataInterfaceCore):
             fcb_state = Constants.DROGUE_DESCENT_INDEX
 
             self.course_enu += random.uniform(-.1, .1)
+            self.pyro_status[0] = True
 
             if self.altitude < 100:
                 self.state = MAIN
@@ -108,6 +111,7 @@ class FakeFlight(FCBDataInterfaceCore):
             self.vertical_velocity = min(self.vertical_velocity + self.main_deploy_accel * loop_time, self.main_speed)
             measured_acceleration = random.uniform(0, 9.8)
             fcb_state = Constants.MAIN_DESCENT_INDEX
+            self.pyro_status[2] = True
 
             if self.altitude < 0:
                 self.state = LANDED
@@ -133,6 +137,7 @@ class FakeFlight(FCBDataInterfaceCore):
         packet[Constants.altitude_key] = self.altitude
         packet[Constants.vertical_speed_key] = self.vertical_velocity
         packet[Constants.acceleration_key] = measured_acceleration
+        packet[Constants.pyro_fire_status] = self.pyro_status
 
         packet[Constants.ground_station_latitude_key] = self.initial_latitude
         packet[Constants.ground_station_longitude_key] = self.initial_longitude
