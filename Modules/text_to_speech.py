@@ -58,7 +58,7 @@ class TextToSpeech(ThreadedModuleCore):
             last_loop_pyro = self.last_pyro_status[i]
 
             if pyro and not last_loop_pyro:
-                self.speak_message("Pyro {} fired".format(i))
+                self.speak_message("Pyro {} fired".format(i + 1))  # Pyros are numbered from 1
 
         self.last_pyro_status = pyro_status.copy()
 
