@@ -61,17 +61,21 @@ def serial_port_callback_name(device):
 
 class DPFGUI():
     def __init__(self):
-        self.GUIStopCommanded = False
+        """
+        Main GUI Class
+        """
+
+        self.GUIStopCommanded = False  # Currently not used, but can be set to True to stop the GUI in the correct thread
 
         # This could use some restructuring
-        self.database_dictionary = {}
+        self.database_dictionary = {}  # Big dictionary that contains the overall database all the widgets draw from
         self.updated_data_dictionary = {}  # Tracks which keys are new since the last GUI loop
-        self.ConsoleData = [[]]
-        self.callbackFunctions = {}
-        self.callback_queue = []
-        self.module_dictionary = {}
-        self.module_load_time_dictionary = {}
-        self.hidden_modules = []
+        self.ConsoleData = [[]]  # List of log messages in primary console [[message, level], []...]
+        self.callbackFunctions = {}  # Dictionary of list of callback functions that can be called from any widget.  These are typically added by modules.  {callback_name: [function_pointer, pointer, ...], ...}
+        self.callback_queue = []  # List of callback function names to call.  These are called in the GUI thread during the update() function
+        self.module_dictionary = {}  # Dictionary of module objects {module_name: module_object, ...}
+        self.module_load_time_dictionary = {}  # Dictionary of module load times {module_name: load_time, ...}
+        self.hidden_modules = []  # List of modules that we don't provide a drop-down option to enable or disable
         self.playback_data_sources = []
         self.current_playback_source = ""
 
@@ -87,9 +91,9 @@ class DPFGUI():
         self.headerTextColor = ""
         self.borderColor = ""
 
-        self.application = QApplication([])
-        self.mainWindow = QMainWindow()
-        self.tabHolderWidget = QTabWidget(self.mainWindow)
+        self.application = QApplication([])  # PyQt Application object
+        self.mainWindow = QMainWindow()  # PyQt MainWindow widget
+        self.tabHolderWidget = QTabWidget(self.mainWindow)  # TabHolderWidget to contain tabs
 
         # Set up main window
         self.mainWindow.show()
@@ -97,11 +101,13 @@ class DPFGUI():
         self.mainWindow.setWindowTitle(self.title)
         self.mainWindow.resize(1920, 1080)
 
+        # Make some menus that we'll need later
         self.serial_devices_menu = QMenu()
         self.modules_menu = QMenu()
         self.playback_source_menu = QMenu()
         self.serial_devices = []
 
+        # List of classes of widgets that can be dynamically created
         self.widgetClasses = {"Annunciator Panel": annunciator_panel.AnnunciatorPanel,
                               "Control Station Status": control_station_status.ControlStationStatus,
                               "Flight Display": flight_display.FlightDisplay,
@@ -116,15 +122,17 @@ class DPFGUI():
                               "Pyro Display": pyro_display_widget.PyroWidget,
                               "Local Sim Helper": local_sim_widget.LocalSimWidget,
                               "Line Cutter Control": line_cutter_control.LineCutterControl,
-                              }  # List of classes of widgets that can be dynamically created
+                              }
 
+        # List of tabs that can be dynamically created
         self.tabClasses = {"Settings": SettingsTab,
                            "Diagnostic": DiagnosticTab,
                            "Rocket Primary": RocketPrimaryTab,
                            "Graph": GraphsTab,
                            "Empty": TabCommon,
-                           }  # List of tabs that can be dynamically created
+                           }
 
+        # Set some object names for all the core stuff
         self.application.setObjectName("Application")
         self.mainWindow.setObjectName("Main_Window")
         self.mainWindow.menuBar().setObjectName("Menu_Bar")
@@ -145,6 +153,12 @@ class DPFGUI():
         self.setUpMenuBar()
 
     def run(self):
+        """
+        Function called in main when its ready to run the GUI
+
+        Sets up the update timer, calls the PyQt exec_ function, and closes down the GUI when done
+        """
+
         # QTimer to run the update method
         timer = QTimer()
         timer.timeout.connect(self.updateGUI)
@@ -205,6 +219,11 @@ class DPFGUI():
         self.playback_source_menu.aboutToShow.connect(self.playbackOptionsMenu)
 
     def setActiveSerialPort(self, port_name, device_name):
+        """
+        Function to queue up a callback to change serial port
+        The actual callback is provided by the module that interfaces with the serial device
+        """
+
         callback_name = serial_port_callback_name(device_name)
         self.callback_queue.append([callback_name, port_name])
 
@@ -260,7 +279,10 @@ class DPFGUI():
         self.current_playback_source = option
 
     def updateGUI(self):
-        """Runs in GUI thread every 20ms"""
+        """
+        Runs in GUI thread every 20ms.  Gets new data updates from modules, provides them with the full database, updates each tab, and handles running any callbacks.
+        """
+
         if self.GUIStopCommanded:
             self.stop()
 
@@ -294,7 +316,6 @@ class DPFGUI():
             widget.update()
 
         # Update tabs
-        active_tab = self.getActiveTabObject()
         for tab in self.tabObjects:
             self.callback_queue += tab.updateVehicleData(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary, recorded_data_dict)
 
@@ -403,7 +424,7 @@ class DPFGUI():
 
     def setTheme(self, background: str, widget_background: str, text: str, header_text: str, border: str):
         """
-        Sets theme from given color strings.  Currently the only accpted format for color strings is rgb(red,green,blue), but I'm going to add more at some point.
+        Sets theme from given color strings.  Currently the only accepted format for color strings is rgb(red,green,blue), but I'm going to add more at some point.
 
         :param background: Background color for the GUI
         :param widget_background: Widget color

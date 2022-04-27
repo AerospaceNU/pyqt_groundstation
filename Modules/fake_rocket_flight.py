@@ -7,6 +7,7 @@ from constants import Constants
 
 from Modules.fcb_data_interface_core import FCBDataInterfaceCore
 
+# Internal states for the physics state machine
 PRE_FLIGHT = 0
 BOOST = 1
 COAST = 2

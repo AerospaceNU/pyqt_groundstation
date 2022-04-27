@@ -1,8 +1,9 @@
 """
 Custom base QWidget
 
-Currently only used for setting colors properly
+Handles everything that is needed to be common between widgets
 """
+
 import copy
 
 from PyQt5 import QtGui

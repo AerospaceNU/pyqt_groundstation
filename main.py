@@ -17,6 +17,7 @@ from Modules.map_interface import MapInterface
 from Modules.egg_finder_radio_interface import EggFinderRadioInterface
 
 if __name__ == '__main__':
+    # Make GUI object, but don't start it yet
     GUI = DPFGUI()
 
     # Add tabs to GUI
@@ -37,5 +38,6 @@ if __name__ == '__main__':
     GUI.addModule("Random Data for Debugging", RandomDataInterface, enabled=False, hide_toggle=False)
     GUI.addModule("Map Interface", MapInterface, enabled=True, hide_toggle=True)
 
+    # Run GUI, and wait until its killed
     GUI.run()
     print("Good Bye")
