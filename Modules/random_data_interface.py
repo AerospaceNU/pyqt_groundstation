@@ -34,12 +34,17 @@ class RandomDataInterface(ThreadedModuleCore):
             self.j = 0
         r = random.random() * 0.1 + 0.95
 
+        if self.i > 180:
+            k = 10
+        else:
+            k = 0
+
         self.data_dictionary["roll"] = self.i
         self.data_dictionary["pitch"] = 10
         self.data_dictionary["yaw"] = self.i
         self.data_dictionary[Constants.altitude_key] = float(self.i) / 80.0 - 10
-        self.data_dictionary["groundSpeed"] = float(self.i) / 10.0
-        self.data_dictionary["verticalSpeed"] = (self.i / 15) - 10
+        self.data_dictionary["ground_speed"] = k
+        self.data_dictionary["v_speed"] = (self.i / 15) - 10
         self.data_dictionary["acceleration"] = (self.i / 60) - 5
         self.data_dictionary["j"] = self.j
         self.data_dictionary["slowSweep"] = 1 - float(self.j) / 180.0

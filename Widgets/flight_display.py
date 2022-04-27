@@ -41,7 +41,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.TerrainTextBox = QLabel()
 
         self.HUDWidget = attitude_display_widget.AttitudeDisplayWidget()
-        self.AltitudeWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(text_spacing=10, pixels_per_line=20, intermediate_lines=0)
+        self.AltitudeWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(text_spacing=50, pixels_per_line=20, intermediate_lines=0)
         self.SpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(left_oriented=False, text_spacing=1, pixels_per_line=30, intermediate_lines=2)
         self.AccelerationWidget = v_speed_indicator_widget.VSpeedIndicatorWidget(maxSpeed=self.accelerationScale, leftOriented=False)
         self.VSpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(text_spacing=10, pixels_per_line=20, intermediate_lines=0)

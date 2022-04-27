@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QLabel, QWidget
 from PyQt5.QtGui import QPainter, QPen, QBrush, QPolygon, QColor, QFont
 from PyQt5.QtCore import Qt, QPoint
 
-from data_helpers import round_to_string, nearest_multiple
+from data_helpers import round_to_string, nearest_multiple, clamp
 
 
 class AltitudeSpeedIndicatorWidget(QLabel):
@@ -14,8 +14,10 @@ class AltitudeSpeedIndicatorWidget(QLabel):
         self.textSpacing = text_spacing  # Delta Value between lines
         self.intermediateLines = int(intermediate_lines)  # Number of lines to draw between text
         self.pixelsPerLine = int(pixels_per_line)
+        self.deltaValuePerTick = 0.4 * float(self.textSpacing)
 
         self.value = 0
+        self.commandedValue = 0
 
         self.leftOriented = left_oriented
 
@@ -32,6 +34,12 @@ class AltitudeSpeedIndicatorWidget(QLabel):
     def paintEvent(self, e):
         short_length = 10
         font_size = max(self.width() / 5, 10)
+
+        # Limit the rate at which the value can change, so that the output looks like its moving
+        if self.commandedValue > self.value:
+            self.value = min(self.value + self.deltaValuePerTick, self.commandedValue)
+        elif self.commandedValue < self.value:
+            self.value = max(self.value - self.deltaValuePerTick, self.commandedValue)
 
         painter = QPainter(self)  # Grey background
         painter.setPen(QPen(QColor(50, 50, 50), 0, Qt.SolidLine))
@@ -104,4 +112,4 @@ class AltitudeSpeedIndicatorWidget(QLabel):
             painter.drawText(int(-3 * (font_size - 2)), int(font_size / 2), round_to_string(self.value, 5))
 
     def setValue(self, value):
-        self.value = value
+        self.commandedValue = value
