@@ -67,7 +67,7 @@ class ThreeDDisplay(CustomQWidgetBase):
 
         position = QVector3D(0, 0, alt)
 
-        self.viewer.setCameraPosition(pos=position, distance=30)
+        self.viewer.setCameraPosition(pos=position)
         tr.rotate(QtGui.QQuaternion(q[0], q[1], q[2], q[3]))
         self.currentSTL.applyTransform(tr, local=True)
 
