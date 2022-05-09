@@ -50,15 +50,17 @@ class ThreeDDisplay(CustomQWidgetBase):
 
         self.setLayout(layout)
 
-        self.showSTL("D:\\Downloads\\Rocket.stl")
+        self.showSTL("Rocket.stl")
 
     def updateData(self, vehicle_data, updated_data):
         q = get_value_from_dictionary(vehicle_data, Constants.orientation_quaternion_key, [1,0,0,0])
 
         self.currentSTL.resetTransform()
         tr = pqg.Transform3D()
+        tr.scale(0.1, 0.1, 0.1)
+        # tr.translate(0,0,-50)
         tr.rotate(QtGui.QQuaternion(q[0], q[1], q[2], q[3]))
-        self.currentSTL.applyTransform(tr, local=False)
+        self.currentSTL.applyTransform(tr, local=True)
 
 
     def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
