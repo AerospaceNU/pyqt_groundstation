@@ -54,7 +54,7 @@ class ThreeDDisplay(CustomQWidgetBase):
 
         self.setLayout(layout)
 
-        self.showSTL("Rocket.stl")
+        self.showSTL("Assets/Rocket.stl")
 
     def updateData(self, vehicle_data, updated_data):
         q = get_value_from_dictionary(vehicle_data, Constants.orientation_quaternion_key, [1, 0, 0, 0])
