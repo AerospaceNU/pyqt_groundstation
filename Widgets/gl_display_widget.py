@@ -12,11 +12,13 @@ from constants import Constants
 from Widgets.custom_q_widget_base import CustomQWidgetBase
 
 from pyqtgraph.Qt import QtGui
+from PyQt5.QtGui import QVector3D
 
 import pyqtgraph.opengl as gl
 import pyqtgraph as pqg
 from stl import mesh
 import numpy as np
+
 
 class ThreeDDisplay(CustomQWidgetBase):
     def __init__(self, parent_widget=None):
@@ -24,8 +26,10 @@ class ThreeDDisplay(CustomQWidgetBase):
 
         self.title = "3d Display"
         self.currentSTL = None
-        self.axis = [0,0,1]
+        self.axis = [0, 0, 1]
         self.angle = 0
+
+        self.scale_factor = 0.1
 
         layout = QGridLayout()
 
@@ -39,10 +43,10 @@ class ThreeDDisplay(CustomQWidgetBase):
         self.viewer.setMinimumHeight(600)
         # self.viewer.setBackgroundColor(pqg.mkColor('g'))
         layout.addWidget(self.viewer, 1, 0, 1, 1)
-        
+
         self.viewer.setWindowTitle('STL Viewer')
         self.viewer.setCameraPosition(distance=10)
-        
+
         g = gl.GLGridItem()
         g.setSize(200, 200)
         g.setSpacing(5, 5)
@@ -53,20 +57,23 @@ class ThreeDDisplay(CustomQWidgetBase):
         self.showSTL("Rocket.stl")
 
     def updateData(self, vehicle_data, updated_data):
-        q = get_value_from_dictionary(vehicle_data, Constants.orientation_quaternion_key, [1,0,0,0])
+        q = get_value_from_dictionary(vehicle_data, Constants.orientation_quaternion_key, [1, 0, 0, 0])
+        alt = get_value_from_dictionary(vehicle_data, Constants.altitude_key, 0)
 
         self.currentSTL.resetTransform()
         tr = pqg.Transform3D()
-        tr.scale(0.1, 0.1, 0.1)
-        # tr.translate(0,0,-50)
+        tr.scale(self.scale_factor, self.scale_factor, self.scale_factor)
+        tr.translate(0, 0, alt / self.scale_factor)
+
+        position = QVector3D(0, 0, alt)
+
+        self.viewer.setCameraPosition(pos=position, distance=30)
         tr.rotate(QtGui.QQuaternion(q[0], q[1], q[2], q[3]))
         self.currentSTL.applyTransform(tr, local=True)
-
 
     def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         self.setStyleSheet("QWidget#" + self.objectName() + " {" + widget_background_string + text_string + border_string + "}")
         self.titleWidget.setStyleSheet(widget_background_string + header_text_string)
-
 
     def showSTL(self, filename):
         if self.currentSTL:
@@ -76,7 +83,7 @@ class ThreeDDisplay(CustomQWidgetBase):
         meshdata = gl.MeshData(vertexes=points, faces=faces)
         mesh = gl.GLMeshItem(meshdata=meshdata, smooth=True, drawFaces=True, drawEdges=True, edgeColor=(0, 0, 0.5, 0.1))
         self.viewer.addItem(mesh)
-        
+
         self.currentSTL = mesh
 
     def loadSTL(self, filename):
