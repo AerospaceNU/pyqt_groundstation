@@ -27,7 +27,7 @@ class Constants:
     bluetooth_connection_key = "ble_client"
     status_source = "status"
 
-    orientation_quaternion_key = "orientation_quaternion"
+    orientation_quaternion_key = "orientation_quaternion" # W X Y Z
     orientation_rpy_key = "orientation_rpy"
     rotational_velocity_key = "rotational_velocity"
     acceleration_vector_key = "acceleration_vector"

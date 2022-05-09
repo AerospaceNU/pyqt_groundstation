@@ -2,6 +2,8 @@ import time
 import math
 import random
 import navpy
+import numpy as np
+import ahrs
 
 from constants import Constants
 
@@ -48,6 +50,9 @@ class FakeFlight(FCBDataInterfaceCore):
         self.state = 0
         self.last_loop_time = time.time()
         self.launch_time = 0
+
+        self.quat = np.array([1,0,0,0])
+        self.filter = ahrs.filters.AngularRate()
 
     def runOnEnableAndDisable(self):
         if self.enabled:
@@ -144,6 +149,11 @@ class FakeFlight(FCBDataInterfaceCore):
         packet[Constants.ground_station_longitude_key] = self.initial_longitude
 
         packet[Constants.fcb_state_number_key] = fcb_state
+
+        # janky quaternion
+        packet[Constants.rotational_velocity_z_key] = (self.vertical_velocity / 10.0)
+        self.quat = self.filter.update(self.quat, np.array([0,0,packet[Constants.rotational_velocity_z_key]]))
+        packet[Constants.orientation_quaternion_key] = self.quat
 
         for cutter in [0, 1, 2]:
             light = 1000 if self.state >= DROGUE else 12

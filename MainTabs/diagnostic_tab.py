@@ -7,6 +7,7 @@ from Widgets import text_box_drop_down_widget
 from Widgets import simple_console_widget
 from Widgets import reconfigure_widget
 from Widgets import complete_console_widget
+from Widgets import gl_display_widget
 
 from MainTabs.main_tab_common import TabCommon
 
@@ -20,6 +21,7 @@ class DiagnosticTab(TabCommon):
         self.addWidget(reconfigure_widget.ReconfigureWidget(self))
         self.addWidget(pyro_display_widget.PyroWidget(self))
         self.addWidget(complete_console_widget.CompleteConsoleWidget(self))
+        self.addWidget(gl_display_widget.ThreeDDisplay(self))
 
         self.widgetList[1].move(400, 0)  # Move the widgets to better spots
         self.widgetList[2].move(1000, 0)  # This isn't really the best way to reference the object, but I don't care

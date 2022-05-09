@@ -37,6 +37,7 @@ from Widgets import graph_widget
 from Widgets import pyro_display_widget
 from Widgets import local_sim_widget
 from Widgets import line_cutter_control
+from Widgets import gl_display_widget
 
 import data_helpers
 from constants import Constants
@@ -122,6 +123,7 @@ class DPFGUI():
                               "Pyro Display": pyro_display_widget.PyroWidget,
                               "Local Sim Helper": local_sim_widget.LocalSimWidget,
                               "Line Cutter Control": line_cutter_control.LineCutterControl,
+                              "3d Viewer": gl_display_widget.ThreeDDisplay,
                               }
 
         # List of tabs that can be dynamically created
