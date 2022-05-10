@@ -47,6 +47,9 @@ class ThreeDDisplay(CustomQWidgetBase):
         self.viewer.setWindowTitle('STL Viewer')
         self.viewer.setCameraPosition(distance=10)
 
+        self.orientation_quaternion = [0, 0, 0, 1]
+        self.altitude = 0
+
         g = gl.GLGridItem()
         g.setSize(200, 200)
         g.setSpacing(5, 5)
@@ -57,18 +60,20 @@ class ThreeDDisplay(CustomQWidgetBase):
         self.showSTL("Assets/Rocket.stl")
 
     def updateData(self, vehicle_data, updated_data):
-        q = get_value_from_dictionary(vehicle_data, Constants.orientation_quaternion_key, [1, 0, 0, 0])
-        alt = get_value_from_dictionary(vehicle_data, Constants.altitude_key, 0)
+        self.orientation_quaternion = get_value_from_dictionary(vehicle_data, Constants.orientation_quaternion_key, [1, 0, 0, 0])
+        self.altitude = get_value_from_dictionary(vehicle_data, Constants.altitude_key, 0)
 
+    def updateInFocus(self):
+        """We do the rendering in updateInFocus instead of updateData so that it only happens when we're looking at the widget"""
         self.currentSTL.resetTransform()
         tr = pqg.Transform3D()
         tr.scale(self.scale_factor, self.scale_factor, self.scale_factor)
-        tr.translate(0, 0, alt / self.scale_factor)
+        tr.translate(0, 0, self.altitude / self.scale_factor)
 
-        position = QVector3D(0, 0, alt)
+        position = QVector3D(0, 0, self.altitude)
 
         self.viewer.setCameraPosition(pos=position)
-        tr.rotate(QtGui.QQuaternion(q[0], q[1], q[2], q[3]))
+        tr.rotate(QtGui.QQuaternion(self.orientation_quaternion[0], self.orientation_quaternion[1], self.orientation_quaternion[2], self.orientation_quaternion[3]))
         self.currentSTL.applyTransform(tr, local=True)
 
     def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
