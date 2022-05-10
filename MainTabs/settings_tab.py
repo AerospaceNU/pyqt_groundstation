@@ -6,6 +6,7 @@ from MainTabs.main_tab_common import TabCommon
 
 from Widgets import control_station_status
 from Widgets.local_sim_widget import LocalSimWidget
+from Widgets import board_cli_wrapper
 
 
 class SettingsTab(TabCommon):
@@ -16,5 +17,6 @@ class SettingsTab(TabCommon):
         self.ControlStationData.setMinimumSize(400, 150)
 
         self.addWidget(LocalSimWidget(self))
+        self.addWidget(board_cli_wrapper.BoardCliWrapper(self))
 
         self.widgetList[1].move(600, 0)
