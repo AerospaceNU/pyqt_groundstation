@@ -38,6 +38,7 @@ from Widgets import pyro_display_widget
 from Widgets import local_sim_widget
 from Widgets import line_cutter_control
 from Widgets import gl_display_widget
+from Widgets import board_cli_wrapper
 
 import data_helpers
 from constants import Constants
@@ -124,6 +125,7 @@ class DPFGUI():
                               "Local Sim Helper": local_sim_widget.LocalSimWidget,
                               "Line Cutter Control": line_cutter_control.LineCutterControl,
                               "3d Viewer": gl_display_widget.ThreeDDisplay,
+                              "CLI GUI": board_cli_wrapper.BoardCliWrapper,
                               }
 
         # List of tabs that can be dynamically created
