@@ -9,16 +9,16 @@ from PyQt5.QtWidgets import QLabel, QVBoxLayout, QHBoxLayout, QListView, QListWi
 import time
 
 from Widgets import custom_q_widget_base
-from data_helpers import get_qcolor_from_string
+from data_helpers import get_qcolor_from_string, get_well_formatted_rgb_string
+
 
 class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-
         layout = QVBoxLayout()
         self.vbox = layout
-        
+
         self.widgetList = []
 
         # self.source = Constants.cli_interface_key
@@ -57,7 +57,6 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
             for j in range(3):
                 self.offloadTableWidget.item(i, j).setTextAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
 
-
         layout.addWidget(self.offloadTableWidget)
 
         tempLayout = QHBoxLayout()
@@ -67,7 +66,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         layout.addItem(tempLayout)
 
         self.add(QPushButton(text="Download selected flight"), onClick=self.onOffloadSelect)
-        
+
         """
         # Also want a list of local flights that updates when you offload, so you can select a flight to graph
         self.localLabel = QLabel(text="Downloaded Flights")
@@ -105,14 +104,13 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
 
         if onClick:
             widget.clicked.connect(onClick)
-            
 
     def refreshData(self):
         print("Refresh data!")
 
     def getIndexFrom(self, listWidget):
         indexes = listWidget.selectedIndexes()
-        if(len(indexes) < 1):
+        if (len(indexes) < 1):
             return
 
         index = indexes[0]
@@ -134,20 +132,21 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         pass
 
     def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        background_color_string = get_well_formatted_rgb_string(widget_background_string.split(":")[1].strip())
+        text_color_string = get_well_formatted_rgb_string(text_string.split(":")[1].strip())
+
+        header_section_string = "QHeaderView::section { background-color:" + background_color_string + "; color:" + text_color_string + ";} "
+        corner_section_string = "QTableCornerButton::section {background-color: " + background_color_string + "; }"
+
         self.setStyleSheet("QWidget#" + self.objectName() + " {" + border_string + widget_background_string + text_string + "}")
         self.titleBox.setStyleSheet(widget_background_string + header_text_string)
-        self.offloadTableWidget.setStyleSheet("QHeaderView::section { background-color:rgb(13,17,23);color:rgb(255,255,255); } "
-            + widget_background_string + header_text_string)
+        self.offloadTableWidget.setStyleSheet(header_section_string + " " + corner_section_string)
         self.offloadNameEntry.setStyleSheet(widget_background_string + header_text_string)
 
         for i in range(self.offloadTableWidget.rowCount()):
             for j in range(self.offloadTableWidget.columnCount()):
-                self.offloadTableWidget.item(i,j).setForeground(get_qcolor_from_string(text_string))
+                self.offloadTableWidget.item(i, j).setForeground(get_qcolor_from_string(text_string))
+                self.offloadTableWidget.item(i, j).setBackground(get_qcolor_from_string(widget_background_string))
 
         for widget in self.widgetList:
             widget.setStyleSheet(widget_background_string + header_text_string)
-
-        print(widget_background_string)
-        print(header_text_string)
-        print(text_string)
-        print(header_text_string)
