@@ -320,8 +320,15 @@ class DPFGUI():
             widget.update()
 
         # Update tabs
+        tab_index_to_remove = -1
         for tab in self.tabObjects:
             self.callback_queue += tab.updateVehicleData(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary, recorded_data_dict)
+            if tab.isClosed:
+                tab_index_to_remove = self.tabObjects.index(tab)
+
+        if tab_index_to_remove != -1:  # Can't do this in the loop above, because python freaks when you change the size of a list while iterating through it
+            self.tabObjects.pop(tab_index_to_remove)
+            self.placeHolderList.pop(tab_index_to_remove)
 
         # set window title
         tab_index = self.tabHolderWidget.currentIndex()

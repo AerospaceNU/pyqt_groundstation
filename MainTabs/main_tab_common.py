@@ -1,7 +1,7 @@
 """
 Code used in all vehicle tabs
 """
-
+from PyQt5 import QtGui
 from PyQt5.QtWidgets import QWidget
 
 from Widgets import custom_q_widget_base
@@ -15,6 +15,7 @@ class TabCommon(QWidget):
 
         self.vehicleName = tab_name
         self.isActiveTab = False
+        self.isClosed = False
 
         self.widgetsCreated = 0
         self.widgetList = []
@@ -23,6 +24,10 @@ class TabCommon(QWidget):
 
     def setIsActiveTab(self, is_active):
         self.isActiveTab = is_active
+
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        super().closeEvent(a0)
+        self.isClosed = True
 
     def updateVehicleData(self, data, console_data, updated_data, recorded_data):
         """The update function that should not be overridden"""
