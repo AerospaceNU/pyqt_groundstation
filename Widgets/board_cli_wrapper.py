@@ -144,8 +144,6 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
             for j in range(self.offloadTableWidget.columnCount()):
                 self.offloadTableWidget.item(i,j).setForeground(get_qcolor_from_string(text_string))
 
-        self.offloadTableWidget.cornerWidget().setStyleSheet(widget_background_string + header_text_string)
-
         for widget in self.widgetList:
             widget.setStyleSheet(widget_background_string + header_text_string)
 
