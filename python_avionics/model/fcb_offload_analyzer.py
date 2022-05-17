@@ -10,9 +10,9 @@ import numpy.typing as npt
 import pandas as pd
 from matplotlib.backend_bases import MouseButton
 
-from src.model.fcb_cli import FcbCli
-from src.model.serial_port import SerialPortManager
-from src.view.console_view import ConsoleView
+from python_avionics.model.fcb_cli import FcbCli
+from python_avionics.model.serial_port import SerialPortManager
+from python_avionics.view.console_view import ConsoleView
 
 
 class FcbOffloadAnalyzer:

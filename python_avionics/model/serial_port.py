@@ -5,7 +5,7 @@ from typing import List, Optional
 import serial
 import serial.tools.list_ports
 
-from src.exceptions import SerialPortDisconnectedError
+from python_avionics.exceptions import SerialPortDisconnectedError
 
 
 class SerialPort:

@@ -11,9 +11,9 @@ from typing import Any, Callable, List
 
 import pandas as pd
 
-from src.exceptions import FcbIncompleteError, FcbNoAckError
-from src.model.serial_port import SerialPort, SerialPortManager
-from src.view.console_view import ConsoleView
+from python_avionics.exceptions import FcbIncompleteError, FcbNoAckError
+from python_avionics.model.serial_port import SerialPort, SerialPortManager
+from python_avionics.view.console_view import ConsoleView
 
 UnpackProperty = namedtuple("UnpackProperty", "name unpack_str")
 PackProperty = namedtuple("PackProperty", "name pack_str")
