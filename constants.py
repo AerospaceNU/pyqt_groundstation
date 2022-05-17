@@ -91,6 +91,7 @@ class Constants:
     primary_reconfigure = "primary_reconfigure"
     raw_message_data_key = "raw_message_data"
     cli_interface_key = "cli_interface"
+    cli_interface_usb_key = "cli_interface_usb"
     cli_string_key = "cli_string"
 
     invalid_fcb_state_name = "Invalid FCB State"

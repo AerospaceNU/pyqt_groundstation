@@ -127,6 +127,7 @@ class DPFGUI():
                               "Line Cutter Control": line_cutter_control.LineCutterControl,
                               "3d Viewer": gl_display_widget.ThreeDDisplay,
                               "CLI GUI": board_cli_wrapper.BoardCliWrapper,
+                              "CLI USB Console": complete_console_widget.CLIUSBInterface,
                               }
 
         # List of tabs that can be dynamically created
