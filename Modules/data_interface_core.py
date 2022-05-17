@@ -71,8 +71,9 @@ class ThreadedModuleCore(threading.Thread):
     def logToConsole(self, value, level, override_disabled_check=False):
         """Logs data to GUI Console"""
         if self.enabled or override_disabled_check:
-            self.console_callback("{0}: {1}".format(time.strftime("%H:%M:%S"), value), level)
-            self.last_console_message = value
+            if self.console_callback is not None:
+                self.console_callback("{0}: {1}".format(time.strftime("%H:%M:%S"), value), level)
+                self.last_console_message = value
 
     def logToConsoleThrottle(self, value, level, interval):
         """Logs data to GUI Console once per interval"""
