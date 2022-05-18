@@ -38,6 +38,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
 
         self.offloadTableWidget = QTableWidget()
         self.offloadTableWidget.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
+        self.offloadTableWidget.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.offloadTableWidget.setMinimumWidth(450)
 
         # Eventually this needs to be dynamically recreated based on a binary message we get over USB
@@ -47,15 +48,19 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         self.offloadTableWidget.setColumnWidth(1, 100)
         self.offloadTableWidget.setColumnWidth(2, 90)
         self.offloadTableWidget.setHorizontalHeaderLabels(["Date", "Duration", "Launched"])
-        for i in range(5):
-            # item = QTableWidgetItem(f"{i}: {'(Yes) ' if i % 2 == 0 else '(No)  '}{time.strftime('%Y-%m-%d %H:%M:%S')} for 00:01:24")
-            self.offloadTableWidget.setItem(i, 0, QTableWidgetItem(time.strftime('%Y-%m-%d %H:%M:%S')))
-            self.offloadTableWidget.setItem(i, 1, QTableWidgetItem("00:01:24"))
-            self.offloadTableWidget.setItem(i, 2, QTableWidgetItem('Ye' if i % 2 == 0 else 'Ni'))
+        
+        flight_array = self.parseOffloadHelp("")
+
+        for i in range(len(flight_array)):
+            row = flight_array[i]
+            row_num = int(row[0])
+            self.offloadTableWidget.setItem(row_num, 0, QTableWidgetItem(row[2]))
+            self.offloadTableWidget.setItem(row_num, 1, QTableWidgetItem(row[3]))
+            self.offloadTableWidget.setItem(row_num, 2, QTableWidgetItem(row[1]))
             # item.setBackground(get_qcolor_from_string("rgb(100,0,0)" if i % 2 == 0 else "rgb(0,100,0)"))
 
             for j in range(3):
-                self.offloadTableWidget.item(i, j).setTextAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+                self.offloadTableWidget.item(row_num, j).setTextAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
 
         layout.addWidget(self.offloadTableWidget)
 
@@ -145,8 +150,26 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
 
         for i in range(self.offloadTableWidget.rowCount()):
             for j in range(self.offloadTableWidget.columnCount()):
-                self.offloadTableWidget.item(i, j).setForeground(get_qcolor_from_string(text_string))
-                self.offloadTableWidget.item(i, j).setBackground(get_qcolor_from_string(widget_background_string))
+                item = self.offloadTableWidget.item(i, j)
+                if item is not None:
+                    item.setForeground(get_qcolor_from_string(text_string))
+                    item.setBackground(get_qcolor_from_string(widget_background_string))
 
         for widget in self.widgetList:
             widget.setStyleSheet(widget_background_string + header_text_string)
+
+    def parseOffloadHelp(self, cli_string: str):
+        cli_str = "\r\nOK\r\nAvailable flights to offload:\r\nLast: 10      Last launched: 9\r\n"\
+            + "| Fight # | Launched | Timestamp | Flight Duration |\r\n"\
+            + "| 0 | true | None | 00:00:13 |\r\n"\
+            + "| 1 | true | Mon Feb  7 02:38:37 2022 | 00:02:10 |\r\n"\
+            + "| 3 | false | Mon Jan  2 02:38:37     2020 | 00:10:33 |\r\n"\
+            + "\r\n\r\nDONE\r\n"
+
+        # Filter for lines that start with | and split by return characters
+        cli_str = list(filter(lambda line : line.startswith("|"), cli_str.splitlines()))
+        # And only return ones with a numeric flight number
+        twoDarray = [list(map(lambda s : s.strip(), line.split("|")[1:-1])) for line in cli_str if line.split("|")[1].strip().isnumeric()]
+
+        return twoDarray
+
