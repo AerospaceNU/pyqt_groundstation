@@ -292,9 +292,10 @@ if __name__ == "__main__":
         # Set up FCB CLI and run offload
         fcb = FcbCli(
             serial_port=SerialPortManager.get_port(name=port_dev),
-            offload_help_cb=ConsoleView.cli_offload_choose_flight,
         )
         fcb.run_offload(args.offload_flight_name)
+        flight_idx: int = ConsoleView.cli_offload_choose_flight(fcb.run_offload_help())
+        fcb.run_offload(args.offload_flight_name, flight_idx)
 
     # Post-process offloaded data
     process_filepath = (

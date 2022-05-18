@@ -33,7 +33,7 @@ class FcbCli:
 
     OUTPUT_DIR = "output"
 
-    def __init__(self, serial_port: SerialPort, offload_help_cb: Callable[[str], int]):
+    def __init__(self, serial_port: SerialPort):
         """
         Initialize an FCB instance.
 
@@ -152,13 +152,7 @@ class FcbCli:
             raise FcbIncompleteError(fcb_command=self._HELP_COMMAND)
         return help_str.strip(self._COMPLETE)
 
-    def run_offload(self, flight_name: str) -> None:
-        """
-        Manage data offload on the FCB.
-
-        :param flight_name: Name of flight, used in saving output
-        """
-        # Provide flights that can be offloaded to callback
+    def run_offload_help(self) -> str:
         self.serial_port.write(
             self._linebreak(self._OFFLOAD_HELP_COMMAND).encode("utf-8")
         )
@@ -169,7 +163,15 @@ class FcbCli:
         if not self._has_complete(search_str=help_str):
             raise FcbIncompleteError(fcb_command=self._OFFLOAD_HELP_COMMAND)
         help_str = help_str.strip(self._COMPLETE)
-        flight_num = self._offload_help_cb(help_str)
+        return help_str
+
+    def run_offload(self, flight_name: str, flight_num: int) -> None:
+        """
+        Manage data offload on the FCB.
+
+        :param flight_name: Name of flight, used in saving output
+        :param flight_num: Flight number as reported by FCB in run_offload_help
+        """
 
         # Start offloading provided flight number
         self.serial_port.write(
@@ -515,7 +517,6 @@ if __name__ == "__main__":
     # Set up FCB CLI and run commands from command line
     fcb = FcbCli(
         serial_port=SerialPortManager.get_port(name=port_dev),
-        offload_help_cb=ConsoleView.cli_offload_choose_flight,
     )
     passed_args = [f'"{arg}"' if " " in arg else arg for arg in sys.argv[1:]]
     print(fcb.run_command(" ".join(passed_args)))

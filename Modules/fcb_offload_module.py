@@ -10,7 +10,6 @@ from constants import Constants
 
 class FCBOffloadModule(ThreadedModuleCore):
     """
-    Measures important stats from laptop
     """
 
     def __init__(self):
@@ -18,7 +17,7 @@ class FCBOffloadModule(ThreadedModuleCore):
 
         self.serial_port_name = ""
         self.serial_connection = False
-        self.python_avionics_fcb_cli = FcbCli(None, self.pythonAvionicsCallback)
+        self.python_avionics_fcb_cli = FcbCli(None)
         self.updatePythonAvionicsSerialPort()
 
         self.serial_devices["FCB USB Connection"] = self.changeActiveSerialPort
@@ -62,8 +61,3 @@ class FCBOffloadModule(ThreadedModuleCore):
             return ret
         else:
             return "Unable to run command: FCB not connected over USB"
-
-    def pythonAvionicsCallback(self, str_arr):
-        """IDK what this does yet"""
-        print("callback: {}".format(str_arr))
-        return 0
