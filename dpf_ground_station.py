@@ -39,7 +39,7 @@ from Widgets import pyro_display_widget
 from Widgets import local_sim_widget
 from Widgets import line_cutter_control
 from Widgets import gl_display_widget
-from Widgets import board_cli_wrapper
+from Widgets import board_usb_offloader_widget
 
 import data_helpers
 from constants import Constants
@@ -126,7 +126,7 @@ class DPFGUI():
                               "Local Sim Helper": local_sim_widget.LocalSimWidget,
                               "Line Cutter Control": line_cutter_control.LineCutterControl,
                               "3d Viewer": gl_display_widget.ThreeDDisplay,
-                              "CLI GUI": board_cli_wrapper.BoardCliWrapper,
+                              "Offload GUI": board_usb_offloader_widget.BoardCliWrapper,
                               "CLI USB Console": complete_console_widget.CLIUSBInterface,
                               }
 

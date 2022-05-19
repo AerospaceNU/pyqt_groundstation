@@ -42,7 +42,6 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         self.offloadTableWidget.setMinimumWidth(450)
 
         # Eventually this needs to be dynamically recreated based on a binary message we get over USB
-        self.offloadTableWidget.setRowCount(5)
         self.offloadTableWidget.setColumnCount(3)
         self.offloadTableWidget.setColumnWidth(0, 160)
         self.offloadTableWidget.setColumnWidth(1, 100)
@@ -50,7 +49,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         self.offloadTableWidget.setHorizontalHeaderLabels(["Date", "Duration", "Launched"])
         
         flight_array = self.parseOffloadHelp("")
-
+        self.offloadTableWidget.setRowCount(max(map(lambda row: int(row[0]), flight_array)) + 1)
         for i in range(len(flight_array)):
             row = flight_array[i]
             row_num = int(row[0])
@@ -60,7 +59,9 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
             # item.setBackground(get_qcolor_from_string("rgb(100,0,0)" if i % 2 == 0 else "rgb(0,100,0)"))
 
             for j in range(3):
-                self.offloadTableWidget.item(row_num, j).setTextAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+                item = self.offloadTableWidget.item(row_num, j)
+                if item is not None:
+                    item.setTextAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
 
         layout.addWidget(self.offloadTableWidget)
 
@@ -146,7 +147,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         self.setStyleSheet("QWidget#" + self.objectName() + " {" + border_string + widget_background_string + text_string + "}")
         self.titleBox.setStyleSheet(widget_background_string + header_text_string)
         self.offloadTableWidget.setStyleSheet(header_section_string + " " + corner_section_string)
-        self.offloadNameEntry.setStyleSheet(widget_background_string + header_text_string)
+        self.offloadNameEntry.setStyleSheet(widget_background_string + header_text_string + border_string)
 
         for i in range(self.offloadTableWidget.rowCount()):
             for j in range(self.offloadTableWidget.columnCount()):

@@ -38,10 +38,8 @@ class FcbCli:
         Initialize an FCB instance.
 
         :param serial_port: Serial port to use to communicate with FCB CLI
-        :param offload_help_cb: Callback to get flight number from user during offload
         """
         self.serial_port = serial_port
-        self._offload_help_cb = offload_help_cb
 
     def _read_ack(self) -> bool:
         """
