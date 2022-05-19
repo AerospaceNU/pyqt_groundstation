@@ -4,7 +4,7 @@ Text box widget
 from re import template
 from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QHBoxLayout, QListView, QListWidget, QListWidgetItem, QPushButton, QLineEdit, QLabel, QGridLayout, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QHBoxLayout, QAbstractItemView, QPushButton, QLineEdit, QLabel, QGridLayout, QTableWidget, QTableWidgetItem
 
 import time
 
@@ -47,6 +47,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         self.offloadTableWidget.setColumnWidth(1, 100)
         self.offloadTableWidget.setColumnWidth(2, 90)
         self.offloadTableWidget.setHorizontalHeaderLabels(["Date", "Duration", "Launched"])
+        self.offloadTableWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         layout.addWidget(self.offloadTableWidget)
 
         self.recreate_table("")
