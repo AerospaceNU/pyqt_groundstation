@@ -88,6 +88,12 @@ class FcbCli:
             required=False,
             help="Name of flight, used for saving",
         )
+        offload_parser.add_argument(
+            "--flight_num",
+            type=int,
+            required=False,
+            help="Name of flight, used for saving",
+        )
 
         sim_parser = subparsers.add_parser("sim", help="Sim flight to FCB")
         sim_parser.add_argument(
@@ -112,7 +118,7 @@ class FcbCli:
         if parsed_args.command == "help":
             return self.run_help()
         if parsed_args.command == "offload":
-            self.run_offload(flight_name=parsed_args.flight_name)
+            self.run_offload(flight_name=parsed_args.flight_name, flight_num=parsed_args.flight_num)
             return "Success"
         if parsed_args.command == "sense":
             return self.run_sense()
