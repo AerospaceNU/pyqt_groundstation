@@ -133,8 +133,8 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
 
     def onOffloadSelect(self):
         index = self.getIndexFrom(self.offloadTableWidget)
-
-        print(f"Index {index} clicked with name {self.offloadNameEntry.text()}")
+        name = self.offloadNameEntry.text()
+        self.runPythonAvionicsCommand("offload --flight_name={0} --flight_num={1}".format(name, index))
 
     def onPostProcessSelect(self):
         print("Post process index " + str(self.getIndexFrom(self.downloadedFlightsWidget)))
@@ -148,10 +148,9 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
 
     def updateData(self, vehicle_data, updated_data):
         if self.isDictValueUpdated("flights_list"):
-            print("NEW FLIGHT LIST")
             flight_list_str = self.getDictValueUsingSourceKey("flights_list")
-            print(flight_list_str)
             self.recreate_table(flight_list_str)
+            self.refreshTheme()
 
     def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         background_color_string = get_well_formatted_rgb_string(widget_background_string.split(":")[1].strip())
