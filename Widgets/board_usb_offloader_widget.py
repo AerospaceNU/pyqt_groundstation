@@ -10,6 +10,7 @@ import time
 
 from Widgets import custom_q_widget_base
 from data_helpers import get_qcolor_from_string, get_well_formatted_rgb_string
+from constants import Constants
 
 
 class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
@@ -57,6 +58,8 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
 
         self.add(QPushButton(text="Download selected flight"), onClick=self.onOffloadSelect)
 
+        self.addSourceKey("flights_list", str, Constants.cli_flights_list_key, default_value="", hide_in_drop_down=True)
+
         """
         # Also want a list of local flights that updates when you offload, so you can select a flight to graph
         self.localLabel = QLabel(text="Downloaded Flights")
@@ -102,7 +105,6 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
                 if item is not None:
                     item.setTextAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
 
-
     def add(self, widget, layout=None, onClick=None):
         if layout is None:
             layout = self.vbox
@@ -114,10 +116,11 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
 
     def refreshData(self):
         print("Refresh data!")
+        # self.runPythonAvionicsCommand("[Insert command here]")
 
     def getIndexFrom(self, listWidget):
         indexes = listWidget.selectedIndexes()
-        if (len(indexes) < 1):
+        if len(indexes) < 1:
             return
 
         index = indexes[0]
@@ -135,8 +138,17 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
     def onGraphSelect(self):
         print("Graph index " + str(self.getIndexFrom(self.downloadedFlightsWidget)))
 
+    def runPythonAvionicsCommand(self, command):
+        """Run this function to call usb cli commands in the module"""
+        self.callbackEvents.append([Constants.cli_interface_usb_key, command])
+
     def updateData(self, vehicle_data, updated_data):
-        pass
+        if self.isDictValueUpdated("flights_list"):
+            print("NEW FLIGHT LIST")
+            flight_list_str = self.getDictValueUsingSourceKey("flights_list")
+            print(flight_list_str)
+
+            # TODO: Call parse function here
 
     def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         background_color_string = get_well_formatted_rgb_string(widget_background_string.split(":")[1].strip())
@@ -161,17 +173,16 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
             widget.setStyleSheet(widget_background_string + header_text_string)
 
     def parseOffloadHelp(self, cli_string: str):
-        cli_str = "\r\nOK\r\nAvailable flights to offload:\r\nLast: 10      Last launched: 9\r\n"\
-            + "| Fight # | Launched | Timestamp | Flight Duration |\r\n"\
-            + "| 0 | true | None | 00:00:13 |\r\n"\
-            + "| 1 | true | Mon Feb  7 02:38:37 2022 | 00:02:10 |\r\n"\
-            + "| 3 | false | Mon Jan  2 02:38:37     2020 | 00:10:33 |\r\n"\
-            + "\r\n\r\nDONE\r\n"
+        cli_str = "\r\nOK\r\nAvailable flights to offload:\r\nLast: 10      Last launched: 9\r\n" \
+                  + "| Fight # | Launched | Timestamp | Flight Duration |\r\n" \
+                  + "| 0 | true | None | 00:00:13 |\r\n" \
+                  + "| 1 | true | Mon Feb  7 02:38:37 2022 | 00:02:10 |\r\n" \
+                  + "| 3 | false | Mon Jan  2 02:38:37     2020 | 00:10:33 |\r\n" \
+                  + "\r\n\r\nDONE\r\n"
 
         # Filter for lines that start with | and split by return characters
-        cli_str = list(filter(lambda line : line.startswith("|"), cli_str.splitlines()))
+        cli_str = list(filter(lambda line: line.startswith("|"), cli_str.splitlines()))
         # And only return ones with a numeric flight number
-        twoDarray = [list(map(lambda s : s.strip(), line.split("|")[1:-1])) for line in cli_str if line.split("|")[1].strip().isnumeric()]
+        twoDarray = [list(map(lambda s: s.strip(), line.split("|")[1:-1])) for line in cli_str if line.split("|")[1].strip().isnumeric()]
 
         return twoDarray
-

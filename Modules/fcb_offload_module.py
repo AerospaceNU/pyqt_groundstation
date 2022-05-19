@@ -9,9 +9,6 @@ from constants import Constants
 
 
 class FCBOffloadModule(ThreadedModuleCore):
-    """
-    """
-
     def __init__(self):
         super().__init__()
 
@@ -48,7 +45,6 @@ class FCBOffloadModule(ThreadedModuleCore):
         if self.enabled:
             self.command_queue.append(command)
         else:
-            print("AAA")
             self.cliConsole.manualAddEntry("FCB USB offload module not enabled, can not run commands", False)
 
     def spin(self):
@@ -60,9 +56,13 @@ class FCBOffloadModule(ThreadedModuleCore):
         if len(self.command_queue) > 0:
             command = self.command_queue.pop(0)
             self.cliConsole.manualAddEntry(command, False)
-            ret = self.runCLICommand(command)
             print("***************************************")
+            ret = self.runCLICommand(command)
             print(ret)
+
+            if "Available flights to offload" in ret:  # Check and see if we have a list of flights, and update the database dictionary
+                self.data_dictionary[Constants.cli_flights_list_key] = ret
+
             self.cliConsole.autoAddEntry(ret, True)
 
         time.sleep(0.1)
@@ -79,7 +79,6 @@ class FCBOffloadModule(ThreadedModuleCore):
                 return ret
             except Exception as e:
                 return "Unable to run command: {}".format(e)
-
         else:
             return "Unable to run command: FCB not connected over USB"
 
@@ -90,4 +89,3 @@ class FCBOffloadModule(ThreadedModuleCore):
         temporary_dict = self.data_dictionary.copy()
         self.data_dictionary = {}
         return temporary_dict
-

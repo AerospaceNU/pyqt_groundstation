@@ -27,7 +27,7 @@ class Constants:
     bluetooth_connection_key = "ble_client"
     status_source = "status"
 
-    orientation_quaternion_key = "orientation_quaternion" # W X Y Z
+    orientation_quaternion_key = "orientation_quaternion"  # W X Y Z
     orientation_rpy_key = "orientation_rpy"
     rotational_velocity_key = "rotational_velocity"
     acceleration_vector_key = "acceleration_vector"
@@ -93,6 +93,7 @@ class Constants:
     cli_interface_key = "cli_interface"
     cli_interface_usb_key = "cli_interface_usb"
     cli_string_key = "cli_string"
+    cli_flights_list_key = "fcb_flights_list"
 
     invalid_fcb_state_name = "Invalid FCB State"
     fcb_state_names = ["Cli Calibrate",
