@@ -41,6 +41,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         self.offloadTableWidget.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.offloadTableWidget.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.offloadTableWidget.setMinimumWidth(450)
+        self.offloadTableWidget.setMinimumHeight(800)
         self.offloadTableWidget.setColumnCount(3)
         self.offloadTableWidget.setColumnWidth(0, 160)
         self.offloadTableWidget.setColumnWidth(1, 100)
@@ -91,7 +92,10 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
 
     def recreate_table(self, offload_help_string):
         flight_array = self.parseOffloadHelp(offload_help_string)
-        self.offloadTableWidget.setRowCount(max(map(lambda row: int(row[0]), flight_array)) + 1)
+        if len(flight_array) > 0:
+            self.offloadTableWidget.setRowCount(max(map(lambda row: int(row[0]), flight_array)) + 1)
+        else:
+            self.offloadTableWidget.setRowCount(1)
         for i in range(len(flight_array)):
             row = flight_array[i]
             row_num = int(row[0])
@@ -116,7 +120,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
 
     def refreshData(self):
         print("Refresh data!")
-        # self.runPythonAvionicsCommand("[Insert command here]")
+        self.runPythonAvionicsCommand("offload --list")
 
     def getIndexFrom(self, listWidget):
         indexes = listWidget.selectedIndexes()
@@ -147,8 +151,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
             print("NEW FLIGHT LIST")
             flight_list_str = self.getDictValueUsingSourceKey("flights_list")
             print(flight_list_str)
-
-            # TODO: Call parse function here
+            self.recreate_table(flight_list_str)
 
     def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         background_color_string = get_well_formatted_rgb_string(widget_background_string.split(":")[1].strip())
@@ -170,16 +173,9 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
                     item.setBackground(get_qcolor_from_string(widget_background_string))
 
         for widget in self.widgetList:
-            widget.setStyleSheet(widget_background_string + header_text_string)
+            widget.setStyleSheet(widget_background_string + header_text_string + border_string)
 
-    def parseOffloadHelp(self, cli_string: str):
-        cli_str = "\r\nOK\r\nAvailable flights to offload:\r\nLast: 10      Last launched: 9\r\n" \
-                  + "| Fight # | Launched | Timestamp | Flight Duration |\r\n" \
-                  + "| 0 | true | None | 00:00:13 |\r\n" \
-                  + "| 1 | true | Mon Feb  7 02:38:37 2022 | 00:02:10 |\r\n" \
-                  + "| 3 | false | Mon Jan  2 02:38:37     2020 | 00:10:33 |\r\n" \
-                  + "\r\n\r\nDONE\r\n"
-
+    def parseOffloadHelp(self, cli_str: str):
         # Filter for lines that start with | and split by return characters
         cli_str = list(filter(lambda line: line.startswith("|"), cli_str.splitlines()))
         # And only return ones with a numeric flight number
