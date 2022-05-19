@@ -20,6 +20,8 @@ class FCBOffloadModule(ThreadedModuleCore):
         self.python_avionics_fcb_cli = FcbCli(None)
         self.updatePythonAvionicsSerialPort()
 
+        self.command_queue = []
+
         self.serial_devices["FCB USB Connection"] = self.changeActiveSerialPort
 
         self.callbacks_to_add.append([Constants.cli_interface_usb_key, self.cliCommand])
@@ -36,6 +38,7 @@ class FCBOffloadModule(ThreadedModuleCore):
             port_object = SerialPort(self.serial_port_name)
             self.python_avionics_fcb_cli.serial_port = port_object
             self.serial_connection = True
+            self.logToConsole("Successfully connected to FCB over USB at port {}".format(self.serial_port_name), 1, True)
         except:
             self.logToConsole("Unable to connect to FCB over USB at port {}".format(self.serial_port_name), 2, True)
             self.serial_connection = False
@@ -43,21 +46,48 @@ class FCBOffloadModule(ThreadedModuleCore):
     def cliCommand(self, command):
         """Callback function to run from the GUI"""
         if self.enabled:
-            ret = self.runCLICommand(command)
-            print(ret)
+            self.command_queue.append(command)
+        else:
+            print("AAA")
+            self.cliConsole.manualAddEntry("FCB USB offload module not enabled, can not run commands", False)
 
     def spin(self):
         if not self.serial_connection:
             self.updatePythonAvionicsSerialPort()
 
-        time.sleep(1)
+        print(time.time())
+
+        if len(self.command_queue) > 0:
+            command = self.command_queue.pop(0)
+            self.cliConsole.manualAddEntry(command, False)
+            ret = self.runCLICommand(command)
+            print("***************************************")
+            print(ret)
+            self.cliConsole.autoAddEntry(ret, True)
+
+        time.sleep(0.1)
+
+    def runsEveryLoop(self):
+        self.data_dictionary[Constants.cli_interface_usb_key] = self.cliConsole.getList()
 
     def runCLICommand(self, command):
         """Function to tell python_avionics to run the cli command, and handle states where the serial port isn't open"""
         if self.serial_connection:
             print("running command [{}]".format(command))
-            ret = self.python_avionics_fcb_cli.run_command(command)
-            print(ret)
-            return ret
+            try:
+                ret = self.python_avionics_fcb_cli.run_command(command)
+                return ret
+            except Exception as e:
+                return "Unable to run command: {}".format(e)
+
         else:
             return "Unable to run command: FCB not connected over USB"
+
+    def getDataDictionary(self):
+        """
+        Override this function to allow us to return the database dict while disabled
+        """
+        temporary_dict = self.data_dictionary.copy()
+        self.data_dictionary = {}
+        return temporary_dict
+

@@ -112,7 +112,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.has_data = False
         self.good_fcb_data = False
 
-        self.updateEveryLoop()
+        self.updateEveryEnabledLoop()
 
     def connectedLoop(self):
         self.last_data_time = time.time()
@@ -120,7 +120,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
             while self.connected and self.should_be_running and self.enabled:
                 self.readData()
                 self.writeData()
-                self.updateEveryLoop()
+                self.updateEveryEnabledLoop()
                 if time.time() - self.last_data_time > 5:  # Timeout checks on any data, not just good data
                     self.logToConsoleAndCheck("Ground station on port {} timed out".format(self.serial_port), 2)
                     self.has_data = False
@@ -182,8 +182,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
             except Exception as e:
                 print(e)
 
-    def updateEveryLoop(self):
-        super(GroundStationDataInterface, self).updateEveryLoop()
+    def updateEveryEnabledLoop(self):
+        super(GroundStationDataInterface, self).updateEveryEnabledLoop()
 
         self.reconfigure_options_dictionary[self.radio_reconfigure_page.getPageName()] = self.radio_reconfigure_page.getDataStructure()
         self.data_dictionary[Constants.cli_interface_key] = self.cliConsole.getList()

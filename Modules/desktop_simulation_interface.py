@@ -51,4 +51,4 @@ class LocalSimulationFlightInterface(GroundStationDataInterface):
             self.logToConsole("Couldn't parse local simulation message: {0}, closing connection".format(e), 2)
             self.enabled = False
 
-        self.updateEveryLoop()
+        self.updateEveryEnabledLoop()
