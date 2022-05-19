@@ -40,30 +40,14 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         self.offloadTableWidget.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.offloadTableWidget.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.offloadTableWidget.setMinimumWidth(450)
-
-        # Eventually this needs to be dynamically recreated based on a binary message we get over USB
         self.offloadTableWidget.setColumnCount(3)
         self.offloadTableWidget.setColumnWidth(0, 160)
         self.offloadTableWidget.setColumnWidth(1, 100)
         self.offloadTableWidget.setColumnWidth(2, 90)
         self.offloadTableWidget.setHorizontalHeaderLabels(["Date", "Duration", "Launched"])
-        
-        flight_array = self.parseOffloadHelp("")
-        self.offloadTableWidget.setRowCount(max(map(lambda row: int(row[0]), flight_array)) + 1)
-        for i in range(len(flight_array)):
-            row = flight_array[i]
-            row_num = int(row[0])
-            self.offloadTableWidget.setItem(row_num, 0, QTableWidgetItem(row[2]))
-            self.offloadTableWidget.setItem(row_num, 1, QTableWidgetItem(row[3]))
-            self.offloadTableWidget.setItem(row_num, 2, QTableWidgetItem(row[1]))
-            # item.setBackground(get_qcolor_from_string("rgb(100,0,0)" if i % 2 == 0 else "rgb(0,100,0)"))
-
-            for j in range(3):
-                item = self.offloadTableWidget.item(row_num, j)
-                if item is not None:
-                    item.setTextAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
-
         layout.addWidget(self.offloadTableWidget)
+
+        self.recreate_table("")
 
         tempLayout = QHBoxLayout()
         self.add(QLabel(text="Flight name: "), layout=tempLayout)
@@ -101,6 +85,23 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         """
 
         self.setLayout(layout)
+
+    def recreate_table(self, offload_help_string):
+        flight_array = self.parseOffloadHelp(offload_help_string)
+        self.offloadTableWidget.setRowCount(max(map(lambda row: int(row[0]), flight_array)) + 1)
+        for i in range(len(flight_array)):
+            row = flight_array[i]
+            row_num = int(row[0])
+            self.offloadTableWidget.setItem(row_num, 0, QTableWidgetItem(row[2]))
+            self.offloadTableWidget.setItem(row_num, 1, QTableWidgetItem(row[3]))
+            self.offloadTableWidget.setItem(row_num, 2, QTableWidgetItem(row[1]))
+            # item.setBackground(get_qcolor_from_string("rgb(100,0,0)" if i % 2 == 0 else "rgb(0,100,0)"))
+
+            for j in range(3):
+                item = self.offloadTableWidget.item(row_num, j)
+                if item is not None:
+                    item.setTextAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+
 
     def add(self, widget, layout=None, onClick=None):
         if layout is None:
