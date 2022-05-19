@@ -64,7 +64,7 @@ class FCBOffloadModule(ThreadedModuleCore):
                 if "Available flights to offload" in ret:  # Check and see if we have a list of flights, and update the database dictionary
                     self.data_dictionary[Constants.cli_flights_list_key] = ret
 
-            self.cliConsole.autoAddEntry(ret, True)
+                self.cliConsole.autoAddEntry(ret, True)
 
         time.sleep(0.1)
 
