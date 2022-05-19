@@ -118,7 +118,8 @@ class FcbCli:
         )
 
         # Parse arguments
-        parsed_args = command_parser.parse_args(shlex.split(command, posix=False))
+        commands = shlex.split(command, posix=False)
+        parsed_args, commands = command_parser.parse_known_args(commands)
 
         # Run appropriate function based on given command and arguments
         if parsed_args.command == "help":

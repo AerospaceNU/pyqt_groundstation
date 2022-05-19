@@ -60,8 +60,9 @@ class FCBOffloadModule(ThreadedModuleCore):
             ret = self.runCLICommand(command)
             print(ret)
 
-            if "Available flights to offload" in ret:  # Check and see if we have a list of flights, and update the database dictionary
-                self.data_dictionary[Constants.cli_flights_list_key] = ret
+            if ret is not None:
+                if "Available flights to offload" in ret:  # Check and see if we have a list of flights, and update the database dictionary
+                    self.data_dictionary[Constants.cli_flights_list_key] = ret
 
             self.cliConsole.autoAddEntry(ret, True)
 
