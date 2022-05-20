@@ -47,8 +47,8 @@ class FCBOffloadModule(ThreadedModuleCore):
         """Callback function to run from the GUI"""
         if self.enabled:
             self.command_queue.append(command)
-        # else:
-        #     self.cliConsole.manualAddEntry("FCB USB offload module not enabled, can not run commands", False)
+        else:
+            self.cliConsole.manualAddEntry("FCB USB offload module not enabled, can not run commands", False)
 
     def spin(self):
         if not self.serial_connection:

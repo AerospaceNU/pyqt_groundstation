@@ -99,7 +99,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
             self.offloadTableWidget.setRowCount(1)
         for i in range(len(flight_array)):
             row = flight_array[i]
-            row_num = int(row[0])
+            row_num = int(row[0]) - 1
             self.offloadTableWidget.setItem(row_num, 0, QTableWidgetItem(row[2]))
             self.offloadTableWidget.setItem(row_num, 1, QTableWidgetItem(row[3]))
             self.offloadTableWidget.setItem(row_num, 2, QTableWidgetItem(row[1]))
