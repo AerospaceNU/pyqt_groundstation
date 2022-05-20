@@ -16,4 +16,5 @@ class ModelViewer(TabCommon):
 
         layout = QGridLayout()
         layout.addWidget(self.viewer)
+        layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
