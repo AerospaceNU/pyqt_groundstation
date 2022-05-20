@@ -149,10 +149,10 @@ class OrientationMessage(BaseMessage):
     """uint8 state, int8 qw, qx, qy, qz, float wx, wy, wz, ax, ay, az, bx, by, bz;"""
 
     messageData = [[UINT_8_TYPE, Constants.fcb_state_number_key],
-                   [INT_8_TYPE, "qw", 0.001],
-                   [INT_8_TYPE, "qx", 0.001],
-                   [INT_8_TYPE, "qy", 0.001],
-                   [INT_8_TYPE, "qz", 0.001],
+                   [INT_8_TYPE, "qw", 0.01],
+                   [INT_8_TYPE, "qx", 0.01],
+                   [INT_8_TYPE, "qy", 0.01],
+                   [INT_8_TYPE, "qz", 0.01],
                    [FLOAT_TYPE, Constants.rotational_velocity_x_key],
                    [FLOAT_TYPE, Constants.rotational_velocity_y_key],
                    [FLOAT_TYPE, Constants.rotational_velocity_z_key],

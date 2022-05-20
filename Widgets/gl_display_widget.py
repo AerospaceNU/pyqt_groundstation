@@ -36,6 +36,7 @@ class ThreeDDisplay(CustomQWidgetBase):
         self.titleWidget = QLabel()
         self.titleWidget.setText(self.title)
         self.titleWidget.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+        self.titleWidget.setMaximumHeight(self.titleWidget.fontInfo().pixelSize() * 1.5)
         layout.addWidget(self.titleWidget, 0, 0, 1, 1)
 
         self.viewer = gl.GLViewWidget()

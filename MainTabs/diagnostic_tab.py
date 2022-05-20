@@ -20,7 +20,6 @@ class DiagnosticTab(TabCommon):
         self.addWidget(simple_console_widget.SimpleConsoleWidget(self))
         self.addWidget(reconfigure_widget.ReconfigureWidget(self))
         self.addWidget(pyro_display_widget.PyroWidget(self))
-        self.addWidget(complete_console_widget.CompleteConsoleWidget(self))
         self.addWidget(gl_display_widget.ThreeDDisplay(self))
 
         self.widgetList[1].move(400, 0)  # Move the widgets to better spots

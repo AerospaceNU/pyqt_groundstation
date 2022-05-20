@@ -25,6 +25,7 @@ if __name__ == '__main__':
     GUI.addTabByTabType("Rocket Primary", "Primary")
     GUI.addTabByTabType("Diagnostic", "Diagnostic")
     GUI.addTabByTabType("Graph", "Graphs")
+    GUI.addTabByTabType("Model Viewer", "AeroNU: The 3D Experience")
 
     # Load in modules
     GUI.addModule("Serial Ground Station", GroundStationDataInterface, enabled=True)

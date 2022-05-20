@@ -22,6 +22,7 @@ from MainTabs.settings_tab import SettingsTab
 from MainTabs.diagnostic_tab import DiagnosticTab
 from MainTabs.rocket_primary_tab import RocketPrimaryTab
 from MainTabs.graphs_tab import GraphsTab
+from MainTabs.model_viewer import ModelViewer
 
 from Widgets import annunciator_panel
 from Widgets import control_station_status
@@ -134,6 +135,7 @@ class DPFGUI():
                            "Rocket Primary": RocketPrimaryTab,
                            "Graph": GraphsTab,
                            "Empty": TabCommon,
+                           "Model Viewer": ModelViewer,
                            }
 
         # Set some object names for all the core stuff
