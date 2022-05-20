@@ -108,7 +108,8 @@ class DPFGUI():
         self.serial_devices_menu = QMenu()
         self.modules_menu = QMenu()
         self.playback_source_menu = QMenu()
-        self.serial_devices = []
+        self.serial_devices = []  # List of names of devices that use a serial port
+        self.serial_devices_ports = {}  # Dictionary of which ports said device is using {device: port, ...}
 
         # List of classes of widgets that can be dynamically created
         self.widgetClasses = {"Annunciator Panel": annunciator_panel.AnnunciatorPanel,
@@ -233,6 +234,18 @@ class DPFGUI():
 
         callback_name = serial_port_callback_name(device_name)
         self.callback_queue.append([callback_name, port_name])
+        self.serial_devices_ports[device_name] = port_name
+
+        if port_name == "":  # Don't need to do anything more if we're disconnecting this device
+            return
+
+        # Otherwise, make sure no one else is using the port
+        for device in self.serial_devices_ports:
+            port = self.serial_devices_ports[device]
+            if port == port_name and device != device_name:
+                callback = serial_port_callback_name(device)
+                self.callback_queue.append([callback, ""])
+                self.serial_devices_ports[device] = ""
 
     def toggleModuleEnabledState(self, module_name):
         if module_name in self.module_dictionary:
@@ -532,6 +545,8 @@ class DPFGUI():
                 self.addCallback(callback_name, callback_function)
                 if device not in self.serial_devices:
                     self.serial_devices.append(device)
+                    self.serial_devices_ports[device] = ""  # Want to start everything up unconnected
+                    self.setActiveSerialPort("", device)  # Force the module to comply with our demands
 
             if hide_toggle:
                 self.hidden_modules.append(interface_name)

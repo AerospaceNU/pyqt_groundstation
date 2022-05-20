@@ -25,7 +25,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         super().__init__()
 
         self.nextCheckTime = time.time()
-        self.serial_port = "/dev/ttyACM0"
+        self.serial_port = ""
         self.baud_rate = 9600
         self.active_radio = RADIO_433
 

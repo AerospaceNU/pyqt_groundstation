@@ -17,7 +17,7 @@ class EggFinderRadioInterface(ThreadedModuleCore):
         super().__init__()
 
         self.nextCheckTime = time.time()
-        self.serial_port = "/dev/ttyACM0"
+        self.serial_port = ""
         self.baud_rate = 9600
         self.last_data_time = time.time()
 

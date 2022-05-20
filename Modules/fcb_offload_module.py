@@ -11,6 +11,7 @@ from constants import Constants
 class FCBOffloadModule(ThreadedModuleCore):
     def __init__(self):
         super().__init__()
+        self.primary_module = True
 
         self.serial_port_name = ""
         self.serial_connection = False
@@ -36,6 +37,8 @@ class FCBOffloadModule(ThreadedModuleCore):
             self.python_avionics_fcb_cli.serial_port = port_object
             self.serial_connection = True
             self.logToConsole("Successfully connected to FCB over USB at port {}".format(self.serial_port_name), 1, True)
+            port_object.port.flushInput()
+            port_object.port.flushOutput()
         except:
             self.logToConsole("Unable to connect to FCB over USB at port {}".format(self.serial_port_name), 2, True)
             self.serial_connection = False
@@ -44,8 +47,8 @@ class FCBOffloadModule(ThreadedModuleCore):
         """Callback function to run from the GUI"""
         if self.enabled:
             self.command_queue.append(command)
-        else:
-            self.cliConsole.manualAddEntry("FCB USB offload module not enabled, can not run commands", False)
+        # else:
+        #     self.cliConsole.manualAddEntry("FCB USB offload module not enabled, can not run commands", False)
 
     def spin(self):
         if not self.serial_connection:

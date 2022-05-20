@@ -120,7 +120,6 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
             widget.clicked.connect(onClick)
 
     def refreshData(self):
-        print("Refresh data!")
         self.runPythonAvionicsCommand("offload --list")
 
     def getIndexFrom(self, listWidget):
