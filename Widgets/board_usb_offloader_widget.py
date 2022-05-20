@@ -41,7 +41,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         self.offloadTableWidget.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.offloadTableWidget.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.offloadTableWidget.setMinimumWidth(450)
-        self.offloadTableWidget.setMinimumHeight(800)
+        self.offloadTableWidget.setMinimumHeight(600)
         self.offloadTableWidget.setColumnCount(3)
         self.offloadTableWidget.setColumnWidth(0, 160)
         self.offloadTableWidget.setColumnWidth(1, 100)
@@ -94,7 +94,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
     def recreate_table(self, offload_help_string):
         flight_array = self.parseOffloadHelp(offload_help_string)
         if len(flight_array) > 0:
-            self.offloadTableWidget.setRowCount(max(map(lambda row: int(row[0]), flight_array)) + 1)
+            self.offloadTableWidget.setRowCount(max(map(lambda row: int(row[0]), flight_array)))
         else:
             self.offloadTableWidget.setRowCount(1)
         for i in range(len(flight_array)):
