@@ -2,6 +2,7 @@ import time
 
 from python_avionics.model.fcb_cli import FcbCli
 from python_avionics.model.serial_port import SerialPort
+from python_avionics.exceptions import SerialPortDisconnectedError
 
 from Modules.data_interface_core import ThreadedModuleCore
 from Modules.DataInterfaceTools.comms_console_helper import CommsConsoleHelper
@@ -30,17 +31,22 @@ class FCBOffloadModule(ThreadedModuleCore):
         self.serial_port_name = portName
         self.serial_connection = False
 
+    def closeSerialPort(self):
+        if self.python_avionics_fcb_cli.serial_port is not None:
+            self.python_avionics_fcb_cli.serial_port.port.close()
+
     def updatePythonAvionicsSerialPort(self):
         try:
             self.logToConsole("Attempting to connect to FCB over USB at port {}".format(self.serial_port_name), 1, True)
+            self.closeSerialPort()
             port_object = SerialPort(self.serial_port_name)
             self.python_avionics_fcb_cli.serial_port = port_object
             self.serial_connection = True
             self.logToConsole("Successfully connected to FCB over USB at port {}".format(self.serial_port_name), 1, True)
             port_object.port.flushInput()
             port_object.port.flushOutput()
-        except:
-            self.logToConsole("Unable to connect to FCB over USB at port {}".format(self.serial_port_name), 2, True)
+        except Exception:
+            self.logToConsole("Unable to connect to FCB over USB at port {0}".format(self.serial_port_name), 2, True)
             self.serial_connection = False
 
     def cliCommand(self, command):
@@ -73,10 +79,12 @@ class FCBOffloadModule(ThreadedModuleCore):
     def runCLICommand(self, command):
         """Function to tell python_avionics to run the cli command, and handle states where the serial port isn't open"""
         if self.serial_connection:
-            print("running command [{}]".format(command))
             try:
                 ret = self.python_avionics_fcb_cli.run_command(command)
                 return ret
+            except (IOError, SerialPortDisconnectedError) as e:
+                self.serial_connection = False
+                return "Lost connection to FCB: {}".format(e)
             except Exception as e:
                 return "Unable to run command: {}".format(e)
         else:

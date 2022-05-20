@@ -162,7 +162,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         self.setStyleSheet("QWidget#" + self.objectName() + " {" + border_string + widget_background_string + text_string + "}")
         self.titleBox.setStyleSheet(widget_background_string + header_text_string)
         self.offloadTableWidget.setStyleSheet(header_section_string + " " + corner_section_string)
-        self.offloadNameEntry.setStyleSheet(widget_background_string + header_text_string + border_string)
+        self.offloadNameEntry.setStyleSheet(widget_background_string + text_string + border_string)
 
         for i in range(self.offloadTableWidget.rowCount()):
             for j in range(self.offloadTableWidget.columnCount()):
@@ -172,7 +172,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
                     item.setBackground(get_qcolor_from_string(widget_background_string))
 
         for widget in self.widgetList:
-            widget.setStyleSheet(widget_background_string + header_text_string + border_string)
+            widget.setStyleSheet(widget_background_string + header_text_string)
 
     def parseOffloadHelp(self, cli_str: str):
         # Filter for lines that start with | and split by return characters
