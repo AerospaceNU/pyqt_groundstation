@@ -170,4 +170,4 @@ class FakeFlight(FCBDataInterfaceCore):
 
         self.handleParsedData("Sim flight packet", packet)
 
-        self.updateEveryLoop()
+        self.updateEveryEnabledLoop()

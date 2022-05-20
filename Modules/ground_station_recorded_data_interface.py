@@ -56,5 +56,5 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
             parsed_packet[Constants.crc_key] = "Good"
 
         self.handleParsedData(packet_type, parsed_packet)
-        self.updateEveryLoop()
+        self.updateEveryEnabledLoop()
         time.sleep(.05)

@@ -33,15 +33,13 @@ class FcbCli:
 
     OUTPUT_DIR = "output"
 
-    def __init__(self, serial_port: SerialPort, offload_help_cb: Callable[[str], int]):
+    def __init__(self, serial_port: SerialPort):
         """
         Initialize an FCB instance.
 
         :param serial_port: Serial port to use to communicate with FCB CLI
-        :param offload_help_cb: Callback to get flight number from user during offload
         """
-        self._serial_port = serial_port
-        self._offload_help_cb = offload_help_cb
+        self.serial_port = serial_port
 
     def _read_ack(self) -> bool:
         """
@@ -49,7 +47,7 @@ class FcbCli:
 
         :return: Whether acknowledgement was found or not
         """
-        rx_data = self._serial_port.read(size=len(self._ACK))
+        rx_data = self.serial_port.read(size=len(self._ACK))
         if rx_data is None:
             return False
         return rx_data.decode("utf-8") == self._ACK
@@ -90,6 +88,18 @@ class FcbCli:
             required=False,
             help="Name of flight, used for saving",
         )
+        offload_parser.add_argument(
+            "--flight_num",
+            type=int,
+            required=False,
+            help="Flight number to offload",
+        )
+        offload_parser.add_argument(
+            "--list",
+            required=False,
+            action='store_true',
+            help="Dump a list of all flights stored",
+        )
 
         sim_parser = subparsers.add_parser("sim", help="Sim flight to FCB")
         sim_parser.add_argument(
@@ -108,13 +118,17 @@ class FcbCli:
         )
 
         # Parse arguments
-        parsed_args = command_parser.parse_args(shlex.split(command, posix=False))
+        commands = shlex.split(command, posix=False)
+        parsed_args, commands = command_parser.parse_known_args(commands)
 
         # Run appropriate function based on given command and arguments
         if parsed_args.command == "help":
             return self.run_help()
         if parsed_args.command == "offload":
-            self.run_offload(flight_name=parsed_args.flight_name)
+            if(parsed_args.list):
+                return self.run_offload_help()
+            else:
+                self.run_offload(flight_name=parsed_args.flight_name, flight_num=parsed_args.flight_num)
             return "Success"
         if parsed_args.command == "sense":
             return self.run_sense()
@@ -143,36 +157,38 @@ class FcbCli:
 
         :return: Help string
         """
-        self._serial_port.write(self._linebreak(self._HELP_COMMAND).encode("utf-8"))
+        self.serial_port.write(self._linebreak(self._HELP_COMMAND).encode("utf-8"))
         if not self._read_ack():
             raise FcbNoAckError(fcb_command=self._HELP_COMMAND)
-        help_bytes = self._serial_port.read(size=10000)
+        help_bytes = self.serial_port.read(size=10000)
         help_str = "" if not help_bytes else help_bytes.decode("utf-8")
         if not self._has_complete(search_str=help_str):
             raise FcbIncompleteError(fcb_command=self._HELP_COMMAND)
         return help_str.strip(self._COMPLETE)
 
-    def run_offload(self, flight_name: str) -> None:
-        """
-        Manage data offload on the FCB.
-
-        :param flight_name: Name of flight, used in saving output
-        """
-        # Provide flights that can be offloaded to callback
-        self._serial_port.write(
+    def run_offload_help(self) -> str:
+        self.serial_port.write(
             self._linebreak(self._OFFLOAD_HELP_COMMAND).encode("utf-8")
         )
         if not self._read_ack():
             raise FcbNoAckError(fcb_command=self._OFFLOAD_HELP_COMMAND)
-        help_bytes = self._serial_port.read(size=10000)
+        help_bytes = self.serial_port.read(size=10000)
         help_str = "" if not help_bytes else help_bytes.decode("utf-8")
         if not self._has_complete(search_str=help_str):
             raise FcbIncompleteError(fcb_command=self._OFFLOAD_HELP_COMMAND)
         help_str = help_str.strip(self._COMPLETE)
-        flight_num = self._offload_help_cb(help_str)
+        return help_str
+
+    def run_offload(self, flight_name: str, flight_num: int) -> None:
+        """
+        Manage data offload on the FCB.
+
+        :param flight_name: Name of flight, used in saving output
+        :param flight_num: Flight number as reported by FCB in run_offload_help
+        """
 
         # Start offloading provided flight number
-        self._serial_port.write(
+        self.serial_port.write(
             self._linebreak(
                 self._OFFLOAD_FLIGHT_COMMAND.format(flight_num=flight_num)
             ).encode("utf-8")
@@ -189,7 +205,7 @@ class FcbCli:
         k_read_size = 2048
         with open(output_bin_filepath, "wb") as output_bin_file:
             while True:
-                byte_array = self._serial_port.read(size=k_read_size)
+                byte_array = self.serial_port.read(size=k_read_size)
                 if not byte_array:
                     raise FcbIncompleteError(fcb_command=self._OFFLOAD_FLIGHT_COMMAND)
                 output_bin_file.write(byte_array)
@@ -238,7 +254,7 @@ class FcbCli:
         df = pd.read_csv(flight_filepath, index_col=0)
 
         # Start sim
-        self._serial_port.write(self._linebreak(self._SIM_COMMAND).encode("utf-8"))
+        self.serial_port.write(self._linebreak(self._SIM_COMMAND).encode("utf-8"))
         if not self._read_ack():
             raise FcbNoAckError(fcb_command=self._SIM_COMMAND)
 
@@ -326,10 +342,10 @@ class FcbCli:
                 row.pyro_cont >> 5,
             )
             # Send data over serial
-            self._serial_port.write(data)
+            self.serial_port.write(data)
 
         # Check for complete ACK
-        complete_data = self._serial_port.read(size=len(self._COMPLETE))
+        complete_data = self.serial_port.read(size=len(self._COMPLETE))
         if not complete_data:
             raise FcbIncompleteError(fcb_command=self._SIM_COMMAND)
         if not self._has_complete(search_str=complete_data.decode("utf8")):
@@ -341,10 +357,10 @@ class FcbCli:
 
         :return: Sense string
         """
-        self._serial_port.write(self._linebreak(self._SENSE_COMMAND).encode("utf-8"))
+        self.serial_port.write(self._linebreak(self._SENSE_COMMAND).encode("utf-8"))
         if not self._read_ack():
             raise FcbNoAckError(fcb_command=self._SENSE_COMMAND)
-        sense_bytes = self._serial_port.read(size=10000)
+        sense_bytes = self.serial_port.read(size=10000)
         sense_str = "" if not sense_bytes else sense_bytes.decode("utf-8")
         if not self._has_complete(search_str=sense_str):
             raise FcbIncompleteError(fcb_command=self._SENSE_COMMAND)
@@ -356,10 +372,10 @@ class FcbCli:
 
         FCB won't actually shut off, but it won't do or respond to anything.
         """
-        self._serial_port.write(self._linebreak(self._SHUTDOWN_COMMAND).encode("utf-8"))
+        self.serial_port.write(self._linebreak(self._SHUTDOWN_COMMAND).encode("utf-8"))
         if not self._read_ack():
             raise FcbNoAckError(fcb_command=self._SHUTDOWN_COMMAND)
-        rx_bytes = self._serial_port.read(size=10000)
+        rx_bytes = self.serial_port.read(size=10000)
         rx_str = "" if not rx_bytes else rx_bytes.decode("utf-8")
         if not self._has_complete(search_str=rx_str):
             raise FcbIncompleteError(fcb_command=self._SHUTDOWN_COMMAND)
@@ -515,7 +531,6 @@ if __name__ == "__main__":
     # Set up FCB CLI and run commands from command line
     fcb = FcbCli(
         serial_port=SerialPortManager.get_port(name=port_dev),
-        offload_help_cb=ConsoleView.cli_offload_choose_flight,
     )
     passed_args = [f'"{arg}"' if " " in arg else arg for arg in sys.argv[1:]]
     print(fcb.run_command(" ".join(passed_args)))

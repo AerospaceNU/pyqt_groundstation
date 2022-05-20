@@ -66,6 +66,9 @@ class CustomQWidgetBase(QWidget):
         self.textColor = get_rgb_from_string(text)
         self.setWidgetColors(self.backgroundColorString, self.textColorString, self.headerTextColorString, self.borderColorString)
 
+    def refreshTheme(self):
+        self.setWidgetColors(self.backgroundColorString, self.textColorString, self.headerTextColorString, self.borderColorString)
+
     def rightClickMenu(self, e: QPoint):
         menu = QMenu()
 

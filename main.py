@@ -15,6 +15,7 @@ from Modules.fake_rocket_flight import FakeFlight
 from Modules.text_to_speech import TextToSpeech
 from Modules.map_interface import MapInterface
 from Modules.egg_finder_radio_interface import EggFinderRadioInterface
+from Modules.fcb_offload_module import FCBOffloadModule
 
 if __name__ == '__main__':
     # Make GUI object, but don't start it yet
@@ -25,11 +26,13 @@ if __name__ == '__main__':
     GUI.addTabByTabType("Rocket Primary", "Primary")
     GUI.addTabByTabType("Diagnostic", "Diagnostic")
     GUI.addTabByTabType("Graph", "Graphs")
+    GUI.addTabByTabType("Offload", "Offload")
     GUI.addTabByTabType("Model Viewer", "AeroNU: The 3D Experience")
 
     # Load in modules
     GUI.addModule("Serial Ground Station", GroundStationDataInterface, enabled=True)
     GUI.addModule("Egg Finder Radio", EggFinderRadioInterface, enabled=False)
+    GUI.addModule("FCB Offload", FCBOffloadModule, enabled=False)
     GUI.addModule("Android Phone Bluetooth", AndroidPhoneBluetoothInterface)
     GUI.addModule("Text To Speech", TextToSpeech, enabled=False)
     GUI.addModule("Laptop Status Monitor", LaptopStatusMonitor, hide_toggle=True)

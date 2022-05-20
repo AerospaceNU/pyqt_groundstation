@@ -96,3 +96,17 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         self.textBoxWidget.setStyleSheet(widget_background_string + text_string)
         self.textEntryWidget.setStyleSheet(border_string + widget_background_string + text_string)
         self.titleBox.setStyleSheet(widget_background_string + header_text_string)
+
+
+class CLIUSBInterface(CompleteConsoleWidget):
+    def __init__(self, parent=None):
+        """
+        Overrides the other console to provide the USB interface
+        I'm not sure this is a great way to do this, but it'll work for now
+        """
+        super(CLIUSBInterface, self).__init__(parent)
+
+        self.source = Constants.cli_interface_usb_key
+        self.title = "FCB CLI USB Interface"
+
+        self.titleBox.setText(self.title)

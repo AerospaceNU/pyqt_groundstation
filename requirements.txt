@@ -1,0 +1,16 @@
+pyserial
+opencv-python
+pyqt5==5.15.4
+imutils
+navpy
+pyqtchart
+pyqtgraph
+pynmea2
+pybluez
+psutil
+pyttsx3
+qtrangeslider[pyqt5]
+pyopengl
+numpy-stl 
+ahrs
+pandas

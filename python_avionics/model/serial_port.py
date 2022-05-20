@@ -22,7 +22,7 @@ class SerialPort:
         """
         self.name: str = name
         self.connected: bool = False
-        self._port: serial.Serial = serial.Serial(
+        self.port: serial.Serial = serial.Serial(
             port=name,
             baudrate=self._DEFAULT_BAUD_RATE,
             timeout=self._DEFAULT_PORT_TIMEOUT_S,
@@ -35,7 +35,7 @@ class SerialPort:
         :param data: Bytes to write to serial port
         """
         try:
-            self._port.write(data)
+            self.port.write(data)
         except Exception:
             raise SerialPortDisconnectedError(port_name=self.name)
 
@@ -46,7 +46,7 @@ class SerialPort:
         :param size: Number of bytes to read from port
         """
         try:
-            data: Optional[bytes] = self._port.read(size)
+            data: Optional[bytes] = self.port.read(size)
         except Exception:
             raise SerialPortDisconnectedError(port_name=self.name)
         return data

@@ -50,7 +50,7 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
         self.has_data = False
         self.good_fcb_data = False
 
-        self.updateEveryLoop()
+        self.updateEveryEnabledLoop()
 
     def handleParsedData(self, message_type, dictionary, update_on_bad_crc=True):
         # Set the fcb state text
@@ -111,7 +111,7 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
                 self.last_good_data_time = time.time()
                 self.good_fcb_data = True
 
-    def updateEveryLoop(self):
+    def updateEveryEnabledLoop(self):
         if self.last_good_data_time < time.time() - 5 and self.has_data:
             self.has_data = False
             self.good_fcb_data = False
