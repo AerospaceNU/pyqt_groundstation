@@ -12,7 +12,7 @@ class ModelViewer(TabCommon):
     def __init__(self, tab_name, parent=None):
         super().__init__(tab_name, parent=parent)
 
-        self.viewer = self.addWidget(gl_display_widget.ThreeDDisplay(self))
+        self.viewer = self.addWidget(gl_display_widget.ThreeDDisplay())
 
         layout = QGridLayout()
         layout.addWidget(self.viewer)
