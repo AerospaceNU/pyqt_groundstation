@@ -1,0 +1,29 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
+image: python:3.10.2
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+    - .venv/
+
+before_script:
+  - python --version
+  - python -m venv .venv/
+  - source .venv/bin/activate
+  - python -m pip install --upgrade pip
+  - pip install black isort flake8 flake8-docstrings mypy
+
+stages:
+  - lint
+
+lint-job:
+  stage: lint
+  script:
+    - chmod -R +x ci/run_lint_remote.sh
+    - ./ci/run_lint_remote.sh

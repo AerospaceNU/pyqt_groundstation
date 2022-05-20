@@ -1,10 +1,15 @@
-.idea
-__pycache__
-parsed_messages.txt
-raw_data.txt
-Postprocessing/export.csv
-config.ini
-external_flash.dat
-internal_flash.dat
+# Directories
+.idea/
+.mypy_cache/
+.venv/
+*__pycache__
+output/
+sim_input/
 
-output
+# Files
+*parsed_messages.txt
+*raw_data.txt
+*Postprocessing/export.csv
+*config.ini
+*external_flash.dat
+*internal_flash.dat

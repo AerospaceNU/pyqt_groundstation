@@ -1,0 +1,12 @@
+[flake8]
+max-line-length = 88
+docstring-convention = pep257
+select = C,E,F,W,B,D,B950
+extend-ignore =
+    E203, # See https://github.com/PyCQA/pycodestyle/issues/373
+    E501, # Using B950 instead
+    D104, # Missing docstring in public package
+    D105, # Missing docstring in magic method
+    D400, # First line should end with a period
+    D401, # First line should be in imperative mood
+    D401b, # First line should be in imperative mood; try rephrasing
