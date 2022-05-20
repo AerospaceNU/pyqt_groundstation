@@ -25,6 +25,5 @@ class DiagnosticTab(TabCommon):
         self.widgetList[2].move(1000, 0)  # This isn't really the best way to reference the object, but I don't care
         self.widgetList[3].move(1000, 700)
         self.widgetList[4].move(1400, 700)
-        self.widgetList[5].move(800, 700)
 
         self.canAddWidgets = True
