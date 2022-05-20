@@ -134,7 +134,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
     def onOffloadSelect(self):
         index = self.getIndexFrom(self.offloadTableWidget)
         name = self.offloadNameEntry.text()
-        self.runPythonAvionicsCommand("offload --flight_name={0} --flight_num={1}".format(name, index))
+        self.runPythonAvionicsCommand("offload --flight_name={0} --flight_num={1}".format(name, index + 1))
 
     def onPostProcessSelect(self):
         print("Post process index " + str(self.getIndexFrom(self.downloadedFlightsWidget)))
