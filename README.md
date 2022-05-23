@@ -133,7 +133,6 @@ sudo chmod o+rw /var/run/sdp
 ## Adding custom functionality
 In basically anything simple you'd need to add, you'll just extend the base class, and overwrite a few functions.
 
-- For widgets, everything should happen automatically from there.
+- For widgets, you'll need to add the widget class to the dictionary of widget classes in the constructor.
 - For modules, you'll need to add a line to main.py to register it.
-- For Tabs, you'll need to add a line to `gui_core.py` in the `addTabByTabType` function, that takes the string name and string type of your tab, and calls `self.addVehicleTab([TabType], tabName)`.
-You'll also need to add a line to the `run` function in `dpf_ground_station.py` that calls `self.addTab()` with the string name and string type from above.
+- For Tabs, you'll need to add the tab class to the dictionary of tab classes in the constructor.
