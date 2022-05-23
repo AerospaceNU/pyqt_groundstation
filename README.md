@@ -102,6 +102,9 @@ Each widget class extends `custom_q_widget_base.py`, which provides all the base
 To get data from the widget overwrites the `updateData` function, which takes the GUI database dictionary as an argument.
 Each widget then gets their required data from the GUI database dictionary, and sets values accordingly.
 
+There's also an `updateInFocus` function that only runs when you're looking at the widget. 
+Use this for computationally intensive stuff (like drawing a graph or rendering 3d images) so that it also doesn't run in the background.
+
 #### QWidget_Parts
 This is where custom PyQt widgets (widgets that directly extend a PyQt widget) go.
 
@@ -110,10 +113,10 @@ This is kind of legacy structure that I don't want to fix, but the class in here
 It would be better to refactor it so that it does extend QWidget or QLabel or something.
 
 ### Main Tabs
-`main_tab_common.py` is an abomination.
-I'm going to try to fix it some, but I don't want to spend a huge amount of time on it yet, since it works.
 To add a custom tab, extend `main_tab_common.py` and call `self.addWidget` to add widgets to the call list.
 Look at `primary_tab.py` for a nice example.
+`main_tab_common.py` extends `QWidget`, so each tab object is actually a pyqt widget. 
+`main_tab_common` also provides framework for making sure all the Widgets get their database dictionary updated as needed.
 
 ### Modules
 This framework was designed to make it simpler to add new features to the GUI.
