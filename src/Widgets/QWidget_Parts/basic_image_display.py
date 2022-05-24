@@ -51,8 +51,8 @@ class BasicImageDisplay(QLabel):
         return self.theta
 
     def setSingleColor(self, red, green, blue):
-        self.image[:, :, 0:3] = np.array([red, green, blue])
-        self.rawImage[:, :, 0:3] = np.array([red, green, blue])
+        self.image[:, :, 0:3] = np.array([blue, green, red])
+        self.rawImage[:, :, 0:3] = np.array([blue, green, red])
         self.updateImage(self.image)
 
     def updateImage(self, img):

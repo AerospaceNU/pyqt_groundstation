@@ -147,9 +147,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.adjustSize()
         self.HUDWidget.update()
 
-    def setWidgetColors(
-            self, widget_background_string, text_string, header_text_string, border_string
-    ):
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         self.SpeedTextBox.setStyleSheet(text_string)
         self.VSpeedTextBox.setStyleSheet(text_string)
         self.AltitudeTextBox.setStyleSheet(text_string)
@@ -161,12 +159,4 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
             self.StateTextBox.setStyleSheet(text_string)
             self.SetpointTextBox.setStyleSheet(text_string)
 
-        self.setStyleSheet(
-            "QWidget#"
-            + self.objectName()
-            + "{"
-            + "{0}{1}{2}{3}".format(
-                widget_background_string, text_string, header_text_string, border_string
-            )
-            + "}"
-        )
+        self.setStyleSheet("QWidget#" + self.objectName() + "{" + "{0}{1}{2}{3}".format(widget_background_string, text_string, header_text_string, border_string) + "}")

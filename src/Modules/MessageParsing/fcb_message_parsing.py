@@ -9,30 +9,10 @@ import struct
 import numpy
 
 from src.constants import Constants
+from src.data_helpers import quaternion_to_euler_angle
 
 # Packet length in bytes
 PACKET_LENGTH = 132
-
-
-def quaternion_to_euler_angle(w, x, y, z):
-    """Copied from stack overflow"""
-
-    ysqr = y * y
-
-    t0 = +2.0 * (w * x + y * z)
-    t1 = +1.0 - 2.0 * (x * x + ysqr)
-    X = math.degrees(math.atan2(t0, t1))
-
-    t2 = +2.0 * (w * y - z * x)
-    t2 = +1.0 if t2 > +1.0 else t2
-    t2 = -1.0 if t2 < -1.0 else t2
-    Y = math.degrees(math.asin(t2))
-
-    t3 = +2.0 * (w * z + x * y)
-    t4 = +1.0 - 2.0 * (ysqr + z * z)
-    Z = math.degrees(math.atan2(t3, t4))
-
-    return [X, Y, Z]
 
 
 def compass_heading_deg_to_enu_rad(heading):
@@ -126,7 +106,7 @@ class BaseMessage(object):
 
                 # Various special options to parse
                 if (
-                    type(parse_type) == int or type(parse_type) == float
+                        type(parse_type) == int or type(parse_type) == float
                 ):  # If it's a number, just multiply
                     dictionary[key] = unpacked_data[i] * parse_type
                 elif parse_type == "TIME":  # If its a time, make a time string
@@ -176,7 +156,7 @@ class OrientationMessage(BaseMessage):
         qz = dictionary.pop("qz")
         qw = dictionary.pop("qw")
 
-        rpy = quaternion_to_euler_angle(qw, qx, qy, qz)
+        rpy = quaternion_to_euler_angle([qx, qz, qz, qw])
 
         dictionary[Constants.roll_position_key] = rpy[0]
         dictionary[Constants.pitch_position_key] = rpy[1]
@@ -321,7 +301,7 @@ class CLIDataMessage(BaseMessage):
 
     def parseMessage(self, data):
         length = data[0]
-        trimmed_data = data[1 : length + 1]
+        trimmed_data = data[1: length + 1]
         dictionary = {}
 
         try:
@@ -452,8 +432,8 @@ def parse_fcb_message(data):
             success = True
 
             if (
-                "line cutter" in message_type.lower()
-                and Constants.line_cutter_number_key in dictionary
+                    "line cutter" in message_type.lower()
+                    and Constants.line_cutter_number_key in dictionary
             ):
                 line_cutter_number = dictionary[Constants.line_cutter_number_key]
                 message_type += str(line_cutter_number)

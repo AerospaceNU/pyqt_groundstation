@@ -26,15 +26,9 @@ class AttitudeDisplayWidget(QLabel):
         self.rollIndicator = cv2.imread("{}/Assets/roll_dial_1.png".format(dir_name), cv2.IMREAD_UNCHANGED)
 
         # Cross-hair
-        self.crossHairImage = basic_image_display.BasicImageDisplay(
-            self.crossHair, int(self.size * 0.7), parent=self
-        )
-        self.rollPointerImage = basic_image_display.BasicImageDisplay(
-            self.rollPointer, self.size * 0.05, y=10, parent=self
-        )
-        self.rollIndicatorImage = basic_image_display.BasicImageDisplay(
-            self.rollIndicator, self.size * 0.9, parent=self
-        )
+        self.crossHairImage = basic_image_display.BasicImageDisplay(self.crossHair, int(self.size * 0.7), parent=self)
+        self.rollPointerImage = basic_image_display.BasicImageDisplay(self.rollPointer, self.size * 0.05, y=10, parent=self)
+        self.rollIndicatorImage = basic_image_display.BasicImageDisplay(self.rollIndicator, self.size * 0.9, parent=self)
 
         self.refreshMask()
 
