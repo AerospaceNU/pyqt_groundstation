@@ -53,6 +53,7 @@ class NavballDisplayWidget(QOpenGLWidget):
         points = []
         radius = (self.width() / 2.0) * 0.975
 
+        # Make a circle
         for i in range(num_points):
             theta = interpolate(i, 0, num_points, 0, 6.28)
             dx = math.cos(theta) * radius
@@ -74,9 +75,8 @@ class NavballDisplayWidget(QOpenGLWidget):
         self.pitch = pitch
         self.yaw = yaw
 
-        # print(roll, pitch, yaw)
-
     def initializeGL(self):
+        """Sets up environment, camera position, and lighting"""
         glShadeModel(GL_SMOOTH)
         glEnable(GL_CULL_FACE)
         glEnable(GL_DEPTH_TEST)
@@ -98,6 +98,7 @@ class NavballDisplayWidget(QOpenGLWidget):
         glPushMatrix()
 
     def generateTexture(self):
+        """Sends the texture to OpenGL"""
         textID = glGenTextures(1)
         glBindTexture(GL_TEXTURE_2D, textID)
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
@@ -112,6 +113,7 @@ class NavballDisplayWidget(QOpenGLWidget):
         return textID
 
     def paintGL(self):
+        # glClear and glPushMatrix start the render cycle
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glPushMatrix()
 
@@ -120,20 +122,23 @@ class NavballDisplayWidget(QOpenGLWidget):
         glRotatef(-90, 1, 0, 0)
         glRotatef(180, 0, 0, 1)
 
+        # Pitch is negative because of how the texture is
         glRotatef(self.roll, 1, 0, 0)
         glRotatef(-self.pitch, 0, 1, 0)
         glRotatef(self.yaw, 0, 0, 1)
 
+        # Call a bunch of OpenGL stuff
         self.generateTexture()
         sphere = gluNewQuadric()
         gluQuadricTexture(sphere, GL_TRUE)
         gluQuadricNormals(sphere, GLU_SMOOTH)
         glEnable(GL_TEXTURE_2D)
-        gluSphere(sphere, 1, 50, 50)
+        gluSphere(sphere, 1, 50, 50)  # Actually draws the sphere
 
         gluDeleteQuadric(sphere)
         glDisable(GL_TEXTURE_2D)
 
+        # glPopMatrix stops the drawing process
         glPopMatrix()
 
 
