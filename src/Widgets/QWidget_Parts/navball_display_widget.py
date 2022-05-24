@@ -82,19 +82,17 @@ class NavballDisplayWidget(QOpenGLWidget):
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_LIGHTING)
 
-        lightZeroPosition = [10., 4., 10., 1.]
-        lightZeroColor = [0.8, 1.0, 0.8, 1.0]
-        glLightfv(GL_LIGHT0, GL_POSITION, lightZeroPosition)
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, lightZeroColor)
+        light_zero_position = [10., 4., 10., 1.]
+        light_zero_color = [0.8, 1.0, 0.8, 1.0]
+        glLightfv(GL_LIGHT0, GL_POSITION, light_zero_position)
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, light_zero_color)
         glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1)
         glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05)
         glEnable(GL_LIGHT0)
         glMatrixMode(GL_PROJECTION)
         gluPerspective(40., 1., 1., 40.)
         glMatrixMode(GL_MODELVIEW)
-        gluLookAt(0, 0, 3,
-                  0, 0, 0,
-                  0, 1, 0)
+        gluLookAt(0, 0, 3, 0, 0, 0, 0, 1, 0)  # The third argument is zoom
         glPushMatrix()
 
     def generateTexture(self):
