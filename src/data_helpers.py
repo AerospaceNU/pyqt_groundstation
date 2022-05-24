@@ -20,7 +20,7 @@ def vector_length(x, y):
 
 def quaternion_to_euler_angle(quaternion):
     """quaternion in xyzw to euler angle"""
-    [x, y, z, w] = quaternion
+    [w, x, y, z] = quaternion
 
     ysqr = y * y
 

@@ -156,7 +156,7 @@ class OrientationMessage(BaseMessage):
         qz = dictionary.pop("qz")
         qw = dictionary.pop("qw")
 
-        rpy = quaternion_to_euler_angle([qx, qz, qz, qw])
+        rpy = quaternion_to_euler_angle([qw, qx, qy, qz])
 
         dictionary[Constants.roll_position_key] = rpy[0]
         dictionary[Constants.pitch_position_key] = rpy[1]

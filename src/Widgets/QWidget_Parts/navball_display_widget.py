@@ -74,6 +74,8 @@ class NavballDisplayWidget(QOpenGLWidget):
         self.pitch = pitch
         self.yaw = yaw
 
+        # print(roll, pitch, yaw)
+
     def initializeGL(self):
         glShadeModel(GL_SMOOTH)
         glEnable(GL_CULL_FACE)
@@ -119,7 +121,7 @@ class NavballDisplayWidget(QOpenGLWidget):
         glRotatef(180, 0, 0, 1)
 
         glRotatef(self.roll, 1, 0, 0)
-        glRotatef(self.pitch, 0, 1, 0)
+        glRotatef(-self.pitch, 0, 1, 0)
         glRotatef(self.yaw, 0, 0, 1)
 
         self.generateTexture()
@@ -142,6 +144,8 @@ if __name__ == '__main__':
     mainWindow = QMainWindow()  # PyQt MainWindow widget
 
     navball = NavballDisplayWidget()
+
+    navball.yaw = -90
 
     mainWindow.setCentralWidget(navball)
     mainWindow.show()
