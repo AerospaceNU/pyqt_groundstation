@@ -1,5 +1,9 @@
+"""
+I literally have no idea what any of the opengl stuff does
+"""
+
+
 import os
-import numpy
 import cv2
 from PyQt5 import QtGui
 
@@ -16,7 +20,6 @@ def read_texture():
     dir_name = os.path.abspath(os.path.join(dir_name, "../.."))
     img_data = cv2.imread("{}/Assets/navball.png".format(dir_name), cv2.IMREAD_UNCHANGED)
     img_data = cv2.cvtColor(img_data, cv2.COLOR_BGR2RGB)
-    img_data = img_data.astype(numpy.uint8)
 
     textID = glGenTextures(1)
     glBindTexture(GL_TEXTURE_2D, textID)
@@ -42,6 +45,9 @@ class NavballWidget(QOpenGLWidget):
         dir_name = os.path.dirname(__file__)
         dir_name = os.path.abspath(os.path.join(dir_name, "../.."))
         self.image = cv2.imread("{}/Assets/navball.png".format(dir_name), cv2.IMREAD_UNCHANGED)
+
+        # self.setMaximumWidth(200)
+        # self.setMaximumHeight(200)
 
     def initializeGL(self):
         glShadeModel(GL_SMOOTH)
