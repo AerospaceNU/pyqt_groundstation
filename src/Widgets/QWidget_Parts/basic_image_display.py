@@ -56,9 +56,7 @@ class BasicImageDisplay(QLabel):
         self.updateImage(self.image)
 
     def updateImage(self, img):
-        convert_to_qt_format = QtGui.QImage(
-            img.data, img.shape[1], img.shape[0], QtGui.QImage.Format_ARGB32
-        )
+        convert_to_qt_format = QtGui.QImage(img.data, img.shape[1], img.shape[0], QtGui.QImage.Format_ARGB32)
         convert_to_qt_format = QtGui.QPixmap.fromImage(convert_to_qt_format)
         pixmap = QPixmap(convert_to_qt_format)
         self.setPixmap(pixmap)

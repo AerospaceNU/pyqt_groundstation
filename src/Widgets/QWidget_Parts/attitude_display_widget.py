@@ -21,15 +21,9 @@ class AttitudeDisplayWidget(QLabel):
 
         dir_name = os.path.dirname(__file__)
         dir_name = os.path.abspath(os.path.join(dir_name, "../.."))
-        self.crossHair = cv2.imread(
-            "{}/Assets/cross_hair.png".format(dir_name), cv2.IMREAD_UNCHANGED
-        )
-        self.rollPointer = cv2.imread(
-            "{}/Assets/roll_pointer.png".format(dir_name), cv2.IMREAD_UNCHANGED
-        )
-        self.rollIndicator = cv2.imread(
-            "{}/Assets/roll_dial_1.png".format(dir_name), cv2.IMREAD_UNCHANGED
-        )
+        self.crossHair = cv2.imread("{}/Assets/cross_hair.png".format(dir_name), cv2.IMREAD_UNCHANGED)
+        self.rollPointer = cv2.imread("{}/Assets/roll_pointer.png".format(dir_name), cv2.IMREAD_UNCHANGED)
+        self.rollIndicator = cv2.imread("{}/Assets/roll_dial_1.png".format(dir_name), cv2.IMREAD_UNCHANGED)
 
         # Cross-hair
         self.crossHairImage = basic_image_display.BasicImageDisplay(
