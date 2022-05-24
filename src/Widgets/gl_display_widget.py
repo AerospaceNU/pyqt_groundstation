@@ -57,12 +57,8 @@ class ThreeDDisplay(CustomQWidgetBase):
         self.showSTL("src/Assets/Rocket.stl")
 
     def updateData(self, vehicle_data, updated_data):
-        self.orientation_quaternion = get_value_from_dictionary(
-            vehicle_data, Constants.orientation_quaternion_key, [1, 0, 0, 0]
-        )
-        self.altitude = get_value_from_dictionary(
-            vehicle_data, Constants.altitude_key, 0
-        )
+        self.orientation_quaternion = get_value_from_dictionary(vehicle_data, Constants.orientation_quaternion_key, [1, 0, 0, 0])
+        self.altitude = get_value_from_dictionary(vehicle_data, Constants.altitude_key, 0)
 
     def updateInFocus(self):
         """We do the rendering in updateInFocus instead of updateData so that it only happens when we're looking at the widget"""
@@ -85,7 +81,7 @@ class ThreeDDisplay(CustomQWidgetBase):
         self.currentSTL.applyTransform(tr, local=True)
 
     def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
+            self, widget_background_string, text_string, header_text_string, border_string
     ):
         self.setStyleSheet(
             "QWidget#"

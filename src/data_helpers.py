@@ -3,6 +3,7 @@ Some functions to help with repetitive tasks
 """
 
 import math
+import numpy
 
 from PyQt5.QtGui import QColor
 
@@ -14,7 +15,32 @@ def clamp(value, minValue, maxValue):
 
 def vector_length(x, y):
     """Returns length of vector [x, y]"""
-    return math.sqrt(x**2 + y**2)
+    return math.sqrt(x ** 2 + y ** 2)
+
+
+def quaternion_to_euler_angle(quaternion):
+    """quaternion in xyzw to euler angle"""
+    [x, y, z, w] = quaternion
+
+    ysqr = y * y
+
+    t0 = +2.0 * (w * x + y * z)
+    t1 = +1.0 - 2.0 * (x * x + ysqr)
+    X = numpy.degrees(numpy.arctan2(t0, t1))
+
+    t2 = +2.0 * (w * y - z * x)
+    t2 = numpy.where(t2 > +1.0, +1.0, t2)
+    # t2 = +1.0 if t2 > +1.0 else t2
+
+    t2 = numpy.where(t2 < -1.0, -1.0, t2)
+    # t2 = -1.0 if t2 < -1.0 else t2
+    Y = numpy.degrees(numpy.arcsin(t2))
+
+    t3 = +2.0 * (w * z + x * y)
+    t4 = +1.0 - 2.0 * (ysqr + z * z)
+    Z = numpy.degrees(numpy.arctan2(t3, t4))
+
+    return [X, Y, Z]
 
 
 def distance_between_points(x, y, x2, y2):

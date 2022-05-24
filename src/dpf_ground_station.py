@@ -43,6 +43,7 @@ from src.Widgets import (
     text_box_drop_down_widget,
     vehicle_status_widget,
     video_widget,
+    navball_widget,
 )
 
 if sys.platform == "linux":  # I don't even know anymore
@@ -175,6 +176,7 @@ class DPFGUI:
             "3d Viewer": gl_display_widget.ThreeDDisplay,
             "Offload GUI": board_usb_offloader_widget.BoardCliWrapper,
             "CLI USB Console": complete_console_widget.CLIUSBInterface,
+            "Navball Widget": navball_widget.NavballWidget,
         }
 
         # List of tabs that can be dynamically created
