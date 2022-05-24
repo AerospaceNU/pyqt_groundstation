@@ -512,12 +512,12 @@ class DPFGUI:
             print("No Theme named {}".format(name))
 
     def setTheme(
-            self,
-            background: str,
-            widget_background: str,
-            text: str,
-            header_text: str,
-            border: str,
+        self,
+        background: str,
+        widget_background: str,
+        text: str,
+        header_text: str,
+        border: str,
     ):
         """
         Sets theme from given color strings.  Currently the only accepted format for color strings is rgb(red,green,blue), but I'm going to add more at some point.
@@ -540,7 +540,8 @@ class DPFGUI:
 
         self.mainWindow.setStyleSheet("QWidget#" + self.mainWindow.objectName() + "{" + src.data_helpers.make_stylesheet_string("background", slightly_darker_color) + src.data_helpers.make_stylesheet_string("color", self.textColor) + "}")
         self.mainWindow.menuBar().setStyleSheet(
-            "QWidget#" + self.mainWindow.menuBar().objectName() + "{" + src.data_helpers.make_stylesheet_string("background", slightly_darker_color) + src.data_helpers.make_stylesheet_string("color", self.textColor) + "}")
+            "QWidget#" + self.mainWindow.menuBar().objectName() + "{" + src.data_helpers.make_stylesheet_string("background", slightly_darker_color) + src.data_helpers.make_stylesheet_string("color", self.textColor) + "}"
+        )
 
         self.tabHolderWidget.setStyleSheet("QWidget#" + self.tabHolderWidget.objectName() + "{" + src.data_helpers.make_stylesheet_string("background", self.backgroundColor) + src.data_helpers.make_stylesheet_string("color", self.textColor) + "}")
         self.tabHolderWidget.tabBar().setStyleSheet(
@@ -553,28 +554,28 @@ class DPFGUI:
             newBorderColor = "rgb(50,50,50)"
 
             stylesheet_string = (
-                    "QTabWidget::pane { border: 1px solid "
-                    + newBorderColor
-                    + ";}"
-                    + "QTabWidget::tab-bar {left: 0px; }"
-                    + "QTabBar::tab {background: "
-                    + darkerBackground
-                    + "; color: "
-                    + self.textColor
-                    + ";border: 1px solid "
-                    + newBorderColor
-                    + ";border-bottom-color: "
-                    + darkerDarkerBorder
-                    + "; border-top-left-radius: 2px;border-top-right-radius: 2px;min-width: 8ex;padding: 4px;}"
-                    + "QTabBar::tab:selected, QTabBar::tab:hover {background: "
-                    + darkerBackground
-                    + "}"
-                    + "QTabBar::tab:selected {border-color: "
-                    + newBorderColor
-                    + ";border-bottom-color: "
-                    + darkerDarkerBorder
-                    + "; }"
-                    + "QTabBar::tab:!selected {margin-top: 2px;}"
+                "QTabWidget::pane { border: 1px solid "
+                + newBorderColor
+                + ";}"
+                + "QTabWidget::tab-bar {left: 0px; }"
+                + "QTabBar::tab {background: "
+                + darkerBackground
+                + "; color: "
+                + self.textColor
+                + ";border: 1px solid "
+                + newBorderColor
+                + ";border-bottom-color: "
+                + darkerDarkerBorder
+                + "; border-top-left-radius: 2px;border-top-right-radius: 2px;min-width: 8ex;padding: 4px;}"
+                + "QTabBar::tab:selected, QTabBar::tab:hover {background: "
+                + darkerBackground
+                + "}"
+                + "QTabBar::tab:selected {border-color: "
+                + newBorderColor
+                + ";border-bottom-color: "
+                + darkerDarkerBorder
+                + "; }"
+                + "QTabBar::tab:!selected {margin-top: 2px;}"
             )
 
             self.tabHolderWidget.setStyleSheet(stylesheet_string)
@@ -611,7 +612,13 @@ class DPFGUI:
 
         self.callbackFunctions[target].append(callback)
 
-    def addModule(self, interface_name: str, interface_class: type(ThreadedModuleCore), enabled=True, hide_toggle=False, ):
+    def addModule(
+        self,
+        interface_name: str,
+        interface_class: type(ThreadedModuleCore),
+        enabled=True,
+        hide_toggle=False,
+    ):
         try:
             start_time = time.time()
 

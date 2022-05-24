@@ -51,24 +51,16 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         self.add(QPushButton(text="Refresh data"), onClick=self.refreshData)
 
         self.offloadTableWidget = QTableWidget()
-        self.offloadTableWidget.setSelectionMode(
-            QTableWidget.SelectionMode.SingleSelection
-        )
-        self.offloadTableWidget.setSelectionBehavior(
-            QTableWidget.SelectionBehavior.SelectRows
-        )
+        self.offloadTableWidget.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
+        self.offloadTableWidget.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.offloadTableWidget.setMinimumWidth(450)
         self.offloadTableWidget.setMinimumHeight(600)
         self.offloadTableWidget.setColumnCount(3)
         self.offloadTableWidget.setColumnWidth(0, 160)
         self.offloadTableWidget.setColumnWidth(1, 100)
         self.offloadTableWidget.setColumnWidth(2, 90)
-        self.offloadTableWidget.setHorizontalHeaderLabels(
-            ["Date", "Duration", "Launched"]
-        )
-        self.offloadTableWidget.setEditTriggers(
-            QAbstractItemView.EditTrigger.NoEditTriggers
-        )
+        self.offloadTableWidget.setHorizontalHeaderLabels(["Date", "Duration", "Launched"])
+        self.offloadTableWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         layout.addWidget(self.offloadTableWidget)
 
         self.recreate_table("")
@@ -79,9 +71,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         tempLayout.addWidget(self.offloadNameEntry)
         layout.addItem(tempLayout)
 
-        self.add(
-            QPushButton(text="Download selected flight"), onClick=self.onOffloadSelect
-        )
+        self.add(QPushButton(text="Download selected flight"), onClick=self.onOffloadSelect)
 
         self.addSourceKey(
             "flights_list",
@@ -123,9 +113,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
     def recreate_table(self, offload_help_string):
         flight_array = self.parseOffloadHelp(offload_help_string)
         if len(flight_array) > 0:
-            self.offloadTableWidget.setRowCount(
-                max(map(lambda row: int(row[0]), flight_array))
-            )
+            self.offloadTableWidget.setRowCount(max(map(lambda row: int(row[0]), flight_array)))
         else:
             self.offloadTableWidget.setRowCount(1)
         for i in range(len(flight_array)):
@@ -139,9 +127,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
             for j in range(3):
                 item = self.offloadTableWidget.item(row_num, j)
                 if item is not None:
-                    item.setTextAlignment(
-                        QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter
-                    )
+                    item.setTextAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
 
     def add(self, widget, layout=None, onClick=None):
         if layout is None:
@@ -167,14 +153,10 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
     def onOffloadSelect(self):
         index = self.getIndexFrom(self.offloadTableWidget)
         name = self.offloadNameEntry.text()
-        self.runPythonAvionicsCommand(
-            "offload --flight_name={0} --flight_num={1}".format(name, index + 1)
-        )
+        self.runPythonAvionicsCommand("offload --flight_name={0} --flight_num={1}".format(name, index + 1))
 
     def onPostProcessSelect(self):
-        print(
-            "Post process index " + str(self.getIndexFrom(self.downloadedFlightsWidget))
-        )
+        print("Post process index " + str(self.getIndexFrom(self.downloadedFlightsWidget)))
 
     def onGraphSelect(self):
         print("Graph index " + str(self.getIndexFrom(self.downloadedFlightsWidget)))
@@ -189,45 +171,17 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
             self.recreate_table(flight_list_str)
             self.refreshTheme()
 
-    def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
-    ):
-        background_color_string = get_well_formatted_rgb_string(
-            widget_background_string.split(":")[1].strip()
-        )
-        text_color_string = get_well_formatted_rgb_string(
-            text_string.split(":")[1].strip()
-        )
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        background_color_string = get_well_formatted_rgb_string(widget_background_string.split(":")[1].strip())
+        text_color_string = get_well_formatted_rgb_string(text_string.split(":")[1].strip())
 
-        header_section_string = (
-            "QHeaderView::section { background-color:"
-            + background_color_string
-            + "; color:"
-            + text_color_string
-            + ";} "
-        )
-        corner_section_string = (
-            "QTableCornerButton::section {background-color: "
-            + background_color_string
-            + "; }"
-        )
+        header_section_string = "QHeaderView::section { background-color:" + background_color_string + "; color:" + text_color_string + ";} "
+        corner_section_string = "QTableCornerButton::section {background-color: " + background_color_string + "; }"
 
-        self.setStyleSheet(
-            "QWidget#"
-            + self.objectName()
-            + " {"
-            + border_string
-            + widget_background_string
-            + text_string
-            + "}"
-        )
+        self.setStyleSheet("QWidget#" + self.objectName() + " {" + border_string + widget_background_string + text_string + "}")
         self.titleBox.setStyleSheet(widget_background_string + header_text_string)
-        self.offloadTableWidget.setStyleSheet(
-            header_section_string + " " + corner_section_string
-        )
-        self.offloadNameEntry.setStyleSheet(
-            widget_background_string + text_string + border_string
-        )
+        self.offloadTableWidget.setStyleSheet(header_section_string + " " + corner_section_string)
+        self.offloadNameEntry.setStyleSheet(widget_background_string + text_string + border_string)
 
         for i in range(self.offloadTableWidget.rowCount()):
             for j in range(self.offloadTableWidget.columnCount()):
@@ -243,10 +197,6 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         # Filter for lines that start with | and split by return characters
         cli_str = list(filter(lambda line: line.startswith("|"), cli_str.splitlines()))
         # And only return ones with a numeric flight number
-        twoDarray = [
-            list(map(lambda s: s.strip(), line.split("|")[1:-1]))
-            for line in cli_str
-            if line.split("|")[1].strip().isnumeric()
-        ]
+        twoDarray = [list(map(lambda s: s.strip(), line.split("|")[1:-1])) for line in cli_str if line.split("|")[1].strip().isnumeric()]
 
         return twoDarray

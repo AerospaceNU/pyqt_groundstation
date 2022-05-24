@@ -19,15 +19,11 @@ from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
 BACKGROUND_COLOR = (255, 144, 30)  # BGR for OpenCV
 
-EXTRA_POSITION_SOURCES = {
-    "egg_finder": [Constants.egg_finder_latitude, Constants.egg_finder_longitude]
-}
+EXTRA_POSITION_SOURCES = {"egg_finder": [Constants.egg_finder_latitude, Constants.egg_finder_longitude]}
 
 
 class MapWidget(CustomQWidgetBase):
-    def __init__(
-        self, parent_widget: QWidget = None, points_to_keep=200, update_interval=3
-    ):
+    def __init__(self, parent_widget: QWidget = None, points_to_keep=200, update_interval=3):
         super().__init__(parent_widget)
         if parent_widget is not None:
             self.setMinimumSize(500, 500)
@@ -115,37 +111,26 @@ class MapWidget(CustomQWidgetBase):
             )
 
     def updateData(self, vehicle_data, updated_data):
-        heading = float(
-            get_value_from_dictionary(vehicle_data, Constants.yaw_position_key, 0)
-        )
+        heading = float(get_value_from_dictionary(vehicle_data, Constants.yaw_position_key, 0))
         gs_lat = self.getValueIfUpdatedUsingSourceKey("groundstation_lat")
         gs_lon = self.getValueIfUpdatedUsingSourceKey("groundstation_lon")
         latitude = self.getDictValueUsingSourceKey("vehicle_lat")
         longitude = self.getDictValueUsingSourceKey("vehicle_lon")
 
-        if (
-            Constants.map_tile_manager_key in vehicle_data
-            and self.map_tile_manager is None
-        ):
+        if Constants.map_tile_manager_key in vehicle_data and self.map_tile_manager is None:
             self.map_tile_manager = vehicle_data[Constants.map_tile_manager_key]
 
-        if (
-            gs_lat != 0 and gs_lon != 0
-        ):  # Only update the ground station positions when we actually get new data
+        if gs_lat != 0 and gs_lon != 0:  # Only update the ground station positions when we actually get new data
             self.use_ground_station_position = True
             self.gs_lat = gs_lat
             self.gs_lon = gs_lon
             self.datum = [gs_lat, gs_lon]
             self.has_datum = True
 
-        if (
-            latitude != 0 and longitude != 0 and self.use_ground_station_position
-        ):  # If we have rocket lat-lon and gs lat-lon, use that
+        if latitude != 0 and longitude != 0 and self.use_ground_station_position:  # If we have rocket lat-lon and gs lat-lon, use that
             ned = navpy.lla2ned(latitude, longitude, 0, self.gs_lat, self.gs_lon, 0)
             self.map_draw_widget.setXY(ned[1], ned[0])
-        elif (
-            latitude != 0 and longitude != 0
-        ):  # If not, use the first rocket position as the datum
+        elif latitude != 0 and longitude != 0:  # If not, use the first rocket position as the datum
             if not self.has_datum:
                 self.datum = [latitude, longitude]
                 self.has_datum = True
@@ -170,18 +155,11 @@ class MapWidget(CustomQWidgetBase):
         if len(self.datum) == 0:  # Can't draw a map if we don't know our lat and lon
             return
 
-        if (
-            time.time() > self.last_image_request_time + 5
-            and self.map_tile_manager is not None
-        ):  # Do we need a new map?
+        if time.time() > self.last_image_request_time + 5 and self.map_tile_manager is not None:  # Do we need a new map?
             self.last_image_request_time = time.time()
 
-            lower_left_coordinates = self.map_draw_widget.drawLocationToPoint(
-                0, self.map_draw_widget.height()
-            )
-            upper_right_coordinates = self.map_draw_widget.drawLocationToPoint(
-                self.map_draw_widget.width(), 0
-            )
+            lower_left_coordinates = self.map_draw_widget.drawLocationToPoint(0, self.map_draw_widget.height())
+            upper_right_coordinates = self.map_draw_widget.drawLocationToPoint(self.map_draw_widget.width(), 0)
 
             lower_left_ned = [lower_left_coordinates[1], lower_left_coordinates[0], 0]
             upper_right_ned = [
@@ -190,28 +168,18 @@ class MapWidget(CustomQWidgetBase):
                 0,
             ]
 
-            lower_left_lla = navpy.ned2lla(
-                lower_left_ned, self.datum[0], self.datum[1], 0
-            )
-            upper_right_lla = navpy.ned2lla(
-                upper_right_ned, self.datum[0], self.datum[1], 0
-            )
+            lower_left_lla = navpy.ned2lla(lower_left_ned, self.datum[0], self.datum[1], 0)
+            upper_right_lla = navpy.ned2lla(upper_right_ned, self.datum[0], self.datum[1], 0)
 
-            self.map_tile_manager.request_new_tile(
-                lower_left_lla, upper_right_lla, self.width()
-            )
+            self.map_tile_manager.request_new_tile(lower_left_lla, upper_right_lla, self.width())
 
-        if (
-            self.map_tile_manager is not None and self.map_tile_manager.hasNewMap()
-        ):  # Check for and get new map if it exists
+        if self.map_tile_manager is not None and self.map_tile_manager.hasNewMap():  # Check for and get new map if it exists
             map_tile = self.map_tile_manager.getLastTile()
 
             lower_left_lla = map_tile.lower_left
             upper_right_lla = map_tile.upper_right
 
-            lower_left_coordinates = navpy.lla2ned(
-                lower_left_lla[0], lower_left_lla[1], 0, self.datum[0], self.datum[1], 0
-            )
+            lower_left_coordinates = navpy.lla2ned(lower_left_lla[0], lower_left_lla[1], 0, self.datum[0], self.datum[1], 0)
             upper_right_coordinates = navpy.lla2ned(
                 upper_right_lla[0],
                 upper_right_lla[1],
@@ -224,20 +192,12 @@ class MapWidget(CustomQWidgetBase):
             lower_left_enu = [lower_left_coordinates[1], lower_left_coordinates[0]]
             upper_right_enu = [upper_right_coordinates[1], upper_right_coordinates[0]]
 
-            self.map_background_widget.setMapBackground(
-                map_tile.map_image, lower_left_enu, upper_right_enu
-            )
+            self.map_background_widget.setMapBackground(map_tile.map_image, lower_left_enu, upper_right_enu)
             self.map_draw_widget.setOpaqueBackground(False)
 
-        map_window_lower_left = self.map_draw_widget.drawLocationToPoint(
-            0, self.map_draw_widget.height()
-        )
-        map_window_upper_right = self.map_draw_widget.drawLocationToPoint(
-            self.map_draw_widget.width(), 0
-        )
-        self.map_background_widget.updateBoundCoordinatesMeters(
-            map_window_lower_left, map_window_upper_right
-        )
+        map_window_lower_left = self.map_draw_widget.drawLocationToPoint(0, self.map_draw_widget.height())
+        map_window_upper_right = self.map_draw_widget.drawLocationToPoint(self.map_draw_widget.width(), 0)
+        self.map_background_widget.updateBoundCoordinatesMeters(map_window_lower_left, map_window_upper_right)
 
     def clearMap(self):
         self.map_draw_widget.clearMap()
@@ -291,9 +251,7 @@ class MapImageBackground(QLabel):
 
         self.initial_draw_passes = 0
 
-    def updateBoundCoordinatesMeters(
-        self, bottom_left, upper_right, update_background=True
-    ):
+    def updateBoundCoordinatesMeters(self, bottom_left, upper_right, update_background=True):
         self.window_bottom_left = bottom_left
         self.window_top_right = upper_right
 
@@ -306,13 +264,7 @@ class MapImageBackground(QLabel):
         win_ur_same = self.last_window_ur == self.window_top_right
         win_bl_same = self.last_window_bl == self.window_bottom_left
 
-        is_map_same = (
-            map_ur_same
-            and map_bl_same
-            and win_ur_same
-            and win_bl_same
-            and not self.has_new_map_image
-        )
+        is_map_same = map_ur_same and map_bl_same and win_ur_same and win_bl_same and not self.has_new_map_image
 
         self.has_new_map_image = False
         self.last_map_ur = self.map_image_top_right
@@ -323,9 +275,7 @@ class MapImageBackground(QLabel):
         return is_map_same
 
     def updateImage(self):
-        if (
-            self.initial_draw_passes < 2
-        ):  # We need to draw the map twice the first time for some reason
+        if self.initial_draw_passes < 2:  # We need to draw the map twice the first time for some reason
             self.initial_draw_passes += 1
         elif self.isMapSameAsLast():
             return
@@ -512,12 +462,8 @@ class MapDrawWidget(QWidget):
         scroll_distance = -event.angleDelta().y()
         delta_meters = (self.max_axis_value - self.min_axis_value) / 10
 
-        self.min_axis_value = min(
-            self.min_axis_value - (delta_meters * scroll_distance / 120.0), -10
-        )  # 120 is a magic number based on how far the mouse goes
-        self.max_axis_value = max(
-            self.max_axis_value + (delta_meters * scroll_distance / 120.0), 10
-        )
+        self.min_axis_value = min(self.min_axis_value - (delta_meters * scroll_distance / 120.0), -10)  # 120 is a magic number based on how far the mouse goes
+        self.max_axis_value = max(self.max_axis_value + (delta_meters * scroll_distance / 120.0), 10)
 
     def mousePressEvent(self, e: QMouseEvent):
         """Determines if we clicked on a widget"""
@@ -537,12 +483,8 @@ class MapDrawWidget(QWidget):
         meters_per_pixel = (self.max_axis_value - self.min_axis_value) / self.height()
 
         if self.isClicked:
-            self.origin_offset_meters[0] += (
-                e.screenPos().x() - self.activeOffset[0]
-            ) * meters_per_pixel
-            self.origin_offset_meters[1] -= (
-                e.screenPos().y() - self.activeOffset[1]
-            ) * meters_per_pixel
+            self.origin_offset_meters[0] += (e.screenPos().x() - self.activeOffset[0]) * meters_per_pixel
+            self.origin_offset_meters[1] -= (e.screenPos().y() - self.activeOffset[1]) * meters_per_pixel
             self.activeOffset = [e.screenPos().x(), e.screenPos().y()]
 
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent) -> None:
@@ -584,9 +526,7 @@ class MapDrawWidget(QWidget):
         # Draw current positions
 
         for position in self.position_dict:
-            [xPos, yPos] = self.pointToDrawLocation(
-                self.position_dict[position][0], self.position_dict[position][1]
-            )
+            [xPos, yPos] = self.pointToDrawLocation(self.position_dict[position][0], self.position_dict[position][1])
 
             if len(self.oldPoints) > 0 and position == "default":
                 painter.setPen(QPen(QColor(10, 10, 10), 1, Qt.SolidLine))
@@ -708,9 +648,7 @@ class MapDrawWidget(QWidget):
         # Get distance to last point in history
         if len(self.oldPoints) > 0:
             last_point_in_list = self.oldPoints[0]
-            distance = distance_between_points(
-                x, y, last_point_in_list[0], last_point_in_list[1]
-            )
+            distance = distance_between_points(x, y, last_point_in_list[0], last_point_in_list[1])
         else:
             distance = 0
 
@@ -720,13 +658,8 @@ class MapDrawWidget(QWidget):
         if len(self.oldPoints) == 0:
             self.oldPoints = [[x, y]]
         else:
-            if (
-                time.time() > self.lastPointTime + self.newPointInterval
-                or distance > self.newPointSpacing
-            ):
-                self.oldPoints = [
-                    [x, y]
-                ] + self.oldPoints  # [:self.pointsToKeep] We keep all the points now
+            if time.time() > self.lastPointTime + self.newPointInterval or distance > self.newPointSpacing:
+                self.oldPoints = [[x, y]] + self.oldPoints  # [:self.pointsToKeep] We keep all the points now
                 self.lastPointTime = time.time()
 
         # Figure out how many decimals to use on the axis scales

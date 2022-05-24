@@ -28,9 +28,7 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
         self.state_text_box = QLabel()
         self.state_data_box = QLabel()
         self.light_text_box = QLabel()
-        self.light_data_graph = sideways_bar_graph.SidewaysBarGraph(
-            min_value=0, max_value=1023, mid_value=-1
-        )
+        self.light_data_graph = sideways_bar_graph.SidewaysBarGraph(min_value=0, max_value=1023, mid_value=-1)
         self.cut_1_label = QLabel()
         self.cut_2_label = QLabel()
         self.cut_1_box = QLabel()
@@ -97,9 +95,7 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
             self.callbackEvents.append(
                 [
                     Constants.cli_interface_key,
-                    '--linecutter -i {0} -c "!cut {1}"'.format(
-                        self.active_line_cutter, button_number
-                    ),
+                    '--linecutter -i {0} -c "!cut {1}"'.format(self.active_line_cutter, button_number),
                 ]
             )  # Replace this with whatever fire command you want
         self.setCutterEnabledOrDisabled(False)
@@ -165,35 +161,17 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
             return
         self.active_line_cutter = int(current_line_cutter[-1])
 
-        state_key = Constants.makeLineCutterString(
-            self.active_line_cutter, Constants.line_cutter_state_key
-        )
-        light_key = Constants.makeLineCutterString(
-            self.active_line_cutter, Constants.photoresistor_key
-        )
-        light_threshold_key = Constants.makeLineCutterString(
-            self.active_line_cutter, Constants.photoresistor_threshold_key
-        )
-        cut_1_key = Constants.makeLineCutterString(
-            self.active_line_cutter, Constants.line_cutter_cut_1
-        )
-        cut_2_key = Constants.makeLineCutterString(
-            self.active_line_cutter, Constants.line_cutter_cut_2
-        )
+        state_key = Constants.makeLineCutterString(self.active_line_cutter, Constants.line_cutter_state_key)
+        light_key = Constants.makeLineCutterString(self.active_line_cutter, Constants.photoresistor_key)
+        light_threshold_key = Constants.makeLineCutterString(self.active_line_cutter, Constants.photoresistor_threshold_key)
+        cut_1_key = Constants.makeLineCutterString(self.active_line_cutter, Constants.line_cutter_cut_1)
+        cut_2_key = Constants.makeLineCutterString(self.active_line_cutter, Constants.line_cutter_cut_2)
 
         state_num = int(get_value_from_dictionary(vehicle_data, state_key, -1))
         light = int(get_value_from_dictionary(vehicle_data, light_key, -1))
-        light_threshold = int(
-            get_value_from_dictionary(vehicle_data, light_threshold_key, -1)
-        )
-        cut_1 = (
-            str(get_value_from_dictionary(vehicle_data, cut_1_key, "false")).lower()
-            == "true"
-        )
-        cut_2 = (
-            str(get_value_from_dictionary(vehicle_data, cut_2_key, "false")).lower()
-            == "true"
-        )
+        light_threshold = int(get_value_from_dictionary(vehicle_data, light_threshold_key, -1))
+        cut_1 = str(get_value_from_dictionary(vehicle_data, cut_1_key, "false")).lower() == "true"
+        cut_2 = str(get_value_from_dictionary(vehicle_data, cut_2_key, "false")).lower() == "true"
 
         if 0 <= state_num < len(STATES):
             state_text = STATES[state_num]
@@ -220,9 +198,7 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
 
         self.update()
 
-    def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
-    ):
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         self.select_box.setStyleSheet(widget_background_string + text_string)
         self.state_text_box.setStyleSheet(widget_background_string + text_string)
         self.state_data_box.setStyleSheet(widget_background_string + text_string)

@@ -23,21 +23,11 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.v_speed_box = QLabel()
         self.acceleration_box = QLabel()
 
-        self.fcb_battery_graph = simple_bar_graph_widget.SimpleBarGraphWidget(
-            title="FCB Batt", minValue=11.1, maxValue=12.6
-        )
-        self.prop_battery_graph = simple_bar_graph_widget.SimpleBarGraphWidget(
-            title="Prop Batt", minValue=0, maxValue=10
-        )
-        self.line_cutter_batt_1_graph = simple_bar_graph_widget.SimpleBarGraphWidget(
-            title="LC1 Batt", minValue=3.7, maxValue=4.2
-        )
-        self.line_cutter_batt_2_graph = simple_bar_graph_widget.SimpleBarGraphWidget(
-            title="LC2 Batt", minValue=3.7, maxValue=4.2
-        )
-        self.fcb_memory_graph = simple_bar_graph_widget.SimpleBarGraphWidget(
-            title="FCB Mem", minValue=0, maxValue=1, barColor="rgb(255,0,0)"
-        )
+        self.fcb_battery_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="FCB Batt", minValue=11.1, maxValue=12.6)
+        self.prop_battery_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="Prop Batt", minValue=0, maxValue=10)
+        self.line_cutter_batt_1_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="LC1 Batt", minValue=3.7, maxValue=4.2)
+        self.line_cutter_batt_2_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="LC2 Batt", minValue=3.7, maxValue=4.2)
+        self.fcb_memory_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="FCB Mem", minValue=0, maxValue=1, barColor="rgb(255,0,0)")
 
         layout = QGridLayout()
         layout.addWidget(self.statusBox, 1, 1, 4, 1)
@@ -60,24 +50,12 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.font = None
         self.fontSize = None
 
-        self.addSourceKey(
-            "status_source", int, Constants.status_source, 3, hide_in_drop_down=True
-        )
-        self.addSourceKey(
-            "fcb_state", str, Constants.fcb_state_key, "No Data", hide_in_drop_down=True
-        )
-        self.addSourceKey(
-            "altitude", float, Constants.altitude_key, -1, hide_in_drop_down=True
-        )
-        self.addSourceKey(
-            "rssi", str, Constants.rssi_key, "No Data", hide_in_drop_down=True
-        )
-        self.addSourceKey(
-            "message_age", float, Constants.message_age_key, -1, hide_in_drop_down=True
-        )
-        self.addSourceKey(
-            "v_speed", float, Constants.vertical_speed_key, -1, hide_in_drop_down=True
-        )
+        self.addSourceKey("status_source", int, Constants.status_source, 3, hide_in_drop_down=True)
+        self.addSourceKey("fcb_state", str, Constants.fcb_state_key, "No Data", hide_in_drop_down=True)
+        self.addSourceKey("altitude", float, Constants.altitude_key, -1, hide_in_drop_down=True)
+        self.addSourceKey("rssi", str, Constants.rssi_key, "No Data", hide_in_drop_down=True)
+        self.addSourceKey("message_age", float, Constants.message_age_key, -1, hide_in_drop_down=True)
+        self.addSourceKey("v_speed", float, Constants.vertical_speed_key, -1, hide_in_drop_down=True)
         self.addSourceKey(
             "acceleration",
             float,
@@ -113,9 +91,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
             -1,
             hide_in_drop_down=False,
         )
-        self.addSourceKey(
-            "fcb_mem", float, Constants.fcb_memory_usage, -1, hide_in_drop_down=True
-        )
+        self.addSourceKey("fcb_mem", float, Constants.fcb_memory_usage, -1, hide_in_drop_down=True)
 
         self.statusBox.setFont(QFont("Monospace", self.widgetSize))
         self.statusBox.setAlignment(QtCore.Qt.AlignCenter)
@@ -174,12 +150,8 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.modeBox.setText("Alt: {} m".format(round_to_string(altitude, 6)))
         self.rssi_box.setText("RSSI: {}".format(rssi))
         self.message_age_box.setText("Message age: {} s".format(message_age))
-        self.v_speed_box.setText(
-            "Vertical Speed: {} m/s".format(round_to_string(v_speed, 6))
-        )
-        self.acceleration_box.setText(
-            "Acceleration: {} m/s^2".format(round_to_string(acceleration, 6))
-        )
+        self.v_speed_box.setText("Vertical Speed: {} m/s".format(round_to_string(v_speed, 6)))
+        self.acceleration_box.setText("Acceleration: {} m/s^2".format(round_to_string(acceleration, 6)))
 
         self.fcb_battery_graph.fixWidth(0.7)
         self.prop_battery_graph.fixWidth(0.7)
@@ -193,9 +165,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.line_cutter_batt_2_graph.setValue(lc2_voltage)
         self.fcb_memory_graph.setValue(fcb_mem)
 
-    def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
-    ):
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         self.modeBox.setStyleSheet(text_string)
         self.rssi_box.setStyleSheet(text_string)
         self.message_age_box.setStyleSheet(text_string)

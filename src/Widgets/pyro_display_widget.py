@@ -38,9 +38,7 @@ class PyroWidget(CustomQWidgetBase):
             self.titleWidgets.append(titleLabel)
 
             self.annunciatorWidgets.append(QLabel())
-            self.annunciatorWidgets[-1].setAlignment(
-                QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter
-            )
+            self.annunciatorWidgets[-1].setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
             self.annunciatorWidgets[-1].setMaximumWidth(width)
             self.annunciatorWidgets[-1].setMaximumHeight(height)
             self.annunciatorWidgets[-1].setMinimumHeight(height)
@@ -50,9 +48,7 @@ class PyroWidget(CustomQWidgetBase):
         self.setLayout(layout)
 
     def updateData(self, vehicle_data, updated_data):
-        pyro_cont_list = get_value_from_dictionary(
-            vehicle_data, Constants.pyro_continuity, []
-        )
+        pyro_cont_list = get_value_from_dictionary(vehicle_data, Constants.pyro_continuity, [])
 
         for i in range(len(pyro_cont_list)):
             pyro = pyro_cont_list[i]
@@ -66,34 +62,18 @@ class PyroWidget(CustomQWidgetBase):
             self.annunciatorWidgets[i].setToolTipDuration(5000)
 
             if pyro:
-                self.annunciatorWidgets[i].setStyleSheet(
-                    "background: green; color: black"
-                )
+                self.annunciatorWidgets[i].setStyleSheet("background: green; color: black")
             else:
-                self.annunciatorWidgets[i].setStyleSheet(
-                    "background: red; color: black"
-                )
+                self.annunciatorWidgets[i].setStyleSheet("background: red; color: black")
 
-        if (
-            self.width() < self.annunciatorWidgets[0].width() * 2
-        ):  # Kind of a hack to force it to adjust properly when we have data
+        if self.width() < self.annunciatorWidgets[0].width() * 2:  # Kind of a hack to force it to adjust properly when we have data
             self.setMaximumWidth(1000)
         self.adjustSize()
         self.setMaximumWidth(self.width())
         self.setMaximumHeight(self.height())
 
-    def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
-    ):
-        self.setStyleSheet(
-            "QWidget#"
-            + self.objectName()
-            + " {"
-            + widget_background_string
-            + text_string
-            + border_string
-            + "}"
-        )
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        self.setStyleSheet("QWidget#" + self.objectName() + " {" + widget_background_string + text_string + border_string + "}")
         self.titleWidget.setStyleSheet(widget_background_string + header_text_string)
 
         for widget in self.titleWidgets:

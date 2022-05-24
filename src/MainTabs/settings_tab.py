@@ -15,9 +15,7 @@ class SettingsTab(TabCommon):
     def __init__(self, tab_name, parent=None):
         super().__init__(tab_name, parent=parent)
 
-        self.ControlStationData = self.addWidget(
-            control_station_status.ControlStationStatus(self)
-        )
+        self.ControlStationData = self.addWidget(control_station_status.ControlStationStatus(self))
         self.ControlStationData.setMinimumSize(400, 150)
 
         self.addWidget(LocalSimWidget(self))

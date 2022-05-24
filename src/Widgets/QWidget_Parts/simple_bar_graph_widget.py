@@ -40,9 +40,7 @@ class SimpleBarGraphWidget(QLabel):
         self.maxValue = maxValue
 
         if barColor is not None:
-            [red, green, blue] = [
-                int(float(i)) for i in barColor.split("(")[1].split(")")[0].split(",")
-            ]
+            [red, green, blue] = [int(float(i)) for i in barColor.split("(")[1].split(")")[0].split(",")]
             self.barColor = QColor(red, green, blue)
         else:
             self.barColor = QColor(50, 50, 255)
@@ -73,9 +71,7 @@ class SimpleBarGraphWidget(QLabel):
 
         valueText = str(self.value)[0:6]
 
-        painter.drawText(
-            QRect(0, padding, self.width(), fontHeight), Qt.AlignCenter, self.title
-        )
+        painter.drawText(QRect(0, padding, self.width(), fontHeight), Qt.AlignCenter, self.title)
         painter.drawText(
             QRect(0, self.height() - fontHeight - padding, self.width(), fontHeight),
             Qt.AlignCenter,
@@ -100,9 +96,7 @@ class SimpleBarGraphWidget(QLabel):
 
         barHeight = int(
             clamp(
-                interpolate(
-                    self.value, self.minValue, self.maxValue, 0, rectangleHeight
-                ),
+                interpolate(self.value, self.minValue, self.maxValue, 0, rectangleHeight),
                 0,
                 rectangleHeight,
             )
@@ -114,9 +108,7 @@ class SimpleBarGraphWidget(QLabel):
 
     def setTextColor(self, textColor: str):
         if "rgb" in textColor:
-            [red, green, blue] = [
-                int(float(i)) for i in textColor.split("(")[1].split(")")[0].split(",")
-            ]
+            [red, green, blue] = [int(float(i)) for i in textColor.split("(")[1].split(")")[0].split(",")]
             self.textColor = QColor(red, green, blue)
         else:
             self.textColor = QColor(textColor)
@@ -142,7 +134,5 @@ class SimpleBarGraphWidget(QLabel):
         return str(self.maxValue)
 
     def getColor(self):
-        colorString = "rgb({0},{1},{2})".format(
-            self.barColor.red(), self.barColor.green(), self.barColor.blue()
-        )
+        colorString = "rgb({0},{1},{2})".format(self.barColor.red(), self.barColor.green(), self.barColor.blue())
         return colorString

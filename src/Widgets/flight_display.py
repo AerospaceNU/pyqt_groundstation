@@ -85,25 +85,15 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.TerrainTextBox = QLabel()
 
         self.HUDWidget = attitude_display_widget.AttitudeDisplayWidget()
-        self.AltitudeWidget = (
-            altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(
-                text_spacing=50, pixels_per_line=20, intermediate_lines=0
-            )
-        )
+        self.AltitudeWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(text_spacing=50, pixels_per_line=20, intermediate_lines=0)
         self.SpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(
             left_oriented=False,
             text_spacing=1,
             pixels_per_line=30,
             intermediate_lines=2,
         )
-        self.AccelerationWidget = v_speed_indicator_widget.VSpeedIndicatorWidget(
-            maxSpeed=self.accelerationScale, leftOriented=False
-        )
-        self.VSpeedWidget = (
-            altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(
-                text_spacing=10, pixels_per_line=20, intermediate_lines=0
-            )
-        )
+        self.AccelerationWidget = v_speed_indicator_widget.VSpeedIndicatorWidget(maxSpeed=self.accelerationScale, leftOriented=False)
+        self.VSpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(text_spacing=10, pixels_per_line=20, intermediate_lines=0)
 
         layout = QGridLayout()
         layout.addWidget(self.SpeedWidget, 1, 1)
@@ -178,9 +168,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
             state_text += "{0:<7s}{1:>5d}\n".format("roll:", int(roll))
             state_text += "{0:<7s}{1:>5d}\n".format("pitch:", int(pitch))
             state_text += "{0:<7s}{1:>5d}\n".format("yaw:", int(yaw))
-            state_text += "{0:<7s}{1:>5s}\n".format(
-                "depth:", round_to_string(altitude, 5)
-            )
+            state_text += "{0:<7s}{1:>5s}\n".format("depth:", round_to_string(altitude, 5))
             # state_text += "{0:<7s}{1:>5s}\n".format("x (e):", round_to_string(xPos, 5))
             # state_text += "{0:<7s}{1:>5s}\n".format("y (n):", round_to_string(yPos, 5))
             self.StateTextBox.setText(state_text)
@@ -198,9 +186,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.update()
         self.adjustSize()
 
-    def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
-    ):
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         self.SpeedTextBox.setStyleSheet(text_string)
         self.VSpeedTextBox.setStyleSheet(text_string)
         self.AltitudeTextBox.setStyleSheet(text_string)
@@ -212,12 +198,4 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
             self.StateTextBox.setStyleSheet(text_string)
             self.SetpointTextBox.setStyleSheet(text_string)
 
-        self.setStyleSheet(
-            "QWidget#"
-            + self.objectName()
-            + "{"
-            + "{0}{1}{2}{3}".format(
-                widget_background_string, text_string, header_text_string, border_string
-            )
-            + "}"
-        )
+        self.setStyleSheet("QWidget#" + self.objectName() + "{" + "{0}{1}{2}{3}".format(widget_background_string, text_string, header_text_string, border_string) + "}")

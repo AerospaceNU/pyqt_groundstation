@@ -40,12 +40,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
 
         self.raw_data_file = open("raw_data.txt", "a+")
         self.parsed_messages_file = open("parsed_messages.txt", "a+")
-        self.raw_data_file.write(
-            "\n\nRUN START {}\n\n".format(time.strftime("%Y-%m-%d %H:%M:%S"))
-        )
-        self.parsed_messages_file.write(
-            "\n\nRUN START {}\n\n".format(time.strftime("%Y-%m-%d %H:%M:%S"))
-        )
+        self.raw_data_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        self.parsed_messages_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
         self.serial_devices["Ground Station"] = self.changeActiveSerialPort
 
@@ -54,18 +50,12 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.radio_reconfigure_page = ReconfigurePage("Serial Ground Station Config")
         self.radio_reconfigure_page.addEnumOption("radio_types", "433 MHz", RADIO_433)
         self.radio_reconfigure_page.addEnumOption("radio_types", "915 MHz", RADIO_915)
-        self.radio_reconfigure_page.updateLine(
-            "Target Radio", "enum", "", "Which radio to use", "radio_types"
-        )
-        self.radio_reconfigure_page.updateLine(
-            "Radio Band", "int", description="Which radio band to use"
-        )
+        self.radio_reconfigure_page.updateLine("Target Radio", "enum", "", "Which radio to use", "radio_types")
+        self.radio_reconfigure_page.updateLine("Radio Band", "int", description="Which radio band to use")
         self.radio_reconfigure_page.bindCallback("Target Radio", self.onRadioSwitch)
         self.radio_reconfigure_page.bindCallback("Radio Band", self.onBandSwitch)
 
-        reconfigure_callbacks = self.radio_reconfigure_page.getCallbackFunctions(
-            Constants.primary_reconfigure
-        )
+        reconfigure_callbacks = self.radio_reconfigure_page.getCallbackFunctions(Constants.primary_reconfigure)
         for callback in reconfigure_callbacks:
             self.callbacks_to_add.append([callback, reconfigure_callbacks[callback]])
 
@@ -79,23 +69,17 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
 
     def cliCommand(self, data):
         self.cliConsole.manualAddEntry(data)
-        self.outgoing_serial_queue.append(
-            createCLICommandMessage(self.active_radio, data)
-        )
+        self.outgoing_serial_queue.append(createCLICommandMessage(self.active_radio, data))
 
     def onBandSwitch(self, data):
         try:
             data = int(data)
-            self.outgoing_serial_queue.append(
-                createRadioBandCommandMessage(0xFF, self.active_radio, data)
-            )
+            self.outgoing_serial_queue.append(createRadioBandCommandMessage(0xFF, self.active_radio, data))
             self.logToConsole("Switching to band {}".format(data), 1, True)
             self.active_radio_bands[self.active_radio] = data
             self.radio_reconfigure_page.updateLine("Radio Band", "int", data)
         except Exception as e:
-            self.logToConsole(
-                "Could not switch to band {0}: {1}".format(data, e), 1, True
-            )
+            self.logToConsole("Could not switch to band {0}: {1}".format(data, e), 1, True)
             print(e)
 
     def onRadioSwitch(self, data):
@@ -106,24 +90,16 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
 
         if data in RADIO_NAMES:
             self.active_radio = data
-            self.logToConsole(
-                "Switching to {} radio".format(RADIO_NAMES[data]), 1, True
-            )
-            self.radio_reconfigure_page.updateLine(
-                "Radio Band", "int", int(self.active_radio_bands[data])
-            )
+            self.logToConsole("Switching to {} radio".format(RADIO_NAMES[data]), 1, True)
+            self.radio_reconfigure_page.updateLine("Radio Band", "int", int(self.active_radio_bands[data]))
         else:
             self.logToConsole("Unknown radio id {}".format(data), 1)
 
     def spin(self):
         if self.nextCheckTime <= time.time():
-            self.logToConsole(
-                "Trying to connect to ground station on {}".format(self.serial_port), 0
-            )
+            self.logToConsole("Trying to connect to ground station on {}".format(self.serial_port), 0)
             try:
-                self.serial = serial.Serial(
-                    self.serial_port, self.baud_rate, timeout=0.01
-                )  # Set the serial port timeout really small, so we only get one message at a time
+                self.serial = serial.Serial(self.serial_port, self.baud_rate, timeout=0.01)  # Set the serial port timeout really small, so we only get one message at a time
                 self.connected = True
                 self.onRadioSwitch(self.active_radio)
                 self.onBandSwitch(0)
@@ -132,9 +108,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 self.serial.close()
             except IOError as e:
                 self.logToConsole(
-                    "Could not connect to ground station on port {}".format(
-                        self.serial_port
-                    ),
+                    "Could not connect to ground station on port {}".format(self.serial_port),
                     2,
                 )
                 # print(e)
@@ -153,9 +127,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 self.readData()
                 self.writeData()
                 self.updateEveryEnabledLoop()
-                if (
-                    time.time() - self.last_data_time > 5
-                ):  # Timeout checks on any data, not just good data
+                if time.time() - self.last_data_time > 5:  # Timeout checks on any data, not just good data
                     self.logToConsoleAndCheck(
                         "Ground station on port {} timed out".format(self.serial_port),
                         2,
@@ -183,21 +155,14 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 crc,
             ] = fcb_message_parsing.parse_fcb_message(raw_bytes)
 
-            if (
-                Constants.radio_id_key in dictionary
-                and dictionary[Constants.radio_id_key] != self.active_radio
-            ):  # Data coming in over the wrong radio
+            if Constants.radio_id_key in dictionary and dictionary[Constants.radio_id_key] != self.active_radio:  # Data coming in over the wrong radio
                 return
 
             if Constants.cli_string_key in dictionary:
-                self.cliConsole.autoAddEntry(
-                    dictionary[Constants.cli_string_key], from_remote=True
-                )
+                self.cliConsole.autoAddEntry(dictionary[Constants.cli_string_key], from_remote=True)
 
             if not success:
-                self.logToConsole(
-                    "Could not parse message: {0}".format(message_type), 1
-                )
+                self.logToConsole("Could not parse message: {0}".format(message_type), 1)
                 self.good_fcb_data = False
             elif not crc:
                 self.logToConsole("Bad CRC for {} message".format(message_type), 1)
@@ -212,9 +177,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 self.has_data = True
         except struct.error as e:
             self.logToConsole(
-                "Can't parse message (length: {2} bytes):\n{1}".format(
-                    raw_bytes, e, len(raw_bytes)
-                ),
+                "Can't parse message (length: {2} bytes):\n{1}".format(raw_bytes, e, len(raw_bytes)),
                 1,
             )
 
@@ -230,9 +193,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.serial.flushInput()
 
         if self.log_to_file:
-            self.raw_data_file.write(
-                "{0}: {1}\n".format(time.strftime("%H:%M:%S"), str(raw_bytes))
-            )
+            self.raw_data_file.write("{0}: {1}\n".format(time.strftime("%H:%M:%S"), str(raw_bytes)))
 
         self.last_data_time = time.time()
 
@@ -247,18 +208,12 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
     def updateEveryEnabledLoop(self):
         super(GroundStationDataInterface, self).updateEveryEnabledLoop()
 
-        self.reconfigure_options_dictionary[
-            self.radio_reconfigure_page.getPageName()
-        ] = self.radio_reconfigure_page.getDataStructure()
+        self.reconfigure_options_dictionary[self.radio_reconfigure_page.getPageName()] = self.radio_reconfigure_page.getDataStructure()
         self.data_dictionary[Constants.cli_interface_key] = self.cliConsole.getList()
 
     def logMessageToFile(self, message_type, parsed_message):
         if self.log_to_file:
-            self.parsed_messages_file.write(
-                "{0}: {1} {2}\n".format(
-                    time.strftime("%H:%M:%S"), message_type, str(parsed_message)
-                )
-            )
+            self.parsed_messages_file.write("{0}: {1} {2}\n".format(time.strftime("%H:%M:%S"), message_type, str(parsed_message)))
 
     def closeOut(self):
         self.raw_data_file.close()

@@ -60,9 +60,7 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
         self.client_sock_list = []
 
         self.connection_thread = threading.Thread(target=self.advertise_bluetooth)
-        self.connection_thread.setDaemon(
-            True
-        )  # Means the thread dies when the main thread exits
+        self.connection_thread.setDaemon(True)  # Means the thread dies when the main thread exits
         self.connection_thread.start()
 
     def spin(self):
@@ -71,24 +69,14 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
         """
 
         try:
-            latitude = get_value_from_dictionary(
-                self.gui_full_data_dictionary, Constants.latitude_key, 0
-            )
-            longitude = get_value_from_dictionary(
-                self.gui_full_data_dictionary, Constants.longitude_key, 0
-            )
-            altitude = get_value_from_dictionary(
-                self.gui_full_data_dictionary, Constants.altitude_key, 0
-            )
-            message_age = get_value_from_dictionary(
-                self.gui_full_data_dictionary, Constants.message_age_key, 0
-            )
+            latitude = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.latitude_key, 0)
+            longitude = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.longitude_key, 0)
+            altitude = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.altitude_key, 0)
+            message_age = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.message_age_key, 0)
             time_str = time.strftime("%H%M%S")
 
             if latitude != 0 and longitude != 0 and message_age < 5:
-                [lat_min, lat_sign, lon_min, lon_sign] = format_lat_lon_for_nmea(
-                    latitude, longitude
-                )
+                [lat_min, lat_sign, lon_min, lon_sign] = format_lat_lon_for_nmea(latitude, longitude)
                 # time, lat, lon, fix quality, satellites, hdop, alt, alt_unit, height above wgs84, height unit, DGPS time, DGPS station
                 msg = pynmea2.GGA(
                     "GP",
@@ -149,9 +137,7 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
         # Wait for connections, and add them to the client list
         while self.should_be_running and can_start:
             if self.enabled and not self.bluetooth_running:
-                self.logToConsole(
-                    "Waiting for connection on RFCOMM channel {}".format(port), 0
-                )
+                self.logToConsole("Waiting for connection on RFCOMM channel {}".format(port), 0)
             if not self.enabled and self.bluetooth_running:
                 self.logToConsole(
                     "No longer advertising bluetooth on channel {}".format(port),
@@ -164,9 +150,7 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
                 try:
                     client_socket, client_info = self.server_sock.accept()
                     self.client_sock_list.append(client_socket)
-                    self.logToConsole(
-                        "Accepted connection from {}".format(client_info), 1
-                    )
+                    self.logToConsole("Accepted connection from {}".format(client_info), 1)
                 except bluetooth.btcommon.BluetoothError as e:
                     pass
             else:

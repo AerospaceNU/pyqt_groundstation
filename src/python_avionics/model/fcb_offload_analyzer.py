@@ -45,12 +45,8 @@ class FcbOffloadAnalyzer:
         df = df[(df["timestamp_s"] > start_time) & (df["timestamp_s"] < end_time)]
 
         # Turn GPS into degrees and minutes from float
-        df["gps_lat_mod"] = (
-            np.floor(np.abs(df["gps_lat"]) / 100) + (np.abs(df["gps_lat"]) % 100 / 60)
-        ) * np.sign(df["gps_lat"])
-        df["gps_long_mod"] = (
-            np.floor(np.abs(df["gps_long"]) / 100) + (np.abs(df["gps_long"]) % 100 / 60)
-        ) * np.sign(df["gps_long"])
+        df["gps_lat_mod"] = (np.floor(np.abs(df["gps_lat"]) / 100) + (np.abs(df["gps_lat"]) % 100 / 60)) * np.sign(df["gps_lat"])
+        df["gps_long_mod"] = (np.floor(np.abs(df["gps_long"]) / 100) + (np.abs(df["gps_long"]) % 100 / 60)) * np.sign(df["gps_long"])
 
         # Start processing on trimmed data. Multipliers come from resolutions converted to MKS units
         k_accel_mult = 0.0071784678
@@ -75,15 +71,9 @@ class FcbOffloadAnalyzer:
         df["imu2_mag_x_real"] = df["imu2_mag_x"] * k_mag_mult
         df["imu2_mag_y_real"] = df["imu2_mag_y"] * k_mag_mult
         df["imu2_mag_z_real"] = df["imu2_mag_z"] * k_mag_mult
-        df["imu_accel_x_avg"] = df[["imu1_accel_x_real", "imu2_accel_x_real"]].mean(
-            axis=1
-        )
-        df["imu_accel_y_avg"] = df[["imu1_accel_y_real", "imu2_accel_y_real"]].mean(
-            axis=1
-        )
-        df["imu_accel_z_avg"] = df[["imu1_accel_z_real", "imu2_accel_z_real"]].mean(
-            axis=1
-        )
+        df["imu_accel_x_avg"] = df[["imu1_accel_x_real", "imu2_accel_x_real"]].mean(axis=1)
+        df["imu_accel_y_avg"] = df[["imu1_accel_y_real", "imu2_accel_y_real"]].mean(axis=1)
+        df["imu_accel_z_avg"] = df[["imu1_accel_z_real", "imu2_accel_z_real"]].mean(axis=1)
         df["imu_gyro_x_avg"] = df[["imu1_gyro_x_real", "imu2_gyro_x_real"]].mean(axis=1)
         df["imu_gyro_y_avg"] = df[["imu1_gyro_y_real", "imu2_gyro_y_real"]].mean(axis=1)
         df["imu_gyro_z_avg"] = df[["imu1_gyro_z_real", "imu2_gyro_z_real"]].mean(axis=1)
@@ -102,9 +92,7 @@ class FcbOffloadAnalyzer:
         return output_filepath
 
 
-def _select_time_limits(
-    df: pd.DataFrame, timestamp_col: str, altitude_col: str
-) -> Tuple[float, float]:
+def _select_time_limits(df: pd.DataFrame, timestamp_col: str, altitude_col: str) -> Tuple[float, float]:
     """
     Give plot to user to select time limits.
 
@@ -115,9 +103,7 @@ def _select_time_limits(
     """
     df.plot(x=timestamp_col, y=altitude_col)
     plt.title("Altitude over Time - Select 2 Points with Right Click")
-    inputs = plt.ginput(
-        n=2, timeout=500, mouse_add=MouseButton.RIGHT, mouse_pop=MouseButton.LEFT
-    )
+    inputs = plt.ginput(n=2, timeout=500, mouse_add=MouseButton.RIGHT, mouse_pop=MouseButton.LEFT)
     plt.close()
     start_time = min(inputs[0][0], inputs[1][0])
     end_time = max(inputs[0][0], inputs[1][0])
@@ -225,9 +211,7 @@ def _graph_data(post_processed_file: str) -> None:
         label="state_transitions",
     )
     if "pyro_status" in df:
-        pyro_events = np.where(df.pyro_status[:-1].values != df.pyro_status[1:].values)[
-            0
-        ]
+        pyro_events = np.where(df.pyro_status[:-1].values != df.pyro_status[1:].values)[0]
         vlines2 = [df.timestamp_s[index] for index in pyro_events]
         ax6[0].vlines(
             x=vlines2,
@@ -262,9 +246,7 @@ def _graph_data(post_processed_file: str) -> None:
 
 if __name__ == "__main__":
     # Set up argument parser
-    parser = ArgumentParser(
-        description="Analyze FCB offloaded data via post-processing."
-    )
+    parser = ArgumentParser(description="Analyze FCB offloaded data via post-processing.")
 
     read_or_process_group = parser.add_mutually_exclusive_group(required=True)
     read_or_process_group.add_argument(
@@ -297,11 +279,7 @@ if __name__ == "__main__":
         fcb.run_offload(args.offload_flight_name, flight_idx)
 
     # Post-process offloaded data
-    process_filepath = (
-        args.process_filepath
-        if args.process_filepath
-        else os.path.join(FcbCli.OUTPUT_DIR, f"{args.offload_flight_name}-output.csv")
-    )
+    process_filepath = args.process_filepath if args.process_filepath else os.path.join(FcbCli.OUTPUT_DIR, f"{args.offload_flight_name}-output.csv")
     analyzer = FcbOffloadAnalyzer(
         offload_data_filepath=process_filepath,
         select_time_limits_cb=_select_time_limits,

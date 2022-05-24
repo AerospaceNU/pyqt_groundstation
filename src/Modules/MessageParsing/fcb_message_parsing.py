@@ -125,14 +125,10 @@ class BaseMessage(object):
                 key = message_line[1]
 
                 # Various special options to parse
-                if (
-                    type(parse_type) == int or type(parse_type) == float
-                ):  # If it's a number, just multiply
+                if type(parse_type) == int or type(parse_type) == float:  # If it's a number, just multiply
                     dictionary[key] = unpacked_data[i] * parse_type
                 elif parse_type == "TIME":  # If its a time, make a time string
-                    dictionary[key] = str(
-                        datetime.datetime.fromtimestamp(unpacked_data[i])
-                    )
+                    dictionary[key] = str(datetime.datetime.fromtimestamp(unpacked_data[i]))
                 elif callable(parse_type):  # If its a function
                     dictionary[key] = parse_type(unpacked_data[i])
                 else:
@@ -236,84 +232,58 @@ class LineCutterMessage(BaseMessage):
             [UINT_8_TYPE, Constants.line_cutter_number_key],
             [
                 UINT_8_TYPE,
-                Constants.makeLineCutterString(
-                    line_cutter_number, Constants.line_cutter_state_key
-                ),
+                Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_state_key),
             ],
             [
                 UINT_32_TYPE,
-                Constants.makeLineCutterString(
-                    line_cutter_number, Constants.timestamp_ms_key
-                ),
+                Constants.makeLineCutterString(line_cutter_number, Constants.timestamp_ms_key),
             ],
             [
                 UINT_32_TYPE,
-                Constants.makeLineCutterString(
-                    line_cutter_number, Constants.barometer_pressure_key
-                ),
+                Constants.makeLineCutterString(line_cutter_number, Constants.barometer_pressure_key),
             ],
             [
                 FLOAT_TYPE,
-                Constants.makeLineCutterString(
-                    line_cutter_number, Constants.altitude_key
-                ),
+                Constants.makeLineCutterString(line_cutter_number, Constants.altitude_key),
             ],
             [
                 FLOAT_TYPE,
-                Constants.makeLineCutterString(
-                    line_cutter_number, Constants.delta_altitude_key
-                ),
+                Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key),
             ],
             [
                 FLOAT_TYPE,
-                Constants.makeLineCutterString(
-                    line_cutter_number, Constants.temperature_key
-                ),
+                Constants.makeLineCutterString(line_cutter_number, Constants.temperature_key),
                 0.01,
             ],
             [
                 FLOAT_TYPE,
-                Constants.makeLineCutterString(
-                    line_cutter_number, Constants.acceleration_key
-                ),
+                Constants.makeLineCutterString(line_cutter_number, Constants.acceleration_key),
             ],
             [
                 FLOAT_TYPE,
-                Constants.makeLineCutterString(
-                    line_cutter_number, Constants.battery_voltage_key
-                ),
+                Constants.makeLineCutterString(line_cutter_number, Constants.battery_voltage_key),
             ],
             [
                 UINT_16_TYPE,
-                Constants.makeLineCutterString(
-                    line_cutter_number, Constants.line_cutter_cut_1
-                ),
+                Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_1),
             ],
             [
                 UINT_16_TYPE,
-                Constants.makeLineCutterString(
-                    line_cutter_number, Constants.line_cutter_cut_2
-                ),
+                Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_2),
             ],
             [
                 UINT_16_TYPE,
-                Constants.makeLineCutterString(
-                    line_cutter_number, Constants.line_cutter_current_sense_key
-                ),
+                Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_current_sense_key),
             ],
             [
                 UINT_16_TYPE,
-                Constants.makeLineCutterString(
-                    line_cutter_number, Constants.photoresistor_key
-                ),
+                Constants.makeLineCutterString(line_cutter_number, Constants.photoresistor_key),
             ],
         ]
 
         super().__init__()
 
-        return super().parseMessage(
-            data
-        )  # Then call the parent parseMessage function like normal
+        return super().parseMessage(data)  # Then call the parent parseMessage function like normal
 
 
 class CLIDataMessage(BaseMessage):
@@ -366,12 +336,8 @@ def parse_ground_station_gps(data, dictionary):
     data = data[0:33]
 
     unpacked_data = struct.unpack("<Bfffdd", data)
-    dictionary[
-        Constants.ground_station_latitude_key
-    ] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[1])
-    dictionary[
-        Constants.ground_station_longitude_key
-    ] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[2])
+    dictionary[Constants.ground_station_latitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[1])
+    dictionary[Constants.ground_station_longitude_key] = lat_lon_decimal_minutes_to_decimal_degrees(unpacked_data[2])
     dictionary[Constants.ground_station_altitude_key] = unpacked_data[3]
     dictionary[Constants.ground_station_pressure_key] = unpacked_data[4]
     dictionary[Constants.ground_station_temperature_key] = unpacked_data[5]
@@ -443,18 +409,11 @@ def parse_fcb_message(data):
 
         # Parse message
         try:
-            message_object = MESSAGE_CALLBACKS[message_number][
-                1
-            ]()  # Make instance of message class
-            dictionary.update(
-                message_object.parseMessage(raw_packet)
-            )  # Run the parse method
+            message_object = MESSAGE_CALLBACKS[message_number][1]()  # Make instance of message class
+            dictionary.update(message_object.parseMessage(raw_packet))  # Run the parse method
             success = True
 
-            if (
-                "line cutter" in message_type.lower()
-                and Constants.line_cutter_number_key in dictionary
-            ):
+            if "line cutter" in message_type.lower() and Constants.line_cutter_number_key in dictionary:
                 line_cutter_number = dictionary[Constants.line_cutter_number_key]
                 message_type += str(line_cutter_number)
         except Exception as e:

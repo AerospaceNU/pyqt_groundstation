@@ -65,9 +65,7 @@ class LocalSimWidget(CustomQWidgetBase):
             path.returnPressed.connect(lambda idx=idx: self.savePath(idx))
 
             button = QPushButton()
-            button.clicked.connect(
-                lambda idx=idx, name=name: self.buttonPressHandler(idx, name)
-            )
+            button.clicked.connect(lambda idx=idx, name=name: self.buttonPressHandler(idx, name))
             button.setText("Pick")
             self.buttons.append(button)
 
@@ -98,18 +96,14 @@ class LocalSimWidget(CustomQWidgetBase):
                 self.paths[idx].setText(self.defaults[idx])
 
     def savePath(self, idx):
-        ConfigSaver.save(
-            "SimWidget", self.pathNames[idx].replace(" ", "_"), self.paths[idx].text()
-        )
+        ConfigSaver.save("SimWidget", self.pathNames[idx].replace(" ", "_"), self.paths[idx].text())
 
     def saveAll(self):
         for i in range(len(self.pathNames)):
             self.savePath(i)
 
     def buttonPressHandler(self, idx: int, name: str):
-        file, check = QFileDialog.getOpenFileName(
-            None, f"Select {name}", "", "All Files (*);;CSV Files (*.csv)"
-        )
+        file, check = QFileDialog.getOpenFileName(None, f"Select {name}", "", "All Files (*);;CSV Files (*.csv)")
         if check:
             idx = self.pathNames.index(name)
             self.paths[idx].setText(file)
@@ -127,9 +121,7 @@ class LocalSimWidget(CustomQWidgetBase):
 
         if self.is_win():
             is32bit = platform.architecture()[0] == "32bit"
-            system32 = os.path.join(
-                os.environ["SystemRoot"], "SysNative" if is32bit else "System32"
-            )
+            system32 = os.path.join(os.environ["SystemRoot"], "SysNative" if is32bit else "System32")
             bash = os.path.join(system32, "wsl.exe")
             args.append(bash)
 
@@ -157,18 +149,8 @@ class LocalSimWidget(CustomQWidgetBase):
         except Exception:
             print("Error killing simulated flight")
 
-    def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
-    ):
-        self.setStyleSheet(
-            "QWidget#"
-            + self.objectName()
-            + " {"
-            + widget_background_string
-            + text_string
-            + border_string
-            + "}"
-        )
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        self.setStyleSheet("QWidget#" + self.objectName() + " {" + widget_background_string + text_string + border_string + "}")
         self.titleWidget.setStyleSheet(widget_background_string + header_text_string)
 
         for widget in self.titleWidgets:

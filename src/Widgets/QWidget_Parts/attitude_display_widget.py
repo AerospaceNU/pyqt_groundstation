@@ -21,26 +21,14 @@ class AttitudeDisplayWidget(QLabel):
 
         dir_name = os.path.dirname(__file__)
         dir_name = os.path.abspath(os.path.join(dir_name, "../.."))
-        self.crossHair = cv2.imread(
-            "{}/Assets/cross_hair.png".format(dir_name), cv2.IMREAD_UNCHANGED
-        )
-        self.rollPointer = cv2.imread(
-            "{}/Assets/roll_pointer.png".format(dir_name), cv2.IMREAD_UNCHANGED
-        )
-        self.rollIndicator = cv2.imread(
-            "{}/Assets/roll_dial_1.png".format(dir_name), cv2.IMREAD_UNCHANGED
-        )
+        self.crossHair = cv2.imread("{}/Assets/cross_hair.png".format(dir_name), cv2.IMREAD_UNCHANGED)
+        self.rollPointer = cv2.imread("{}/Assets/roll_pointer.png".format(dir_name), cv2.IMREAD_UNCHANGED)
+        self.rollIndicator = cv2.imread("{}/Assets/roll_dial_1.png".format(dir_name), cv2.IMREAD_UNCHANGED)
 
         # Cross-hair
-        self.crossHairImage = basic_image_display.BasicImageDisplay(
-            self.crossHair, int(self.size * 0.7), parent=self
-        )
-        self.rollPointerImage = basic_image_display.BasicImageDisplay(
-            self.rollPointer, self.size * 0.05, y=10, parent=self
-        )
-        self.rollIndicatorImage = basic_image_display.BasicImageDisplay(
-            self.rollIndicator, self.size * 0.9, parent=self
-        )
+        self.crossHairImage = basic_image_display.BasicImageDisplay(self.crossHair, int(self.size * 0.7), parent=self)
+        self.rollPointerImage = basic_image_display.BasicImageDisplay(self.rollPointer, self.size * 0.05, y=10, parent=self)
+        self.rollIndicatorImage = basic_image_display.BasicImageDisplay(self.rollIndicator, self.size * 0.9, parent=self)
 
         self.refreshMask()
 
@@ -93,9 +81,7 @@ class AttitudeDisplayWidget(QLabel):
         center_y = int(self.height() / 2)
         pitch_scale_factor = (-1 / 50) * (self.height() / 2)
 
-        painter.translate(
-            center_x, center_y
-        )  # Set our coordinate system to be centered on the widget
+        painter.translate(center_x, center_y)  # Set our coordinate system to be centered on the widget
         painter.rotate(-self.roll)
 
         painter.drawRect(-r, pitch_scale_factor * self.pitch, 2 * r, r2)
@@ -111,9 +97,7 @@ class AttitudeDisplayWidget(QLabel):
 
         spacing = 5  # Draw lines every 5 degrees
         nearest_pitch = spacing * round(self.pitch / spacing)
-        max_to_draw_line = int(
-            abs((self.width() * 0.5) / (2 * pitch_scale_factor))
-        )  # Figure out the biggest pitch to get a line drawn
+        max_to_draw_line = int(abs((self.width() * 0.5) / (2 * pitch_scale_factor)))  # Figure out the biggest pitch to get a line drawn
         max_pitch = min(nearest_pitch + max_to_draw_line + spacing, 91)
         min_pitch = max(nearest_pitch - max_to_draw_line, -90)
 

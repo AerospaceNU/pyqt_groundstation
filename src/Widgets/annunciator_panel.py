@@ -53,40 +53,24 @@ class AnnunciatorPanel(CustomQWidgetBase):
 
             status = str(data[i][1])
             if status == "0":
-                self.annunciatorWidgets[i].setStyleSheet(
-                    "background: green; color: black"
-                )
+                self.annunciatorWidgets[i].setStyleSheet("background: green; color: black")
             elif status == "1":
-                self.annunciatorWidgets[i].setStyleSheet(
-                    "background: yellow; color: black"
-                )
+                self.annunciatorWidgets[i].setStyleSheet("background: yellow; color: black")
             elif status == "2":
-                self.annunciatorWidgets[i].setStyleSheet(
-                    "background: red; color: black"
-                )
+                self.annunciatorWidgets[i].setStyleSheet("background: red; color: black")
             else:
-                self.annunciatorWidgets[i].setStyleSheet(
-                    "background: blue; color: black"
-                )
+                self.annunciatorWidgets[i].setStyleSheet("background: blue; color: black")
 
-        for i in range(
-            len(data), len(self.annunciatorWidgets)
-        ):  # Make the rest empty and green
+        for i in range(len(data), len(self.annunciatorWidgets)):  # Make the rest empty and green
             self.annunciatorWidgets[i].setText(" ")
             self.annunciatorWidgets[i].setStyleSheet("background: green; color: black")
 
-        if (
-            self.width() < self.annunciatorWidgets[0].width() * 2
-        ):  # Kind of a hack to force it to adjust properly when we have data
+        if self.width() < self.annunciatorWidgets[0].width() * 2:  # Kind of a hack to force it to adjust properly when we have data
             self.setMaximumWidth(1000)
         self.adjustSize()
         self.setMaximumWidth(self.width())
         self.setMaximumHeight(self.height())
 
-    def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
-    ):
-        string = "{0}{1}{2}{3}".format(
-            widget_background_string, text_string, header_text_string, border_string
-        )
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        string = "{0}{1}{2}{3}".format(widget_background_string, text_string, header_text_string, border_string)
         self.setStyleSheet("QWidget#" + self.objectName() + "{" + string + "}")

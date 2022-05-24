@@ -48,9 +48,7 @@ class ReconfigurePage(object):
                 found_reconfigure_line = True
 
         if not found_reconfigure_line:
-            self.reconfigure_lines.append(
-                [text, line_type, current_value, description, config]
-            )
+            self.reconfigure_lines.append([text, line_type, current_value, description, config])
 
     def bindCallback(self, line_name, function):
         if line_name not in self.callback_dictionary:

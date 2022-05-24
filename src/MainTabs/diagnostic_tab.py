@@ -22,9 +22,7 @@ class DiagnosticTab(TabCommon):
         self.addWidget(pyro_display_widget.PyroWidget(self))
 
         self.widgetList[1].move(400, 0)  # Move the widgets to better spots
-        self.widgetList[2].move(
-            1000, 0
-        )  # This isn't really the best way to reference the object, but I don't care
+        self.widgetList[2].move(1000, 0)  # This isn't really the best way to reference the object, but I don't care
         self.widgetList[3].move(1000, 700)
         self.widgetList[4].move(1400, 700)
 

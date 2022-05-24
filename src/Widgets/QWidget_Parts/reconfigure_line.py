@@ -42,9 +42,7 @@ class ReconfigureLine(QWidget):
         if lineType != self.type:
             if lineType == "enum":
                 self.dropDown.show()
-                self.dropDown.setStyleSheet(
-                    self.widgetBackgroundString + self.textString
-                )
+                self.dropDown.setStyleSheet(self.widgetBackgroundString + self.textString)
                 self.entryBox.hide()
             else:
                 self.dropDown.hide()

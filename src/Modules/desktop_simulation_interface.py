@@ -15,9 +15,7 @@ class LocalSimulationFlightInterface(GroundStationDataInterface):
     def __init__(self):
         super().__init__()
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.callbacks_to_add = (
-            []
-        )  # Don't add callbacks for radio and band switching (Kind of a hack)
+        self.callbacks_to_add = []  # Don't add callbacks for radio and band switching (Kind of a hack)
 
         self.log_to_file = False
 
@@ -25,24 +23,16 @@ class LocalSimulationFlightInterface(GroundStationDataInterface):
         if self.enabled:
             try:
                 self.logToConsole(
-                    "Attempting to connect to local simulation at {0}:{1}".format(
-                        HOST, PORT
-                    ),
+                    "Attempting to connect to local simulation at {0}:{1}".format(HOST, PORT),
                     1,
                 )
                 time.sleep(0.5)  # Sometimes we get enabled before the sim process is up
-                self.socket = socket.socket(
-                    socket.AF_INET, socket.SOCK_STREAM
-                )  # Connects the socket when module is enabled
+                self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Connects the socket when module is enabled
                 self.socket.connect((HOST, PORT))
-                self.logToConsole(
-                    "Connected to local simulation at {0}:{1}".format(HOST, PORT), 1
-                )
+                self.logToConsole("Connected to local simulation at {0}:{1}".format(HOST, PORT), 1)
             except Exception as e:
                 self.logToConsole(
-                    "Could not connect to local simulation at {0}:{1}.  {2}".format(
-                        HOST, PORT, e
-                    ),
+                    "Could not connect to local simulation at {0}:{1}.  {2}".format(HOST, PORT, e),
                     2,
                 )
                 self.enabled = False
@@ -66,9 +56,7 @@ class LocalSimulationFlightInterface(GroundStationDataInterface):
             self.parseData(data)
         except Exception as e:
             self.logToConsole(
-                "Couldn't parse local simulation message: {0}, closing connection".format(
-                    e
-                ),
+                "Couldn't parse local simulation message: {0}, closing connection".format(e),
                 2,
             )
             self.enabled = False

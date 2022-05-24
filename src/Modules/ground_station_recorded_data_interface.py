@@ -16,13 +16,9 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
     def startUp(self):
         self.reader = RecordedDataReader(
             load_slower=True,
-            logging_callback=lambda data, level=1: self.logToConsole(
-                data, level, override_disabled_check=True
-            ),
+            logging_callback=lambda data, level=1: self.logToConsole(data, level, override_disabled_check=True),
         )
-        self.logToConsole(
-            "Done indexing recorded data", 1, override_disabled_check=True
-        )
+        self.logToConsole("Done indexing recorded data", 1, override_disabled_check=True)
 
     def runOnEnableAndDisable(self):
         self.reader.setPacketIndex(0)
@@ -34,9 +30,7 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
         runs_to_use = []
         if self.enabled:
             for run in self.reader.getRuns():
-                [data_series, _] = self.reader.getFullHistoryForKey(
-                    run, Constants.rssi_key
-                )
+                [data_series, _] = self.reader.getFullHistoryForKey(run, Constants.rssi_key)
                 if len(data_series) > 0 and run not in runs_to_use:
                     runs_to_use.append(run)
 
@@ -47,9 +41,7 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
                     self.recorded_data_dictionary[run] = {}
 
                 for key in self.reader.getRecordedDataKeys(run):
-                    [data_series, time_series] = self.reader.getFullHistoryForKey(
-                        run, key
-                    )
+                    [data_series, time_series] = self.reader.getFullHistoryForKey(run, key)
                     self.recorded_data_dictionary[run][key] = [data_series, time_series]
 
     def spin(self):
@@ -61,10 +53,7 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
         self.logToConsole("New [{0}] message".format(packet_type), 0)
 
         # We changed how crc is logged at some point, so this is needed to look at old data
-        if (
-            Constants.crc_key in parsed_packet
-            and parsed_packet[Constants.crc_key] == "1"
-        ):
+        if Constants.crc_key in parsed_packet and parsed_packet[Constants.crc_key] == "1":
             parsed_packet[Constants.crc_key] = "Good"
 
         self.handleParsedData(packet_type, parsed_packet)

@@ -24,9 +24,7 @@ def interpolate(value, in_min, in_max, out_min, out_max):
 
 
 class SidewaysBarGraph(QLabel):
-    def __init__(
-        self, parentWidget: QWidget = None, min_value=0, max_value=100, mid_value=None
-    ):
+    def __init__(self, parentWidget: QWidget = None, min_value=0, max_value=100, mid_value=None):
         super().__init__(parentWidget)
 
         self.value = 0
@@ -45,15 +43,11 @@ class SidewaysBarGraph(QLabel):
         text = round_to_string(self.value, 4)
         text_width = self.fontInfo().pixelSize() * len(text)
         right_bound = self.width() - text_width
-        painter.drawText(
-            QRect(right_bound, 0, text_width, self.height()), Qt.AlignCenter, text
-        )
+        painter.drawText(QRect(right_bound, 0, text_width, self.height()), Qt.AlignCenter, text)
 
         painter.drawRect(0, 0, right_bound - 1, self.height() - 1)
 
-        box_draw_width = interpolate(
-            self.value, self.min_value, self.max_value, 1, right_bound - 3
-        )
+        box_draw_width = interpolate(self.value, self.min_value, self.max_value, 1, right_bound - 3)
         box_draw_width = int(clamp(box_draw_width, 1, right_bound - 3))
 
         painter.setBrush(QBrush(QColor(50, 50, 255)))
@@ -63,12 +57,8 @@ class SidewaysBarGraph(QLabel):
 
         if self.mid_value is not None:
             painter.setPen(QPen(QColor(100, 100, 100), 0, Qt.SolidLine))
-            mid_line_draw_location = interpolate(
-                self.mid_value, self.min_value, self.max_value, 1, right_bound - 3
-            )
-            painter.drawLine(
-                mid_line_draw_location, 0, mid_line_draw_location, self.height()
-            )
+            mid_line_draw_location = interpolate(self.mid_value, self.min_value, self.max_value, 1, right_bound - 3)
+            painter.drawLine(mid_line_draw_location, 0, mid_line_draw_location, self.height())
 
     def setValue(self, value):
         self.value = value

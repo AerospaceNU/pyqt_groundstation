@@ -115,25 +115,19 @@ class GraphsTab(TabCommon):
             1,
         )
         layout.addWidget(
-            self.addWidget(
-                GraphWidget(title="State", source_list=[Constants.fcb_state_number_key])
-            ),
+            self.addWidget(GraphWidget(title="State", source_list=[Constants.fcb_state_number_key])),
             3,
             2,
         )
         layout.addWidget(
-            self.addWidget(
-                GraphWidget(title="RSSI", source_list=[Constants.rssi_val_key])
-            ),
+            self.addWidget(GraphWidget(title="RSSI", source_list=[Constants.rssi_val_key])),
             3,
             3,
         )
         layout.addWidget(self.graphControlWidget, 4, 1, 1, 3)
         self.setLayout(layout)
 
-        self.graphControlWidget.rangeSlider.valueChanged.connect(
-            self.onSliderValueChange
-        )
+        self.graphControlWidget.rangeSlider.valueChanged.connect(self.onSliderValueChange)
         self.graphControlWidget.resetGraphButton.pressed.connect(self.clearAllGraphs)
 
     def clearAllGraphs(self):
@@ -168,16 +162,12 @@ class GraphsTab(TabCommon):
         if self.slider_min == 0:
             graph_min = None
         else:
-            graph_min = interpolate(
-                self.slider_min, 0, 1000, smallest_time, largest_time
-            )
+            graph_min = interpolate(self.slider_min, 0, 1000, smallest_time, largest_time)
 
         if self.slider_max == 1000:
             graph_max = None
         else:
-            graph_max = interpolate(
-                self.slider_max, 0, 1000, smallest_time, largest_time
-            )
+            graph_max = interpolate(self.slider_max, 0, 1000, smallest_time, largest_time)
 
         for widget in self.widgetList:
             if type(widget) == GraphWidget:

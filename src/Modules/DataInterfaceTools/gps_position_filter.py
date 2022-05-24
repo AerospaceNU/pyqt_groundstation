@@ -33,23 +33,15 @@ class GPSPositionFilter(object):
 
         self.has_initial_point = True
 
-        self.latitude_list = (self.latitude_list + [latitude])[
-            -self.filter_history_length :
-        ]  # Put lat and lon in a list for median filter
-        self.longitude_list = (self.longitude_list + [longitude])[
-            -self.filter_history_length :
-        ]
+        self.latitude_list = (self.latitude_list + [latitude])[-self.filter_history_length :]  # Put lat and lon in a list for median filter
+        self.longitude_list = (self.longitude_list + [longitude])[-self.filter_history_length :]
 
         # Calculate ground speed based on lsat two messages
-        ned = navpy.lla2ned(
-            latitude, longitude, 0, self.last_lat_lon[0], self.last_lat_lon[1], 0
-        )
+        ned = navpy.lla2ned(latitude, longitude, 0, self.last_lat_lon[0], self.last_lat_lon[1], 0)
         delta_time = time.time() - self.last_lat_lon_time
         distance_traveled = vector_length(ned[1], ned[0])
         ground_speed = float(distance_traveled) / float(delta_time)
-        self.ground_speed_list = (self.ground_speed_list + [ground_speed])[
-            -self.filter_history_length :
-        ]  # Put it in a list for the median filter
+        self.ground_speed_list = (self.ground_speed_list + [ground_speed])[-self.filter_history_length :]  # Put it in a list for the median filter
 
         self.last_lat_lon = [latitude, longitude]
         self.last_lat_lon_time = time.time()

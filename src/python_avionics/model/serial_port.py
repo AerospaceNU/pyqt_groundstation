@@ -63,9 +63,7 @@ class SerialPortManager:
 
     @classmethod
     def _update_connected_ports(cls) -> None:
-        connected_ports = [
-            port_info.device for port_info in serial.tools.list_ports.comports()
-        ]
+        connected_ports = [port_info.device for port_info in serial.tools.list_ports.comports()]
         for port_name in connected_ports:
             if port_name not in cls._serial_port_names():
                 cls._serial_ports.append(SerialPort(name=port_name))

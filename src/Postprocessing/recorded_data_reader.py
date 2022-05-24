@@ -44,12 +44,8 @@ class RecordedDataReader(object):
             else:
                 try:
                     timestamp = line.split(" ")[0][0:-1]
-                    nan = float(
-                        "NaN"
-                    )  # Hack to make the eval statement work if nans are saved out
-                    packet_type = (
-                        line.split(timestamp)[1].split("{")[0][2:].strip()
-                    )  # don't even ask
+                    nan = float("NaN")  # Hack to make the eval statement work if nans are saved out
+                    packet_type = line.split(timestamp)[1].split("{")[0][2:].strip()  # don't even ask
                     packet_data = eval("{" + line.split("{")[1])
 
                     timestamp_string = "{0} {1}".format(str(data_date), timestamp)
@@ -60,10 +56,7 @@ class RecordedDataReader(object):
                     continue
 
                 # Calculate distance from start
-                if (
-                    Constants.latitude_key in packet_data
-                    and packet_data[Constants.latitude_key] != 0
-                ):
+                if Constants.latitude_key in packet_data and packet_data[Constants.latitude_key] != 0:
                     if not has_first_point:
                         first_point = [
                             packet_data[Constants.latitude_key],
@@ -86,19 +79,10 @@ class RecordedDataReader(object):
                 self.packet_types.append(packet_type)
 
             if load_slower:
-                time.sleep(
-                    0.000000001
-                )  # This many 0s probably don't help, but this sleep keeps the file indexing from taking all the CPU resources
+                time.sleep(0.000000001)  # This many 0s probably don't help, but this sleep keeps the file indexing from taking all the CPU resources
 
-            if (
-                logging_callback is not None
-                and time.time() - last_logging_time > logging_interval
-            ):
-                logging_callback(
-                    "Indexing recorded dat: {0:.2f}% done".format(
-                        100 * data.index(line) / len(data)
-                    )
-                )
+            if logging_callback is not None and time.time() - last_logging_time > logging_interval:
+                logging_callback("Indexing recorded dat: {0:.2f}% done".format(100 * data.index(line) / len(data)))
                 last_logging_time = time.time()
 
         self.fields = list(packet_data.keys())
@@ -128,9 +112,7 @@ class RecordedDataReader(object):
                 delta_time = data_time - first_time
 
                 self.full_history_data_struct[run_name][key][0].append(packet[key])
-                self.full_history_data_struct[run_name][key][1].append(
-                    delta_time.seconds
-                )
+                self.full_history_data_struct[run_name][key][1].append(delta_time.seconds)
 
         self.parsed_to_full_history = True
 

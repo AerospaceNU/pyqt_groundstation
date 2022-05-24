@@ -69,12 +69,8 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
             cameras = list(vehicle_data["camera"])
             self.setVideoOptions(cameras)
 
-    def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
-    ):
-        string = "{0}{1}{2}{3}".format(
-            widget_background_string, text_string, header_text_string, border_string
-        )
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        string = "{0}{1}{2}{3}".format(widget_background_string, text_string, header_text_string, border_string)
         self.setStyleSheet("QWidget#" + self.objectName() + "{" + string + "}")
 
         self.videoSwitcher.setStyleSheet(widget_background_string + text_string)

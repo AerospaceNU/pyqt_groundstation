@@ -16,9 +16,7 @@ class MedianFilter(object):
         self.data_list = []
 
     def new_data(self, new_data_point):
-        self.data_list = (self.data_list + [new_data_point])[
-            -self.filter_history_length :
-        ]  # Put lat and lon in a list for median filter
+        self.data_list = (self.data_list + [new_data_point])[-self.filter_history_length :]  # Put lat and lon in a list for median filter
 
     def get_filtered_data_output(self):
         if self.has_data():

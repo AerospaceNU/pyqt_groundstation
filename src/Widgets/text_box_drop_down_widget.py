@@ -50,15 +50,11 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
         out_string = ""
         longest_line = 0
         for line in data_to_print:
-            line[0] = (
-                str(line[0]).replace("\t", "     ").rstrip()
-            )  # Do some formatting to convert tabs to spaces and ditch trailing spaces
+            line[0] = str(line[0]).replace("\t", "     ").rstrip()  # Do some formatting to convert tabs to spaces and ditch trailing spaces
             longest_line = max(longest_line, len(line[0]))
 
         for line in data_to_print:
-            spaces = " " * (
-                longest_line - len(line[0]) + 2
-            )  # Add two extra spaces to everything
+            spaces = " " * (longest_line - len(line[0]) + 2)  # Add two extra spaces to everything
             new_line = "{0}{2}{1}\n".format(line[0], str(line[1]).lstrip(), spaces)
 
             out_string = out_string + new_line
@@ -77,9 +73,7 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
         self.menuItems = menu_item_list
         self.dropDownWidget.setStyleSheet(self.colorString)
 
-    def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
-    ):
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         self.colorString = widget_background_string + header_text_string
         self.textBoxWidget.setStyleSheet(widget_background_string + text_string)
         self.dropDownWidget.setStyleSheet(widget_background_string + header_text_string)

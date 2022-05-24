@@ -29,9 +29,7 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
 
         self.textEntryWidget.returnPressed.connect(self.returnPressed)
 
-        self.oldKeyPress = (
-            self.textEntryWidget.keyPressEvent
-        )  # We want to use the old key press, but do our code first
+        self.oldKeyPress = self.textEntryWidget.keyPressEvent  # We want to use the old key press, but do our code first
         self.textEntryWidget.keyPressEvent = self.textEntryKeyPressEvent
 
         self.xBuffer = 0
@@ -53,20 +51,14 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
             if self.commandHistoryIndex == -1:  # If we're editing the newest command
                 self.currentCommand = self.textEntryWidget.text()
             if len(self.commandHistory) > 0:
-                self.commandHistoryIndex = min(
-                    len(self.commandHistory) - 1, self.commandHistoryIndex + 1
-                )
-                self.textEntryWidget.setText(
-                    self.commandHistory[self.commandHistoryIndex]
-                )
+                self.commandHistoryIndex = min(len(self.commandHistory) - 1, self.commandHistoryIndex + 1)
+                self.textEntryWidget.setText(self.commandHistory[self.commandHistoryIndex])
         elif eventQKeyEvent.key() == 16777237:  # DOWN
             self.commandHistoryIndex = max(self.commandHistoryIndex - 1, -1)
             if self.commandHistoryIndex == -1:
                 self.textEntryWidget.setText(self.currentCommand)
             else:
-                self.textEntryWidget.setText(
-                    self.commandHistory[self.commandHistoryIndex]
-                )
+                self.textEntryWidget.setText(self.commandHistory[self.commandHistoryIndex])
 
         self.oldKeyPress(eventQKeyEvent)
 
@@ -98,22 +90,10 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         self.textBoxWidget.setText(outString[:-1])
         self.adjustSize()
 
-    def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
-    ):
-        self.setStyleSheet(
-            "QWidget#"
-            + self.objectName()
-            + " {"
-            + border_string
-            + widget_background_string
-            + text_string
-            + "}"
-        )
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        self.setStyleSheet("QWidget#" + self.objectName() + " {" + border_string + widget_background_string + text_string + "}")
         self.textBoxWidget.setStyleSheet(widget_background_string + text_string)
-        self.textEntryWidget.setStyleSheet(
-            border_string + widget_background_string + text_string
-        )
+        self.textEntryWidget.setStyleSheet(border_string + widget_background_string + text_string)
         self.titleBox.setStyleSheet(widget_background_string + header_text_string)
 
 

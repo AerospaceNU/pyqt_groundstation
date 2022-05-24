@@ -53,9 +53,7 @@ class CustomQWidgetBase(QWidget):
 
         self.vehicleData = {}
         self.recordedData = {}
-        self.updated_data_dictionary = (
-            {}
-        )  # Tracks which keys are new since the last GUI loop
+        self.updated_data_dictionary = {}  # Tracks which keys are new since the last GUI loop
         self.sourceDictionary = {}
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -63,9 +61,7 @@ class CustomQWidgetBase(QWidget):
 
     def setTheme(self, widgetBackground, text, headerText, border):
         """I implemented my own theme code instead of using the QT stuff, because this does what I want"""
-        self.backgroundColorString = make_stylesheet_string(
-            "background", widgetBackground
-        )
+        self.backgroundColorString = make_stylesheet_string("background", widgetBackground)
         self.textColorString = make_stylesheet_string("color", text)
         self.headerTextColorString = make_stylesheet_string("color", headerText)
         self.borderColorString = "border: {0}px solid {1};".format(1, border)
@@ -139,22 +135,14 @@ class CustomQWidgetBase(QWidget):
         if not self.isInLayout:
             self.draggable = draggable
 
-    def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
-    ):
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         """Overwrite this for each widget"""
-        self.setStyleSheet(
-            "{0}{1}{2}{3}".format(
-                widget_background_string, text_string, header_text_string, border_string
-            )
-        )
+        self.setStyleSheet("{0}{1}{2}{3}".format(widget_background_string, text_string, header_text_string, border_string))
 
     def paintEvent(self, a0: QtGui.QPaintEvent) -> None:
         """Draw border around widget"""
         painter = QPainter(self)  # Grey background
-        painter.setPen(
-            QColor(self.borderColor[0], self.borderColor[1], self.borderColor[2])
-        )
+        painter.setPen(QColor(self.borderColor[0], self.borderColor[1], self.borderColor[2]))
         painter.setBrush(
             QColor(
                 self.backgroundColor[0],
@@ -229,9 +217,7 @@ class CustomQWidgetBase(QWidget):
         default_value=None,
         hide_in_drop_down=False,
     ):
-        self.sourceDictionary[internal_id] = SourceKeyData(
-            default_key, value_type, default_value, hide_in_drop_down
-        )
+        self.sourceDictionary[internal_id] = SourceKeyData(default_key, value_type, default_value, hide_in_drop_down)
 
     def removeSourceKey(self, internal_key_id):
         del self.sourceDictionary[internal_key_id]
@@ -241,9 +227,7 @@ class CustomQWidgetBase(QWidget):
         default_value = self.sourceDictionary[internal_key_id].default_value
         value_type = self.sourceDictionary[internal_key_id].value_type
 
-        return_value = get_value_from_dictionary(
-            self.vehicleData, dictionary_key, default_value
-        )
+        return_value = get_value_from_dictionary(self.vehicleData, dictionary_key, default_value)
         try:
             return value_type(return_value)
         except TypeError:

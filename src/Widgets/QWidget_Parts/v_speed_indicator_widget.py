@@ -109,11 +109,7 @@ class VSpeedIndicatorWidget(QLabel):
             painter.translate(-self.width(), 0)
 
         for i in range(int(maxSpeed / speedIncrement) * 2 + 1):
-            y = int(
-                interpolate(
-                    i, 0, 2 * maxSpeed / speedIncrement, padding, gaugeHeight - padding
-                )
-            )
+            y = int(interpolate(i, 0, 2 * maxSpeed / speedIncrement, padding, gaugeHeight - padding))
 
             if self.leftOriented:
                 painter.drawLine(fontSize, y, fontSize + self.width() / 8, y)

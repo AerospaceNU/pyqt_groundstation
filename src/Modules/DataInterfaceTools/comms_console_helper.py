@@ -32,13 +32,9 @@ class CommsConsoleHelper(object):
         text = text.strip("\n")
 
         if from_remote:
-            self.command_history_list.append(
-                "{0}: {1}".format(time.strftime("%H:%M:%S"), text)
-            )
+            self.command_history_list.append("{0}: {1}".format(time.strftime("%H:%M:%S"), text))
         else:
-            self.command_history_list.append(
-                "{0}: > {1}".format(time.strftime("%H:%M:%S"), text)
-            )
+            self.command_history_list.append("{0}: > {1}".format(time.strftime("%H:%M:%S"), text))
 
         self.command_history_list = self.command_history_list[-self.maxLength :]
 

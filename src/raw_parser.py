@@ -23,19 +23,13 @@ for line in open("D:\\Downloads\\raw_data.txt"):
     except Exception:
         pass
 
-arr = [
-    (d["latitude"], d["longitude"], ([0, 1, 0] if d["crc"] == "Good" else [1, 0, 0]))
-    for d in dictlist
-    if "latitude" in d
-]
+arr = [(d["latitude"], d["longitude"], ([0, 1, 0] if d["crc"] == "Good" else [1, 0, 0])) for d in dictlist if "latitude" in d]
 arr = np.array(arr)
 lat = arr[:, 0]
 lon = arr[:, 1]
 crc = arr[:, 2]
 
-dist = [
-    math.sqrt((x - 42.3522786) ** 2 + (y + 71.0894531) ** 2) for (x, y) in zip(lat, lon)
-]
+dist = [math.sqrt((x - 42.3522786) ** 2 + (y + 71.0894531) ** 2) for (x, y) in zip(lat, lon)]
 y = [0 for x in dist]
 
 fig = plt.figure()

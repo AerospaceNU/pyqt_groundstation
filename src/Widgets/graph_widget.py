@@ -61,9 +61,7 @@ class GraphWidget(CustomQWidgetBase):
             self.addSourceKey("line {}".format(i), float, source, default_value=0)
 
         self.data_dictionary = {}  # Stores the history for each data field we
-        self.time_dictionary = (
-            {}
-        )  # Stores the times we've taken data at (the x axis) for each field we track
+        self.time_dictionary = {}  # Stores the times we've taken data at (the x axis) for each field we track
         self.plot_line_dictionary = {}  # Stores the plot line objects
         self.start_time = time.time()
         self.last_update_time = time.time()
@@ -97,51 +95,31 @@ class GraphWidget(CustomQWidgetBase):
                     # <sarcasm> This logic makes perfect sense </sarcasm>
                     # The base goal is to make the last value in the array a nan when the data isn't updated so the graph x axis keeps updating
                     # We need 4 cases because we don't want to overwrite any data, and we don't want NaNs anywhere other than the last spot
-                    if self.isDictValueUpdated(source) and math.isnan(
-                        self.data_dictionary[source][-1]
-                    ):
+                    if self.isDictValueUpdated(source) and math.isnan(self.data_dictionary[source][-1]):
                         self.data_dictionary[source][-1] = value
                         self.time_dictionary[source][-1] = time.time() - self.start_time
                     elif self.isDictValueUpdated(source):
                         self.data_dictionary[source].append(value)
-                        self.time_dictionary[source].append(
-                            time.time() - self.start_time
-                        )
+                        self.time_dictionary[source].append(time.time() - self.start_time)
                     elif math.isnan(self.data_dictionary[source][-1]):
                         self.time_dictionary[source][-1] = time.time() - self.start_time
                     else:
                         self.data_dictionary[source].append(float("nan"))
-                        self.time_dictionary[source].append(
-                            time.time() - self.start_time
-                        )
+                        self.time_dictionary[source].append(time.time() - self.start_time)
 
-                    oldest_allowable_time = (
-                        time.time() - self.start_time - self.max_time_to_keep
-                    )
+                    oldest_allowable_time = time.time() - self.start_time - self.max_time_to_keep
                     if math.isnan(self.time_dictionary[source][0]):
                         check_index = 1
                     else:
                         check_index = 0
 
-                    if (
-                        self.max_time_to_keep > 0
-                        and self.time_dictionary[source][check_index]
-                        < oldest_allowable_time
-                    ):
-                        slice_index = first_index_in_list_larger_than(
-                            self.time_dictionary[source], oldest_allowable_time
-                        )
-                        self.time_dictionary[source] = [
-                            oldest_allowable_time
-                        ] + self.time_dictionary[source][slice_index:]
-                        self.data_dictionary[source] = [
-                            float("nan")
-                        ] + self.data_dictionary[source][slice_index:]
+                    if self.max_time_to_keep > 0 and self.time_dictionary[source][check_index] < oldest_allowable_time:
+                        slice_index = first_index_in_list_larger_than(self.time_dictionary[source], oldest_allowable_time)
+                        self.time_dictionary[source] = [oldest_allowable_time] + self.time_dictionary[source][slice_index:]
+                        self.data_dictionary[source] = [float("nan")] + self.data_dictionary[source][slice_index:]
         else:
             for source in self.sourceDictionary:
-                [data_series, time_series] = self.getRecordedDictDataUsingSourceKey(
-                    source
-                )
+                [data_series, time_series] = self.getRecordedDictDataUsingSourceKey(source)
 
                 if len(data_series) > 0 and len(data_series) == len(time_series):
                     self.data_dictionary[source] = data_series
@@ -157,9 +135,7 @@ class GraphWidget(CustomQWidgetBase):
     def updatePlot(self):
         """Actually updates lines on plot"""
 
-        if (
-            time.time() - self.last_update_time < self.update_interval
-        ):  # Don't re-draw graphs to quickly
+        if time.time() - self.last_update_time < self.update_interval:  # Don't re-draw graphs to quickly
             return
         self.last_update_time = time.time()
 
@@ -173,19 +149,11 @@ class GraphWidget(CustomQWidgetBase):
                     pen=get_pen_from_line_number(len(self.plot_line_dictionary)),
                 )
             if self.plot_line_dictionary[data_name].name() != data_label:
-                index = list(self.plot_line_dictionary.keys()).index(
-                    data_name
-                )  # The index of the line that we're working on
+                index = list(self.plot_line_dictionary.keys()).index(data_name)  # The index of the line that we're working on
 
-                self.plot_line_dictionary[data_name].opts[
-                    "name"
-                ] = data_label  # Force change the name of the line
-                self.graphWidget.getPlotItem().legend.items[index][1].setText(
-                    data_label
-                )  # Change the name of the legend item
-                self.data_dictionary[data_name] = [
-                    float("nan")
-                ]  # Reset the data history
+                self.plot_line_dictionary[data_name].opts["name"] = data_label  # Force change the name of the line
+                self.graphWidget.getPlotItem().legend.items[index][1].setText(data_label)  # Change the name of the legend item
+                self.data_dictionary[data_name] = [float("nan")]  # Reset the data history
                 self.time_dictionary[data_name] = [0]
 
             # Connect=finite allows NaN values to be skipped
@@ -196,30 +164,22 @@ class GraphWidget(CustomQWidgetBase):
                     connect="finite",
                 )
             elif self.min_x is None:  # No minimum, truncate maximum
-                max_index = first_index_in_list_larger_than(
-                    self.time_dictionary[data_name], self.max_x
-                )
+                max_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.max_x)
                 self.plot_line_dictionary[data_name].setData(
                     self.time_dictionary[data_name][0:max_index],
                     self.data_dictionary[data_name][0:max_index],
                     connect="finite",
                 )
             elif self.max_x is None:  # No maximum, truncate minimum
-                min_index = first_index_in_list_larger_than(
-                    self.time_dictionary[data_name], self.min_x
-                )
+                min_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.min_x)
                 self.plot_line_dictionary[data_name].setData(
                     self.time_dictionary[data_name][min_index:],
                     self.data_dictionary[data_name][min_index:],
                     connect="finite",
                 )
             else:  # Truncate both max and min
-                max_index = first_index_in_list_larger_than(
-                    self.time_dictionary[data_name], self.max_x
-                )
-                min_index = first_index_in_list_larger_than(
-                    self.time_dictionary[data_name], self.min_x
-                )
+                max_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.max_x)
+                min_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.min_x)
                 self.plot_line_dictionary[data_name].setData(
                     self.time_dictionary[data_name][min_index:max_index],
                     self.data_dictionary[data_name][min_index:max_index],
@@ -239,9 +199,7 @@ class GraphWidget(CustomQWidgetBase):
         menu.addSeparator()
         menu.addMenu(self.graphWidget.getPlotItem().vb.menu)
         menu.addMenu(self.graphWidget.getPlotItem().ctrlMenu)
-        self.graphWidget.getPlotItem().vb.scene().contextMenuItem = (
-            self.graphWidget.getPlotItem().getAxis("left")
-        )
+        self.graphWidget.getPlotItem().vb.scene().contextMenuItem = self.graphWidget.getPlotItem().getAxis("left")
         menu.addAction(self.graphWidget.getPlotItem().vb.scene().contextMenu[0])
 
         for key in self.sourceDictionary:
@@ -293,9 +251,7 @@ class GraphWidget(CustomQWidgetBase):
                 time_val = min(time_val, smallest_time)
         return time_val
 
-    def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
-    ):
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
         self.graphWidget.setStyleSheet(widget_background_string)
 
         self.graphWidget.setBackground(get_qcolor_from_string(widget_background_string))
@@ -305,6 +261,4 @@ class GraphWidget(CustomQWidgetBase):
         self.graphWidget.getAxis("bottom").setPen(self.textColor)
 
         if self.title is not None:
-            self.graphWidget.setTitle(
-                self.title, color=get_qcolor_from_string(header_text_string)
-            )
+            self.graphWidget.setTitle(self.title, color=get_qcolor_from_string(header_text_string))

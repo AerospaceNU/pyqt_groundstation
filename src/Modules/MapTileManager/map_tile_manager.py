@@ -54,32 +54,20 @@ class MapTileManager(object):
         pixel_width = request[2]
 
         # Calculate meters per pixel and then zoom level
-        meter_width = abs(
-            navpy.lla2ned(
-                lower_left[0], lower_left[1], 0, upper_right[0], upper_right[1], 0
-            )[1]
-        )
+        meter_width = abs(navpy.lla2ned(lower_left[0], lower_left[1], 0, upper_right[0], upper_right[1], 0)[1])
         meters_per_pixel = float(meter_width) / float(pixel_width)
         zoom = get_zoom_level_from_pixels_per_meter(meters_per_pixel)
 
         # Add some padding
-        new_lower_left = navpy.ned2lla(
-            [-100, -100, 0], lower_left[0], lower_left[1], 0
-        )[0:2]
-        new_upper_right = navpy.ned2lla(
-            [100, 100, 0], upper_right[0], upper_right[1], 0
-        )[0:2]
+        new_lower_left = navpy.ned2lla([-100, -100, 0], lower_left[0], lower_left[1], 0)[0:2]
+        new_upper_right = navpy.ned2lla([100, 100, 0], upper_right[0], upper_right[1], 0)[0:2]
 
         tile_set = get_bounding_box_tiles(new_lower_left, new_upper_right, zoom)
 
-        if (
-            self.last_tile_set == tile_set
-        ):  # If we're getting the same data again, skip it
+        if self.last_tile_set == tile_set:  # If we're getting the same data again, skip it
             return
 
-        self.tile_cache.update(
-            get_all_tiles_in_box(tile_set, zoom, exclude_list=self.tile_cache.keys())
-        )
+        self.tile_cache.update(get_all_tiles_in_box(tile_set, zoom, exclude_list=self.tile_cache.keys()))
         map_image = stitch_all_tiles_in_box(tile_set, zoom, self.tile_cache)
         edges = get_edges_for_tile_set(tile_set, zoom)
 

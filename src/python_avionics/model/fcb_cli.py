@@ -72,9 +72,7 @@ class FcbCli:
         :return: Return value from command, or None if no command matched
         """
         # Set up complete argument parser
-        command_parser = ArgumentParser(
-            prog="fcb_cli", description="Python FCB CLI arguments"
-        )
+        command_parser = ArgumentParser(prog="fcb_cli", description="Python FCB CLI arguments")
         subparsers = command_parser.add_subparsers(help="FCB CLI help", dest="command")
 
         # Add subparsers as options
@@ -113,8 +111,7 @@ class FcbCli:
 
         subparsers.add_parser(
             "shutdown",
-            help="Prevent FCB from doing anything else. FCB won't actually shut off, "
-            "but it won't do or respond to anything",
+            help="Prevent FCB from doing anything else. FCB won't actually shut off, " "but it won't do or respond to anything",
         )
 
         # Parse arguments
@@ -170,9 +167,7 @@ class FcbCli:
         return help_str.strip(self._COMPLETE)
 
     def run_offload_help(self) -> str:
-        self.serial_port.write(
-            self._linebreak(self._OFFLOAD_HELP_COMMAND).encode("utf-8")
-        )
+        self.serial_port.write(self._linebreak(self._OFFLOAD_HELP_COMMAND).encode("utf-8"))
         if not self._read_ack():
             raise FcbNoAckError(fcb_command=self._OFFLOAD_HELP_COMMAND)
         help_bytes = self.serial_port.read(size=10000)
@@ -191,11 +186,7 @@ class FcbCli:
         """
 
         # Start offloading provided flight number
-        self.serial_port.write(
-            self._linebreak(
-                self._OFFLOAD_FLIGHT_COMMAND.format(flight_num=flight_num)
-            ).encode("utf-8")
-        )
+        self.serial_port.write(self._linebreak(self._OFFLOAD_FLIGHT_COMMAND.format(flight_num=flight_num)).encode("utf-8"))
         if not self._read_ack():
             raise FcbNoAckError(fcb_command=self._OFFLOAD_FLIGHT_COMMAND)
 
@@ -231,9 +222,7 @@ class FcbCli:
         output_csv_file = open(output_csv_filepath, "w", newline="")
         csv_writer = csv.writer(output_csv_file)
         csv_writer.writerow([prop.name for prop in self._log_data_struct])
-        log_struct_str = (
-            f"<{''.join([prop.unpack_str for prop in self._log_data_struct])}"
-        )
+        log_struct_str = f"<{''.join([prop.unpack_str for prop in self._log_data_struct])}"
         log_struct_size = struct.Struct(log_struct_str).size
         while True:
             packed_data = input_bin_file.read(log_struct_size)

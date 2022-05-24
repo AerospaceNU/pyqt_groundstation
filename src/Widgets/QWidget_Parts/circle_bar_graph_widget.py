@@ -40,9 +40,7 @@ class CircleBarGraphWidget(QLabel):
         self.maxValue = max_value
 
         if bar_color is not None:
-            [red, green, blue] = [
-                int(float(i)) for i in bar_color.split("(")[1].split(")")[0].split(",")
-            ]
+            [red, green, blue] = [int(float(i)) for i in bar_color.split("(")[1].split(")")[0].split(",")]
             self.barColor = QColor(red, green, blue)
         else:
             self.barColor = QColor(50, 50, 255)
@@ -71,9 +69,7 @@ class CircleBarGraphWidget(QLabel):
         font_height = int(font_size * 1.5)
 
         value_text = str(self.value)[0:6]
-        painter.drawText(
-            QRect(0, 0, self.width(), self.height() * 0.9), Qt.AlignCenter, value_text
-        )
+        painter.drawText(QRect(0, 0, self.width(), self.height() * 0.9), Qt.AlignCenter, value_text)
 
         small_font_size = max(font_size / 2, 6)
         painter.setFont(QFont("Monospace", small_font_size))
@@ -114,9 +110,7 @@ class CircleBarGraphWidget(QLabel):
 
     def setTextColor(self, text_color: str):
         if "rgb" in text_color:
-            [red, green, blue] = [
-                int(float(i)) for i in text_color.split("(")[1].split(")")[0].split(",")
-            ]
+            [red, green, blue] = [int(float(i)) for i in text_color.split("(")[1].split(")")[0].split(",")]
             self.textColor = QColor(red, green, blue)
         else:
             self.textColor = QColor(text_color)
@@ -135,7 +129,5 @@ class CircleBarGraphWidget(QLabel):
         return str(self.maxValue)
 
     def getColor(self):
-        color_string = "rgb({0},{1},{2})".format(
-            self.barColor.red(), self.barColor.green(), self.barColor.blue()
-        )
+        color_string = "rgb({0},{1},{2})".format(self.barColor.red(), self.barColor.green(), self.barColor.blue())
         return color_string

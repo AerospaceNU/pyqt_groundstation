@@ -114,9 +114,7 @@ def get_edges_for_tile_set(tile_set, zoom):
 
     for x in range(x_min, x_max + 1):
         for y in range(y_min, y_max + 1):
-            edges = tile_edges(
-                x, y, zoom
-            )  # lon, lat, lon, lat, but not really clear what order
+            edges = tile_edges(x, y, zoom)  # lon, lat, lon, lat, but not really clear what order
 
             max_lat = max(edges[1], edges[3])  # Find mins and maxes
             min_lat = min(edges[1], edges[3])

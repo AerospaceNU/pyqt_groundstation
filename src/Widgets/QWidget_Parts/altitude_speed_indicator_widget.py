@@ -19,9 +19,7 @@ class AltitudeSpeedIndicatorWidget(QLabel):
         self.size = 200
 
         self.textSpacing = text_spacing  # Delta Value between lines
-        self.intermediateLines = int(
-            intermediate_lines
-        )  # Number of lines to draw between text
+        self.intermediateLines = int(intermediate_lines)  # Number of lines to draw between text
         self.pixelsPerLine = int(pixels_per_line)
         self.deltaValuePerTick = 0.4 * float(self.textSpacing)
 
@@ -58,15 +56,11 @@ class AltitudeSpeedIndicatorWidget(QLabel):
 
         line_width = self.height() / 100
 
-        painter.translate(
-            int(self.width() / 2), int(self.height() / 2)
-        )  # Set our coordinate system to be centered on the widget
+        painter.translate(int(self.width() / 2), int(self.height() / 2))  # Set our coordinate system to be centered on the widget
         painter.setPen(QPen(Qt.white, line_width, Qt.SolidLine))
         painter.setBrush(QBrush(Qt.white, Qt.SolidPattern))
 
-        lines_to_draw = (self.height() / 2) / (
-            self.pixelsPerLine / (self.intermediateLines + 1)
-        )
+        lines_to_draw = (self.height() / 2) / (self.pixelsPerLine / (self.intermediateLines + 1))
         line_delta_value = self.textSpacing / (self.intermediateLines + 1)
 
         start_x = int(self.width() / 2)
@@ -78,9 +72,7 @@ class AltitudeSpeedIndicatorWidget(QLabel):
 
         rounded_value = nearest_multiple(self.value, self.textSpacing)
         delta_value_per_pixel = float(self.textSpacing) / float(self.pixelsPerLine)
-        center_offset_pixels = float(rounded_value - self.value) / float(
-            delta_value_per_pixel
-        )
+        center_offset_pixels = float(rounded_value - self.value) / float(delta_value_per_pixel)
         line_pixel_spacing = self.pixelsPerLine / (self.intermediateLines + 1)
 
         for i in range(-int(lines_to_draw), int(lines_to_draw + 2)):
