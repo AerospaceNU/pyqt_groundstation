@@ -1,5 +1,5 @@
 [flake8]
-max-line-length = 88
+max-line-length = 250
 docstring-convention = pep257
 select = C,E,F,W,B,D,B950
 extend-ignore =

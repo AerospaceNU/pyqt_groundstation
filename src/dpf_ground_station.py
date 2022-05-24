@@ -47,9 +47,7 @@ from src.Widgets import (
 
 if sys.platform == "linux":  # I don't even know anymore
     if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:
-        os.environ.pop(
-            "QT_QPA_PLATFORM_PLUGIN_PATH"
-        )  # https://stackoverflow.com/questions/63829991/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it
+        os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")  # https://stackoverflow.com/questions/63829991/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it
 
 # Background, Widget Background, Text, Header Text, Border
 THEMES = {}
@@ -110,30 +108,22 @@ class DPFGUI:
         self.GUIStopCommanded = False  # Currently not used, but can be set to True to stop the GUI in the correct thread
 
         # This could use some restructuring
-        self.database_dictionary = (
-            {}
-        )  # Big dictionary that contains the overall database all the widgets draw from
-        self.updated_data_dictionary = (
-            {}
-        )  # Tracks which keys are new since the last GUI loop
-        self.ConsoleData = [
-            []
-        ]  # List of log messages in primary console [[message, level], []...]
-        self.callbackFunctions = (
-            {}
-        )  # Dictionary of list of callback functions that can be called from any widget.  These are typically added by modules.  {callback_name: [function_pointer, pointer, ...], ...}
-        self.callback_queue = (
-            []
-        )  # List of callback function names to call.  These are called in the GUI thread during the update() function
-        self.module_dictionary = (
-            {}
-        )  # Dictionary of module objects {module_name: module_object, ...}
-        self.module_load_time_dictionary = (
-            {}
-        )  # Dictionary of module load times {module_name: load_time, ...}
-        self.hidden_modules = (
-            []
-        )  # List of modules that we don't provide a drop-down option to enable or disable
+        # Big dictionary that contains the overall database all the widgets draw from
+        self.database_dictionary = {}
+        # Tracks which keys are new since the last GUI loop
+        self.updated_data_dictionary = {}
+        # List of log messages in primary console [[message, level], []...]
+        self.ConsoleData = [[]]
+        # Dictionary of list of callback functions that can be called from any widget.  These are typically added by modules.  {callback_name: [function_pointer, pointer, ...], ...}
+        self.callbackFunctions = {}
+        # List of callback function names to call.  These are called in the GUI thread during the update() function
+        self.callback_queue = []
+        # Dictionary of module objects {module_name: module_object, ...}
+        self.module_dictionary = {}
+        # Dictionary of module load times {module_name: load_time, ...}
+        self.module_load_time_dictionary = {}
+        # List of modules that we don't provide a drop-down option to enable or disable
+        self.hidden_modules = []
         self.playback_data_sources = []
         self.current_playback_source = ""
 
@@ -151,9 +141,7 @@ class DPFGUI:
 
         self.application = QApplication([])  # PyQt Application object
         self.mainWindow = QMainWindow()  # PyQt MainWindow widget
-        self.tabHolderWidget = QTabWidget(
-            self.mainWindow
-        )  # TabHolderWidget to contain tabs
+        self.tabHolderWidget = QTabWidget(self.mainWindow)  # TabHolderWidget to contain tabs
 
         # Set up main window
         self.mainWindow.show()
@@ -166,9 +154,7 @@ class DPFGUI:
         self.modules_menu = QMenu()
         self.playback_source_menu = QMenu()
         self.serial_devices = []  # List of names of devices that use a serial port
-        self.serial_devices_ports = (
-            {}
-        )  # Dictionary of which ports said device is using {device: port, ...}
+        self.serial_devices_ports = {}  # Dictionary of which ports said device is using {device: port, ...}
 
         # List of classes of widgets that can be dynamically created
         self.widgetClasses = {
@@ -260,15 +246,11 @@ class DPFGUI:
         sorted_keys = list(self.widgetClasses.keys())
         sorted_keys.sort()
         for item in sorted_keys:
-            widget_menu.addAction(
-                item, lambda name=item: self.makeNewWidgetInCurrentTab(name)
-            )
+            widget_menu.addAction(item, lambda name=item: self.makeNewWidgetInCurrentTab(name))
 
         widget_menu_2 = insert_menu.addMenu("Widget as own window")
         for item in sorted_keys:
-            widget_menu_2.addAction(
-                item, lambda name=item: self.makeNewWidgetInNewWindow(name)
-            )
+            widget_menu_2.addAction(item, lambda name=item: self.makeNewWidgetInNewWindow(name))
 
         tab_menu = insert_menu.addMenu("New Tab")
         sorted_tabs = list(self.tabClasses.keys())
@@ -286,16 +268,12 @@ class DPFGUI:
         # Menu bar to change theme
         theme_menu = menu_bar.addMenu("Theme")
         for theme in THEMES:
-            theme_menu.addAction(
-                theme, lambda theme_name=theme: self.setThemeByName(theme_name)
-            )
+            theme_menu.addAction(theme, lambda theme_name=theme: self.setThemeByName(theme_name))
 
         # Menu bar to set serial port
         # Because the available serial ports and data interfaces change after this class is created, we run a method every time we create the menu
         self.serial_devices_menu = menu_bar.addMenu("Serial Devices")
-        self.serial_devices_menu.aboutToShow.connect(
-            self.refreshSerialDevices
-        )  # aboutToShow runs before the menu is created
+        self.serial_devices_menu.aboutToShow.connect(self.refreshSerialDevices)  # aboutToShow runs before the menu is created
 
         # Menu bar to enable/disable data interfaces
         self.modules_menu = menu_bar.addMenu("Modules")
@@ -314,9 +292,7 @@ class DPFGUI:
         self.callback_queue.append([callback_name, port_name])
         self.serial_devices_ports[device_name] = port_name
 
-        if (
-            port_name == ""
-        ):  # Don't need to do anything more if we're disconnecting this device
+        if port_name == "":  # Don't need to do anything more if we're disconnecting this device
             return
 
         # Otherwise, make sure no one else is using the port
@@ -342,10 +318,7 @@ class DPFGUI:
             # If we just enabled module that should be by itself, disable the others
             if interface.primary_module and interface.enabled:
                 for target_module_name in self.module_dictionary:
-                    if (
-                        target_module_name != module_name
-                        and self.module_dictionary[target_module_name].primary_module
-                    ):
+                    if target_module_name != module_name and self.module_dictionary[target_module_name].primary_module:
                         self.module_dictionary[target_module_name].setEnabled(False)
         else:
             self.updateConsole("Module {} does not exist".format(module_name), 2)
@@ -358,19 +331,9 @@ class DPFGUI:
             if interfaceName in self.hidden_modules:
                 pass
             elif interface.enabled:
-                self.modules_menu.addAction(
-                    "Disable {}".format(interfaceName),
-                    lambda target_interface=interfaceName: self.toggleModuleEnabledState(
-                        target_interface
-                    ),
-                )
+                self.modules_menu.addAction("Disable {}".format(interfaceName), lambda target_interface=interfaceName: self.toggleModuleEnabledState(target_interface))
             else:
-                self.modules_menu.addAction(
-                    "Enable {}".format(interfaceName),
-                    lambda target_interface=interfaceName: self.toggleModuleEnabledState(
-                        target_interface
-                    ),
-                )
+                self.modules_menu.addAction("Enable {}".format(interfaceName), lambda target_interface=interfaceName: self.toggleModuleEnabledState(target_interface))
 
     def refreshSerialDevices(self):
         serial_ports = [comport for comport in serial.tools.list_ports.comports()]
@@ -380,26 +343,13 @@ class DPFGUI:
             device_menu = self.serial_devices_menu.addMenu(device)
 
             for port in serial_ports:
-                device_menu.addAction(
-                    "{0}: {1}".format(port.device, port.description),
-                    lambda portName=port.device, device_name=device: self.setActiveSerialPort(
-                        portName, device_name
-                    ),
-                )
-            device_menu.addAction(
-                "Disconnect",
-                lambda portName="", device_name=device: self.setActiveSerialPort(
-                    portName, device_name
-                ),
-            )  # Kind of a hack
+                device_menu.addAction("{0}: {1}".format(port.device, port.description), lambda portName=port.device, device_name=device: self.setActiveSerialPort(portName, device_name))
+                device_menu.addAction("Disconnect", lambda portName="", device_name=device: self.setActiveSerialPort(portName, device_name))  # Kind of a hack
 
     def playbackOptionsMenu(self):
         self.playback_source_menu.clear()
         for option in self.playback_data_sources:
-            self.playback_source_menu.addAction(
-                option,
-                lambda option_name=option: self.setCurrentPlaybackOption(option_name),
-            )
+            self.playback_source_menu.addAction(option, lambda option_name=option: self.setCurrentPlaybackOption(option_name))
 
     def setCurrentPlaybackOption(self, option):
         self.current_playback_source = option
@@ -420,13 +370,8 @@ class DPFGUI:
         for interface in self.module_dictionary:
             interface_object = self.module_dictionary[interface]
             if interface_object.hasRecordedData():
-                interface_runs = [
-                    "{0} | {1}".format(interface, run)
-                    for run in interface_object.getRunNames()
-                ]
-                self.playback_data_sources = list(
-                    set(self.playback_data_sources + interface_runs)
-                )
+                interface_runs = ["{0} | {1}".format(interface, run) for run in interface_object.getRunNames()]
+                self.playback_data_sources = list(set(self.playback_data_sources + interface_runs))
                 self.playback_data_sources.sort()
             self.updateDatabaseDictionary(interface_object.getDataDictionary())
 
@@ -437,13 +382,8 @@ class DPFGUI:
         # Send full database dictionary back to the data interfaces
         for interface in self.module_dictionary:
             try:
-                self.module_dictionary[interface].setFullDataDictionary(
-                    self.database_dictionary
-                )
-                self.updateReconfigureOptions(
-                    Constants.primary_reconfigure,
-                    self.module_dictionary[interface].getReconfigureDictionary(),
-                )
+                self.module_dictionary[interface].setFullDataDictionary(self.database_dictionary)
+                self.updateReconfigureOptions(Constants.primary_reconfigure, self.module_dictionary[interface].getReconfigureDictionary())
             except RuntimeError:  # Sometimes there's a "dictionary changed size during iteration" error here that I don't want to debug
                 pass
 
@@ -454,18 +394,11 @@ class DPFGUI:
         # Update tabs
         tab_index_to_remove = -1
         for tab in self.tabObjects:
-            self.callback_queue += tab.updateVehicleData(
-                self.database_dictionary,
-                self.ConsoleData,
-                self.updated_data_dictionary,
-                recorded_data_dict,
-            )
+            self.callback_queue += tab.updateVehicleData(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary, recorded_data_dict)
             if tab.isClosed:
                 tab_index_to_remove = self.tabObjects.index(tab)
 
-        if (
-            tab_index_to_remove != -1
-        ):  # Can't do this in the loop above, because python freaks when you change the size of a list while iterating through it
+        if tab_index_to_remove != -1:  # Can't do this in the loop above, because python freaks when you change the size of a list while iterating through it
             self.tabObjects.pop(tab_index_to_remove)
             self.placeHolderList.pop(tab_index_to_remove)
 
@@ -507,11 +440,7 @@ class DPFGUI:
                 widget = self.widgetClasses[widget_name](parent)
             return widget
         except all as e:
-            print(
-                "Dynamically creating {} type widgets is not supported yet".format(
-                    widget_name
-                )
-            )
+            print("Dynamically creating {} type widgets is not supported yet".format(widget_name))
             print(e)
             return QWidget(parent)
 
@@ -528,11 +457,7 @@ class DPFGUI:
         if name in self.widgetClasses:
             activeTab = self.getActiveTabObject()
             if activeTab is not None:
-                activeTab.addWidget(
-                    self.createWidgetFromName(
-                        name, parent=activeTab, in_new_window=True
-                    )
-                )
+                activeTab.addWidget(self.createWidgetFromName(name, parent=activeTab, in_new_window=True))
                 activeTab.updateTheme()
         else:
             print("No widget named {}".format(name))
@@ -565,18 +490,12 @@ class DPFGUI:
         else:
             new_tab_object = tab(vehicle_name)
             new_tab_object.show()
-            new_tab_object.setStyleSheet(
-                src.data_helpers.make_stylesheet_string(
-                    "background", self.backgroundColor
-                )
-            )
+            new_tab_object.setStyleSheet(src.data_helpers.make_stylesheet_string("background", self.backgroundColor))
 
         self.tabObjects.append(new_tab_object)
         self.tabNames.append(vehicle_name)
 
-        self.placeHolderList.append(
-            placeholder.Placeholder(new_tab_object)
-        )  # Something needs to be updating for the GUI to function, so we make a silly thing to always do that
+        self.placeHolderList.append(placeholder.Placeholder(new_tab_object))  # Something needs to be updating for the GUI to function, so we make a silly thing to always do that
         new_tab_object.setTheme(
             self.backgroundColor,
             self.widgetBackgroundColor,
@@ -593,12 +512,12 @@ class DPFGUI:
             print("No Theme named {}".format(name))
 
     def setTheme(
-        self,
-        background: str,
-        widget_background: str,
-        text: str,
-        header_text: str,
-        border: str,
+            self,
+            background: str,
+            widget_background: str,
+            text: str,
+            header_text: str,
+            border: str,
     ):
         """
         Sets theme from given color strings.  Currently the only accepted format for color strings is rgb(red,green,blue), but I'm going to add more at some point.
@@ -610,109 +529,58 @@ class DPFGUI:
         :param border: Widget border color
         """
 
-        self.backgroundColor = src.data_helpers.get_well_formatted_rgb_string(
-            background
-        )
-        self.widgetBackgroundColor = src.data_helpers.get_well_formatted_rgb_string(
-            widget_background
-        )
+        self.backgroundColor = src.data_helpers.get_well_formatted_rgb_string(background)
+        self.widgetBackgroundColor = src.data_helpers.get_well_formatted_rgb_string(widget_background)
         self.textColor = src.data_helpers.get_well_formatted_rgb_string(text)
-        self.headerTextColor = src.data_helpers.get_well_formatted_rgb_string(
-            header_text
-        )
+        self.headerTextColor = src.data_helpers.get_well_formatted_rgb_string(header_text)
         self.borderColor = src.data_helpers.get_well_formatted_rgb_string(border)
 
         [red, green, blue] = src.data_helpers.get_rgb_from_string(background)
-        slightly_darker_color = src.data_helpers.format_rgb_string(
-            max(red - 10, 0), max(green - 10, 0), max(blue - 10, 0)
-        )
+        slightly_darker_color = src.data_helpers.format_rgb_string(max(red - 10, 0), max(green - 10, 0), max(blue - 10, 0))
 
-        self.mainWindow.setStyleSheet(
-            "QWidget#"
-            + self.mainWindow.objectName()
-            + "{"
-            + src.data_helpers.make_stylesheet_string(
-                "background", slightly_darker_color
-            )
-            + src.data_helpers.make_stylesheet_string("color", self.textColor)
-            + "}"
-        )
+        self.mainWindow.setStyleSheet("QWidget#" + self.mainWindow.objectName() + "{" + src.data_helpers.make_stylesheet_string("background", slightly_darker_color) + src.data_helpers.make_stylesheet_string("color", self.textColor) + "}")
         self.mainWindow.menuBar().setStyleSheet(
-            "QWidget#"
-            + self.mainWindow.menuBar().objectName()
-            + "{"
-            + src.data_helpers.make_stylesheet_string(
-                "background", slightly_darker_color
-            )
-            + src.data_helpers.make_stylesheet_string("color", self.textColor)
-            + "}"
-        )
+            "QWidget#" + self.mainWindow.menuBar().objectName() + "{" + src.data_helpers.make_stylesheet_string("background", slightly_darker_color) + src.data_helpers.make_stylesheet_string("color", self.textColor) + "}")
 
-        self.tabHolderWidget.setStyleSheet(
-            "QWidget#"
-            + self.tabHolderWidget.objectName()
-            + "{"
-            + src.data_helpers.make_stylesheet_string(
-                "background", self.backgroundColor
-            )
-            + src.data_helpers.make_stylesheet_string("color", self.textColor)
-            + "}"
-        )
+        self.tabHolderWidget.setStyleSheet("QWidget#" + self.tabHolderWidget.objectName() + "{" + src.data_helpers.make_stylesheet_string("background", self.backgroundColor) + src.data_helpers.make_stylesheet_string("color", self.textColor) + "}")
         self.tabHolderWidget.tabBar().setStyleSheet(
-            "QWidget#"
-            + self.tabHolderWidget.tabBar().objectName()
-            + "{"
-            + src.data_helpers.make_stylesheet_string(
-                "background", slightly_darker_color
-            )
-            + src.data_helpers.make_stylesheet_string("color", self.textColor)
-            + "}"
+            "QWidget#" + self.tabHolderWidget.tabBar().objectName() + "{" + src.data_helpers.make_stylesheet_string("background", slightly_darker_color) + src.data_helpers.make_stylesheet_string("color", self.textColor) + "}"
         )
 
         if sys.platform == "win32":
-            darkerBackground = src.data_helpers.generateDarkerColor(
-                self.backgroundColor, 10
-            )
-            darkerDarkerBorder = src.data_helpers.generateDarkerColor(
-                darkerBackground, 10
-            )
+            darkerBackground = src.data_helpers.generateDarkerColor(self.backgroundColor, 10)
+            darkerDarkerBorder = src.data_helpers.generateDarkerColor(darkerBackground, 10)
             newBorderColor = "rgb(50,50,50)"
 
             stylesheet_string = (
-                "QTabWidget::pane { border: 1px solid "
-                + newBorderColor
-                + ";}"
-                + "QTabWidget::tab-bar {left: 0px; }"
-                + "QTabBar::tab {background: "
-                + darkerBackground
-                + "; color: "
-                + self.textColor
-                + ";border: 1px solid "
-                + newBorderColor
-                + ";border-bottom-color: "
-                + darkerDarkerBorder
-                + "; border-top-left-radius: 2px;border-top-right-radius: 2px;min-width: 8ex;padding: 4px;}"
-                + "QTabBar::tab:selected, QTabBar::tab:hover {background: "
-                + darkerBackground
-                + "}"
-                + "QTabBar::tab:selected {border-color: "
-                + newBorderColor
-                + ";border-bottom-color: "
-                + darkerDarkerBorder
-                + "; }"
-                + "QTabBar::tab:!selected {margin-top: 2px;}"
+                    "QTabWidget::pane { border: 1px solid "
+                    + newBorderColor
+                    + ";}"
+                    + "QTabWidget::tab-bar {left: 0px; }"
+                    + "QTabBar::tab {background: "
+                    + darkerBackground
+                    + "; color: "
+                    + self.textColor
+                    + ";border: 1px solid "
+                    + newBorderColor
+                    + ";border-bottom-color: "
+                    + darkerDarkerBorder
+                    + "; border-top-left-radius: 2px;border-top-right-radius: 2px;min-width: 8ex;padding: 4px;}"
+                    + "QTabBar::tab:selected, QTabBar::tab:hover {background: "
+                    + darkerBackground
+                    + "}"
+                    + "QTabBar::tab:selected {border-color: "
+                    + newBorderColor
+                    + ";border-bottom-color: "
+                    + darkerDarkerBorder
+                    + "; }"
+                    + "QTabBar::tab:!selected {margin-top: 2px;}"
             )
 
             self.tabHolderWidget.setStyleSheet(stylesheet_string)
 
         for tab in self.tabObjects:
-            tab.setTheme(
-                self.backgroundColor,
-                self.widgetBackgroundColor,
-                self.textColor,
-                self.headerTextColor,
-                self.borderColor,
-            )
+            tab.setTheme(self.backgroundColor, self.widgetBackgroundColor, self.textColor, self.headerTextColor, self.borderColor)
 
     def updateConsole(self, value, level):
         self.ConsoleData = ([[value, level]] + self.ConsoleData)[:40]
@@ -731,9 +599,7 @@ class DPFGUI:
             if callback[0] in self.callbackFunctions:
                 callback_list = self.callbackFunctions[callback[0]]
                 for callback_function in callback_list:
-                    callback_function(
-                        callback[1]
-                    )  # <sarcasm>What amazingly clean code</sarcasm>
+                    callback_function(callback[1])  # <sarcasm>What amazingly clean code</sarcasm>
             else:
                 pass
                 # print("{} isn't a valid callback".format(callback[0]))  # Debugging code
@@ -745,13 +611,7 @@ class DPFGUI:
 
         self.callbackFunctions[target].append(callback)
 
-    def addModule(
-        self,
-        interface_name: str,
-        interface_class: type(ThreadedModuleCore),
-        enabled=True,
-        hide_toggle=False,
-    ):
+    def addModule(self, interface_name: str, interface_class: type(ThreadedModuleCore), enabled=True, hide_toggle=False, ):
         try:
             start_time = time.time()
 
@@ -773,26 +633,18 @@ class DPFGUI:
                 self.addCallback(callback_name, callback_function)
                 if device not in self.serial_devices:
                     self.serial_devices.append(device)
-                    self.serial_devices_ports[
-                        device
-                    ] = ""  # Want to start everything up unconnected
-                    self.setActiveSerialPort(
-                        "", device
-                    )  # Force the module to comply with our demands
+                    self.serial_devices_ports[device] = ""  # Want to start everything up unconnected
+                    self.setActiveSerialPort("", device)  # Force the module to comply with our demands
 
             if hide_toggle:
                 self.hidden_modules.append(interface_name)
 
-            self.module_dictionary[
-                interface_name
-            ] = interface_object  # Append last so it doesn't get appended if any errors pop up
+            self.module_dictionary[interface_name] = interface_object  # Append last so it doesn't get appended if any errors pop up
 
             delta_time = time.time() - start_time
             self.module_load_time_dictionary[interface_name] = delta_time
         except Exception as e:  # Should catch a lot of errors loading in modules
-            error_string = "Could not load module {0} of type {1}: {2}".format(
-                interface_name, interface_class, e
-            )
+            error_string = "Could not load module {0} of type {1}: {2}".format(interface_name, interface_class, e)
             print(error_string)
             self.updateConsole(error_string, 2)
 
