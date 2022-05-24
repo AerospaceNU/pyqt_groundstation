@@ -118,7 +118,7 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
                     rssi_val = rssi_val.strip(" db")
                     try:
                         dictionary[Constants.rssi_val_key] = float(rssi_val)
-                    except:
+                    except ValueError:
                         pass
 
             self.data_dictionary.update(dictionary)

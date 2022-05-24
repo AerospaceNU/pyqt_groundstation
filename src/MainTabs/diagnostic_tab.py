@@ -3,8 +3,6 @@ Blank tab with diagnostic boxes
 """
 from src.MainTabs.main_tab_common import TabCommon
 from src.Widgets import (
-    complete_console_widget,
-    gl_display_widget,
     pyro_display_widget,
     reconfigure_widget,
     simple_console_widget,

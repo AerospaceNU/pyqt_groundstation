@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPolygon, QRegion
+from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPolygon
 from PyQt5.QtWidgets import QLabel, QWidget
 
 

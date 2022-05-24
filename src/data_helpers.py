@@ -75,7 +75,7 @@ def check_type(value, data_type):
     try:
         data_type(value)
         return True
-    except:
+    except ValueError:
         return False
 
 

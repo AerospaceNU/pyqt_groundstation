@@ -2,9 +2,9 @@
 Console
 """
 
-from PyQt5 import QtCore, QtGui
+from PyQt5 import QtGui
 from PyQt5.QtGui import QColor, QFont, QPainter
-from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget
+from PyQt5.QtWidgets import QWidget
 
 from src.Widgets import custom_q_widget_base
 

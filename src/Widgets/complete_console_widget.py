@@ -2,7 +2,6 @@
 Text box widget
 """
 from PyQt5 import QtCore
-from PyQt5.QtCore import QEvent
 from PyQt5.QtGui import QFont, QKeyEvent
 from PyQt5.QtWidgets import QGridLayout, QLabel, QLineEdit
 

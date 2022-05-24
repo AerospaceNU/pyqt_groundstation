@@ -3,14 +3,7 @@ Widget for buttons
 """
 
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import (
-    QComboBox,
-    QGridLayout,
-    QLabel,
-    QPushButton,
-    QSizePolicy,
-    QWidget,
-)
+from PyQt5.QtWidgets import QComboBox, QGridLayout, QPushButton, QSizePolicy, QWidget
 
 from src.Widgets import custom_q_widget_base
 

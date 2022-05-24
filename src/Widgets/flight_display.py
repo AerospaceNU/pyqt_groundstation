@@ -7,7 +7,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget
 
 from src.constants import Constants
-from src.data_helpers import get_value_from_dictionary, round_to_string
+from src.data_helpers import round_to_string
 from src.Widgets import custom_q_widget_base
 from src.Widgets.QWidget_Parts import (
     altitude_speed_indicator_widget,

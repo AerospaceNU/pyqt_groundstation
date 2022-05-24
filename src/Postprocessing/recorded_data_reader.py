@@ -44,7 +44,6 @@ class RecordedDataReader(object):
             else:
                 try:
                     timestamp = line.split(" ")[0][0:-1]
-                    nan = float("NaN")  # Hack to make the eval statement work if nans are saved out
                     packet_type = line.split(timestamp)[1].split("{")[0][2:].strip()  # don't even ask
                     packet_data = eval("{" + line.split("{")[1])
 

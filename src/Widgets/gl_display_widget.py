@@ -103,7 +103,6 @@ class ThreeDDisplay(CustomQWidgetBase):
 
     def loadSTL(self, filename):
         m = mesh.Mesh.from_file(filename)
-        shape = m.points.shape
         points = m.points.reshape(-1, 3)
         faces = np.arange(points.shape[0]).reshape(-1, 3)
         return points, faces

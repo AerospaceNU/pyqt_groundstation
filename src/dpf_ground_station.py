@@ -26,7 +26,6 @@ from src.MainTabs.settings_tab import SettingsTab
 from src.Modules.data_interface_core import ThreadedModuleCore
 from src.Widgets import (
     annunciator_panel,
-    board_cli_wrapper,
     board_usb_offloader_widget,
     complete_console_widget,
     control_station_status,
