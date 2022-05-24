@@ -29,7 +29,7 @@ class NavballWidget(custom_q_widget_base.CustomQWidgetBase):
             roll = get_value_from_dictionary(vehicle_data, Constants.roll_position_key, 0)
             pitch = get_value_from_dictionary(vehicle_data, Constants.pitch_position_key, 0)
             yaw = get_value_from_dictionary(vehicle_data, Constants.yaw_position_key, 0)
-            self.navballDisplayWidget.settRPY(roll, pitch, yaw)
+            self.navballDisplayWidget.setRPY(roll, pitch, yaw)
 
     def updateInFocus(self):
         self.navballDisplayWidget.update()  # Re-render navball

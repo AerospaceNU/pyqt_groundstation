@@ -14,11 +14,12 @@ from src.Widgets.QWidget_Parts import (
     attitude_display_widget,
     compass_display_widget,
     v_speed_indicator_widget,
+    navball_display_widget,
 )
 
 
 class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
-    def __init__(self, widget: QWidget = None, compass_and_text=False):
+    def __init__(self, widget: QWidget = None, use_navball_widget=True, compass_and_text=False):
         super().__init__(widget)
 
         self.scale = 200
@@ -29,81 +30,28 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.vSpeedScale = 1
         self.accelerationScale = 10
 
-        self.addSourceKey(
-            "pitch",
-            float,
-            Constants.pitch_position_key,
-            default_value=0,
-            hide_in_drop_down=True,
-        )
-        self.addSourceKey(
-            "roll",
-            float,
-            Constants.roll_position_key,
-            default_value=0,
-            hide_in_drop_down=True,
-        )
-        self.addSourceKey(
-            "yaw",
-            float,
-            Constants.yaw_position_key,
-            default_value=0,
-            hide_in_drop_down=True,
-        )
-        self.addSourceKey(
-            "altitude",
-            float,
-            Constants.altitude_key,
-            default_value=0,
-            hide_in_drop_down=True,
-        )
-        self.addSourceKey(
-            "speed",
-            float,
-            Constants.ground_speed_key,
-            default_value=0,
-            hide_in_drop_down=True,
-        )
-        self.addSourceKey(
-            "vspeed",
-            float,
-            Constants.vertical_speed_key,
-            default_value=0,
-            hide_in_drop_down=True,
-        )
-        self.addSourceKey(
-            "accel",
-            float,
-            Constants.acceleration_key,
-            default_value=0,
-            hide_in_drop_down=True,
-        )
+        self.addSourceKey("pitch", float, Constants.pitch_position_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("roll", float, Constants.roll_position_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("yaw", float, Constants.yaw_position_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("altitude", float, Constants.altitude_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("speed", float, Constants.ground_speed_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("vspeed", float, Constants.vertical_speed_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("accel", float, Constants.acceleration_key, default_value=0, hide_in_drop_down=True)
 
         self.SpeedTextBox = QLabel()
         self.VSpeedTextBox = QLabel()
         self.AltitudeTextBox = QLabel()
         self.TerrainTextBox = QLabel()
 
-        self.HUDWidget = attitude_display_widget.AttitudeDisplayWidget()
-        self.AltitudeWidget = (
-            altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(
-                text_spacing=50, pixels_per_line=20, intermediate_lines=0
-            )
-        )
-        self.SpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(
-            left_oriented=False,
-            text_spacing=1,
-            pixels_per_line=30,
-            intermediate_lines=2,
-        )
-        self.AccelerationWidget = v_speed_indicator_widget.VSpeedIndicatorWidget(
-            maxSpeed=self.accelerationScale, leftOriented=False
-        )
-        self.VSpeedWidget = (
-            altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(
-                text_spacing=10, pixels_per_line=20, intermediate_lines=0
-            )
-        )
+        if use_navball_widget:
+            self.HUDWidget = navball_display_widget.NavballDisplayWidget()
+        else:
+            self.HUDWidget = attitude_display_widget.AttitudeDisplayWidget()
+
+        self.AltitudeWidget = (altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(text_spacing=50, pixels_per_line=20, intermediate_lines=0))
+        self.SpeedWidget = altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(left_oriented=False, text_spacing=1, pixels_per_line=30, intermediate_lines=2)
+        self.AccelerationWidget = v_speed_indicator_widget.VSpeedIndicatorWidget(maxSpeed=self.accelerationScale, leftOriented=False)
+        self.VSpeedWidget = (altitude_speed_indicator_widget.AltitudeSpeedIndicatorWidget(text_spacing=10, pixels_per_line=20, intermediate_lines=0))
 
         layout = QGridLayout()
         layout.addWidget(self.SpeedWidget, 1, 1)
@@ -165,7 +113,7 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         v_speed = self.getDictValueUsingSourceKey("vspeed")
         acceleration = self.getDictValueUsingSourceKey("accel") / 9.8  # m/s^2 to g
 
-        self.HUDWidget.setRollPitch(roll, pitch)
+        self.HUDWidget.setRPY(roll, pitch, yaw)
         self.AltitudeWidget.setValue(altitude)
         self.SpeedWidget.setValue(ground_speed)
         self.VSpeedWidget.setValue(v_speed)
@@ -197,9 +145,10 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
 
         self.update()
         self.adjustSize()
+        self.HUDWidget.update()
 
     def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
+            self, widget_background_string, text_string, header_text_string, border_string
     ):
         self.SpeedTextBox.setStyleSheet(text_string)
         self.VSpeedTextBox.setStyleSheet(text_string)

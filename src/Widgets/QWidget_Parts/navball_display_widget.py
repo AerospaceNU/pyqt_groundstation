@@ -37,9 +37,8 @@ class NavballDisplayWidget(QOpenGLWidget):
 
     def setOrientation(self, quaternion):
         [self.roll, self.pitch, self.yaw] = quaternion_to_euler_angle(quaternion)
-        print(self.roll, self.pitch, self.yaw)
 
-    def settRPY(self, roll, pitch, yaw):
+    def setRPY(self, roll, pitch, yaw):
         self.roll = roll
         self.pitch = pitch
         self.yaw = yaw
