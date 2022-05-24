@@ -9,36 +9,19 @@ from src.Widgets.QWidget_Parts import basic_image_display
 
 class CompassDisplayWidget(QLabel):
     def __init__(self, parentWidget: QWidget = None):
-        self.imageLoaded = False
-
         super().__init__(parentWidget)
-
         self.size = 200
 
         dirName = os.path.dirname(__file__)
         dirName = os.path.abspath(os.path.join(dirName, "../.."))
-        compass = cv2.imread(
-            "{}/Assets/compass.png".format(dirName), cv2.IMREAD_UNCHANGED
-        )
-        arrowImg = cv2.resize(
-            cv2.imread("{}/Assets/arrow.png".format(dirName), cv2.IMREAD_UNCHANGED)[
-                900:2100, 900:2100
-            ],
-            (self.size, int(self.size / 2)),
-        )
+        compass = cv2.imread("{}/Assets/compass.png".format(dirName), cv2.IMREAD_UNCHANGED)
+        arrowImg = cv2.resize(cv2.imread("{}/Assets/arrow.png".format(dirName), cv2.IMREAD_UNCHANGED)[900:2100, 900:2100], (self.size, int(self.size / 2)), )
 
-        self.compassImage = basic_image_display.BasicImageDisplay(
-            self, compass, self.size
-        )
-        self.arrowImage = basic_image_display.BasicImageDisplay(
-            self, arrowImg, self.size
-        )
-
-        self.imageLoaded = True
+        self.compassImage = basic_image_display.BasicImageDisplay(compass, self.size, parent=self)
+        self.arrowImage = basic_image_display.BasicImageDisplay(arrowImg, self.size, parent=self)
 
     def setYaw(self, yaw):
-        yaw = -(yaw + 90)
-
+        yaw = yaw + 180
         self.arrowImage.setRotation(yaw)
 
     def setSize(self, size):
@@ -49,8 +32,8 @@ class CompassDisplayWidget(QLabel):
         self.setMinimumWidth(size)
         self.setMinimumHeight(size)
 
-        self.compassImage.setGeometry(size * 1)
-        self.arrowImage.setGeometry(size * 1)
+        self.compassImage.setTargetWidth(size * 1)
+        self.arrowImage.setTargetWidth(size * 1)
 
     def setCompassColor(self, colorString):
         [r, g, b] = get_rgb_from_string(colorString)
