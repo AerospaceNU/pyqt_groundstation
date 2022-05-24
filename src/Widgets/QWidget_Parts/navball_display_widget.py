@@ -2,8 +2,11 @@
 I literally have no idea what any of the opengl stuff does
 """
 
+import math
 import os
 import cv2
+from PyQt5.QtCore import QPoint
+from PyQt5.QtGui import QPolygon, QRegion
 
 from PyQt5.QtWidgets import QWidget, QOpenGLWidget
 
@@ -11,7 +14,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 from src.Widgets.QWidget_Parts.basic_image_display import BasicImageDisplay
-from src.data_helpers import quaternion_to_euler_angle
+from src.data_helpers import quaternion_to_euler_angle, interpolate
 
 
 class NavballDisplayWidget(QOpenGLWidget):
@@ -41,6 +44,27 @@ class NavballDisplayWidget(QOpenGLWidget):
         self.setMaximumHeight(size)
 
         self.crossHairImage.setTargetWidth(size * 0.7)
+
+        self.refreshMask()
+
+    def refreshMask(self):
+        # Set up circular mask for painter
+        num_points = 100
+        points = []
+        radius = (self.width() / 2.0) * 0.975
+
+        for i in range(num_points):
+            theta = interpolate(i, 0, num_points, 0, 6.28)
+            dx = math.cos(theta) * radius
+            dy = math.sin(theta) * radius
+            x = self.width() / 2 + dx
+            y = self.height() / 2 + dy
+
+            points.append(QPoint(int(x), int(y)))
+
+        poly = QPolygon(points)
+        region = QRegion(poly)
+        self.setMask(region)
 
     def setOrientation(self, quaternion):
         [self.roll, self.pitch, self.yaw] = quaternion_to_euler_angle(quaternion)
