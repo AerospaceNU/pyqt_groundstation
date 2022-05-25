@@ -73,7 +73,7 @@ class FCBOffloadModule(ThreadedModuleCore):
         time.sleep(0.1)
 
     def runsEveryLoop(self):
-        self.data_dictionary[Constants.cli_interface_usb_keyf] = self.cliConsole.getList()
+        self.data_dictionary[Constants.cli_interface_usb_key] = self.cliConsole.getList()
 
     def runCLICommand(self, command):
         """Function to tell python_avionics to run the cli command, and handle states where the serial port isn't open"""
