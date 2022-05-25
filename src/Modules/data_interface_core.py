@@ -29,9 +29,7 @@ class ThreadedModuleCore(threading.Thread):
         self.should_be_running = True
         self.enabled = True
         self.was_enabled = True
-        self.primary_module = (
-            False  # Only one module with this set to true should run at a time
-        )
+        self.primary_module = False  # Only one module with this set to true should run at a time
 
         self.console_callback = None
         self.last_console_message = ""
@@ -74,9 +72,7 @@ class ThreadedModuleCore(threading.Thread):
         """Logs data to GUI Console"""
         if self.enabled or override_disabled_check:
             if self.console_callback is not None:
-                self.console_callback(
-                    "{0}: {1}".format(time.strftime("%H:%M:%S"), value), level
-                )
+                self.console_callback("{0}: {1}".format(time.strftime("%H:%M:%S"), value), level)
                 self.last_console_message = value
 
     def logToConsoleThrottle(self, value, level, interval):
@@ -97,18 +93,14 @@ class ThreadedModuleCore(threading.Thread):
         """
         self.startUp()
         while self.should_be_running:
-            if (
-                self.enabled != self.was_enabled
-            ):  # If the enabled state changes, run the method for that
+            if self.enabled != self.was_enabled:  # If the enabled state changes, run the method for that
                 self.runOnEnableAndDisable()
                 self.was_enabled = self.enabled
 
             if self.enabled:
                 self.spin()
             self.runsEveryLoop()
-            time.sleep(
-                0.01
-            )  # Keep python from locking the database objects all the time
+            time.sleep(0.01)  # Keep python from locking the database objects all the time
         self.closeOut()
 
     def startUp(self):

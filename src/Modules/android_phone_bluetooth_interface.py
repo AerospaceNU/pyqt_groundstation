@@ -37,12 +37,7 @@ def format_lat_lon_for_nmea(latitude, longitude):
     else:
         lon_sign = "W"
 
-    return [
-        decimal_degrees_to_deg_min(latitude),
-        lat_sign,
-        decimal_degrees_to_deg_min(longitude),
-        lon_sign,
-    ]
+    return [decimal_degrees_to_deg_min(latitude), lat_sign, decimal_degrees_to_deg_min(longitude), lon_sign, ]
 
 
 class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
@@ -60,9 +55,7 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
         self.client_sock_list = []
 
         self.connection_thread = threading.Thread(target=self.advertise_bluetooth)
-        self.connection_thread.setDaemon(
-            True
-        )  # Means the thread dies when the main thread exits
+        self.connection_thread.setDaemon(True)  # Means the thread dies when the main thread exits
         self.connection_thread.start()
 
     def spin(self):
@@ -71,45 +64,16 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
         """
 
         try:
-            latitude = get_value_from_dictionary(
-                self.gui_full_data_dictionary, Constants.latitude_key, 0
-            )
-            longitude = get_value_from_dictionary(
-                self.gui_full_data_dictionary, Constants.longitude_key, 0
-            )
-            altitude = get_value_from_dictionary(
-                self.gui_full_data_dictionary, Constants.altitude_key, 0
-            )
-            message_age = get_value_from_dictionary(
-                self.gui_full_data_dictionary, Constants.message_age_key, 0
-            )
+            latitude = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.latitude_key, 0)
+            longitude = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.longitude_key, 0)
+            altitude = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.altitude_key, 0)
+            message_age = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.message_age_key, 0)
             time_str = time.strftime("%H%M%S")
 
             if latitude != 0 and longitude != 0 and message_age < 5:
-                [lat_min, lat_sign, lon_min, lon_sign] = format_lat_lon_for_nmea(
-                    latitude, longitude
-                )
+                [lat_min, lat_sign, lon_min, lon_sign] = format_lat_lon_for_nmea(latitude, longitude)
                 # time, lat, lon, fix quality, satellites, hdop, alt, alt_unit, height above wgs84, height unit, DGPS time, DGPS station
-                msg = pynmea2.GGA(
-                    "GP",
-                    "GGA",
-                    (
-                        time_str,
-                        lat_min,
-                        lat_sign,
-                        lon_min,
-                        lon_sign,
-                        "1",
-                        "04",
-                        "2.6",
-                        str(altitude),
-                        "M",
-                        "0",
-                        "M",
-                        "",
-                        "0000",
-                    ),
-                )
+                msg = pynmea2.GGA("GP", "GGA", (time_str, lat_min, lat_sign, lon_min, lon_sign, "1", "04", "2.6", str(altitude), "M", "0", "M", "", "0000",))
                 self.send_bluetooth(str(msg))
 
             time.sleep(1)
@@ -129,44 +93,27 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
             self.server_sock.listen(1)
             port = self.server_sock.getsockname()[1]
             uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
-            advertise_service(
-                self.server_sock,
-                "TestServer",
-                service_id=uuid,
-                service_classes=[uuid, SERIAL_PORT_CLASS],
-                profiles=[SERIAL_PORT_PROFILE],
-            )
+            advertise_service(self.server_sock, "TestServer", service_id=uuid, service_classes=[uuid, SERIAL_PORT_CLASS], profiles=[SERIAL_PORT_PROFILE], )
             self.logToConsole("Starting Bluetooth", 1)
         except bluetooth.btcommon.BluetoothError as e:
             self.logToConsole("Can't start bluetooth: {}".format(e), 2)
             if "permission" in str(e).lower() and sys.platform == "linux":
-                self.logToConsole(
-                    "Linux permission error for bluetooth, try running [sudo chmod o+rw /var/run/sdp]",
-                    2,
-                )
+                self.logToConsole("Linux permission error for bluetooth, try running [sudo chmod o+rw /var/run/sdp]", 2)
             can_start = False
 
         # Wait for connections, and add them to the client list
         while self.should_be_running and can_start:
             if self.enabled and not self.bluetooth_running:
-                self.logToConsole(
-                    "Waiting for connection on RFCOMM channel {}".format(port), 0
-                )
+                self.logToConsole("Waiting for connection on RFCOMM channel {}".format(port), 0)
             if not self.enabled and self.bluetooth_running:
-                self.logToConsole(
-                    "No longer advertising bluetooth on channel {}".format(port),
-                    1,
-                    override_disabled_check=True,
-                )
+                self.logToConsole("No longer advertising bluetooth on channel {}".format(port), 1, override_disabled_check=True)
 
             if self.enabled:
                 self.bluetooth_running = True
                 try:
                     client_socket, client_info = self.server_sock.accept()
                     self.client_sock_list.append(client_socket)
-                    self.logToConsole(
-                        "Accepted connection from {}".format(client_info), 1
-                    )
+                    self.logToConsole("Accepted connection from {}".format(client_info), 1)
                 except bluetooth.btcommon.BluetoothError as e:
                     pass
             else:

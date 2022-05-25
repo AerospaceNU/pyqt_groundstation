@@ -36,34 +36,16 @@ class FCBOffloadModule(ThreadedModuleCore):
 
     def updatePythonAvionicsSerialPort(self):
         try:
-            self.logToConsole(
-                "Attempting to connect to FCB over USB at port {}".format(
-                    self.serial_port_name
-                ),
-                1,
-                True,
-            )
+            self.logToConsole("Attempting to connect to FCB over USB at port {}".format(self.serial_port_name), 1, True)
             self.closeSerialPort()
             port_object = SerialPort(self.serial_port_name)
             self.python_avionics_fcb_cli.serial_port = port_object
             self.serial_connection = True
-            self.logToConsole(
-                "Successfully connected to FCB over USB at port {}".format(
-                    self.serial_port_name
-                ),
-                1,
-                True,
-            )
+            self.logToConsole("Successfully connected to FCB over USB at port {}".format(self.serial_port_name), 1, True)
             port_object.port.flushInput()
             port_object.port.flushOutput()
         except Exception:
-            self.logToConsole(
-                "Unable to connect to FCB over USB at port {0}".format(
-                    self.serial_port_name
-                ),
-                2,
-                True,
-            )
+            self.logToConsole("Unable to connect to FCB over USB at port {0}".format(self.serial_port_name), 2, True)
             self.serial_connection = False
 
     def cliCommand(self, command):
@@ -71,9 +53,7 @@ class FCBOffloadModule(ThreadedModuleCore):
         if self.enabled:
             self.command_queue.append(command)
         else:
-            self.cliConsole.manualAddEntry(
-                "FCB USB offload module not enabled, can not run commands", False
-            )
+            self.cliConsole.manualAddEntry("FCB USB offload module not enabled, can not run commands", False)
 
     def spin(self):
         if not self.serial_connection:
@@ -85,9 +65,7 @@ class FCBOffloadModule(ThreadedModuleCore):
             ret = self.runCLICommand(command)
 
             if ret is not None:
-                if (
-                    "Available flights to offload" in ret
-                ):  # Check and see if we have a list of flights, and update the database dictionary
+                if "Available flights to offload" in ret:  # Check and see if we have a list of flights, and update the database dictionary
                     self.data_dictionary[Constants.cli_flights_list_key] = ret
 
                 self.cliConsole.autoAddEntry(ret, True)
@@ -95,9 +73,7 @@ class FCBOffloadModule(ThreadedModuleCore):
         time.sleep(0.1)
 
     def runsEveryLoop(self):
-        self.data_dictionary[
-            Constants.cli_interface_usb_key
-        ] = self.cliConsole.getList()
+        self.data_dictionary[Constants.cli_interface_usb_keyf] = self.cliConsole.getList()
 
     def runCLICommand(self, command):
         """Function to tell python_avionics to run the cli command, and handle states where the serial port isn't open"""

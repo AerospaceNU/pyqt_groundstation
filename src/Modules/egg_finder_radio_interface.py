@@ -35,24 +35,15 @@ class EggFinderRadioInterface(ThreadedModuleCore):
     def spin(self):
         # TODO: Break serial logic out into base class
         if self.nextCheckTime <= time.time():
-            self.logToConsole(
-                "Trying to connect to egg finder on {}".format(self.serial_port), 0
-            )
+            self.logToConsole("Trying to connect to egg finder on {}".format(self.serial_port), 0)
             try:
-                self.serial = serial.Serial(
-                    self.serial_port, self.baud_rate, timeout=0.01
-                )  # Set the serial port timeout really small, so we only get one message at a time
+                self.serial = serial.Serial(self.serial_port, self.baud_rate, timeout=0.01)  # Set the serial port timeout really small, so we only get one message at a time
                 self.connected = True
                 self.connectedLoop()
                 self.nextCheckTime = time.time() + 1
                 self.serial.close()
             except IOError as e:
-                self.logToConsole(
-                    "Could not connect to egg finder on port {}".format(
-                        self.serial_port
-                    ),
-                    2,
-                )
+                self.logToConsole("Could not connect to egg finder on port {}".format(self.serial_port), 2)
                 # print(e)
                 self.nextCheckTime = time.time() + 5
 
@@ -67,21 +58,13 @@ class EggFinderRadioInterface(ThreadedModuleCore):
             while self.connected and self.should_be_running and self.enabled:
                 self.readData()
                 self.updateEveryLoop()
-                if (
-                    time.time() - self.last_data_time > 5
-                ):  # Timeout checks on any data, not just good data
-                    self.logToConsoleAndCheck(
-                        "Egg finder on port {} timed out".format(self.serial_port), 2
-                    )
+                if time.time() - self.last_data_time > 5:  # Timeout checks on any data, not just good data
+                    self.logToConsoleAndCheck("Egg finder on port {} timed out".format(self.serial_port), 2)
                     self.has_data = False
                 time.sleep(0.01)
-            self.logToConsole(
-                "Disconnected from egg finder on port {}".format(self.serial_port), 2
-            )
+            self.logToConsole("Disconnected from egg finder on port {}".format(self.serial_port), 2)
         except IOError:
-            self.logToConsole(
-                "Lost connection to egg finder on port {}".format(self.serial_port), 2
-            )
+            self.logToConsole("Lost connection to egg finder on port {}".format(self.serial_port), 2)
             self.connected = False
 
     def readData(self):
@@ -110,19 +93,11 @@ class EggFinderRadioInterface(ThreadedModuleCore):
                     msg = pynmea2.parse(nmea_string.strip())
 
                     if type(msg) == pynmea2.types.talker.GGA:
-                        self.logToConsole(
-                            "Egg finder : {1}".format(time.time(), msg), 0
-                        )
+                        self.logToConsole("Egg finder : {1}".format(time.time(), msg), 0)
 
-                        self.data_dictionary[
-                            Constants.egg_finder_latitude
-                        ] = msg.latitude
-                        self.data_dictionary[
-                            Constants.egg_finder_longitude
-                        ] = msg.longitude
-                        self.data_dictionary[
-                            Constants.egg_finder_altitude
-                        ] = msg.altitude
+                        self.data_dictionary[Constants.egg_finder_latitude] = msg.latitude
+                        self.data_dictionary[Constants.egg_finder_longitude] = msg.longitude
+                        self.data_dictionary[Constants.egg_finder_altitude] = msg.altitude
 
         except Exception as e:
             pass

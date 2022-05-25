@@ -37,20 +37,10 @@ class TextToSpeech(ThreadedModuleCore):
         self.descent_interval_seconds = 10
 
     def spin(self):
-        state = get_value_from_dictionary(
-            self.gui_full_data_dictionary, Constants.fcb_state_key, ""
-        )
-        altitude = get_value_from_dictionary(
-            self.gui_full_data_dictionary, Constants.altitude_key, "Invalid Altitude"
-        )
-        v_speed = get_value_from_dictionary(
-            self.gui_full_data_dictionary,
-            Constants.vertical_speed_key,
-            "Invalid Vertical Speed",
-        )
-        pyro_status = get_value_from_dictionary(
-            self.gui_full_data_dictionary, Constants.pyro_fire_status, []
-        )
+        state = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.fcb_state_key, "")
+        altitude = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.altitude_key, "Invalid Altitude")
+        v_speed = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.vertical_speed_key, "Invalid Vertical Speed")
+        pyro_status = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.pyro_fire_status, [])
 
         # Make sure these two are the same length
         # Should only run once when we get the first data point
@@ -62,10 +52,7 @@ class TextToSpeech(ThreadedModuleCore):
 
         # Read out state changes
         if state != self.last_state:
-            if (
-                self.last_state
-                == Constants.fcb_state_names[Constants.PREFLIGHT_STATE_INDEX]
-            ):  # If we're going out of preflight (happens when launch is detected)
+            if self.last_state == Constants.fcb_state_names[Constants.PREFLIGHT_STATE_INDEX]:  # If we're going out of preflight (happens when launch is detected)
                 self.last_speech_time = time.time()
 
             self.speak_message(state)
@@ -77,29 +64,16 @@ class TextToSpeech(ThreadedModuleCore):
             last_loop_pyro = self.last_pyro_status[i]
 
             if pyro and not last_loop_pyro:
-                self.speak_message(
-                    "Pyro {} fired".format(i + 1)
-                )  # Pyros are numbered from 1
+                self.speak_message("Pyro {} fired".format(i + 1))  # Pyros are numbered from 1
 
         self.last_pyro_status = pyro_status.copy()
 
         # Read out altitude and velocity
-        if (
-            state in ASCENT_LOGGING_STATES
-            and time.time() - self.ascent_speech_interval_seconds
-            > self.last_speech_time
-        ):
+        if state in ASCENT_LOGGING_STATES and time.time() - self.ascent_speech_interval_seconds > self.last_speech_time:
             log_message = "Altitude: {} meters".format(int(altitude))
             self.speak_message(log_message)
-        elif (
-            state in DESCENT_LOGGING_STATES
-            and time.time() - self.descent_interval_seconds > self.last_speech_time
-        ):
-            log_message = (
-                "Altitude: {0} meters, Descent rate: {1} meters per second".format(
-                    int(altitude), abs(int(v_speed))
-                )
-            )
+        elif state in DESCENT_LOGGING_STATES and time.time() - self.descent_interval_seconds > self.last_speech_time:
+            log_message = ("Altitude: {0} meters, Descent rate: {1} meters per second".format(int(altitude), abs(int(v_speed))))
             self.speak_message(log_message)
         else:
             return
