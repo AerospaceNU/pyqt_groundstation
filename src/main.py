@@ -35,22 +35,13 @@ if __name__ == "__main__":
     GUI.addModule("Serial Ground Station", GroundStationDataInterface, enabled=True)
     GUI.addModule("Egg Finder Radio", EggFinderRadioInterface, enabled=False)
     GUI.addModule("FCB Offload", FCBOffloadModule, enabled=False)
-    GUI.addModule("Android Phone Bluetooth", AndroidPhoneBluetoothInterface)
+    GUI.addModule("Android Phone Bluetooth", AndroidPhoneBluetoothInterface, enabled=False)
     GUI.addModule("Text To Speech", TextToSpeech, enabled=False)
     GUI.addModule("Laptop Status Monitor", LaptopStatusMonitor, hide_toggle=True)
     GUI.addModule("Local Simulation", LocalSimulationFlightInterface, enabled=False)
-    GUI.addModule(
-        "Ground Station Recorded Data",
-        GroundStationRecordedDataInterface,
-        enabled=False,
-    )
+    GUI.addModule("Ground Station Recorded Data", GroundStationRecordedDataInterface, enabled=False, )
     GUI.addModule("Fake Flight", FakeFlight, enabled=False)
-    GUI.addModule(
-        "Random Data for Debugging",
-        RandomDataInterface,
-        enabled=False,
-        hide_toggle=False,
-    )
+    GUI.addModule("Random Data for Debugging", RandomDataInterface, enabled=False, hide_toggle=False, )
     GUI.addModule("Map Interface", MapInterface, enabled=True, hide_toggle=True)
 
     # Run GUI, and wait until its killed

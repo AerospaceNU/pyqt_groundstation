@@ -73,21 +73,13 @@ class GraphTabControl(custom_q_widget_base.CustomQWidgetBase):
     def graphsEnabled(self):
         return self.graphs_enabled
 
-    def setWidgetColors(
-        self, widget_background_string, text_string, header_text_string, border_string
-    ):
-        string = "{0}{1}{2}{3}".format(
-            widget_background_string, text_string, header_text_string, border_string
-        )
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        string = "{0}{1}{2}{3}".format(widget_background_string, text_string, header_text_string, border_string)
         self.setStyleSheet("QWidget#" + self.objectName() + "{" + string + "}")
 
         self.resetGraphButton.setStyleSheet(widget_background_string + text_string)
         self.enableGraphButton.setStyleSheet(widget_background_string + text_string)
-        self.rangeSlider.setStyleSheet(text_string)
+        self.rangeSlider.setStyleSheet(widget_background_string)
         self.historyLabelBox.setStyleSheet(widget_background_string + text_string)
-        self.historyTextBox.setStyleSheet(
-            border_string + widget_background_string + text_string
-        )
-        self.recordedDataModeSelect.setStyleSheet(
-            widget_background_string + text_string
-        )
+        self.historyTextBox.setStyleSheet(border_string + widget_background_string + text_string)
+        self.recordedDataModeSelect.setStyleSheet(widget_background_string + text_string)

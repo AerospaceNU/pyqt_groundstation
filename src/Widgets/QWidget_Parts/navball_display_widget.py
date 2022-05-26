@@ -81,14 +81,16 @@ class NavballDisplayWidget(QOpenGLWidget):
         glEnable(GL_CULL_FACE)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_LIGHTING)
+        glEnable(GL_COLOR_MATERIAL)
 
-        light_zero_position = [10., 4., 10., 1.]
+        light_zero_position = [0, 0, 15, 1]
         light_zero_color = [0.8, 1.0, 0.8, 1.0]
         glLightfv(GL_LIGHT0, GL_POSITION, light_zero_position)
         glLightfv(GL_LIGHT0, GL_DIFFUSE, light_zero_color)
         glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1)
         glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05)
         glEnable(GL_LIGHT0)
+
         glMatrixMode(GL_PROJECTION)
         gluPerspective(40., 1., 1., 40.)
         glMatrixMode(GL_MODELVIEW)
@@ -106,7 +108,7 @@ class NavballDisplayWidget(QOpenGLWidget):
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, self.img_data.shape[1], self.img_data.shape[0], 0, GL_RGB, GL_UNSIGNED_BYTE, self.img_data)
         return textID
 
@@ -126,7 +128,7 @@ class NavballDisplayWidget(QOpenGLWidget):
         glRotatef(self.yaw, 0, 0, 1)
 
         # Call a bunch of OpenGL stuff
-        self.generateTexture()
+        texture_id = self.generateTexture()
         sphere = gluNewQuadric()
         gluQuadricTexture(sphere, GL_TRUE)
         gluQuadricNormals(sphere, GLU_SMOOTH)
@@ -135,6 +137,7 @@ class NavballDisplayWidget(QOpenGLWidget):
 
         gluDeleteQuadric(sphere)
         glDisable(GL_TEXTURE_2D)
+        glDeleteTextures(texture_id)
 
         # glPopMatrix stops the drawing process
         glPopMatrix()
