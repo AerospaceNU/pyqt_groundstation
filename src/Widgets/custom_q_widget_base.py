@@ -59,45 +59,29 @@ class CustomQWidgetBase(QWidget):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.rightClickMenu)
 
-    def setTheme(self, widgetBackground, text, headerText, border):
+    def setTheme(self, widget_background, text, header_text, border):
         """I implemented my own theme code instead of using the QT stuff, because this does what I want"""
-        self.backgroundColorString = make_stylesheet_string("background", widgetBackground)
+        self.backgroundColorString = make_stylesheet_string("background", widget_background)
         self.textColorString = make_stylesheet_string("color", text)
-        self.headerTextColorString = make_stylesheet_string("color", headerText)
+        self.headerTextColorString = make_stylesheet_string("color", header_text)
         self.borderColorString = "border: {0}px solid {1};".format(1, border)
 
         self.borderColor = get_rgb_from_string(border)
-        self.backgroundColor = get_rgb_from_string(widgetBackground)
+        self.backgroundColor = get_rgb_from_string(widget_background)
         self.textColor = get_rgb_from_string(text)
-        self.setWidgetColors(
-            self.backgroundColorString,
-            self.textColorString,
-            self.headerTextColorString,
-            self.borderColorString,
-        )
+        self.setWidgetColors(self.backgroundColorString, self.textColorString, self.headerTextColorString, self.borderColorString)
 
     def refreshTheme(self):
-        self.setWidgetColors(
-            self.backgroundColorString,
-            self.textColorString,
-            self.headerTextColorString,
-            self.borderColorString,
-        )
+        self.setWidgetColors(self.backgroundColorString, self.textColorString, self.headerTextColorString, self.borderColorString)
 
     def rightClickMenu(self, e: QPoint):
         menu = QMenu()
 
         if not self.isInLayout:
             if self.draggable:
-                menu.addAction(
-                    "Disable dragging",
-                    lambda draggable=False: self.setDraggable(draggable),
-                )
+                menu.addAction("Disable dragging", lambda draggable=False: self.setDraggable(draggable))
             else:
-                menu.addAction(
-                    "Enable dragging",
-                    lambda draggable=True: self.setDraggable(draggable),
-                )
+                menu.addAction("Enable dragging", lambda draggable=True: self.setDraggable(draggable))
 
             menu.addSeparator()
             menu.addAction("Delete", self.hide)
@@ -111,15 +95,9 @@ class CustomQWidgetBase(QWidget):
 
                 for option in available_sources:
                     if self.sourceDictionary[source].key_name == option:
-                        submenu.addAction(
-                            "--- {} ---".format(option),
-                            lambda a=source, b=option: self.updateDictKeyTarget(a, b),
-                        )  # If its the currently selected
+                        submenu.addAction("--- {} ---".format(option), lambda a=source, b=option: self.updateDictKeyTarget(a, b))  # If its the currently selected
                     else:
-                        submenu.addAction(
-                            "    {}".format(option),
-                            lambda a=source, b=option: self.updateDictKeyTarget(a, b),
-                        )
+                        submenu.addAction("    {}".format(option), lambda a=source, b=option: self.updateDictKeyTarget(a, b))
 
         menu.addSeparator()
         self.addCustomMenuItems(menu, e)
@@ -143,13 +121,7 @@ class CustomQWidgetBase(QWidget):
         """Draw border around widget"""
         painter = QPainter(self)  # Grey background
         painter.setPen(QColor(self.borderColor[0], self.borderColor[1], self.borderColor[2]))
-        painter.setBrush(
-            QColor(
-                self.backgroundColor[0],
-                self.backgroundColor[1],
-                self.backgroundColor[2],
-            )
-        )
+        painter.setBrush(QColor(self.backgroundColor[0], self.backgroundColor[1], self.backgroundColor[2]))
         painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
 
     def coreUpdate(self):
@@ -186,37 +158,19 @@ class CustomQWidgetBase(QWidget):
     def mousePressEvent(self, e: QMouseEvent):
         """Determines if we clicked on a widget"""
         self.isClicked = True
-        self.activeOffset = [
-            float(e.screenPos().x()) - self.pos().x(),
-            float(e.screenPos().y()) - self.pos().y(),
-        ]
+        self.activeOffset = [float(e.screenPos().x()) - self.pos().x(), float(e.screenPos().y()) - self.pos().y()]
 
     def mouseMoveEvent(self, e: QMouseEvent):
         """Moves the active widget to the position of the mouse if we are currently clicked"""
         if not self.isInLayout and self.isClicked and self.draggable:
-            x = clamp(
-                e.screenPos().x() - self.activeOffset[0],
-                0,
-                self.parent().width() - self.width(),
-            )
-            y = clamp(
-                e.screenPos().y() - self.activeOffset[1],
-                0,
-                self.parent().height() - self.height(),
-            )
+            x = clamp(e.screenPos().x() - self.activeOffset[0], 0, self.parent().width() - self.width())
+            y = clamp(e.screenPos().y() - self.activeOffset[1], 0, self.parent().height() - self.height())
             self.move(x, y)
 
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.isClicked = False
 
-    def addSourceKey(
-        self,
-        internal_id: str,
-        value_type,
-        default_key: str,
-        default_value=None,
-        hide_in_drop_down=False,
-    ):
+    def addSourceKey(self, internal_id: str, value_type, default_key: str, default_value=None, hide_in_drop_down=False):
         self.sourceDictionary[internal_id] = SourceKeyData(default_key, value_type, default_value, hide_in_drop_down)
 
     def removeSourceKey(self, internal_key_id):
