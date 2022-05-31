@@ -25,13 +25,7 @@ def empty_function(a):
 
 
 class GraphWidget(CustomQWidgetBase):
-    def __init__(
-        self,
-        parent_widget: QWidget = None,
-        source_list=None,
-        title=None,
-        time_history=0,
-    ):
+    def __init__(self, parent_widget: QWidget = None, source_list=None, title=None, time_history=0):
         super().__init__(parent_widget)
 
         if source_list is None:
@@ -142,49 +136,28 @@ class GraphWidget(CustomQWidgetBase):
         for data_name in self.data_dictionary:
             data_label = self.sourceDictionary[data_name].key_name
             if data_name not in self.plot_line_dictionary:
-                self.plot_line_dictionary[data_name] = self.graphWidget.plot(
-                    self.time_dictionary[data_name],
-                    self.data_dictionary[data_name],
-                    name=data_label,
-                    pen=get_pen_from_line_number(len(self.plot_line_dictionary)),
-                )
+                self.plot_line_dictionary[data_name] = self.graphWidget.plot(self.time_dictionary[data_name], self.data_dictionary[data_name], name=data_label, pen=get_pen_from_line_number(len(self.plot_line_dictionary)))
             if self.plot_line_dictionary[data_name].name() != data_label:
                 index = list(self.plot_line_dictionary.keys()).index(data_name)  # The index of the line that we're working on
 
-                self.plot_line_dictionary[data_name].opts["name"] = data_label  # Force change the name of the line
+                self.plot_line_dictionary[data_name].opts["name"] = data_label  # Force change theform name of the line
                 self.graphWidget.getPlotItem().legend.items[index][1].setText(data_label)  # Change the name of the legend item
                 self.data_dictionary[data_name] = [float("nan")]  # Reset the data history
                 self.time_dictionary[data_name] = [0]
 
             # Connect=finite allows NaN values to be skipped
             if self.min_x is None and self.max_x is None:  # No restrictions
-                self.plot_line_dictionary[data_name].setData(
-                    self.time_dictionary[data_name],
-                    self.data_dictionary[data_name],
-                    connect="finite",
-                )
+                self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name], self.data_dictionary[data_name], connect="finite")
             elif self.min_x is None:  # No minimum, truncate maximum
                 max_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.max_x)
-                self.plot_line_dictionary[data_name].setData(
-                    self.time_dictionary[data_name][0:max_index],
-                    self.data_dictionary[data_name][0:max_index],
-                    connect="finite",
-                )
+                self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][0:max_index], self.data_dictionary[data_name][0:max_index], connect="finite")
             elif self.max_x is None:  # No maximum, truncate minimum
                 min_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.min_x)
-                self.plot_line_dictionary[data_name].setData(
-                    self.time_dictionary[data_name][min_index:],
-                    self.data_dictionary[data_name][min_index:],
-                    connect="finite",
-                )
+                self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][min_index:], self.data_dictionary[data_name][min_index:], connect="finite")
             else:  # Truncate both max and min
                 max_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.max_x)
                 min_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.min_x)
-                self.plot_line_dictionary[data_name].setData(
-                    self.time_dictionary[data_name][min_index:max_index],
-                    self.data_dictionary[data_name][min_index:max_index],
-                    connect="finite",
-                )
+                self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][min_index:max_index], self.data_dictionary[data_name][min_index:max_index], connect="finite")
 
     def setHistoryLength(self, history_length):
         self.max_time_to_keep = history_length
