@@ -137,7 +137,7 @@ class NavballDisplayWidget(QOpenGLWidget):
 
         gluDeleteQuadric(sphere)
         glDisable(GL_TEXTURE_2D)
-        glDeleteTextures(texture_id)
+        glDeleteTextures(int(texture_id))
 
         # glPopMatrix stops the drawing process
         glPopMatrix()
