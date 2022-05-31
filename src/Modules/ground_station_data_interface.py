@@ -85,7 +85,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
     def onRadioSwitch(self, data):
         try:
             data = int(data)
-        except:
+        except ValueError:
             return
 
         if data in RADIO_NAMES:
@@ -106,12 +106,11 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 self.connectedLoop()
                 self.nextCheckTime = time.time() + 1
                 self.serial.close()
-            except IOError as e:
+            except IOError:
                 self.logToConsole(
                     "Could not connect to ground station on port {}".format(self.serial_port),
                     2,
                 )
-                # print(e)
                 self.nextCheckTime = time.time() + 5
 
         self.connected = False
@@ -177,7 +176,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 self.has_data = True
         except struct.error as e:
             self.logToConsole(
-                "Can't parse message (length: {2} bytes):\n{1}".format(raw_bytes, e, len(raw_bytes)),
+                "Can't parse message (length: {1} bytes):\n{0}".format(e, len(raw_bytes)),
                 1,
             )
 

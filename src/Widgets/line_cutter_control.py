@@ -2,7 +2,6 @@
 Text box widget
 """
 from PyQt5 import QtCore
-from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QComboBox, QGridLayout, QLabel, QPushButton, QWidget
 
 from src.constants import Constants
@@ -140,7 +139,7 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
                     data = int(next_char)
                     if data not in line_cutter_options:
                         line_cutter_options.append(data)
-                except:
+                except ValueError:
                     pass
 
         line_cutter_options.sort()

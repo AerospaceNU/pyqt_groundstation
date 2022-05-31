@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QRect, Qt
-from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen
+from PyQt5.QtGui import QColor, QFont, QPainter, QPen
 from PyQt5.QtWidgets import QLabel, QWidget
 
 
@@ -66,7 +66,6 @@ class CircleBarGraphWidget(QLabel):
         padding = 4
         painter.setPen(QPen(self.textColor, 1, Qt.SolidLine))
         painter.setFont(QFont("Monospace", font_size))
-        font_height = int(font_size * 1.5)
 
         value_text = str(self.value)[0:6]
         painter.drawText(QRect(0, 0, self.width(), self.height() * 0.9), Qt.AlignCenter, value_text)

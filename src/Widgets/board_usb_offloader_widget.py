@@ -1,20 +1,13 @@
 """
 Text box widget
 """
-import time
-from re import template
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import QEvent
 from PyQt5.QtWidgets import (
     QAbstractItemView,
-    QGridLayout,
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QListView,
-    QListWidget,
-    QListWidgetItem,
     QPushButton,
     QTableWidget,
     QTableWidgetItem,

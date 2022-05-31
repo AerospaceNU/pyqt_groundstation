@@ -1,11 +1,11 @@
 import math
+import sys
 import threading
 import time
 
 try:
     # If pybluez installation fails, this import won't work. Still allow GUI to run in that case
-    import bluetooth.btcommon
-    from bluetooth import *
+    import bluetooth.btcommon as ble
 except ImportError:
     pass
 import pynmea2
@@ -52,8 +52,8 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
 
     def __init__(self):
         super().__init__()
-        self.server_sock = BluetoothSocket(RFCOMM)
-        self.server_sock.bind(("", PORT_ANY))
+        self.server_sock = ble.BluetoothSocket(ble.RFCOMM)
+        self.server_sock.bind(("", ble.PORT_ANY))
         self.server_sock.settimeout(1)
         self.bluetooth_running = False
 
@@ -101,7 +101,7 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
                 self.send_bluetooth(str(msg))
 
             time.sleep(1)
-        except Exception as e:
+        except Exception:
             pass
 
     def advertise_bluetooth(self):
@@ -117,15 +117,15 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
             self.server_sock.listen(1)
             port = self.server_sock.getsockname()[1]
             uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
-            advertise_service(
+            ble.advertise_service(
                 self.server_sock,
                 "TestServer",
                 service_id=uuid,
-                service_classes=[uuid, SERIAL_PORT_CLASS],
-                profiles=[SERIAL_PORT_PROFILE],
+                service_classes=[uuid, ble.SERIAL_PORT_CLASS],
+                profiles=[ble.SERIAL_PORT_PROFILE],
             )
             self.logToConsole("Starting Bluetooth", 1)
-        except bluetooth.btcommon.BluetoothError as e:
+        except ble.BluetoothError as e:
             self.logToConsole("Can't start bluetooth: {}".format(e), 2)
             if "permission" in str(e).lower() and sys.platform == "linux":
                 self.logToConsole(
@@ -151,7 +151,7 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
                     client_socket, client_info = self.server_sock.accept()
                     self.client_sock_list.append(client_socket)
                     self.logToConsole("Accepted connection from {}".format(client_info), 1)
-                except bluetooth.btcommon.BluetoothError as e:
+                except ble.BluetoothError:
                     pass
             else:
                 time.sleep(1)
@@ -166,7 +166,7 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
         for client_socket in self.client_sock_list:
             try:
                 client_socket.send(data_string)
-            except Exception as e:
+            except Exception:
                 self.logToConsole("Lost connection to one bluetooth device", 2)
                 client_socket.close()
                 self.client_sock_list.remove(client_socket)

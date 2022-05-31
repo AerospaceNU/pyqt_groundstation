@@ -11,7 +11,7 @@ import serial.tools.list_ports_linux
 
 def get_device_names():
     device_re = re.compile(
-        b"Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$",
+        r"Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$",
         re.I,
     )
     df = subprocess.check_output("lsusb")

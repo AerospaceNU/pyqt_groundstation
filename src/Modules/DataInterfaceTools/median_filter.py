@@ -3,11 +3,6 @@ Single datapoint median filter
 """
 
 import statistics
-import time
-
-import navpy
-
-from src.data_helpers import vector_length
 
 
 class MedianFilter(object):

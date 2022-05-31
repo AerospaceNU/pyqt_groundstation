@@ -7,7 +7,7 @@ import sys
 import time
 from argparse import ArgumentParser
 from collections import namedtuple
-from typing import Any, Callable, List
+from typing import Any, List
 
 import pandas as pd
 

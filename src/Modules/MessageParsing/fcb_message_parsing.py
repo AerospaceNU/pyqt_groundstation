@@ -416,7 +416,7 @@ def parse_fcb_message(data):
             if "line cutter" in message_type.lower() and Constants.line_cutter_number_key in dictionary:
                 line_cutter_number = dictionary[Constants.line_cutter_number_key]
                 message_type += str(line_cutter_number)
-        except Exception as e:
+        except Exception:
             # print("Could not parse message of type {0}: {1}".format(message_type, e))
             # print(raw_packet)
             success = False
@@ -427,7 +427,7 @@ def parse_fcb_message(data):
             data = data[0:29]
             parse_ground_station_gps(data, dictionary)
             return [True, dictionary, GROUND_STATION_MESSAGE_TYPES[0], 1]
-        except:
+        except Exception:
             return [False, {}, GROUND_STATION_MESSAGE_TYPES[0], 1]
     else:
         return [False, {}, "Invalid message type {}".format(message_number), 1]

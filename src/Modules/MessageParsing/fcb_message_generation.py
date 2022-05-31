@@ -2,13 +2,7 @@
 This file provides functions to create binary messages to send to the ground station
 """
 
-import datetime
-import math
 import struct
-
-import numpy
-
-from src.constants import Constants
 
 
 def createRadioBandCommandMessage(destination, target_radio, channel):

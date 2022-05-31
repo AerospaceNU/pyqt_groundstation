@@ -1,7 +1,7 @@
 [flake8]
 max-line-length = 250
 docstring-convention = pep257
-select = C,E,F,W,B,D,B950
+select = C,E,F,W,B,B950,#D
 extend-ignore =
     E203, # See https://github.com/PyCQA/pycodestyle/issues/373
     E501, # Using B950 instead

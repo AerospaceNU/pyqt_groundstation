@@ -6,7 +6,7 @@ import navpy
 import numpy
 from PyQt5 import QtGui
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QBrush, QColor, QMouseEvent, QPainter, QPen, QPixmap, QPolygon
+from PyQt5.QtGui import QBrush, QColor, QMouseEvent, QPainter, QPen, QPolygon
 from PyQt5.QtWidgets import QGridLayout, QLabel, QMenu, QWidget
 
 from src.constants import Constants

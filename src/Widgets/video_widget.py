@@ -3,7 +3,7 @@ Attitude Display
 """
 import cv2
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QLabel, QSizePolicy, QWidget
+from PyQt5.QtWidgets import QLabel, QWidget
 
 from src.Widgets import custom_q_widget_base
 

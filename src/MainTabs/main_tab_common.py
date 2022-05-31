@@ -4,7 +4,7 @@ Code used in all vehicle tabs
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QWidget
 
-from src.data_helpers import get_well_formatted_rgb_string, make_stylesheet_string
+from src.data_helpers import make_stylesheet_string
 from src.Widgets import custom_q_widget_base
 
 

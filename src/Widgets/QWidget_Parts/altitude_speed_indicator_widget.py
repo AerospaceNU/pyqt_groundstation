@@ -2,7 +2,7 @@ from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPolygon
 from PyQt5.QtWidgets import QLabel, QWidget
 
-from src.data_helpers import clamp, nearest_multiple, round_to_string
+from src.data_helpers import nearest_multiple, round_to_string
 
 
 class AltitudeSpeedIndicatorWidget(QLabel):

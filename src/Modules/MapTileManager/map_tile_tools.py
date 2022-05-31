@@ -3,7 +3,6 @@ import urllib.request
 from urllib.request import Request
 
 import cv2
-import navpy
 import numpy
 
 from src.Modules.MapTileManager.tile_convert import bbox_to_xyz, tile_edges
