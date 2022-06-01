@@ -43,6 +43,7 @@ class RecordedDataReader(object):
                 run_number += 1
             else:
                 try:
+                    nan = float("nan")
                     timestamp = line.split(" ")[0][0:-1]
                     packet_type = line.split(timestamp)[1].split("{")[0][2:].strip()  # don't even ask
                     packet_data = eval("{" + line.split("{")[1])
