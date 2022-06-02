@@ -9,30 +9,10 @@ import struct
 import numpy
 
 from src.constants import Constants
+from src.data_helpers import quaternion_to_euler_angle
 
 # Packet length in bytes
 PACKET_LENGTH = 132
-
-
-def quaternion_to_euler_angle(w, x, y, z):
-    """Copied from stack overflow"""
-
-    ysqr = y * y
-
-    t0 = +2.0 * (w * x + y * z)
-    t1 = +1.0 - 2.0 * (x * x + ysqr)
-    X = math.degrees(math.atan2(t0, t1))
-
-    t2 = +2.0 * (w * y - z * x)
-    t2 = +1.0 if t2 > +1.0 else t2
-    t2 = -1.0 if t2 < -1.0 else t2
-    Y = math.degrees(math.asin(t2))
-
-    t3 = +2.0 * (w * z + x * y)
-    t4 = +1.0 - 2.0 * (ysqr + z * z)
-    Z = math.degrees(math.atan2(t3, t4))
-
-    return [X, Y, Z]
 
 
 def compass_heading_deg_to_enu_rad(heading):
@@ -172,7 +152,7 @@ class OrientationMessage(BaseMessage):
         qz = dictionary.pop("qz")
         qw = dictionary.pop("qw")
 
-        rpy = quaternion_to_euler_angle(qw, qx, qy, qz)
+        rpy = quaternion_to_euler_angle([qw, qx, qy, qz])
 
         dictionary[Constants.roll_position_key] = rpy[0]
         dictionary[Constants.pitch_position_key] = rpy[1]
@@ -192,23 +172,12 @@ class PositionDataMessage(BaseMessage):
         [FLOAT_TYPE, Constants.temperature_key],
         [FLOAT_TYPE, Constants.altitude_key],
         [FLOAT_TYPE, Constants.vertical_speed_key],
-        [
-            FLOAT_TYPE,
-            Constants.latitude_key,
-            lat_lon_decimal_minutes_to_decimal_degrees,
-        ],
-        [
-            FLOAT_TYPE,
-            Constants.longitude_key,
-            lat_lon_decimal_minutes_to_decimal_degrees,
-        ],
+        [FLOAT_TYPE, Constants.latitude_key, lat_lon_decimal_minutes_to_decimal_degrees],
+        [FLOAT_TYPE, Constants.longitude_key, lat_lon_decimal_minutes_to_decimal_degrees],
         [FLOAT_TYPE, Constants.gps_alt_key],
         [FLOAT_TYPE, Constants.fcb_battery_voltage],
         [FLOAT_TYPE, Constants.ground_speed_key, 0.514444],  # fcb reports speed in kts
-        [
-            FLOAT_TYPE,
-            Constants.course_over_ground_key,
-        ],  # GPS reports compass heading (NED and degrees)
+        [FLOAT_TYPE, Constants.course_over_ground_key],  # GPS reports compass heading (NED and degrees)
         [UINT_32_TYPE, Constants.gps_time_key, "TIME"],
         [UINT_8_TYPE, Constants.gps_sats_key],
         [UINT_8_TYPE, Constants.fcb_state_number_key],
@@ -230,55 +199,18 @@ class LineCutterMessage(BaseMessage):
 
         self.messageData = [
             [UINT_8_TYPE, Constants.line_cutter_number_key],
-            [
-                UINT_8_TYPE,
-                Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_state_key),
-            ],
-            [
-                UINT_32_TYPE,
-                Constants.makeLineCutterString(line_cutter_number, Constants.timestamp_ms_key),
-            ],
-            [
-                UINT_32_TYPE,
-                Constants.makeLineCutterString(line_cutter_number, Constants.barometer_pressure_key),
-            ],
-            [
-                FLOAT_TYPE,
-                Constants.makeLineCutterString(line_cutter_number, Constants.altitude_key),
-            ],
-            [
-                FLOAT_TYPE,
-                Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key),
-            ],
-            [
-                FLOAT_TYPE,
-                Constants.makeLineCutterString(line_cutter_number, Constants.temperature_key),
-                0.01,
-            ],
-            [
-                FLOAT_TYPE,
-                Constants.makeLineCutterString(line_cutter_number, Constants.acceleration_key),
-            ],
-            [
-                FLOAT_TYPE,
-                Constants.makeLineCutterString(line_cutter_number, Constants.battery_voltage_key),
-            ],
-            [
-                UINT_16_TYPE,
-                Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_1),
-            ],
-            [
-                UINT_16_TYPE,
-                Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_2),
-            ],
-            [
-                UINT_16_TYPE,
-                Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_current_sense_key),
-            ],
-            [
-                UINT_16_TYPE,
-                Constants.makeLineCutterString(line_cutter_number, Constants.photoresistor_key),
-            ],
+            [UINT_8_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_state_key)],
+            [UINT_32_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.timestamp_ms_key)],
+            [UINT_32_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.barometer_pressure_key)],
+            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.altitude_key)],
+            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.delta_altitude_key)],
+            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.temperature_key), 0.01],
+            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.acceleration_key)],
+            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.battery_voltage_key)],
+            [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_1)],
+            [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_cut_2)],
+            [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.line_cutter_current_sense_key)],
+            [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, Constants.photoresistor_key)],
         ]
 
         super().__init__()
@@ -291,7 +223,7 @@ class CLIDataMessage(BaseMessage):
 
     def parseMessage(self, data):
         length = data[0]
-        trimmed_data = data[1 : length + 1]
+        trimmed_data = data[1: length + 1]
         dictionary = {}
 
         try:

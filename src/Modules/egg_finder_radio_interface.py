@@ -42,11 +42,9 @@ class EggFinderRadioInterface(ThreadedModuleCore):
                 self.connectedLoop()
                 self.nextCheckTime = time.time() + 1
                 self.serial.close()
-            except IOError:
-                self.logToConsole(
-                    "Could not connect to egg finder on port {}".format(self.serial_port),
-                    2,
-                )
+            except IOError as e:
+                self.logToConsole("Could not connect to egg finder on port {}".format(self.serial_port), 2)
+                # print(e)
                 self.nextCheckTime = time.time() + 5
 
         self.connected = False
@@ -95,13 +93,13 @@ class EggFinderRadioInterface(ThreadedModuleCore):
                     msg = pynmea2.parse(nmea_string.strip())
 
                     if type(msg) == pynmea2.types.talker.GGA:
-                        self.logToConsole("Egg finder : {0}".format(msg), 0)
+                        self.logToConsole("Egg finder : {1}".format(time.time(), msg), 0)
 
                         self.data_dictionary[Constants.egg_finder_latitude] = msg.latitude
                         self.data_dictionary[Constants.egg_finder_longitude] = msg.longitude
                         self.data_dictionary[Constants.egg_finder_altitude] = msg.altitude
 
-        except Exception:
+        except Exception as e:
             pass
             # print("Could not parse NMEA string: {0}".format(e))
 

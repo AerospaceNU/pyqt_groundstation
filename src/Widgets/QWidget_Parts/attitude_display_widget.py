@@ -135,7 +135,7 @@ class AttitudeDisplayWidget(QLabel):
 
         self.rollIndicatorImage.setRotation(self.roll)  # Set roll image
 
-    def setRollPitch(self, roll, pitch):
+    def setRPY(self, roll, pitch, _):
         if pitch > 180:
             pitch -= 360
 

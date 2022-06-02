@@ -39,11 +39,7 @@ class TextToSpeech(ThreadedModuleCore):
     def spin(self):
         state = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.fcb_state_key, "")
         altitude = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.altitude_key, "Invalid Altitude")
-        v_speed = get_value_from_dictionary(
-            self.gui_full_data_dictionary,
-            Constants.vertical_speed_key,
-            "Invalid Vertical Speed",
-        )
+        v_speed = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.vertical_speed_key, "Invalid Vertical Speed")
         pyro_status = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.pyro_fire_status, [])
 
         # Make sure these two are the same length
@@ -77,7 +73,7 @@ class TextToSpeech(ThreadedModuleCore):
             log_message = "Altitude: {} meters".format(int(altitude))
             self.speak_message(log_message)
         elif state in DESCENT_LOGGING_STATES and time.time() - self.descent_interval_seconds > self.last_speech_time:
-            log_message = "Altitude: {0} meters, Descent rate: {1} meters per second".format(int(altitude), abs(int(v_speed)))
+            log_message = ("Altitude: {0} meters, Descent rate: {1} meters per second".format(int(altitude), abs(int(v_speed))))
             self.speak_message(log_message)
         else:
             return

@@ -71,14 +71,8 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
         if self.good_radio_crc or update_on_bad_crc:
             # Special parse operations to deal with filtering lat and lon data
             if Constants.latitude_key in dictionary and Constants.longitude_key in dictionary:  # If dictionary contains vehicle gps position, filter it
-                self.vehicle_position_filter.new_gps_coords(
-                    dictionary[Constants.latitude_key],
-                    dictionary[Constants.longitude_key],
-                )
-                [
-                    new_lat,
-                    new_lon,
-                ] = self.vehicle_position_filter.get_filtered_position_output()
+                self.vehicle_position_filter.new_gps_coords(dictionary[Constants.latitude_key], dictionary[Constants.longitude_key])
+                [new_lat, new_lon] = self.vehicle_position_filter.get_filtered_position_output()
                 dictionary[Constants.latitude_key] = new_lat
                 dictionary[Constants.longitude_key] = new_lon
 
@@ -87,14 +81,8 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
 
             # Filter ground station lat and lon
             if Constants.ground_station_latitude_key in dictionary and Constants.ground_station_longitude_key in dictionary:
-                self.ground_station_position_filter.new_gps_coords(
-                    dictionary[Constants.ground_station_latitude_key],
-                    dictionary[Constants.ground_station_longitude_key],
-                )
-                [
-                    new_lat,
-                    new_lon,
-                ] = self.ground_station_position_filter.get_filtered_position_output()
+                self.ground_station_position_filter.new_gps_coords(dictionary[Constants.ground_station_latitude_key], dictionary[Constants.ground_station_longitude_key], )
+                [new_lat, new_lon, ] = self.ground_station_position_filter.get_filtered_position_output()
                 dictionary[Constants.ground_station_latitude_key] = new_lat
                 dictionary[Constants.ground_station_longitude_key] = new_lon
 
@@ -118,7 +106,7 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
                     rssi_val = rssi_val.strip(" db")
                     try:
                         dictionary[Constants.rssi_val_key] = float(rssi_val)
-                    except ValueError:
+                    except:
                         pass
 
             self.data_dictionary.update(dictionary)

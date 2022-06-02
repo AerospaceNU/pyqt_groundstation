@@ -6,7 +6,7 @@ import navpy
 import numpy
 from PyQt5 import QtGui
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QBrush, QColor, QMouseEvent, QPainter, QPen, QPolygon
+from PyQt5.QtGui import QBrush, QColor, QMouseEvent, QPainter, QPen, QPixmap, QPolygon
 from PyQt5.QtWidgets import QGridLayout, QLabel, QMenu, QWidget
 
 from src.constants import Constants
@@ -19,7 +19,9 @@ from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
 BACKGROUND_COLOR = (255, 144, 30)  # BGR for OpenCV
 
-EXTRA_POSITION_SOURCES = {"egg_finder": [Constants.egg_finder_latitude, Constants.egg_finder_longitude]}
+EXTRA_POSITION_SOURCES = {
+    "egg_finder": [Constants.egg_finder_latitude, Constants.egg_finder_longitude]
+}
 
 
 class MapWidget(CustomQWidgetBase):
@@ -28,51 +30,14 @@ class MapWidget(CustomQWidgetBase):
         if parent_widget is not None:
             self.setMinimumSize(500, 500)
 
-        self.addSourceKey(
-            "groundstation_lat",
-            float,
-            Constants.ground_station_latitude_key,
-            default_value=0,
-            hide_in_drop_down=True,
-        )
-        self.addSourceKey(
-            "groundstation_lon",
-            float,
-            Constants.ground_station_longitude_key,
-            default_value=0,
-            hide_in_drop_down=True,
-        )
-
-        self.addSourceKey(
-            "vehicle_lat",
-            float,
-            Constants.latitude_key,
-            default_value=0,
-            hide_in_drop_down=True,
-        )
-        self.addSourceKey(
-            "vehicle_lon",
-            float,
-            Constants.longitude_key,
-            default_value=0,
-            hide_in_drop_down=True,
-        )
+        self.addSourceKey("groundstation_lat", float, Constants.ground_station_latitude_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("groundstation_lon", float, Constants.ground_station_longitude_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("vehicle_lat", float, Constants.latitude_key, default_value=0, hide_in_drop_down=True)
+        self.addSourceKey("vehicle_lon", float, Constants.longitude_key, default_value=0, hide_in_drop_down=True)
 
         for source in EXTRA_POSITION_SOURCES:
-            self.addSourceKey(
-                "{}_lat".format(source),
-                float,
-                EXTRA_POSITION_SOURCES[source][0],
-                default_value=0,
-                hide_in_drop_down=True,
-            )
-            self.addSourceKey(
-                "{}_lon".format(source),
-                float,
-                EXTRA_POSITION_SOURCES[source][1],
-                default_value=0,
-                hide_in_drop_down=True,
-            )
+            self.addSourceKey("{}_lat".format(source), float, EXTRA_POSITION_SOURCES[source][0], default_value=0, hide_in_drop_down=True)
+            self.addSourceKey("{}_lon".format(source), float, EXTRA_POSITION_SOURCES[source][1], default_value=0, hide_in_drop_down=True)
 
         self.use_ground_station_position = False
         self.gs_lat = 0
@@ -100,15 +65,9 @@ class MapWidget(CustomQWidgetBase):
         menu.addAction("Reset Origin", self.resetOrigin)
 
         if self.map_draw_widget.dragging_enabled:
-            menu.addAction(
-                "Disable Map Dragging",
-                lambda enabled=False: self.map_draw_widget.setDraggingEnabled(enabled),
-            )
+            menu.addAction("Disable Map Dragging", lambda enabled=False: self.map_draw_widget.setDraggingEnabled(enabled))
         else:
-            menu.addAction(
-                "Enable Map Dragging",
-                lambda enabled=True: self.map_draw_widget.setDraggingEnabled(enabled),
-            )
+            menu.addAction("Enable Map Dragging", lambda enabled=True: self.map_draw_widget.setDraggingEnabled(enabled))
 
     def updateData(self, vehicle_data, updated_data):
         heading = float(get_value_from_dictionary(vehicle_data, Constants.yaw_position_key, 0))
@@ -162,11 +121,7 @@ class MapWidget(CustomQWidgetBase):
             upper_right_coordinates = self.map_draw_widget.drawLocationToPoint(self.map_draw_widget.width(), 0)
 
             lower_left_ned = [lower_left_coordinates[1], lower_left_coordinates[0], 0]
-            upper_right_ned = [
-                upper_right_coordinates[1],
-                upper_right_coordinates[0],
-                0,
-            ]
+            upper_right_ned = [upper_right_coordinates[1], upper_right_coordinates[0], 0]
 
             lower_left_lla = navpy.ned2lla(lower_left_ned, self.datum[0], self.datum[1], 0)
             upper_right_lla = navpy.ned2lla(upper_right_ned, self.datum[0], self.datum[1], 0)
@@ -180,14 +135,7 @@ class MapWidget(CustomQWidgetBase):
             upper_right_lla = map_tile.upper_right
 
             lower_left_coordinates = navpy.lla2ned(lower_left_lla[0], lower_left_lla[1], 0, self.datum[0], self.datum[1], 0)
-            upper_right_coordinates = navpy.lla2ned(
-                upper_right_lla[0],
-                upper_right_lla[1],
-                0,
-                self.datum[0],
-                self.datum[1],
-                0,
-            )
+            upper_right_coordinates = navpy.lla2ned(upper_right_lla[0], upper_right_lla[1], 0, self.datum[0], self.datum[1], 0)
 
             lower_left_enu = [lower_left_coordinates[1], lower_left_coordinates[0]]
             upper_right_enu = [upper_right_coordinates[1], upper_right_coordinates[0]]
@@ -264,7 +212,7 @@ class MapImageBackground(QLabel):
         win_ur_same = self.last_window_ur == self.window_top_right
         win_bl_same = self.last_window_bl == self.window_bottom_left
 
-        is_map_same = map_ur_same and map_bl_same and win_ur_same and win_bl_same and not self.has_new_map_image
+        is_map_same = (map_ur_same and map_bl_same and win_ur_same and win_bl_same and not self.has_new_map_image)
 
         self.has_new_map_image = False
         self.last_map_ur = self.map_image_top_right
@@ -298,42 +246,10 @@ class MapImageBackground(QLabel):
         elif self.map_image_top_right[1] < self.window_bottom_left[1]:
             return
 
-        image_x_min = math.floor(
-            interpolate(
-                self.window_bottom_left[0],
-                self.map_image_bottom_left[0],
-                self.map_image_top_right[0],
-                0,
-                map_image_width,
-            )
-        )
-        image_x_max = math.ceil(
-            interpolate(
-                self.window_top_right[0],
-                self.map_image_bottom_left[0],
-                self.map_image_top_right[0],
-                0,
-                map_image_width,
-            )
-        )
-        image_y_max = math.floor(
-            interpolate(
-                self.window_bottom_left[1],
-                self.map_image_bottom_left[1],
-                self.map_image_top_right[1],
-                map_image_height,
-                0,
-            )
-        )  # Y Max to min because matrix rows are numbered top down
-        image_y_min = math.ceil(
-            interpolate(
-                self.window_top_right[1],
-                self.map_image_bottom_left[1],
-                self.map_image_top_right[1],
-                map_image_height,
-                0,
-            )
-        )
+        image_x_min = math.floor(interpolate(self.window_bottom_left[0], self.map_image_bottom_left[0], self.map_image_top_right[0], 0, map_image_width))
+        image_x_max = math.ceil(interpolate(self.window_top_right[0], self.map_image_bottom_left[0], self.map_image_top_right[0], 0, map_image_width))
+        image_y_max = math.floor(interpolate(self.window_bottom_left[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))  # Y Max to min because matrix rows are numbered top down
+        image_y_min = math.ceil(interpolate(self.window_top_right[1], self.map_image_bottom_left[1], self.map_image_top_right[1], map_image_height, 0))
 
         subset_width_pixels = image_x_max - image_x_min
         width_ratio = self.width() / subset_width_pixels
@@ -544,10 +460,12 @@ class MapDrawWidget(QWidget):
             points = [QPoint(-6, 10), QPoint(6, 10), QPoint(0, -15)]  # Is a triangle
             poly = QPolygon(points)
 
+            heading = -self.heading + 90  # Translate to coordinates that we can use on the screen
+
             painter.translate(int(xPos), int(yPos))
-            painter.rotate(self.heading)
+            painter.rotate(heading)
             painter.drawPolygon(poly)
-            painter.rotate(-self.heading)
+            painter.rotate(-heading)
             painter.translate(-int(xPos), -int(yPos))
 
         # Draw origin axes
@@ -648,7 +566,9 @@ class MapDrawWidget(QWidget):
         # Get distance to last point in history
         if len(self.oldPoints) > 0:
             last_point_in_list = self.oldPoints[0]
-            distance = distance_between_points(x, y, last_point_in_list[0], last_point_in_list[1])
+            distance = distance_between_points(
+                x, y, last_point_in_list[0], last_point_in_list[1]
+            )
         else:
             distance = 0
 
@@ -658,8 +578,13 @@ class MapDrawWidget(QWidget):
         if len(self.oldPoints) == 0:
             self.oldPoints = [[x, y]]
         else:
-            if time.time() > self.lastPointTime + self.newPointInterval or distance > self.newPointSpacing:
-                self.oldPoints = [[x, y]] + self.oldPoints  # [:self.pointsToKeep] We keep all the points now
+            if (
+                    time.time() > self.lastPointTime + self.newPointInterval
+                    or distance > self.newPointSpacing
+            ):
+                self.oldPoints = [
+                                     [x, y]
+                                 ] + self.oldPoints  # [:self.pointsToKeep] We keep all the points now
                 self.lastPointTime = time.time()
 
         # Figure out how many decimals to use on the axis scales

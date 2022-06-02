@@ -79,7 +79,7 @@ class GraphTabControl(custom_q_widget_base.CustomQWidgetBase):
 
         self.resetGraphButton.setStyleSheet(widget_background_string + text_string)
         self.enableGraphButton.setStyleSheet(widget_background_string + text_string)
-        self.rangeSlider.setStyleSheet(text_string)
+        self.rangeSlider.setStyleSheet(widget_background_string)
         self.historyLabelBox.setStyleSheet(widget_background_string + text_string)
         self.historyTextBox.setStyleSheet(border_string + widget_background_string + text_string)
         self.recordedDataModeSelect.setStyleSheet(widget_background_string + text_string)

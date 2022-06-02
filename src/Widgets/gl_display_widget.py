@@ -44,7 +44,7 @@ class ThreeDDisplay(CustomQWidgetBase):
         self.viewer.setWindowTitle("STL Viewer")
         self.viewer.setCameraPosition(distance=10)
 
-        self.orientation_quaternion = [0, 0, 0, 1]
+        self.orientation_quaternion = [1, 0, 0, 0]
         self.altitude = 0
 
         g = gl.GLGridItem()
@@ -70,14 +70,7 @@ class ThreeDDisplay(CustomQWidgetBase):
         position = QVector3D(0, 0, self.altitude)
 
         self.viewer.setCameraPosition(pos=position)
-        tr.rotate(
-            QtGui.QQuaternion(
-                self.orientation_quaternion[0],
-                self.orientation_quaternion[1],
-                self.orientation_quaternion[2],
-                self.orientation_quaternion[3],
-            )
-        )
+        tr.rotate(QtGui.QQuaternion(self.orientation_quaternion[0], self.orientation_quaternion[1], self.orientation_quaternion[2], self.orientation_quaternion[3]))
         self.currentSTL.applyTransform(tr, local=True)
 
     def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
@@ -90,13 +83,7 @@ class ThreeDDisplay(CustomQWidgetBase):
 
         points, faces = self.loadSTL(filename)
         meshdata = gl.MeshData(vertexes=points, faces=faces)
-        mesh = gl.GLMeshItem(
-            meshdata=meshdata,
-            smooth=True,
-            drawFaces=True,
-            drawEdges=True,
-            edgeColor=(0, 0, 0.5, 0.1),
-        )
+        mesh = gl.GLMeshItem(meshdata=meshdata, smooth=True, drawFaces=True, drawEdges=True, edgeColor=(0, 0, 0.5, 0.1))
         self.viewer.addItem(mesh)
 
         self.currentSTL = mesh

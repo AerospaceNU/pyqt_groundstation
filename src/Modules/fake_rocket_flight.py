@@ -8,6 +8,7 @@ import numpy as np
 
 from src.constants import Constants
 from src.Modules.fcb_data_interface_core import FCBDataInterfaceCore
+from src.data_helpers import quaternion_to_euler_angle
 
 # Internal states for the physics state machine
 PRE_FLIGHT = 0
@@ -51,7 +52,7 @@ class FakeFlight(FCBDataInterfaceCore):
         self.last_loop_time = time.time()
         self.launch_time = 0
 
-        self.quat = np.array([1, 0, 0, 0])
+        self.quaternion_wxyz = np.array([1, 0, 0, 0])
         self.filter = ahrs.filters.AngularRate()
 
     def runOnEnableAndDisable(self):
@@ -114,10 +115,7 @@ class FakeFlight(FCBDataInterfaceCore):
                 self.state = MAIN
                 self.logToConsole("Main deploy", 1)
         elif self.state == MAIN:
-            self.vertical_velocity = min(
-                self.vertical_velocity + self.main_deploy_accel * loop_time,
-                self.main_speed,
-            )
+            self.vertical_velocity = min(self.vertical_velocity + self.main_deploy_accel * loop_time, self.main_speed)
             measured_acceleration = random.uniform(0, 9.8)
             fcb_state = Constants.MAIN_DESCENT_INDEX
             self.pyro_status[2] = True
@@ -155,8 +153,13 @@ class FakeFlight(FCBDataInterfaceCore):
 
         # janky quaternion
         packet[Constants.rotational_velocity_z_key] = self.vertical_velocity / 10.0
-        self.quat = self.filter.update(self.quat, np.array([0, 0, packet[Constants.rotational_velocity_z_key]]))
-        packet[Constants.orientation_quaternion_key] = self.quat
+        self.quaternion_wxyz = self.filter.update(self.quaternion_wxyz, np.array([0, 0, packet[Constants.rotational_velocity_z_key]]))
+
+        packet[Constants.orientation_quaternion_key] = self.quaternion_wxyz
+        rpy = quaternion_to_euler_angle(self.quaternion_wxyz)
+        packet[Constants.roll_position_key] = rpy[0]
+        packet[Constants.pitch_position_key] = rpy[1]
+        packet[Constants.yaw_position_key] = rpy[2]
 
         for cutter in [0, 1, 2]:
             light = 1000 if self.state >= DROGUE else 12
@@ -168,8 +171,8 @@ class FakeFlight(FCBDataInterfaceCore):
             packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_state_key)] = fcb_state
             packet[Constants.makeLineCutterString(cutter, Constants.photoresistor_key)] = light
             packet[Constants.makeLineCutterString(cutter, Constants.photoresistor_threshold_key)] = 500
-            packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_cut_1)] = self.state < DROGUE or self.altitude > 500
-            packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_cut_2)] = self.state < DROGUE or self.altitude > 1000
+            packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_cut_1)] = (self.state < DROGUE or self.altitude > 500)
+            packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_cut_2)] = (self.state < DROGUE or self.altitude > 1000)
 
         self.handleParsedData("Sim flight packet", packet)
 
