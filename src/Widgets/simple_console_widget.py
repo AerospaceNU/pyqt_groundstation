@@ -3,7 +3,7 @@ Console
 """
 
 from PyQt5 import QtGui
-from PyQt5.QtGui import QColor, QFont, QPainter
+from PyQt5.QtGui import QColor, QFont, QPainter, QPalette
 from PyQt5.QtWidgets import QWidget
 
 from src.Widgets import custom_q_widget_base
@@ -37,7 +37,7 @@ class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
                 self.maxLineWidth = max(self.maxLineWidth, len(line[0]))
 
                 if color == 0:
-                    painter.setPen(QColor(self.textColor[0], self.textColor[1], self.textColor[2]))
+                    painter.setPen(self.palette().text().color())
                 elif color == 1:
                     painter.setPen(QColor("yellow"))
                 elif color == 2:

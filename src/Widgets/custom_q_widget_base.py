@@ -9,7 +9,7 @@ import copy
 from PyQt5 import QtGui
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QColor, QMouseEvent, QPainter
-from PyQt5.QtWidgets import QMenu, QWidget
+from PyQt5.QtWidgets import QMenu, QWidget, QFrame
 
 from src.data_helpers import (
     check_type,
@@ -30,7 +30,7 @@ class SourceKeyData(object):
         self.hide_in_drop_down = hide_in_drop_down
 
 
-class CustomQWidgetBase(QWidget):
+class CustomQWidgetBase(QFrame):
     def __init__(self, widget: QWidget = None):
         super().__init__(widget)
 
@@ -58,21 +58,6 @@ class CustomQWidgetBase(QWidget):
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.rightClickMenu)
-
-    def setTheme(self, widget_background, text, header_text, border):
-        """I implemented my own theme code instead of using the QT stuff, because this does what I want"""
-        self.backgroundColorString = make_stylesheet_string("background", widget_background)
-        self.textColorString = make_stylesheet_string("color", text)
-        self.headerTextColorString = make_stylesheet_string("color", header_text)
-        self.borderColorString = "border: {0}px solid {1};".format(1, border)
-
-        self.borderColor = get_rgb_from_string(border)
-        self.backgroundColor = get_rgb_from_string(widget_background)
-        self.textColor = get_rgb_from_string(text)
-        self.setWidgetColors(self.backgroundColorString, self.textColorString, self.headerTextColorString, self.borderColorString)
-
-    def refreshTheme(self):
-        self.setWidgetColors(self.backgroundColorString, self.textColorString, self.headerTextColorString, self.borderColorString)
 
     def rightClickMenu(self, e: QPoint):
         menu = QMenu()
@@ -113,12 +98,15 @@ class CustomQWidgetBase(QWidget):
         if not self.isInLayout:
             self.draggable = draggable
 
-    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+    def updateAfterThemeSet(self):
         """Overwrite this for each widget"""
-        self.setStyleSheet("{0}{1}{2}{3}".format(widget_background_string, text_string, header_text_string, border_string))
+        return
 
     def paintEvent(self, a0: QtGui.QPaintEvent) -> None:
         """Draw border around widget"""
+
+        return
+
         painter = QPainter(self)  # Grey background
         painter.setPen(QColor(self.borderColor[0], self.borderColor[1], self.borderColor[2]))
         painter.setBrush(QColor(self.backgroundColor[0], self.backgroundColor[1], self.backgroundColor[2]))

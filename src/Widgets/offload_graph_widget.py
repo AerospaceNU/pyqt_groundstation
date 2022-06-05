@@ -308,30 +308,6 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
     #         self.recreate_table(self.getFlights())
     #         self.refreshTheme()
 
-    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
-        background_color_string = get_well_formatted_rgb_string(widget_background_string.split(":")[1].strip())
-        text_color_string = get_well_formatted_rgb_string(text_string.split(":")[1].strip())
+    def updateAfterThemeSet(self):
+        self.altitudeGraph.setBackground(self.palette().color(self.backgroundRole()))
 
-        header_section_string = "QHeaderView::section { background-color:" + background_color_string + "; color:" + text_color_string + ";} "
-        corner_section_string = "QTableCornerButton::section {background-color: " + background_color_string + "; }"
-
-        self.setStyleSheet("QWidget#" + self.objectName() + " {" + border_string + widget_background_string + text_string + "}")
-        self.titleBox.setStyleSheet(widget_background_string + header_text_string)
-        self.downloadedTableWidget.setStyleSheet(header_section_string + " " + corner_section_string + " " + widget_background_string)
-
-        for i in range(self.downloadedTableWidget.rowCount()):
-            for j in range(self.downloadedTableWidget.columnCount()):
-                item = self.downloadedTableWidget.item(i, j)
-                if item is not None:
-                    item.setForeground(get_qcolor_from_string(text_string))
-                    item.setBackground(get_qcolor_from_string(widget_background_string))
-
-        for widget in self.widgetList:
-            widget.setStyleSheet(widget_background_string + header_text_string)
-
-        self.altitudeGraph.setStyleSheet(widget_background_string)
-        self.altitudeGraph.setBackground(get_qcolor_from_string(widget_background_string))
-        self.altitudeGraph.getAxis("left").setTextPen(self.textColor)
-        self.altitudeGraph.getAxis("left").setPen(self.textColor)
-        self.altitudeGraph.getAxis("bottom").setTextPen(self.textColor)
-        self.altitudeGraph.getAxis("bottom").setPen(self.textColor)

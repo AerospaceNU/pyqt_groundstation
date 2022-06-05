@@ -4,7 +4,7 @@ Top bar of primary display to show vehicle status
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget
+from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QWidget
 
 from src.constants import Constants
 from src.data_helpers import round_to_string
@@ -29,19 +29,28 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.line_cutter_batt_2_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="LC2 Batt", minValue=3.7, maxValue=4.2)
         self.fcb_memory_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="FCB Mem", minValue=0, maxValue=1, barColor="rgb(255,0,0)")
 
-        layout = QGridLayout()
-        layout.addWidget(self.statusBox, 1, 1, 4, 1)
-        layout.addWidget(self.fcb_state_box, 1, 2, 4, 1)
-        layout.addWidget(self.modeBox, 1, 3, 4, 1)
-        layout.addWidget(self.rssi_box, 1, 4)
-        layout.addWidget(self.message_age_box, 2, 4)
-        layout.addWidget(self.v_speed_box, 3, 4)
-        layout.addWidget(self.acceleration_box, 4, 4)
-        layout.addWidget(self.fcb_battery_graph, 1, 6, 4, 1)
-        layout.addWidget(self.prop_battery_graph, 1, 7, 4, 1)
-        layout.addWidget(self.line_cutter_batt_1_graph, 1, 8, 4, 1)
-        layout.addWidget(self.line_cutter_batt_2_graph, 1, 9, 4, 1)
-        layout.addWidget(self.fcb_memory_graph, 1, 10, 4, 1)
+        layout = QHBoxLayout()
+        layout.addWidget(self.statusBox)
+        layout.addWidget(self.fcb_state_box)
+        layout.addWidget(self.modeBox)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.rssi_box)
+        vbox.addWidget(self.message_age_box)
+        vbox.addWidget(self.v_speed_box)
+        vbox.addWidget(self.acceleration_box)
+        layout.addLayout(vbox)
+        self.quick_vbox = vbox
+
+        layout.addWidget(self.fcb_battery_graph)
+        layout.addWidget(self.prop_battery_graph)
+        layout.addWidget(self.line_cutter_batt_1_graph)
+        layout.addWidget(self.line_cutter_batt_2_graph)
+        layout.addWidget(self.fcb_memory_graph,)
+    
+        # for i in [self.rssi_box, self.message_age_box, self.v_speed_box, self.acceleration_box]:
+        #     i.setMinimumHeight(30)
+
         layout.setContentsMargins(1, 1, 3, 1)
         self.setLayout(layout)
 
@@ -56,44 +65,16 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.addSourceKey("rssi", str, Constants.rssi_key, "No Data", hide_in_drop_down=True)
         self.addSourceKey("message_age", float, Constants.message_age_key, -1, hide_in_drop_down=True)
         self.addSourceKey("v_speed", float, Constants.vertical_speed_key, -1, hide_in_drop_down=True)
-        self.addSourceKey(
-            "acceleration",
-            float,
-            Constants.acceleration_key,
-            -1,
-            hide_in_drop_down=True,
-        )
-        self.addSourceKey(
-            "fcb_voltage",
-            float,
-            Constants.fcb_battery_voltage,
-            -1,
-            hide_in_drop_down=True,
-        )
-        self.addSourceKey(
-            "prop_voltage",
-            float,
-            Constants.prop_battery_voltage,
-            -1,
-            hide_in_drop_down=True,
-        )
-        self.addSourceKey(
-            "lc1_voltage",
-            float,
-            Constants.makeLineCutterString(0, Constants.battery_voltage_key),
-            -1,
-            hide_in_drop_down=False,
-        )
-        self.addSourceKey(
-            "lc2_voltage",
-            float,
-            Constants.makeLineCutterString(1, Constants.battery_voltage_key),
-            -1,
-            hide_in_drop_down=False,
-        )
+        self.addSourceKey("acceleration", float, Constants.acceleration_key, -1, hide_in_drop_down=True)
+        self.addSourceKey("fcb_voltage", float, Constants.fcb_battery_voltage, -1, hide_in_drop_down=True)
+        self.addSourceKey("prop_voltage", float, Constants.prop_battery_voltage, -1, hide_in_drop_down=True)
+        self.addSourceKey("lc1_voltage", float, Constants.makeLineCutterString(0, Constants.battery_voltage_key), -1, hide_in_drop_down=False)
+        self.addSourceKey("lc2_voltage", float, Constants.makeLineCutterString(1, Constants.battery_voltage_key), -1, hide_in_drop_down=False)
         self.addSourceKey("fcb_mem", float, Constants.fcb_memory_usage, -1, hide_in_drop_down=True)
 
-        self.statusBox.setFont(QFont("Monospace", self.widgetSize))
+        self.updateAfterThemeSet()
+
+    def updateAfterThemeSet(self):
         self.statusBox.setAlignment(QtCore.Qt.AlignCenter)
         self.statusBox.setMinimumWidth(self.widgetSize * 8)
 
@@ -105,18 +86,12 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.modeBox.setAlignment(QtCore.Qt.AlignCenter)
         self.modeBox.setMinimumWidth(self.widgetSize * 13)
 
-        for box in [
-            self.rssi_box,
-            self.message_age_box,
-            self.v_speed_box,
-            self.acceleration_box,
-        ]:
+        for box in [self.rssi_box, self.message_age_box, self.v_speed_box, self.acceleration_box]:
             box.setFont(QFont("Monospace", self.widgetSize * 0.4))
 
         self.statusBox.adjustSize()
         self.fcb_state_box.adjustSize()
         self.modeBox.adjustSize()
-        self.setMaximumHeight(self.modeBox.height() * 2 + 20)
 
     def updateInFocus(self):
         fault_status = self.getDictValueUsingSourceKey("status_source")
@@ -133,16 +108,16 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         fcb_mem = self.getDictValueUsingSourceKey("fcb_mem")
 
         if fault_status == 2:
-            self.statusBox.setStyleSheet("color: red")
+            self.statusBox.setStyleSheet("color: red; font: {}pt Monospace".format(self.widgetSize))
             self.statusBox.setText("Faulted")
         elif fault_status == 1:
-            self.statusBox.setStyleSheet("color: yellow")
+            self.statusBox.setStyleSheet("color: yellow; font: {}pt Monospace".format(self.widgetSize))
             self.statusBox.setText("Warning")
         elif fault_status == 0:
-            self.statusBox.setStyleSheet("color: green")
+            self.statusBox.setStyleSheet("color: green; font: {}pt Monospace".format(self.widgetSize))
             self.statusBox.setText("OK")
         else:
-            self.statusBox.setStyleSheet("color: blue")
+            self.statusBox.setStyleSheet("color: blue; font: {}pt Monospace".format(self.widgetSize))
             self.statusBox.setText("Unknown")
 
         self.fcb_state_box.setText(fcb_state)
@@ -164,17 +139,3 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.line_cutter_batt_1_graph.setValue(lc1_voltage)
         self.line_cutter_batt_2_graph.setValue(lc2_voltage)
         self.fcb_memory_graph.setValue(fcb_mem)
-
-    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
-        self.modeBox.setStyleSheet(text_string)
-        self.rssi_box.setStyleSheet(text_string)
-        self.message_age_box.setStyleSheet(text_string)
-        self.v_speed_box.setStyleSheet(text_string)
-        self.acceleration_box.setStyleSheet(text_string)
-        self.fcb_state_box.setStyleSheet(text_string)
-
-        self.fcb_battery_graph.setTextColor(text_string)
-        self.prop_battery_graph.setTextColor(text_string)
-        self.line_cutter_batt_1_graph.setTextColor(text_string)
-        self.line_cutter_batt_2_graph.setTextColor(text_string)
-        self.fcb_memory_graph.setTextColor(text_string)

@@ -20,8 +20,6 @@ class TabCommon(QWidget):
         self.widgetsCreated = 0
         self.widgetList = []
 
-        self.colors = []
-
     def setIsActiveTab(self, is_active):
         self.isActiveTab = is_active
 
@@ -66,14 +64,6 @@ class TabCommon(QWidget):
         self.widgetsCreated += 1
         return widget
 
-    def setTheme(self, background, widget_background, text, header_text, border):
-        background_string = make_stylesheet_string("background", background)
-        self.setStyleSheet("QWidget#" + self.objectName() + " {" + background_string + "}")
-
+    def updateAfterThemeSet(self):
         for widget in self.widgetList:
-            widget.setTheme(widget_background, text, header_text, border)
-
-        self.colors = [background, widget_background, text, header_text, border]
-
-    def updateTheme(self):
-        self.setTheme(self.colors[0], self.colors[1], self.colors[2], self.colors[3], self.colors[4])
+            widget.updateAfterThemeSet()

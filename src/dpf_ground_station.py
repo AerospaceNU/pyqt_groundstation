@@ -14,6 +14,8 @@ import serial.tools.list_ports
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget, QWidget
 
+from qt_material import apply_stylesheet, list_themes
+
 import src.data_helpers
 from src.constants import Constants
 from src.MainTabs.diagnostic_tab import DiagnosticTab
@@ -48,51 +50,6 @@ from src.Widgets import (
 if sys.platform == "linux":  # I don't even know anymore
     if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:
         os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")  # https://stackoverflow.com/questions/63829991/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it
-
-# Background, Widget Background, Text, Header Text, Border
-THEMES = {}
-THEMES["Dark"] = [
-    "rgb[13, 17, 23]",
-    "rgb[13, 17, 23]",
-    "rgb[139,148,158]",
-    "rgb[88,166,255]",
-    "rgb[139,148,158]",
-]
-THEMES["No Borders"] = [
-    "rgb[13, 17, 23]",
-    "rgb[13, 17, 23]",
-    "rgb[139,148,158]",
-    "rgb[88,166,255]",
-    "rgb[40,50,70]",
-]
-THEMES["Green Text"] = [
-    "rgb[20, 20, 20]",
-    "rgb[25, 25, 25]",
-    "rgb[150,150,150]",
-    "rgb[10,200,10]",
-    "rgb[50,50,50]",
-]
-THEMES["Light"] = [
-    "rgb[255, 255, 255]",
-    "rgb[255, 255, 255]",
-    "rgb[0,0,0]",
-    "rgb[0,0,0]",
-    "rgb[0,0,0]",
-]
-THEMES["High Contrast Dark"] = [
-    "rgb[0, 0, 0]",
-    "rgb[0, 0, 0]",
-    "rgb[255,255,255]",
-    "rgb[255,255,255]",
-    "rgb[255,255,255]",
-]
-THEMES["Don't click on this one"] = [
-    "rgb[0, 0, 0]",
-    "rgb[0, 0, 0]",
-    "rgb[0, 0, 0]",
-    "rgb[0, 0, 0]",
-    "rgb[0, 0, 0]",
-]
 
 
 def serial_port_callback_name(device):
@@ -132,12 +89,6 @@ class DPFGUI:
         self.tabObjects = []
 
         self.title = ""
-
-        self.backgroundColor = ""
-        self.widgetBackgroundColor = ""
-        self.textColor = ""
-        self.headerTextColor = ""
-        self.borderColor = ""
 
         self.application = QApplication([])  # PyQt Application object
         self.mainWindow = QMainWindow()  # PyQt MainWindow widget
@@ -198,12 +149,7 @@ class DPFGUI:
 
         # Generate a random title from this list
         # I don't know why I did this
-        titles = [
-            "DPF Ground Station",
-            "Make sure the pointy end is facing up",
-            "This title intentionally left blank",
-            "Don't crash the rocket",
-        ]
+        titles = ["DPF Ground Station", "Make sure the pointy end is facing up", "This title intentionally left blank", "Don't crash the rocket"]
         self.title = random.choice(titles)
 
         # Add callback to clear console
@@ -211,7 +157,6 @@ class DPFGUI:
         self.addCallback("enable_module", self.enableModuleCallback)
 
         # Other setup tasks
-        self.setThemeByName("Dark")
         self.setUpMenuBar()
 
     def run(self):
@@ -220,6 +165,8 @@ class DPFGUI:
 
         Sets up the update timer, calls the PyQt exec_ function, and closes down the GUI when done
         """
+
+        self.setThemeByName("dark_cyan.xml")
 
         # QTimer to run the update method
         timer = QTimer()
@@ -261,14 +208,11 @@ class DPFGUI:
 
         tab_menu = insert_menu.addMenu("New Tab as own window")
         for item in sorted_tabs:
-            tab_menu.addAction(
-                item,
-                lambda name=item: self.addTabByTabType(name, None, own_window=True),
-            )
+            tab_menu.addAction(item, lambda name=item: self.addTabByTabType(name, None, own_window=True))
 
         # Menu bar to change theme
         theme_menu = menu_bar.addMenu("Theme")
-        for theme in THEMES:
+        for theme in list_themes():
             theme_menu.addAction(theme, lambda theme_name=theme: self.setThemeByName(theme_name))
 
         # Menu bar to set serial port
@@ -491,98 +435,22 @@ class DPFGUI:
         else:
             new_tab_object = tab(vehicle_name)
             new_tab_object.show()
-            new_tab_object.setStyleSheet(src.data_helpers.make_stylesheet_string("background", self.backgroundColor))
 
         self.tabObjects.append(new_tab_object)
         self.tabNames.append(vehicle_name)
 
         self.placeHolderList.append(placeholder.Placeholder(new_tab_object))  # Something needs to be updating for the GUI to function, so we make a silly thing to always do that
-        new_tab_object.setTheme(
-            self.backgroundColor,
-            self.widgetBackgroundColor,
-            self.textColor,
-            self.headerTextColor,
-            self.borderColor,
-        )
 
     def setThemeByName(self, name: str):
-        if name in THEMES:
-            theme = THEMES[name]
-            self.setTheme(theme[0], theme[1], theme[2], theme[3], theme[4])
+        if name in list_themes():
+            apply_stylesheet(self.application, theme=name)
+            self.updateAfterThemeSet()
         else:
             print("No Theme named {}".format(name))
 
-    def setTheme(
-        self,
-        background: str,
-        widget_background: str,
-        text: str,
-        header_text: str,
-        border: str,
-    ):
-        """
-        Sets theme from given color strings.  Currently the only accepted format for color strings is rgb(red,green,blue), but I'm going to add more at some point.
-
-        :param background: Background color for the GUI
-        :param widget_background: Widget color
-        :param text: Primary text color
-        :param header_text: Header text color
-        :param border: Widget border color
-        """
-
-        self.backgroundColor = src.data_helpers.get_well_formatted_rgb_string(background)
-        self.widgetBackgroundColor = src.data_helpers.get_well_formatted_rgb_string(widget_background)
-        self.textColor = src.data_helpers.get_well_formatted_rgb_string(text)
-        self.headerTextColor = src.data_helpers.get_well_formatted_rgb_string(header_text)
-        self.borderColor = src.data_helpers.get_well_formatted_rgb_string(border)
-
-        [red, green, blue] = src.data_helpers.get_rgb_from_string(background)
-        slightly_darker_color = src.data_helpers.format_rgb_string(max(red - 10, 0), max(green - 10, 0), max(blue - 10, 0))
-
-        self.mainWindow.setStyleSheet("QWidget#" + self.mainWindow.objectName() + "{" + src.data_helpers.make_stylesheet_string("background", slightly_darker_color) + src.data_helpers.make_stylesheet_string("color", self.textColor) + "}")
-        self.mainWindow.menuBar().setStyleSheet(
-            "QWidget#" + self.mainWindow.menuBar().objectName() + "{" + src.data_helpers.make_stylesheet_string("background", slightly_darker_color) + src.data_helpers.make_stylesheet_string("color", self.textColor) + "}"
-        )
-
-        self.tabHolderWidget.setStyleSheet("QWidget#" + self.tabHolderWidget.objectName() + "{" + src.data_helpers.make_stylesheet_string("background", self.backgroundColor) + src.data_helpers.make_stylesheet_string("color", self.textColor) + "}")
-        self.tabHolderWidget.tabBar().setStyleSheet(
-            "QWidget#" + self.tabHolderWidget.tabBar().objectName() + "{" + src.data_helpers.make_stylesheet_string("background", slightly_darker_color) + src.data_helpers.make_stylesheet_string("color", self.textColor) + "}"
-        )
-
-        if sys.platform == "win32":
-            darkerBackground = src.data_helpers.generateDarkerColor(self.backgroundColor, 10)
-            darkerDarkerBorder = src.data_helpers.generateDarkerColor(darkerBackground, 10)
-            newBorderColor = "rgb(50,50,50)"
-
-            stylesheet_string = (
-                "QTabWidget::pane { border: 1px solid "
-                + newBorderColor
-                + ";}"
-                + "QTabWidget::tab-bar {left: 0px; }"
-                + "QTabBar::tab {background: "
-                + darkerBackground
-                + "; color: "
-                + self.textColor
-                + ";border: 1px solid "
-                + newBorderColor
-                + ";border-bottom-color: "
-                + darkerDarkerBorder
-                + "; border-top-left-radius: 2px;border-top-right-radius: 2px;min-width: 8ex;padding: 4px;}"
-                + "QTabBar::tab:selected, QTabBar::tab:hover {background: "
-                + darkerBackground
-                + "}"
-                + "QTabBar::tab:selected {border-color: "
-                + newBorderColor
-                + ";border-bottom-color: "
-                + darkerDarkerBorder
-                + "; }"
-                + "QTabBar::tab:!selected {margin-top: 2px;}"
-            )
-
-            self.tabHolderWidget.setStyleSheet(stylesheet_string)
-
+    def updateAfterThemeSet(self):
         for tab in self.tabObjects:
-            tab.setTheme(self.backgroundColor, self.widgetBackgroundColor, self.textColor, self.headerTextColor, self.borderColor)
+            tab.updateAfterThemeSet()
 
     def updateConsole(self, value, level):
         self.ConsoleData = ([[value, level]] + self.ConsoleData)[:40]
@@ -613,13 +481,7 @@ class DPFGUI:
 
         self.callbackFunctions[target].append(callback)
 
-    def addModule(
-        self,
-        interface_name: str,
-        interface_class: type(ThreadedModuleCore),
-        enabled=True,
-        hide_toggle=False,
-    ):
+    def addModule(self, interface_name: str, interface_class: type(ThreadedModuleCore), enabled=True, hide_toggle=False):
         try:
             start_time = time.time()
 

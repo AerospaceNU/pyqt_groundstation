@@ -10,7 +10,7 @@
             "request": "launch",
             "console": "integratedTerminal",
             "module": "src.main",
-            "justMyCode": true
+            "justMyCode": false
         }
     ]
 }

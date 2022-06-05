@@ -224,14 +224,5 @@ class GraphWidget(CustomQWidgetBase):
                 time_val = min(time_val, smallest_time)
         return time_val
 
-    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
-        self.graphWidget.setStyleSheet(widget_background_string)
-
-        self.graphWidget.setBackground(get_qcolor_from_string(widget_background_string))
-        self.graphWidget.getAxis("left").setTextPen(self.textColor)
-        self.graphWidget.getAxis("left").setPen(self.textColor)
-        self.graphWidget.getAxis("bottom").setTextPen(self.textColor)
-        self.graphWidget.getAxis("bottom").setPen(self.textColor)
-
-        if self.title is not None:
-            self.graphWidget.setTitle(self.title, color=get_qcolor_from_string(header_text_string))
+    def updateAfterThemeSet(self):
+        self.graphWidget.setBackground(self.palette().color(self.backgroundRole()))
