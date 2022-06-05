@@ -102,10 +102,16 @@ class MapWidget(CustomQWidgetBase):
         for source in EXTRA_POSITION_SOURCES:
             lat = self.getValueIfUpdatedUsingSourceKey("{}_lat".format(source))
             lon = self.getValueIfUpdatedUsingSourceKey("{}_lon".format(source))
+            if lat == 0 or lon == 0:
+                continue
 
-            if self.has_datum and lat != 0 and lon != 0:
-                ned = navpy.lla2ned(lat, lon, 0, self.datum[0], self.datum[1], 0)
-                self.map_draw_widget.setXY(ned[1], ned[0], position_name=source)
+            if not self.has_datum:
+                self.datum = [lat, lon]
+                self.has_datum = True
+
+            if self.has_datum:
+                    ned = navpy.lla2ned(lat, lon, 0, self.datum[0], self.datum[1], 0)
+                    self.map_draw_widget.setXY(ned[1], ned[0], position_name=source)
 
         self.map_draw_widget.setHeading(heading)
 

@@ -14,28 +14,29 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
         super().__init__()
 
     def startUp(self):
-        self.reader = RecordedDataReader(
-            load_slower=True,
-            logging_callback=lambda data, level=1: self.logToConsole(data, level, override_disabled_check=True),
-        )
-        self.logToConsole("Done indexing recorded data", 1, override_disabled_check=True)
+        pass
 
     def runOnEnableAndDisable(self):
-        self.reader.setPacketIndex(0)
-
-        if not self.reader.parsedToFullHistory():
-            self.reader.parseIntoIndividualLists()
-
-        # Only use runs where we got packets with the rssi field (meaning that data came in over the radio)
-        runs_to_use = []
         if self.enabled:
+            self.reader = RecordedDataReader(
+                load_slower=True,
+                logging_callback=lambda data, level=1: self.logToConsole(data, level, override_disabled_check=True),
+            )
+            self.logToConsole("Done indexing recorded data", 1, override_disabled_check=True)
+
+            self.reader.setPacketIndex(0)
+
+            if not self.reader.parsedToFullHistory():
+                self.reader.parseIntoIndividualLists()
+
+            # Only use runs where we got packets with the rssi field (meaning that data came in over the radio)
+            runs_to_use = []
             for run in self.reader.getRuns():
                 [data_series, _] = self.reader.getFullHistoryForKey(run, Constants.rssi_key)
                 if len(data_series) > 0 and run not in runs_to_use:
                     runs_to_use.append(run)
 
-        # Put this data in the right spot so we can view it later
-        if self.enabled:
+            # Put this data in the right spot so we can view it later
             for run in runs_to_use:
                 if run not in self.recorded_data_dictionary:
                     self.recorded_data_dictionary[run] = {}

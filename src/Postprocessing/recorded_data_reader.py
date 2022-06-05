@@ -34,6 +34,8 @@ class RecordedDataReader(object):
         run_number = 0
         last_logging_time = 0
 
+        i = 0
+        startTime = time.time()
         for line in data:
             if len(line.strip()) == 0:
                 pass
@@ -78,12 +80,16 @@ class RecordedDataReader(object):
                 self.data_struct.append(packet_data)
                 self.packet_types.append(packet_type)
 
-            if load_slower:
+            if load_slower and (i % 500 == 0):
                 time.sleep(0.000000001)  # This many 0s probably don't help, but this sleep keeps the file indexing from taking all the CPU resources
+            i = i + 1
 
             if logging_callback is not None and time.time() - last_logging_time > logging_interval:
                 logging_callback("Indexing recorded dat: {0:.2f}% done".format(100 * data.index(line) / len(data)))
                 last_logging_time = time.time()
+                logging_callback(f"Indxing took {time.time() - startTime} seconds")
+
+            
 
         self.fields = list(packet_data.keys())
         self.packetIndex = 0

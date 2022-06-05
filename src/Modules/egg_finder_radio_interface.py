@@ -26,6 +26,8 @@ class EggFinderRadioInterface(ThreadedModuleCore):
 
         self.data_buffer = ""
 
+        self.last_good_data_time = 0
+
         self.serial_devices["Egg Finder"] = self.changeActiveSerialPort
 
     def changeActiveSerialPort(self, portName):
@@ -98,10 +100,11 @@ class EggFinderRadioInterface(ThreadedModuleCore):
                         self.data_dictionary[Constants.egg_finder_latitude] = msg.latitude
                         self.data_dictionary[Constants.egg_finder_longitude] = msg.longitude
                         self.data_dictionary[Constants.egg_finder_altitude] = msg.altitude
+                        self.last_good_data_time = time.time()
 
         except Exception as e:
             pass
             # print("Could not parse NMEA string: {0}".format(e))
 
     def updateEveryLoop(self):
-        pass
+        self.data_dictionary[Constants.egg_finder_age] = round(time.time() - self.last_good_data_time, 3)

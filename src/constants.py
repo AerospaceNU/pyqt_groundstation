@@ -65,6 +65,7 @@ class Constants:
     egg_finder_latitude = "egg_finder_latitude"
     egg_finder_longitude = "egg_finder_longitude"
     egg_finder_altitude = "egg_finder_altitude"
+    egg_finder_age = "egg_finder_age"
 
     laptop_disk_usage_key = "laptop_disk"
     laptop_cpu_usage_key = "laptop_cpu"
