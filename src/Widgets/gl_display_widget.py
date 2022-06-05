@@ -36,10 +36,12 @@ class ThreeDDisplay(CustomQWidgetBase):
         layout.addWidget(self.titleWidget, 0, 0, 1, 1)
 
         self.viewer = gl.GLViewWidget()
-        self.viewer.setMinimumWidth(600)
-        self.viewer.setMinimumHeight(600)
+        # self.viewer.setMinimumWidth(600)
+        # self.viewer.setMinimumHeight(600)
         # self.viewer.setBackgroundColor(pqg.mkColor('g'))
         layout.addWidget(self.viewer, 1, 0, 1, 1)
+        # layout.setRowMinimumHeight(1, 600)
+        # layout.setColumnMinimumWidth(0, 600)
 
         self.viewer.setWindowTitle("STL Viewer")
         self.viewer.setCameraPosition(distance=10)
@@ -55,6 +57,9 @@ class ThreeDDisplay(CustomQWidgetBase):
         self.setLayout(layout)
 
         self.showSTL("src/Assets/Rocket.stl")
+
+    def updateAfterThemeSet(self):
+        self.viewer.setBackgroundColor(self.palette().color(self.backgroundRole()))
 
     def updateData(self, vehicle_data, updated_data):
         self.orientation_quaternion = get_value_from_dictionary(vehicle_data, Constants.orientation_quaternion_key, [1, 0, 0, 0])
@@ -83,7 +88,8 @@ class ThreeDDisplay(CustomQWidgetBase):
 
         points, faces = self.loadSTL(filename)
         meshdata = gl.MeshData(vertexes=points, faces=faces)
-        mesh = gl.GLMeshItem(meshdata=meshdata, smooth=True, drawFaces=True, drawEdges=True, edgeColor=(0, 0, 0.5, 0.1))
+        mesh = gl.GLMeshItem(meshdata=meshdata, smooth=True, drawFaces=True, drawEdges=False, edgeColor=(0, 0, 0.5, 0.1),
+            shader='shaded')
         self.viewer.addItem(mesh)
 
         self.currentSTL = mesh
