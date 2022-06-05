@@ -6,7 +6,6 @@ from typing import Callable, Tuple
 import matplotlib.cm
 import matplotlib.pyplot as plt
 import numpy as np
-import numpy.typing as npt
 import pandas as pd
 from matplotlib.backend_bases import MouseButton
 
@@ -42,6 +41,10 @@ class FcbOffloadAnalyzer:
 
         # Ask for data to keep of launch and trim
         start_time, end_time = self._select_time_limits_cb(df, "timestamp_s", "pos_z")
+        FcbOffloadAnalyzer.analyzeTimeRange(df, start_time, end_time, self._offload_data_filepath)
+
+    @staticmethod
+    def analyzeTimeRange(df, start_time, end_time, offload_path):
         df = df[(df["timestamp_s"] > start_time) & (df["timestamp_s"] < end_time)]
 
         # Turn GPS into degrees and minutes from float
@@ -87,7 +90,7 @@ class FcbOffloadAnalyzer:
         df["baro_temp_avg"] = df[["baro1_temp", "baro2_temp"]].mean(axis=1)
 
         # Save to a post-processed CSV
-        output_filepath = f"{os.path.splitext(self._offload_data_filepath)[0]}-post.csv"
+        output_filepath = f"{os.path.splitext(offload_path)[0]}-post.csv"
         df.to_csv(output_filepath)
         return output_filepath
 

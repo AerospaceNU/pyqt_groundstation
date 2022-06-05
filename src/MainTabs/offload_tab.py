@@ -7,6 +7,7 @@ from src.Widgets import (
     board_usb_offloader_widget,
     complete_console_widget,
     simple_console_widget,
+    offload_graph_widget,
 )
 
 
@@ -16,6 +17,7 @@ class OffloadTab(TabCommon):
         simpleConsoleWidget = self.addWidget(simple_console_widget.SimpleConsoleWidget(self))
         completeConsoleWidget = self.addWidget(complete_console_widget.CLIUSBInterface(self))
         offloadWidget = self.addWidget(board_usb_offloader_widget.BoardCliWrapper(self))
+        graphWidget = self.addWidget(offload_graph_widget.OffloadGraphWidget(self))
 
         simpleConsoleWidget.move(1000, 0)
         offloadWidget.move(500, 0)

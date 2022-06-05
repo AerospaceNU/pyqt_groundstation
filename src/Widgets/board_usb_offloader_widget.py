@@ -74,33 +74,6 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
             hide_in_drop_down=True,
         )
 
-        """
-        # Also want a list of local flights that updates when you offload, so you can select a flight to graph
-        self.localLabel = QLabel(text="Downloaded Flights")
-        layout.addWidget(self.localLabel)
-        self.localFlightEntries = []
-        self.downloadedFlightsWidget = QListWidget()
-        self.downloadedFlightsWidget.setSelectionMode(QListWidget.SelectionMode.SingleSelection)
-        self.downloadedFlightsWidget.setMinimumWidth(350)
-        for i in range(5):
-            item = QListWidgetItem()
-            item.setText(f"User Title Here (FCBV{i % 2} #{i}, 2022:11:22 12:34:56)")
-            # item.setBackground(get_qcolor_from_string("rgb(100,0,0)" if i % 2 == 0 else "rgb(0,100,0)"))
-            self.downloadedFlightsWidget.addItem(item)
-            self.localFlightEntries.append(item)
-        layout.addWidget(self.downloadedFlightsWidget)
-
-        # Buttons to post-process or graph
-        tempLayout = QGridLayout()
-        self.postProcessBtn = QPushButton(text="Post-Process Selected")
-        self.postProcessBtn.clicked.connect(self.onPostProcessSelect)
-        self.graphBtn = QPushButton(text="Graph Selected")
-        self.graphBtn.clicked.connect(self.onGraphSelect)
-        tempLayout.addWidget(self.postProcessBtn)
-        tempLayout.addWidget(self.graphBtn)
-        layout.addItem(tempLayout)
-        """
-
         self.setLayout(layout)
 
     def recreate_table(self, offload_help_string):
@@ -173,7 +146,8 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
 
         self.setStyleSheet("QWidget#" + self.objectName() + " {" + border_string + widget_background_string + text_string + "}")
         self.titleBox.setStyleSheet(widget_background_string + header_text_string)
-        self.offloadTableWidget.setStyleSheet(header_section_string + " " + corner_section_string)
+        self.offloadTableWidget.setStyleSheet(header_section_string + " " + corner_section_string + " " + widget_background_string)
+
         self.offloadNameEntry.setStyleSheet(widget_background_string + text_string + border_string)
 
         for i in range(self.offloadTableWidget.rowCount()):

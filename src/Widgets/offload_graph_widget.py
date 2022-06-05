@@ -1,0 +1,337 @@
+"""
+Text box widget
+"""
+import os
+import time
+from os import listdir
+from os.path import isfile, join
+from re import template
+
+import pandas as pd
+import pyqtgraph
+from PyQt5 import QtCore
+from PyQt5.QtCore import QEvent, Qt
+from PyQt5.QtWidgets import (
+    QAbstractItemView,
+    QFileDialog,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListView,
+    QListWidget,
+    QListWidgetItem,
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QVBoxLayout,
+)
+from pyqtgraph import PlotWidget
+from qtrangeslider import QRangeSlider
+
+from src.constants import Constants
+from src.data_helpers import (
+    first_index_in_list_larger_than,
+    get_qcolor_from_string,
+    get_well_formatted_rgb_string,
+    interpolate,
+)
+from src.python_avionics.model.fcb_offload_analyzer import FcbOffloadAnalyzer
+from src.Widgets import custom_q_widget_base, graph_widget
+
+PEN_COLORS = ["red", "blue", "green", "magenta"]
+
+
+def get_pen_from_line_number(line_number):
+    index = line_number % len(PEN_COLORS)
+    return pyqtgraph.mkPen(color=PEN_COLORS[index])
+
+
+def rgb_to_hex(rgb):
+    return "%02x%02x%02x" % rgb
+
+
+class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        layout = QVBoxLayout()
+        self.vbox = layout
+
+        self.widgetList = []
+
+        # self.source = Constants.cli_interface_key
+        self.titleBox = QLabel()
+        self.title = "Offload and Graph"
+        self.titleBox.setText(self.title)
+        self.titleBox.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+        layout.addWidget(self.titleBox)
+
+        # --- OFFLOAD ---
+        temp = QHBoxLayout()
+        self.add(QPushButton(text="Import File"), layout=temp, onClick=self.onFileImport)
+        self.add(QPushButton(text="Refresh Data"), layout=temp, onClick=self.refreshTable)
+        layout.addLayout(temp)
+
+        self.downloadedTableWidget = QTableWidget()
+        self.downloadedTableWidget.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
+        self.downloadedTableWidget.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.downloadedTableWidget.setMinimumHeight(300)
+        self.downloadedTableWidget.setColumnCount(3)
+        self.downloadedTableWidget.setColumnWidth(0, 160)
+        self.downloadedTableWidget.setColumnWidth(1, 150)
+        self.downloadedTableWidget.setColumnWidth(1, 200)
+        self.downloadedTableWidget.setHorizontalHeaderLabels(["Name", "Raw", "Post-processed"])
+        self.downloadedTableWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.downloadedTableWidget.itemSelectionChanged.connect(self.updateButtons)
+        layout.addWidget(self.downloadedTableWidget)
+
+        self.recreate_table(self.getFlights())
+
+        temp = QHBoxLayout()
+        self.postButton = self.add(QPushButton(text="Select Flight for Post"), layout=temp, onClick=self.onFlightSelected)
+        self.simButton = self.add(QPushButton(text="Simulate selected"), layout=temp, onClick=self.onSimulateSelected)
+        self.graphButton = self.add(QPushButton(text="Graph selected"), layout=temp, onClick=self.onGraphSelected)
+        self.simButton.setEnabled(False)
+        self.graphButton.setEnabled(False)
+        layout.addLayout(temp)
+
+        self.addSourceKey(
+            "flights_list",
+            str,
+            Constants.cli_flights_list_key,
+            default_value="",
+            hide_in_drop_down=True,
+        )
+
+        self.altitudeGraph = PlotWidget()
+        self.altitudeGraph.setMaximumHeight(400)
+        self.altitudeGraph.setLabel("bottom", "Time (s)")
+        self.altitudeGraph.showGrid(x=True, y=True)
+        self.altitudeGraph.addLegend()
+        self.altitudeLine = None
+        layout.addWidget(self.altitudeGraph)
+
+        self.rangeSlider = QRangeSlider(Qt.Horizontal)
+        self.rangeSlider.setRange(0, 1000)
+        self.rangeSlider.setSliderPosition([0, 1000])
+        self.widgetList.append(self.rangeSlider)
+        layout.addWidget(self.rangeSlider)
+
+        self.rangeSlider.valueChanged.connect(self.onSliderChange)
+
+        self.add(QPushButton(text="Actually Post-Process"), onClick=self.onPostProcessSelect)
+
+        self.setLayout(layout)
+
+    def onSliderChange(self, data):
+        self.slider_min = data[0]
+        self.slider_max = data[1]
+
+        smallest_time = min(self.altitude_time_arr)
+        largest_time = max(self.altitude_time_arr)
+
+        if self.slider_min == 0:
+            graph_min = None
+        else:
+            graph_min = interpolate(self.slider_min, 0, 1000, smallest_time, largest_time)
+
+        if self.slider_max == 1000:
+            graph_max = None
+        else:
+            graph_max = interpolate(self.slider_max, 0, 1000, smallest_time, largest_time)
+
+        self.min_x = graph_min
+        self.max_x = graph_max
+
+        # self.altitudeGraph.setXAxisBounds(graph_min, graph_max)
+
+        # Connect=finite allows NaN values to be skipped
+        if self.min_x is None and self.max_x is None:  # No restrictions
+            self.altitudeLine.setData(
+                self.altitude_time_arr,
+                self.altitude_data_arr,
+                connect="finite",
+            )
+            self.min_x = smallest_time
+            self.max_x = largest_time
+        elif self.min_x is None:  # No minimum, truncate maximum
+            max_index = first_index_in_list_larger_than(self.altitude_time_arr, self.max_x)
+            self.altitudeLine.setData(
+                self.altitude_time_arr[0:max_index],
+                self.altitude_data_arr[0:max_index],
+                connect="finite",
+            )
+            self.min_x = smallest_time
+        elif self.max_x is None:  # No maximum, truncate minimum
+            min_index = first_index_in_list_larger_than(self.altitude_time_arr, self.min_x)
+            self.altitudeLine.setData(
+                self.altitude_time_arr[min_index:],
+                self.altitude_data_arr[min_index:],
+                connect="finite",
+            )
+            self.max_x = largest_time
+        else:  # Truncate both max and min
+            max_index = first_index_in_list_larger_than(self.altitude_time_arr, self.max_x)
+            min_index = first_index_in_list_larger_than(self.altitude_time_arr, self.min_x)
+            self.altitudeLine.setData(
+                self.altitude_time_arr[min_index:max_index],
+                self.altitude_data_arr[min_index:max_index],
+                connect="finite",
+            )
+
+        self.altitudeGraph.setXRange(self.min_x, self.max_x)
+
+    def recreate_table(self, flight_array):
+        if len(flight_array) > 0:
+            self.downloadedTableWidget.setRowCount(len(flight_array))
+        else:
+            self.downloadedTableWidget.setRowCount(0)
+        for i in range(len(flight_array)):
+            row = flight_array[i]
+            self.downloadedTableWidget.setItem(i, 0, QTableWidgetItem(row[0]))
+            self.downloadedTableWidget.setItem(i, 1, QTableWidgetItem(row[1]))
+            self.downloadedTableWidget.setItem(i, 2, QTableWidgetItem(row[2]))
+
+            for j in range(3):
+                item = self.downloadedTableWidget.item(i, j)
+                if item is not None:
+                    item.setTextAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+
+    def getFlights(self):
+        mypath = "output"
+        if not os.path.exists(mypath):
+            return []
+        flight_files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and (f.endswith("-output.csv") or f.endswith("-output-post.csv"))]
+
+        ret = []
+        for file in set(map(lambda it: it.replace("-output.csv", "").replace("-output-post.csv", ""), flight_files)):
+            has_raw = "Yes" if file + "-output.csv" in flight_files else "No"
+            has_post = "Yes" if file + "-output-post.csv" in flight_files else "No"
+            ret.append([file.replace("-output.csv", ""), has_raw, has_post])
+
+        return ret
+
+    def refreshTable(self):
+        self.recreate_table(self.getFlights())
+        self.refreshTheme()
+        self.updateButtons()
+
+    def add(self, widget, layout=None, onClick=None):
+        if layout is None:
+            layout = self.vbox
+        self.widgetList.append(widget)
+        layout.addWidget(widget)
+
+        if onClick:
+            widget.clicked.connect(onClick)
+
+        return widget
+
+    def onFileImport(self):
+        options = QFileDialog.Options()
+        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "", "All Files (*);;CSV Files (*.csv)", options=options)
+        if fileName:
+            print(fileName)
+            import os
+            import shutil
+
+            if not os.path.exists("output"):
+                os.mkdir("output")
+            shutil.copy2(fileName, "output/")
+
+            self.refreshTable()
+
+    def getFlightFrom(self, listWidget):
+        indexes = listWidget.selectedItems()
+        if len(indexes) < 1:
+            return
+
+        index = indexes[0]
+        return index.text()
+
+    def onFlightSelected(self):
+        flightName = self.getFlightFrom(self.downloadedTableWidget)
+
+        import os
+
+        self.raw_file_path = os.path.join("output", f"{flightName}-output.csv")
+        csv = pd.read_csv(self.raw_file_path)
+        self.raw_file = csv
+
+        # Hack since timestamp_s is in ms
+        csv["timestamp_s"] = csv["timestamp_s"] / 1000
+
+        self.altitude_time_arr = list(csv["timestamp_s"])
+        self.altitude_data_arr = list(csv["pos_z"])
+        if self.altitudeLine is not None:
+            self.altitudeGraph.getPlotItem().removeItem(self.altitudeLine)
+        self.altitudeLine = self.altitudeGraph.plot(
+            self.altitude_time_arr,
+            self.altitude_data_arr,
+            name="Altitude (m)",
+            pen=get_pen_from_line_number(0),
+        )
+
+        self.min_x = min(self.altitude_time_arr)
+        self.max_x = max(self.altitude_time_arr)
+
+        self.altitudeGraph.setXRange(self.min_x, self.max_x)
+
+        # import matplotlib.pyplot as plt
+        # plt.figure()
+        # plt.plot(csv['timestamp_s'] / 1000, csv['pos_z'])
+        # plt.show()
+
+    def onPostProcessSelect(self):
+        FcbOffloadAnalyzer.analyzeTimeRange(self.raw_file, self.min_x, self.max_x, self.raw_file_path)
+        self.refreshTable()
+
+    def onGraphSelected(self):
+        pass
+
+    def onSimulateSelected(self):
+        pass
+
+    def updateButtons(self):
+        flights = self.getFlights()
+        flightName = self.getFlightFrom(self.downloadedTableWidget)
+
+        for flight in flights:
+            if flight[0] == flightName:
+                has_post = flight[1] == "Yes"
+                self.simButton.setEnabled(has_post)
+                self.graphButton.setEnabled(has_post)
+
+    # def updateData(self, vehicle_data, updated_data):
+    #     if self.isDictValueUpdated("flights_list"):
+    #         self.recreate_table(self.getFlights())
+    #         self.refreshTheme()
+
+    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
+        background_color_string = get_well_formatted_rgb_string(widget_background_string.split(":")[1].strip())
+        text_color_string = get_well_formatted_rgb_string(text_string.split(":")[1].strip())
+
+        header_section_string = "QHeaderView::section { background-color:" + background_color_string + "; color:" + text_color_string + ";} "
+        corner_section_string = "QTableCornerButton::section {background-color: " + background_color_string + "; }"
+
+        self.setStyleSheet("QWidget#" + self.objectName() + " {" + border_string + widget_background_string + text_string + "}")
+        self.titleBox.setStyleSheet(widget_background_string + header_text_string)
+        self.downloadedTableWidget.setStyleSheet(header_section_string + " " + corner_section_string + " " + widget_background_string)
+
+        for i in range(self.downloadedTableWidget.rowCount()):
+            for j in range(self.downloadedTableWidget.columnCount()):
+                item = self.downloadedTableWidget.item(i, j)
+                if item is not None:
+                    item.setForeground(get_qcolor_from_string(text_string))
+                    item.setBackground(get_qcolor_from_string(widget_background_string))
+
+        for widget in self.widgetList:
+            widget.setStyleSheet(widget_background_string + header_text_string)
+
+        self.altitudeGraph.setStyleSheet(widget_background_string)
+        self.altitudeGraph.setBackground(get_qcolor_from_string(widget_background_string))
+        self.altitudeGraph.getAxis("left").setTextPen(self.textColor)
+        self.altitudeGraph.getAxis("left").setPen(self.textColor)
+        self.altitudeGraph.getAxis("bottom").setTextPen(self.textColor)
+        self.altitudeGraph.getAxis("bottom").setPen(self.textColor)

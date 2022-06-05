@@ -1,4 +1,9 @@
+import os
 import time
+from os import listdir
+from os.path import isfile, join
+
+import pandas as pd
 
 from src.constants import Constants
 from src.Modules.data_interface_core import ThreadedModuleCore
@@ -92,6 +97,7 @@ class FCBOffloadModule(ThreadedModuleCore):
         if self.serial_connection:
             try:
                 ret = self.python_avionics_fcb_cli.run_command(command)
+                print(f"Successfully ran {command}")
                 return ret
             except (IOError, SerialPortDisconnectedError) as e:
                 self.serial_connection = False
@@ -108,3 +114,31 @@ class FCBOffloadModule(ThreadedModuleCore):
         temporary_dict = self.data_dictionary.copy()
         self.data_dictionary = {}
         return temporary_dict
+
+    def runOnEnableAndDisable(self):
+        if not self.enabled:
+            return
+
+        mypath = "output"
+        if not os.path.exists(mypath):
+            return []
+        all_post_processed_files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and f.endswith("-output-post.csv")]
+
+        for file in all_post_processed_files:
+            print(f"Loading flight {file}")
+            runName = file.replace("-output-post.csv", "")
+            df = pd.read_csv(join(mypath, file), index_col=0)
+
+            time_series = df["timestamp_s"] / 1000.0
+
+            if runName not in self.recorded_data_dictionary:
+                self.recorded_data_dictionary[runName] = {}
+
+            # self.recorded_data_dictionary[runName][Constants.altitude_key] = [list(df['pos_z']), list(time_series)]
+            # return
+
+            # TOTAL HACK, but the member names are the same as what the FCB expects
+            # and the member values are keys in the dataframe
+            offload_map = [a for a in dir(Constants.OffloadConstants) if not a.startswith("__")]
+            for key in offload_map:
+                self.recorded_data_dictionary[runName][getattr(Constants, key)] = [list(df[getattr(Constants.OffloadConstants, key)]), list(time_series)]
