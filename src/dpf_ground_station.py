@@ -449,6 +449,8 @@ class DPFGUI:
             print("No Theme named {}".format(name))
 
     def updateAfterThemeSet(self):
+        self.application.setStyleSheet(self.application.styleSheet() +  "\nQSlider:horizontal { background: none; } QSlider:horizontal { background: none; }")
+        
         for tab in self.tabObjects:
             tab.updateAfterThemeSet()
 

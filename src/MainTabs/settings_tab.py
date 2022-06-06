@@ -15,6 +15,5 @@ class SettingsTab(TabCommon):
         self.ControlStationData.setMinimumSize(400, 150)
 
         self.addWidget(LocalSimWidget(self))
-        self.addWidget(board_usb_offloader_widget.BoardCliWrapper(self))
 
         self.widgetList[1].move(600, 0)
