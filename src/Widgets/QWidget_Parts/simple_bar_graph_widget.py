@@ -79,7 +79,8 @@ class SimpleBarGraphWidget(QLabel):
         )
 
         painter.setPen(QPen(QColor(100, 100, 100), 0, Qt.SolidLine))
-        painter.setBrush(QBrush(QColor(50, 50, 50), Qt.SolidPattern))
+        
+        painter.setBrush(QBrush(self.palette().button().color(), Qt.SolidPattern))
 
         topY = 2 * padding + fontHeight
         startX = int(self.width() * 0.1)
@@ -106,8 +107,10 @@ class SimpleBarGraphWidget(QLabel):
     def setValue(self, value):
         self.value = value
 
-    def setTextColor(self, textColor: str):
-        if "rgb" in textColor:
+    def setTextColor(self, textColor):
+        if type(textColor) is QColor:
+            self.textColor = textColor
+        elif "rgb" in textColor:
             [red, green, blue] = [int(float(i)) for i in textColor.split("(")[1].split(")")[0].split(",")]
             self.textColor = QColor(red, green, blue)
         else:

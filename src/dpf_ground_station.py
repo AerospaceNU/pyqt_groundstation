@@ -55,6 +55,7 @@ if sys.platform == "linux":  # I don't even know anymore
 def serial_port_callback_name(device):
     return "set_{}_serial_port".format(device)
 
+CUSTOM_THEMES = ["themes/high_contrast_light.xml"]
 
 class DPFGUI:
     def __init__(self):
@@ -212,7 +213,7 @@ class DPFGUI:
 
         # Menu bar to change theme
         theme_menu = menu_bar.addMenu("Theme")
-        for theme in list_themes():
+        for theme in self.getThemes():
             theme_menu.addAction(theme, lambda theme_name=theme: self.setThemeByName(theme_name))
 
         # Menu bar to set serial port
@@ -441,8 +442,11 @@ class DPFGUI:
 
         self.placeHolderList.append(placeholder.Placeholder(new_tab_object))  # Something needs to be updating for the GUI to function, so we make a silly thing to always do that
 
+    def getThemes(self):
+        return list_themes() + CUSTOM_THEMES
+
     def setThemeByName(self, name: str):
-        if name in list_themes():
+        if name in self.getThemes():
             apply_stylesheet(self.application, theme=name)
             self.updateAfterThemeSet()
         else:

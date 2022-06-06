@@ -93,6 +93,10 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.fcb_state_box.adjustSize()
         self.modeBox.adjustSize()
 
+        for widget in [self.fcb_battery_graph, self.prop_battery_graph, self.line_cutter_batt_1_graph, self.line_cutter_batt_2_graph, self.fcb_memory_graph]:
+            widget.setTextColor(self.palette().text().color())
+
+
     def updateInFocus(self):
         fault_status = self.getDictValueUsingSourceKey("status_source")
         fcb_state = self.getDictValueUsingSourceKey("fcb_state")

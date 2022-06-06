@@ -44,3 +44,7 @@ class ControlStationStatus(custom_q_widget_base.CustomQWidgetBase):
         self.DiskStatus.setValue(disk)
 
         self.setMaximumWidth(self.BatteryStatus.width() * 4 + 30)
+
+    def updateAfterThemeSet(self):
+        for widget in [self.BatteryStatus, self.DiskStatus, self.RamStatus, self.CPUStatus]:
+            widget.setTextColor(self.palette().text().color())
