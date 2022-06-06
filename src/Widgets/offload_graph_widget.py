@@ -76,6 +76,7 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
         self.downloadedTableWidget = QTableWidget()
         self.downloadedTableWidget.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.downloadedTableWidget.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.downloadedTableWidget.doubleClicked.connect(self.onFlightSelected)
         self.downloadedTableWidget.setMinimumHeight(300)
         self.downloadedTableWidget.setColumnCount(3)
         self.downloadedTableWidget.setColumnWidth(0, 160)
@@ -121,6 +122,10 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
         self.rangeSlider.valueChanged.connect(self.onSliderChange)
 
         self.add(QPushButton(text="Actually Post-Process"), onClick=self.onPostProcessSelect)
+
+
+        self.minXline = None
+        self.maxXline = None
 
         self.setLayout(layout)
 
@@ -181,6 +186,11 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
             )
 
         self.altitudeGraph.setXRange(self.min_x, self.max_x)
+
+        if(self.min_x > self.minXline.getXPos()):
+            self.minXline.setPos(self.min_x)
+        if(self.max_x < self.maxXline.getXPos()):
+            self.maxXline.setPos(self.max_x)
 
     def recreate_table(self, flight_array):
         if len(flight_array) > 0:
@@ -256,6 +266,8 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
         import os
 
         self.raw_file_path = os.path.join("output", f"{flightName}-output.csv")
+        if not os.path.exists(self.raw_file_path):
+            return
         csv = pd.read_csv(self.raw_file_path)
         self.raw_file = csv
 
@@ -278,13 +290,16 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
 
         self.altitudeGraph.setXRange(self.min_x, self.max_x)
 
-        # import matplotlib.pyplot as plt
-        # plt.figure()
-        # plt.plot(csv['timestamp_s'] / 1000, csv['pos_z'])
-        # plt.show()
+        if self.minXline is None:
+            self.minXline = pyqtgraph.InfiniteLine(movable=True, name="Flight start")
+            self.maxXline = pyqtgraph.InfiniteLine(movable=True, name="Flight end")
+            self.altitudeGraph.addItem(self.minXline)
+            self.altitudeGraph.addItem(self.maxXline)
+        self.minXline.setPos(self.min_x)
+        self.maxXline.setPos(self.max_x)
 
     def onPostProcessSelect(self):
-        FcbOffloadAnalyzer.analyzeTimeRange(self.raw_file, self.min_x, self.max_x, self.raw_file_path)
+        FcbOffloadAnalyzer.analyzeTimeRange(self.raw_file, self.minXline.getXPos(), self.maxXline.getXPos(), self.raw_file_path)
         self.refreshTable()
 
     def onGraphSelected(self):
@@ -299,9 +314,10 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
 
         for flight in flights:
             if flight[0] == flightName:
-                has_post = flight[1] == "Yes"
+                has_post = flight[2] == "Yes"
                 self.simButton.setEnabled(has_post)
                 self.graphButton.setEnabled(has_post)
+                self.postButton.setEnabled(flight[1]=="Yes")
 
     # def updateData(self, vehicle_data, updated_data):
     #     if self.isDictValueUpdated("flights_list"):
