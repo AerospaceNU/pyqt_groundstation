@@ -5,7 +5,7 @@ import time
 
 try:
     # If pybluez installation fails, this import won't work. Still allow GUI to run in that case
-    import bluetooth.btcommon as ble
+    import bluetooth as ble
 except ImportError:
     pass
 import pynmea2
