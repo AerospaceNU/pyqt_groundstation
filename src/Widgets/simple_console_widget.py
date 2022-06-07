@@ -25,8 +25,6 @@ class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
     def paintEvent(self, a0: QtGui.QPaintEvent) -> None:
         """Draw border around widget"""
         painter = QPainter(self)  # Grey background
-        painter.setPen(QColor(self.borderColor[0], self.borderColor[1], self.borderColor[2]))
-        painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
 
         self.maxLineWidth = 0
         font_height = self.fontInfo().pixelSize()

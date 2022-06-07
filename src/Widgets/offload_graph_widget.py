@@ -324,6 +324,6 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
     #         self.recreate_table(self.getFlights())
     #         self.refreshTheme()
 
-    def updateAfterThemeSet(self):
+    def customUpdateAfterThemeSet(self):
         self.altitudeGraph.setBackground(self.palette().color(self.backgroundRole()))
 

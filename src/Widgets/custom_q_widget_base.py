@@ -99,18 +99,15 @@ class CustomQWidgetBase(QFrame):
             self.draggable = draggable
 
     def updateAfterThemeSet(self):
+        """Allows custom appearances to be set across all widgets"""
+        self.customUpdateAfterThemeSet()
+
+        # if self.isInLayout:
+        #     self.setStyleSheet("QWidget#" + self.objectName() + " {border: 0}")
+
+    def customUpdateAfterThemeSet(self):
         """Overwrite this for each widget"""
         return
-
-    def paintEvent(self, a0: QtGui.QPaintEvent) -> None:
-        """Draw border around widget"""
-
-        return
-
-        painter = QPainter(self)  # Grey background
-        painter.setPen(QColor(self.borderColor[0], self.borderColor[1], self.borderColor[2]))
-        painter.setBrush(QColor(self.backgroundColor[0], self.backgroundColor[1], self.backgroundColor[2]))
-        painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
 
     def coreUpdate(self):
         if not self.isInLayout:

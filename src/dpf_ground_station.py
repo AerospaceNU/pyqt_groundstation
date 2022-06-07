@@ -55,7 +55,9 @@ if sys.platform == "linux":  # I don't even know anymore
 def serial_port_callback_name(device):
     return "set_{}_serial_port".format(device)
 
+
 CUSTOM_THEMES = ["themes/high_contrast_light.xml"]
+
 
 class DPFGUI:
     def __init__(self):
@@ -395,7 +397,6 @@ class DPFGUI:
             activeTab = self.getActiveTabObject()
             if activeTab is not None:
                 activeTab.addWidget(self.createWidgetFromName(name, parent=activeTab))
-                activeTab.updateTheme()
         else:
             print("No widget named {}".format(name))
 
@@ -453,8 +454,8 @@ class DPFGUI:
             print("No Theme named {}".format(name))
 
     def updateAfterThemeSet(self):
-        self.application.setStyleSheet(self.application.styleSheet() +  "\nQSlider:horizontal { background: none; } QSlider:horizontal { background: none; }")
-        
+        self.application.setStyleSheet(self.application.styleSheet() + "\nQSlider:horizontal { background: none; } QSlider:horizontal { background: none; }")
+
         for tab in self.tabObjects:
             tab.updateAfterThemeSet()
 

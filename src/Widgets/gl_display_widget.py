@@ -58,7 +58,7 @@ class ThreeDDisplay(CustomQWidgetBase):
 
         self.showSTL("src/Assets/Rocket.stl")
 
-    def updateAfterThemeSet(self):
+    def customUpdateAfterThemeSet(self):
         self.viewer.setBackgroundColor(self.palette().color(self.backgroundRole()))
 
     def updateData(self, vehicle_data, updated_data):

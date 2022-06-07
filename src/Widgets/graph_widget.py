@@ -224,5 +224,6 @@ class GraphWidget(CustomQWidgetBase):
                 time_val = min(time_val, smallest_time)
         return time_val
 
-    def updateAfterThemeSet(self):
+    def customUpdateAfterThemeSet(self):
         self.graphWidget.setBackground(self.palette().color(self.backgroundRole()))
+        self.setStyleSheet("border: 0")

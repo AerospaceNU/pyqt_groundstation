@@ -46,8 +46,8 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         layout.addWidget(self.prop_battery_graph)
         layout.addWidget(self.line_cutter_batt_1_graph)
         layout.addWidget(self.line_cutter_batt_2_graph)
-        layout.addWidget(self.fcb_memory_graph,)
-    
+        layout.addWidget(self.fcb_memory_graph, )
+
         # for i in [self.rssi_box, self.message_age_box, self.v_speed_box, self.acceleration_box]:
         #     i.setMinimumHeight(30)
 
@@ -72,9 +72,9 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.addSourceKey("lc2_voltage", float, Constants.makeLineCutterString(1, Constants.battery_voltage_key), -1, hide_in_drop_down=False)
         self.addSourceKey("fcb_mem", float, Constants.fcb_memory_usage, -1, hide_in_drop_down=True)
 
-        self.updateAfterThemeSet()
+        self.customUpdateAfterThemeSet()
 
-    def updateAfterThemeSet(self):
+    def customUpdateAfterThemeSet(self):
         self.statusBox.setAlignment(QtCore.Qt.AlignCenter)
         self.statusBox.setMinimumWidth(self.widgetSize * 8)
 
@@ -95,7 +95,6 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
 
         for widget in [self.fcb_battery_graph, self.prop_battery_graph, self.line_cutter_batt_1_graph, self.line_cutter_batt_2_graph, self.fcb_memory_graph]:
             widget.setTextColor(self.palette().text().color())
-
 
     def updateInFocus(self):
         fault_status = self.getDictValueUsingSourceKey("status_source")

@@ -62,12 +62,10 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
             cameras = list(vehicle_data["camera"])
             self.setVideoOptions(cameras)
 
-    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
-        string = "{0}{1}{2}{3}".format(widget_background_string, text_string, header_text_string, border_string)
-        self.setStyleSheet("QWidget#" + self.objectName() + "{" + string + "}")
+    def customUpdateAfterThemeSet(self):
+        font = QFont("Monospace", 8)
+        self.videoSwitcher.setFont(font)
 
-        self.videoSwitcher.setStyleSheet(widget_background_string + text_string)
-        self.resetGraphButton.setStyleSheet(widget_background_string + text_string)
-        self.clearMapButton.setStyleSheet(widget_background_string + text_string)
-        self.resetDatumButton.setStyleSheet(widget_background_string + text_string)
-        self.resetOriginButton.setStyleSheet(widget_background_string + text_string)
+        for widget in [self.resetGraphButton, self.clearMapButton, self.resetDatumButton, self.resetOriginButton]:
+            widget.setStyleSheet("QPushButton {font: 8pt Arial; margin:-1px; padding-left: 3px; padding-right: 3px; padding-top: 4px; padding-bottom: 4px;}")
+

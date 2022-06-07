@@ -5,7 +5,7 @@ import time
 
 try:
     # If pybluez installation fails, this import won't work. Still allow GUI to run in that case
-    import bluetooth as ble
+    import bluetooth.btcommon as ble
 except ImportError:
     pass
 import pynmea2
@@ -73,14 +73,6 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
             message_age = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.message_age_key, 0)
             time_str = time.strftime("%H%M%S")
 
-            if latitude == 0 and longitude == 0:
-                for source in EXTRA_POSITION_SOURCES:
-                    latitude = get_value_from_dictionary(self.gui_full_data_dictionary, source[0], 0)
-                    longitude = get_value_from_dictionary(self.gui_full_data_dictionary, source[1], 0)
-                    message_age = get_value_from_dictionary(self.gui_full_data_dictionary, source[2], 0)
-                    if latitude != 0 and longitude != 0:
-                        break
-
             if latitude != 0 and longitude != 0 and message_age < 5:
                 [lat_min, lat_sign, lon_min, lon_sign] = format_lat_lon_for_nmea(latitude, longitude)
                 # time, lat, lon, fix quality, satellites, hdop, alt, alt_unit, height above wgs84, height unit, DGPS time, DGPS station
@@ -125,7 +117,7 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
                     client_socket, client_info = self.server_sock.accept()
                     self.client_sock_list.append(client_socket)
                     self.logToConsole("Accepted connection from {}".format(client_info), 1)
-                except ble.btcommon.BluetoothError as e:
+                except bluetooth.btcommon.BluetoothError as e:
                     self.logToConsole("Accepted connection from {}".format(client_info), 1)
                 except ble.BluetoothError:
                     pass
@@ -146,6 +138,3 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
                 self.logToConsole("Lost connection to one bluetooth device", 2)
                 client_socket.close()
                 self.client_sock_list.remove(client_socket)
-
-if __name__ == "__main__":
-    interface = AndroidPhoneBluetoothInterface()
