@@ -405,7 +405,6 @@ class DPFGUI:
             activeTab = self.getActiveTabObject()
             if activeTab is not None:
                 activeTab.addWidget(self.createWidgetFromName(name, parent=activeTab, in_new_window=True))
-                activeTab.updateTheme()
         else:
             print("No widget named {}".format(name))
 

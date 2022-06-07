@@ -196,17 +196,3 @@ class LineCutterControl(custom_q_widget_base.CustomQWidgetBase):
             self.cut_2_box.setText("Error")
 
         self.update()
-
-    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
-        self.select_box.setStyleSheet(widget_background_string + text_string)
-        self.state_text_box.setStyleSheet(widget_background_string + text_string)
-        self.state_data_box.setStyleSheet(widget_background_string + text_string)
-        self.light_text_box.setStyleSheet(widget_background_string + text_string)
-        self.light_data_graph.setStyleSheet(widget_background_string + text_string)
-
-        self.cut_1_label.setStyleSheet(widget_background_string + text_string)
-        self.cut_2_label.setStyleSheet(widget_background_string + text_string)
-        self.cutting_enable_button.setStyleSheet(widget_background_string + text_string)
-        self.cut_1_button.setStyleSheet(widget_background_string + text_string)
-        self.cut_2_button.setStyleSheet(widget_background_string + text_string)
-        self.arm_button.setStyleSheet(widget_background_string + text_string)

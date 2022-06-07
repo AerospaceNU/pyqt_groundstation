@@ -71,10 +71,3 @@ class PyroWidget(CustomQWidgetBase):
         self.adjustSize()
         self.setMaximumWidth(self.width())
         self.setMaximumHeight(self.height())
-
-    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
-        self.setStyleSheet("QWidget#" + self.objectName() + " {" + widget_background_string + text_string + border_string + "}")
-        self.titleWidget.setStyleSheet(widget_background_string + header_text_string)
-
-        for widget in self.titleWidgets:
-            widget.setStyleSheet(widget_background_string + text_string)

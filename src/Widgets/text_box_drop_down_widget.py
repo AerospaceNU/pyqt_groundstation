@@ -73,7 +73,5 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
         self.menuItems = menu_item_list
         self.dropDownWidget.setStyleSheet(self.colorString)
 
-    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
-        self.colorString = widget_background_string + header_text_string
-        self.textBoxWidget.setStyleSheet(widget_background_string + text_string)
-        self.dropDownWidget.setStyleSheet(widget_background_string + header_text_string)
+    def customUpdateAfterThemeSet(self):
+        self.textBoxWidget.setFont(QFont("Monospace", self.fontInfo().pointSize()))

@@ -148,19 +148,3 @@ class LocalSimWidget(CustomQWidgetBase):
                 process.kill()
         except Exception:
             print("Error killing simulated flight")
-
-    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
-        self.setStyleSheet("QWidget#" + self.objectName() + " {" + widget_background_string + text_string + border_string + "}")
-        self.titleWidget.setStyleSheet(widget_background_string + header_text_string)
-
-        for widget in self.titleWidgets:
-            widget.setStyleSheet(widget_background_string + text_string)
-
-        for widget in self.paths:
-            widget.setStyleSheet(widget_background_string + text_string)
-
-        for widget in self.buttons:
-            widget.setStyleSheet(widget_background_string + text_string)
-
-        self.goButton.setStyleSheet(widget_background_string + text_string)
-        self.killButton.setStyleSheet(widget_background_string + text_string)

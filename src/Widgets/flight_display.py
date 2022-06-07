@@ -144,17 +144,3 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.update()
         self.adjustSize()
         self.HUDWidget.update()
-
-    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
-        self.SpeedTextBox.setStyleSheet(text_string)
-        self.VSpeedTextBox.setStyleSheet(text_string)
-        self.AltitudeTextBox.setStyleSheet(text_string)
-        self.TerrainTextBox.setStyleSheet(text_string)
-        self.HUDWidget.setStyleSheet(text_string)
-
-        if self.compass_and_text:
-            self.CompassWidget.setCompassColor(text_string)
-            self.StateTextBox.setStyleSheet(text_string)
-            self.SetpointTextBox.setStyleSheet(text_string)
-
-        self.setStyleSheet("QWidget#" + self.objectName() + "{" + "{0}{1}{2}{3}".format(widget_background_string, text_string, header_text_string, border_string) + "}")

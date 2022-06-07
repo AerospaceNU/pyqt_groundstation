@@ -60,11 +60,6 @@ class VideoWidget(custom_q_widget_base.CustomQWidgetBase):
         # Resize image
         frame = cv2.resize(frame, (int(image_width), int(image_height)))
         rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        convert_to_qt_format = QtGui.QImage(
-            rgb_image.data,
-            rgb_image.shape[1],
-            rgb_image.shape[0],
-            QtGui.QImage.Format_RGB888,
-        )
+        convert_to_qt_format = QtGui.QImage(rgb_image.data, rgb_image.shape[1], rgb_image.shape[0], QtGui.QImage.Format_RGB888, )
         convert_to_qt_format = QtGui.QPixmap.fromImage(convert_to_qt_format)
         self.videoWidget.setPixmap(convert_to_qt_format)

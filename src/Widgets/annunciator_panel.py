@@ -70,7 +70,3 @@ class AnnunciatorPanel(CustomQWidgetBase):
         self.adjustSize()
         self.setMaximumWidth(self.width())
         self.setMaximumHeight(self.height())
-
-    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
-        string = "{0}{1}{2}{3}".format(widget_background_string, text_string, header_text_string, border_string)
-        self.setStyleSheet("QWidget#" + self.objectName() + "{" + string + "}")

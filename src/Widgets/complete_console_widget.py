@@ -89,12 +89,6 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         self.textBoxWidget.setText(outString[:-1])
         self.adjustSize()
 
-    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
-        self.setStyleSheet("QWidget#" + self.objectName() + " {" + border_string + widget_background_string + text_string + "}")
-        self.textBoxWidget.setStyleSheet(widget_background_string + text_string)
-        self.textEntryWidget.setStyleSheet(border_string + widget_background_string + text_string)
-        self.titleBox.setStyleSheet(widget_background_string + header_text_string)
-
 
 class CLIUSBInterface(CompleteConsoleWidget):
     def __init__(self, parent=None):

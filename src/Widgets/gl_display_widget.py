@@ -78,10 +78,6 @@ class ThreeDDisplay(CustomQWidgetBase):
         tr.rotate(QtGui.QQuaternion(self.orientation_quaternion[0], self.orientation_quaternion[1], self.orientation_quaternion[2], self.orientation_quaternion[3]))
         self.currentSTL.applyTransform(tr, local=True)
 
-    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
-        self.setStyleSheet("QWidget#" + self.objectName() + " {" + widget_background_string + text_string + border_string + "}")
-        self.titleWidget.setStyleSheet(widget_background_string + header_text_string)
-
     def showSTL(self, filename):
         if self.currentSTL:
             self.viewer.removeItem(self.currentSTL)
@@ -89,7 +85,7 @@ class ThreeDDisplay(CustomQWidgetBase):
         points, faces = self.loadSTL(filename)
         meshdata = gl.MeshData(vertexes=points, faces=faces)
         mesh = gl.GLMeshItem(meshdata=meshdata, smooth=True, drawFaces=True, drawEdges=False, edgeColor=(0, 0, 0.5, 0.1),
-            shader='shaded')
+                             shader='shaded')
         self.viewer.addItem(mesh)
 
         self.currentSTL = mesh
