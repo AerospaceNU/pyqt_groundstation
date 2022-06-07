@@ -234,9 +234,10 @@ class GraphWidget(CustomQWidgetBase):
         # Clear and recreate the legend
         self.legend.setLabelTextColor(text_color)
         self.legend.clear()
+        self.graphWidget.getPlotItem().clear()
         self.plot_line_dictionary = {}
 
         if self.title is not None:
-            self.graphWidget.setTitle(self.title, color=text_color)
+            self.graphWidget.setTitle(self.title, color=self.palette().placeholderText().color())
 
         self.graphWidget.setStyleSheet("border: 0")
