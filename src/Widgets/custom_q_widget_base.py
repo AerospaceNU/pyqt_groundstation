@@ -40,14 +40,6 @@ class CustomQWidgetBase(QFrame):
         self.draggable = True
         self.activeOffset = [0, 0]
 
-        self.borderColor = [0, 0, 0]
-        self.backgroundColor = [0, 0, 0]
-        self.textColor = [0, 0, 0]
-        self.borderColorString = ""
-        self.backgroundColorString = ""
-        self.textColorString = ""
-        self.headerTextColorString = ""
-
         self.callbackEvents = []
         self.tabName = ""
 

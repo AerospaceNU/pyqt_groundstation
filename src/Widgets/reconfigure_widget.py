@@ -69,7 +69,6 @@ class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
 
             self.layout().addWidget(line)
             self.reconfigureWidgetLabels.append(line)
-            line.setColor(self.backgroundColorString, self.borderColorString, self.textColorString)
             reset_needed = True
         while len(reconfigure_items) < len(self.reconfigureWidgetLabels):
             self.layout().removeWidget(self.reconfigureWidgetLabels[-1])
@@ -100,12 +99,7 @@ class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
         self.callbackEvents.append(["{}_reset".format(self.source), True])
 
     def textEntryCallback(self, name, value):
-        self.callbackEvents.append(
-            [
-                "{}_set_new".format(self.source),
-                "{0}:{1}:{2}".format(self.selectedTarget, name, value),
-            ]
-        )
+        self.callbackEvents.append(["{}_set_new".format(self.source), "{0}:{1}:{2}".format(self.selectedTarget, name, value)])
 
     def setMenuItems(self, menu_item_list):
         if len(menu_item_list) > 0:
@@ -114,11 +108,4 @@ class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
             self.dropDownWidget.clear()
             self.dropDownWidget.addItems(menu_item_list)
         self.menuItems = menu_item_list
-        self.dropDownWidget.setStyleSheet(self.backgroundColorString + self.headerTextColorString)
 
-    def setWidgetColors(self, widget_background_string, text_string, header_text_string, border_string):
-        self.dropDownWidget.setStyleSheet(widget_background_string + header_text_string)
-        self.resetButton.setStyleSheet(widget_background_string + header_text_string)
-
-        for line in self.reconfigureWidgetLabels:
-            line.setColor(widget_background_string, border_string, text_string)

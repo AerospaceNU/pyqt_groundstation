@@ -34,7 +34,7 @@ class GraphWidget(CustomQWidgetBase):
         self.graphWidget = PlotWidget(enableMenu=True)
         self.graphWidget.setLabel("bottom", "Time (s)")
         self.graphWidget.showGrid(x=True, y=True)
-        self.graphWidget.addLegend()
+        self.legend = self.graphWidget.addLegend()
         self.graphWidget.getPlotItem().vb.raiseContextMenu = empty_function  # Reach deep into the graph widget and disable its ability to make a context menu
         # Because I need that menu to be displayed the way I want
 
@@ -175,11 +175,9 @@ class GraphWidget(CustomQWidgetBase):
         self.graphWidget.getPlotItem().vb.scene().contextMenuItem = self.graphWidget.getPlotItem().getAxis("left")
         menu.addAction(self.graphWidget.getPlotItem().vb.scene().contextMenu[0])
 
-        for key in self.sourceDictionary:
-            remove_line_menu.addAction(
-                self.sourceDictionary[key].key_name,
-                lambda name=key: self.removeLineFromPlot(name),
-            )
+        for key in self.sourceDictionary:  # Total hack to clear and recreate the legend
+
+            remove_line_menu.addAction(self.sourceDictionary[key].key_name, lambda name=key: self.removeLineFromPlot(name))
 
     def addLineToPlot(self):
         num_keys = len(self.sourceDictionary.keys())
@@ -226,4 +224,19 @@ class GraphWidget(CustomQWidgetBase):
 
     def customUpdateAfterThemeSet(self):
         self.graphWidget.setBackground(self.palette().color(self.backgroundRole()))
+
+        text_color = self.palette().text().color()
+        self.graphWidget.getAxis("left").setTextPen(text_color)
+        self.graphWidget.getAxis("left").setPen(text_color)
+        self.graphWidget.getAxis("bottom").setTextPen(text_color)
+        self.graphWidget.getAxis("bottom").setPen(text_color)
+
+        # Clear and recreate the legend
+        self.legend.setLabelTextColor(text_color)
+        self.legend.clear()
+        self.plot_line_dictionary = {}
+
+        if self.title is not None:
+            self.graphWidget.setTitle(self.title, color=text_color)
+
         self.setStyleSheet("border: 0")
