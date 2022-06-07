@@ -1,13 +1,10 @@
 <!--?xml version="1.0" encoding="UTF-8"?-->
 <resources>
-  <color name="primaryColor">#000000</color>
-  <!-- <color name="primaryColor">#2979ff</color> -->
-  <color name="primaryLightColor">#75a7ff</color>
-  <color name="secondaryColor">#f5f5f5</color>
-  <color name="secondaryLightColor">#ffffff</color>
-  <color name="secondaryDarkColor">#e6e6e6</color>
-  <!-- <color name="primaryTextColor">#3c3c3c</color> -->
-  <color name="primaryTextColor">#000000</color>
-  <!-- <color name="secondaryTextColor">#555555</color> -->
-  <color name="secondaryTextColor">#000000</color>
+  <color name="primaryColor">#000000</color> <!-- Header text -->
+  <color name="primaryLightColor">#75a7ff</color> <!-- Highlight -->
+  <color name="secondaryColor">#f5f5f5</color> <!-- Title bar -->
+  <color name="secondaryLightColor">#000000</color> <!-- Border -->
+  <color name="secondaryDarkColor">#e6e6e6</color> <!-- Background -->
+  <color name="primaryTextColor">#000000</color> <!-- Highlighted text color -->
+  <color name="secondaryTextColor">#000000</color> <!-- Text color -->
 </resources>

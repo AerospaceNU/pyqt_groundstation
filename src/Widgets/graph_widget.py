@@ -239,4 +239,4 @@ class GraphWidget(CustomQWidgetBase):
         if self.title is not None:
             self.graphWidget.setTitle(self.title, color=text_color)
 
-        self.setStyleSheet("border: 0")
+        self.graphWidget.setStyleSheet("border: 0")
