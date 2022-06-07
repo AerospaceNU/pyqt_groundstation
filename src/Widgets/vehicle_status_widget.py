@@ -39,8 +39,8 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         vbox.addWidget(self.message_age_box)
         vbox.addWidget(self.v_speed_box)
         vbox.addWidget(self.acceleration_box)
+        vbox.setContentsMargins(1, 1, 1, 0)
         layout.addLayout(vbox)
-        self.quick_vbox = vbox
 
         layout.addWidget(self.fcb_battery_graph)
         layout.addWidget(self.prop_battery_graph)
@@ -48,10 +48,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         layout.addWidget(self.line_cutter_batt_2_graph)
         layout.addWidget(self.fcb_memory_graph, )
 
-        # for i in [self.rssi_box, self.message_age_box, self.v_speed_box, self.acceleration_box]:
-        #     i.setMinimumHeight(30)
-
-        layout.setContentsMargins(1, 1, 3, 1)
+        layout.setContentsMargins(1, 1, 1, 1)
         self.setLayout(layout)
 
         self.widgetSize = 20
@@ -88,6 +85,9 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
 
         for box in [self.rssi_box, self.message_age_box, self.v_speed_box, self.acceleration_box]:
             box.setFont(QFont("Monospace", self.widgetSize * 0.4))
+            box.setMaximumHeight(box.fontInfo().pixelSize() + 3)
+
+        self.setMaximumHeight(self.widgetSize * 5)
 
         self.statusBox.adjustSize()
         self.fcb_state_box.adjustSize()
@@ -95,6 +95,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
 
         for widget in [self.fcb_battery_graph, self.prop_battery_graph, self.line_cutter_batt_1_graph, self.line_cutter_batt_2_graph, self.fcb_memory_graph]:
             widget.setTextColor(self.palette().text().color())
+            widget.adjustSize()
 
     def updateInFocus(self):
         fault_status = self.getDictValueUsingSourceKey("status_source")
@@ -127,7 +128,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
 
         self.modeBox.setText("Alt: {} m".format(round_to_string(altitude, 6)))
         self.rssi_box.setText("RSSI: {}".format(rssi))
-        self.message_age_box.setText("Message age: {} s".format(message_age))
+        self.message_age_box.setText("Message age: {0:.2f} s".format(message_age))
         self.v_speed_box.setText("Vertical Speed: {} m/s".format(round_to_string(v_speed, 6)))
         self.acceleration_box.setText("Acceleration: {} m/s^2".format(round_to_string(acceleration, 6)))
 
