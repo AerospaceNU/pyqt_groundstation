@@ -18,6 +18,7 @@ EXTRA_POSITION_SOURCES = [
     [Constants.egg_finder_latitude, Constants.egg_finder_longitude, Constants.egg_finder_age]
 ]
 
+
 def decimal_degrees_to_deg_min(decimal_degrees):
     whole_degrees = math.floor(abs(decimal_degrees))
     degree_parts = abs(decimal_degrees) - whole_degrees
@@ -72,6 +73,14 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
             altitude = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.altitude_key, 0)
             message_age = get_value_from_dictionary(self.gui_full_data_dictionary, Constants.message_age_key, 0)
             time_str = time.strftime("%H%M%S")
+
+            if latitude == 0 and longitude == 0:
+                for source in EXTRA_POSITION_SOURCES:
+                    latitude = get_value_from_dictionary(self.gui_full_data_dictionary, source[0], 0)
+                    longitude = get_value_from_dictionary(self.gui_full_data_dictionary, source[1], 0)
+                    message_age = get_value_from_dictionary(self.gui_full_data_dictionary, source[2], 0)
+                    if latitude != 0 and longitude != 0:
+                        break
 
             if latitude != 0 and longitude != 0 and message_age < 5:
                 [lat_min, lat_sign, lon_min, lon_sign] = format_lat_lon_for_nmea(latitude, longitude)
@@ -138,3 +147,7 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
                 self.logToConsole("Lost connection to one bluetooth device", 2)
                 client_socket.close()
                 self.client_sock_list.remove(client_socket)
+
+
+if __name__ == "__main__":
+    interface = AndroidPhoneBluetoothInterface()
