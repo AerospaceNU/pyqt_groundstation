@@ -126,10 +126,8 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
                     client_socket, client_info = self.server_sock.accept()
                     self.client_sock_list.append(client_socket)
                     self.logToConsole("Accepted connection from {}".format(client_info), 1)
-                except bluetooth.btcommon.BluetoothError as e:
-                    self.logToConsole("Accepted connection from {}".format(client_info), 1)
-                except ble.BluetoothError:
-                    pass
+                except ble.BluetoothError as e:
+                    self.logToConsole("Bluetooth error: {}".format(e), 1)
             else:
                 time.sleep(1)
                 self.bluetooth_running = False
