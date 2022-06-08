@@ -16,17 +16,16 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget, QWidge
 
 from qt_material import apply_stylesheet, list_themes
 
-import src.data_helpers
 from src.constants import Constants
-from src.MainTabs.diagnostic_tab import DiagnosticTab
-from src.MainTabs.graphs_tab import GraphsTab
-from src.MainTabs.main_tab_common import TabCommon
-from src.MainTabs.model_viewer import ModelViewer
-from src.MainTabs.offload_tab import OffloadTab
-from src.MainTabs.rocket_primary_tab import RocketPrimaryTab
-from src.MainTabs.settings_tab import SettingsTab
-from src.MainTabs.side_tab_holder import SideTabHolder
-from src.MainTabs.database_view_tab import DatabaseViewTab
+from src.Widgets.MainTabs.diagnostic_tab import DiagnosticTab
+from src.Widgets.MainTabs.graphs_tab import GraphsTab
+from src.Widgets.MainTabs.main_tab_common import TabCommon
+from src.Widgets.MainTabs.model_viewer import ModelViewer
+from src.Widgets.MainTabs.offload_tab import OffloadTab
+from src.Widgets.MainTabs.rocket_primary_tab import RocketPrimaryTab
+from src.Widgets.MainTabs.settings_tab import SettingsTab
+from src.Widgets.MainTabs.side_tab_holder import SideTabHolder
+from src.Widgets.database_view import DatabaseViewTab
 
 from src.Modules.data_interface_core import ThreadedModuleCore
 
@@ -167,9 +166,9 @@ class DPFGUI:
         self.setUpMenuBar()
 
         # Set up settings tab
-        settings_tab = SideTabHolder("Settings")
-        settings_tab.addSubTab("Custom Settings", SettingsTab("Custom Settings"))
-        settings_tab.addSubTab("Database View", DatabaseViewTab("Database View"))  # Keep this one last
+        settings_tab = SideTabHolder()
+        settings_tab.addSubTab("Custom Settings", SettingsTab())
+        settings_tab.addSubTab("Database View", DatabaseViewTab())  # Keep this one last
         self.addVehicleTab(settings_tab, "Settings", False)
 
     def run(self):
@@ -439,9 +438,9 @@ class DPFGUI:
 
     def addVehicleTabFromClass(self, tab_class, vehicle_name: str, own_window=False):
         if not own_window:
-            new_tab_object = tab_class(vehicle_name, parent=self.tabHolderWidget)
+            new_tab_object = tab_class(parent=self.tabHolderWidget)
         else:
-            new_tab_object = tab_class(vehicle_name)
+            new_tab_object = tab_class()
 
         self.addVehicleTab(new_tab_object, vehicle_name, own_window=own_window)
 
@@ -455,6 +454,8 @@ class DPFGUI:
 
         self.tabObjects.append(new_tab_object)
         self.tabNames.append(vehicle_name)
+        new_tab_object.setObjectName("{0}_tab_{1}".format(vehicle_name, len(self.tabObjects)))
+        new_tab_object.vehicleName = vehicle_name
 
         self.placeHolderList.append(placeholder.Placeholder(new_tab_object))  # Something needs to be updating for the GUI to function, so we make a silly thing to always do that
 

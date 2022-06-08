@@ -5,7 +5,7 @@ A rewrite of primary_tab to be more useful on a rocket
 from PyQt5.QtWidgets import QGridLayout
 
 from src.constants import Constants
-from src.MainTabs.main_tab_common import TabCommon
+from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets import (
     annunciator_panel,
     button_panel,
@@ -19,8 +19,8 @@ from src.Widgets import (
 
 
 class RocketPrimaryTab(TabCommon):
-    def __init__(self, tab_name, parent=None):
-        super().__init__(tab_name, parent=parent)
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
 
         self.FlightDisplay = self.addWidget(flight_display.FlightDisplay(compass_and_text=False))
         self.StatusBar = self.addWidget(vehicle_status_widget.VehicleStatusWidget())

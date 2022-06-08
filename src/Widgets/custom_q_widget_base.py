@@ -43,6 +43,8 @@ class CustomQWidgetBase(QFrame):
         self.callbackEvents = []
         self.tabName = ""
 
+        self.isClosed = False
+
         self.vehicleData = {}
         self.recordedData = {}
         self.updated_data_dictionary = {}  # Tracks which keys are new since the last GUI loop
@@ -50,6 +52,10 @@ class CustomQWidgetBase(QFrame):
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.rightClickMenu)
+
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        super().closeEvent(a0)
+        self.isClosed = True
 
     def rightClickMenu(self, e: QPoint):
         menu = QMenu()
@@ -112,12 +118,15 @@ class CustomQWidgetBase(QFrame):
         """Called only when widget is being looked at"""
         pass
 
-    def setVehicleData(self, vehicle_data, updated_data, recorded_data):
+    def updateVehicleData(self, vehicle_data, console_data, updated_data, recorded_data):
         """Called by the tab every loop.  DO NOT OVERRIDE"""
         self.recordedData = recorded_data
         self.vehicleData = vehicle_data
         self.updated_data_dictionary = updated_data
         self.updateData(vehicle_data, updated_data)
+        self.updateConsole(console_data)
+
+        return self.getCallbackEvents()
 
     def updateData(self, vehicle_data, updated_data):
         """Called every loop with new vehicle database dictionary"""

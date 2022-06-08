@@ -6,14 +6,14 @@ from PyQt5.QtWidgets import QGridLayout
 
 from src.constants import Constants
 from src.data_helpers import interpolate
-from src.MainTabs.main_tab_common import TabCommon
+from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets.graph_tab_control import GraphTabControl
 from src.Widgets.graph_widget import GraphWidget
 
 
 class GraphsTab(TabCommon):
-    def __init__(self, tab_name, parent=None):
-        super().__init__(tab_name, parent=parent)
+    def __init__(self,  parent=None):
+        super().__init__( parent=parent)
 
         self.graphControlWidget = self.addWidget(GraphTabControl())
 

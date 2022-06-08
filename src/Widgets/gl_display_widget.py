@@ -17,8 +17,8 @@ from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
 
 class ThreeDDisplay(CustomQWidgetBase):
-    def __init__(self, parent_widget=None):
-        super().__init__(parent_widget)
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
         self.title = "3d Display"
         self.currentSTL = None
@@ -77,6 +77,8 @@ class ThreeDDisplay(CustomQWidgetBase):
         self.viewer.setCameraPosition(pos=position)
         tr.rotate(QtGui.QQuaternion(self.orientation_quaternion[0], self.orientation_quaternion[1], self.orientation_quaternion[2], self.orientation_quaternion[3]))
         self.currentSTL.applyTransform(tr, local=True)
+
+        print(self.objectName())
 
     def showSTL(self, filename):
         if self.currentSTL:

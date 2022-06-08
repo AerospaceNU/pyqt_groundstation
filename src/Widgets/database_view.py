@@ -4,12 +4,12 @@ Starts up a scroll area that shows all the data in the database dictionary
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QLabel, QGridLayout, QScrollArea
 
-from src.MainTabs.main_tab_common import TabCommon
+from src.Widgets.MainTabs.main_tab_common import TabCommon
 
 
 class DatabaseViewTab(TabCommon):
-    def __init__(self, tab_name, parent=None):
-        super().__init__(tab_name, parent=parent)
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
 
         self.scroll_area = QScrollArea()
         self.display_label = QLabel()

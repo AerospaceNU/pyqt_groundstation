@@ -3,13 +3,13 @@ Blank tab with diagnostic boxes
 """
 from PyQt5.QtWidgets import QGridLayout
 
-from src.MainTabs.main_tab_common import TabCommon
+from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets import gl_display_widget
 
 
 class ModelViewer(TabCommon):
-    def __init__(self, tab_name, parent=None):
-        super().__init__(tab_name, parent=parent)
+    def __init__(self,  parent=None):
+        super().__init__( parent=parent)
 
         self.viewer = self.addWidget(gl_display_widget.ThreeDDisplay())
 
