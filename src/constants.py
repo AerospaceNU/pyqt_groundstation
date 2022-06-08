@@ -122,6 +122,8 @@ class Constants:
     MAX_PYROS = 6
 
     map_tile_manager_key = "map_tile_manager"
+    enable_module_key = "enable_module"
+    module_data_key = "module_data"
 
     # Line cutter stuff
     MAX_LINE_CUTTERS = 4

@@ -2,7 +2,7 @@
 A rewrite of primary_tab to be more useful on a rocket
 """
 
-from PyQt5.QtWidgets import QGridLayout
+from PyQt5.QtWidgets import QGridLayout, QSizePolicy
 
 from src.constants import Constants
 from src.Widgets.MainTabs.main_tab_common import TabCommon
@@ -51,9 +51,10 @@ class RocketPrimaryTab(TabCommon):
         layout.setColumnStretch(1, 0)
         self.setLayout(layout)
 
-    def customUpdateVehicleData(self, data):
-        self.ButtonPanel.setMaximumWidth(max(self.FlightDisplay.width() - self.Annunciator.width() - 6, 5))
+        self.ButtonPanel.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+        self.Console.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
 
+    def customUpdateVehicleData(self, data):
         selectedVideo = self.ButtonPanel.getSelectedVideo()
 
         if selectedVideo == "Map":

@@ -46,6 +46,7 @@ from src.Widgets import (
     vehicle_status_widget,
     video_widget,
     navball_widget,
+    module_configuration,
 )
 
 if sys.platform == "linux":  # I don't even know anymore
@@ -130,7 +131,8 @@ class DPFGUI:
             "Offload GUI": board_usb_offloader_widget.BoardCliWrapper,
             "CLI USB Console": complete_console_widget.CLIUSBInterface,
             "Navball Widget": navball_widget.NavballWidget,
-            "Database View": DatabaseView
+            "Database View": DatabaseView,
+            "Module Configuration": module_configuration.ModuleConfiguration
         }
 
         # List of tabs that can be dynamically created
@@ -166,7 +168,9 @@ class DPFGUI:
         # Set up settings tab
         settings_tab = SideTabHolder()
         settings_tab.addSubTab("Custom Settings", SettingsTab())
+        settings_tab.addSubTab("Module Configuration", module_configuration.ModuleConfiguration())
         settings_tab.addSubTab("Database View", DatabaseView())  # Keep this one last
+
         self.addVehicleTab(settings_tab, "Settings")
 
     def run(self):
@@ -320,6 +324,8 @@ class DPFGUI:
 
         recorded_data_dict = {}
 
+        module_data = {}
+
         # Get data from interfaces
         for interface in self.module_dictionary:
             interface_object = self.module_dictionary[interface]
@@ -333,6 +339,8 @@ class DPFGUI:
                 run_name = self.current_playback_source.split(" | ")[1]
                 recorded_data_dict = interface_object.getSpecificRun(run_name)
 
+            module_data[interface] = [interface_object.enabled, self.module_load_time_dictionary[interface], interface_object.hasRecordedData()]
+
         # Send full database dictionary back to the data interfaces
         for interface in self.module_dictionary:
             try:
@@ -340,6 +348,8 @@ class DPFGUI:
                 self.updateReconfigureOptions(Constants.primary_reconfigure, self.module_dictionary[interface].getReconfigureDictionary())
             except RuntimeError:  # Sometimes there's a "dictionary changed size during iteration" error here that I don't want to debug
                 pass
+
+        self.database_dictionary[Constants.module_data_key] = module_data
 
         # Update tabs
         tab_index_to_remove = -1

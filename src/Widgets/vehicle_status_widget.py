@@ -75,16 +75,16 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.statusBox.setAlignment(QtCore.Qt.AlignCenter)
         self.statusBox.setMinimumWidth(self.widgetSize * 8)
 
-        self.fcb_state_box.setFont(QFont("Monospace", self.widgetSize))
+        self.fcb_state_box.setStyleSheet("font: {}pt Monospace".format(self.widgetSize))
         self.fcb_state_box.setAlignment(QtCore.Qt.AlignCenter)
         self.fcb_state_box.setMinimumWidth(self.widgetSize * 13)
 
-        self.modeBox.setFont(QFont("Monospace", self.widgetSize))
+        self.modeBox.setStyleSheet("font: {}pt Monospace".format(self.widgetSize))
         self.modeBox.setAlignment(QtCore.Qt.AlignCenter)
         self.modeBox.setMinimumWidth(self.widgetSize * 13)
 
         for box in [self.rssi_box, self.message_age_box, self.v_speed_box, self.acceleration_box]:
-            box.setFont(QFont("Monospace", self.widgetSize * 0.4))
+            box.setStyleSheet("font: {}pt Monospace".format(self.widgetSize * 0.4))
             box.setMaximumHeight(box.fontInfo().pixelSize() + 3)
 
         self.setMaximumHeight(self.widgetSize * 5)

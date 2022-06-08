@@ -1,17 +1,28 @@
-from PyQt5.QtWidgets import QComboBox, QGridLayout, QLabel, QLineEdit, QWidget, QStackedWidget, QPushButton, QFrame
+from PyQt5.QtWidgets import QGridLayout, QVBoxLayout, QWidget, QStackedWidget, QPushButton, QFrame, QScrollArea, QSizePolicy
 
 
 class SideTabWidget(QWidget):
     def __init__(self):
         super(SideTabWidget, self).__init__()
 
+        self.button_widget = QWidget()
+        self.button_layout = QVBoxLayout()
+        self.button_widget.setLayout(self.button_layout)
+        self.button_widget.setContentsMargins(0, 0, 0, 0)
+        self.button_layout.setContentsMargins(0, 1, 0, 1)
+        self.button_widget.setMinimumWidth(200)
+        self.button_widget.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Maximum)
+
+        self.button_scroll_area = QScrollArea()
+        self.button_scroll_area.horizontalScrollBar().setEnabled(False)
+        self.button_scroll_area.setWidget(self.button_widget)
+        self.button_scroll_area.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+
         self.stacked_widget = QStackedWidget()
-        button_widget = QFrame()
-        self.button_layout = QGridLayout()
-        button_widget.setLayout(self.button_layout)
+        self.stacked_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         main_layout = QGridLayout()
-        main_layout.addWidget(button_widget, 0, 0)
+        main_layout.addWidget(self.button_scroll_area, 0, 0)
         main_layout.addWidget(self.stacked_widget, 0, 1)
         main_layout.setContentsMargins(1, 1, 1, 1)
         self.setLayout(main_layout)
@@ -26,6 +37,8 @@ class SideTabWidget(QWidget):
         self.stacked_widget.addWidget(tab_widget)
         self.button_layout.addWidget(button)
         self.tab_names.append(tab_name)
+        self.button_widget.adjustSize()
+        self.button_scroll_area.adjustSize()
 
     def goToTabByName(self, name):
         index = self.tab_names.index(name)
