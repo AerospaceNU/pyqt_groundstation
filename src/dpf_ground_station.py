@@ -12,7 +12,7 @@ import time
 
 import serial.tools.list_ports
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget
 
 from qt_material import apply_stylesheet, list_themes
 
@@ -24,7 +24,7 @@ from src.Widgets.MainTabs.offload_tab import OffloadTab
 from src.Widgets.MainTabs.rocket_primary_tab import RocketPrimaryTab
 from src.Widgets.MainTabs.settings_tab import SettingsTab
 from src.Widgets.MainTabs.side_tab_holder import SideTabHolder
-from src.Widgets.database_view import DatabaseViewTab
+from src.Widgets.database_view import DatabaseView
 
 from src.Modules.data_interface_core import ThreadedModuleCore
 
@@ -130,6 +130,7 @@ class DPFGUI:
             "Offload GUI": board_usb_offloader_widget.BoardCliWrapper,
             "CLI USB Console": complete_console_widget.CLIUSBInterface,
             "Navball Widget": navball_widget.NavballWidget,
+            "Database View": DatabaseView
         }
 
         # List of tabs that can be dynamically created
@@ -165,7 +166,7 @@ class DPFGUI:
         # Set up settings tab
         settings_tab = SideTabHolder()
         settings_tab.addSubTab("Custom Settings", SettingsTab())
-        settings_tab.addSubTab("Database View", DatabaseViewTab())  # Keep this one last
+        settings_tab.addSubTab("Database View", DatabaseView())  # Keep this one last
         self.addVehicleTab(settings_tab, "Settings")
 
     def run(self):
