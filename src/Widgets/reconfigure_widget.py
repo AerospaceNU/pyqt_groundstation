@@ -11,8 +11,8 @@ from src.Widgets.QWidget_Parts import reconfigure_line
 
 
 class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
-    def __init__(self, parent_widget: QWidget = None):
-        super().__init__(parent_widget)
+    def __init__(self, parent: QWidget = None):
+        super().__init__(parent)
 
         self.dropDownWidget = QComboBox()
         self.resetButton = QPushButton()

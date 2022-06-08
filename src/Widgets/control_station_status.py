@@ -11,8 +11,8 @@ from src.Widgets.QWidget_Parts import simple_bar_graph_widget
 
 
 class ControlStationStatus(custom_q_widget_base.CustomQWidgetBase):
-    def __init__(self, widget: QWidget = None):
-        super().__init__(widget)
+    def __init__(self, parent: QWidget = None):
+        super().__init__(parent)
         self.BatteryStatus = simple_bar_graph_widget.SimpleBarGraphWidget(title="Battery", minValue=0, maxValue=100)
         self.DiskStatus = simple_bar_graph_widget.SimpleBarGraphWidget(title="Disk", minValue=0, maxValue=100)
         self.RamStatus = simple_bar_graph_widget.SimpleBarGraphWidget(title="Ram", minValue=0, maxValue=100)

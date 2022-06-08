@@ -25,9 +25,9 @@ EXTRA_POSITION_SOURCES = {
 
 
 class MapWidget(CustomQWidgetBase):
-    def __init__(self, parent_widget: QWidget = None, points_to_keep=200, update_interval=3):
-        super().__init__(parent_widget)
-        if parent_widget is not None:
+    def __init__(self, parent: QWidget = None, points_to_keep=200, update_interval=3):
+        super().__init__(parent)
+        if parent is not None:
             self.setMinimumSize(500, 500)
 
         self.addSourceKey("groundstation_lat", float, Constants.ground_station_latitude_key, default_value=0, hide_in_drop_down=True)

@@ -125,6 +125,7 @@ class CustomQWidgetBase(QFrame):
         self.updated_data_dictionary = updated_data
         self.updateData(vehicle_data, updated_data)
         self.updateConsole(console_data)
+        self.coreUpdate()
 
         return self.getCallbackEvents()
 

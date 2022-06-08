@@ -10,8 +10,8 @@ from src.Widgets import custom_q_widget_base
 
 
 class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
-    def __init__(self, parent_widget: QWidget = None):
-        super().__init__(parent_widget)
+    def __init__(self, parent: QWidget = None):
+        super().__init__(parent)
 
         self.textBoxWidget = QLabel()
         self.dropDownWidget = QComboBox()

@@ -33,7 +33,6 @@ class TabCommon(custom_q_widget_base.CustomQWidgetBase):
 
         for widget in self.widgetList:
             callbacks += widget.updateVehicleData(vehicle_data, console_data, updated_data, recorded_data)
-            widget.coreUpdate()
 
         self.customUpdateVehicleData(data)
 
