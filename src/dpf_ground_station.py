@@ -386,19 +386,22 @@ class DPFGUI:
 
     def createWidgetFromName(self, widget_name, parent=None, in_new_window=False):
         """Will create any widget from its file name!"""
-        if widget_name not in self.widgetClasses:
-            print("No widget of type {}".format(widget_name))
-            return QWidget(parent)  # Kind of a hack
         try:
-            if in_new_window:
-                widget = self.widgetClasses[widget_name]()
+            if widget_name in self.widgetClasses:
+                if in_new_window:
+                    widget = self.widgetClasses[widget_name]()
+                else:
+                    widget = self.widgetClasses[widget_name](parent)
+                return widget
+            elif widget_name in self.tabClasses:
+                return self.tabClasses[widget_name]()
             else:
-                widget = self.widgetClasses[widget_name](parent)
-            return widget
+                print("No widget of type {}".format(widget_name))
+                return None
         except all as e:
             print("Dynamically creating {} type widgets is not supported yet".format(widget_name))
             print(e)
-            return QWidget(parent)
+            return None
 
     def getActiveTabObject(self) -> TabCommon:
         tab_index = self.tabHolderWidget.currentIndex()
@@ -434,17 +437,15 @@ class DPFGUI:
         new_tab_object.vehicleName = vehicle_name
 
     def addNewWidgetInNewWindow(self, name):
-        if name in self.widgetClasses:
-            object_name = "{0}_{1}_isolated".format(name, len(self.tabObjects))
+        widget_object = self.createWidgetFromName(name, in_new_window=True)
 
-            widget_object = self.createWidgetFromName(name, in_new_window=True)
+        if widget_object is not None:
+            object_name = "{0}_{1}_isolated".format(name, len(self.tabObjects))
             widget_object.show()
 
             self.tabObjects.append(widget_object)
             self.tabNames.append(object_name)
             widget_object.setObjectName(object_name)
-        else:
-            print("No widget named {}".format(name))
 
     @staticmethod
     def getThemes():
