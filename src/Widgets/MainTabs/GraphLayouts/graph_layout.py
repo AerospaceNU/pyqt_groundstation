@@ -1,5 +1,3 @@
-
-
 from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 from PyQt5.QtWidgets import QGridLayout
@@ -10,8 +8,8 @@ from src.data_helpers import interpolate
 
 
 class GraphLayoutCommon(TabCommon):
-    def __init__(self,  parent=None):
-        super().__init__( parent=parent)
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
 
         self.graphControlWidget = self.addWidget(GraphTabControl())
 

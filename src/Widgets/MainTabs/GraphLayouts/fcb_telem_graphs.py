@@ -1,5 +1,3 @@
-
-
 from src.Widgets.MainTabs.GraphLayouts.graph_layout import GraphLayoutCommon
 from PyQt5.QtWidgets import QGridLayout
 from src.Widgets.graph_tab_control import GraphTabControl
@@ -9,8 +7,8 @@ from src.data_helpers import interpolate
 
 
 class FcbTelemetryGraphs(GraphLayoutCommon):
-    def __init__(self,  parent=None):
-        super().__init__( parent=parent)
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
 
         layout = QGridLayout()
         layout.addWidget(self.addWidget(GraphWidget(title="Altitude", source_list=[Constants.altitude_key, Constants.gps_alt_key], )), 1, 1)
@@ -24,6 +22,3 @@ class FcbTelemetryGraphs(GraphLayoutCommon):
         layout.addWidget(self.addWidget(GraphWidget(title="RSSI", source_list=[Constants.rssi_val_key])), 3, 3)
         layout.addWidget(self.graphControlWidget, 4, 1, 1, 3)
         self.setLayout(layout)
-
-    def customUpdateVehicleData(self, data):
-        return super().customUpdateVehicleData(data)
