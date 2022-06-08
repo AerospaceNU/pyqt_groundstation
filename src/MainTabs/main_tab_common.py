@@ -56,7 +56,7 @@ class TabCommon(QWidget):
         """The update function that should be overridden"""
         pass
 
-    def addWidget(self, widget: custom_q_widget_base, widget_name=None) -> custom_q_widget_base.CustomQWidgetBase:
+    def addWidget(self, widget: custom_q_widget_base.CustomQWidgetBase, widget_name=None) -> custom_q_widget_base.CustomQWidgetBase:
         if widget_name is None:
             widget_name = str(type(widget)).split(".")[-1][:-2]
 

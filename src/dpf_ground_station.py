@@ -25,7 +25,10 @@ from src.MainTabs.model_viewer import ModelViewer
 from src.MainTabs.offload_tab import OffloadTab
 from src.MainTabs.rocket_primary_tab import RocketPrimaryTab
 from src.MainTabs.settings_tab import SettingsTab
+from src.MainTabs.side_tab_holder import SideTabHolder
+
 from src.Modules.data_interface_core import ThreadedModuleCore
+
 from src.Widgets import (
     annunciator_panel,
     board_usb_offloader_widget,
@@ -134,7 +137,7 @@ class DPFGUI:
 
         # List of tabs that can be dynamically created
         self.tabClasses = {
-            "Settings": SettingsTab,
+            "Settings": SideTabHolder,
             "Diagnostic": DiagnosticTab,
             "Rocket Primary": RocketPrimaryTab,
             "Graph": GraphsTab,
@@ -161,6 +164,13 @@ class DPFGUI:
 
         # Other setup tasks
         self.setUpMenuBar()
+
+        # Set up settings tab
+        settings_tab = SideTabHolder("Settings")
+        settings_tab.addSubTab("Custom Settings", SettingsTab("Custom Settings"))
+
+
+        self.addVehicleTab(settings_tab, "Settings", False)
 
     def run(self):
         """
@@ -423,18 +433,24 @@ class DPFGUI:
 
         if tab_type in self.tabClasses:
             tab_class = self.tabClasses[tab_type]
-            self.addVehicleTab(tab_class, tab_name, own_window)
+            self.addVehicleTabFromClass(tab_class, tab_name, own_window)
         else:
             print("Don't have tab configuration for vehicle type {}".format(tab_type))
 
-    def addVehicleTab(self, tab, vehicle_name: str, own_window=False):
+    def addVehicleTabFromClass(self, tab_class, vehicle_name: str, own_window=False):
         if not own_window:
-            new_tab_object = tab(vehicle_name, parent=self.tabHolderWidget)
+            new_tab_object = tab_class(vehicle_name, parent=self.tabHolderWidget)
+        else:
+            new_tab_object = tab_class(vehicle_name)
+
+        self.addVehicleTab(new_tab_object, vehicle_name, own_window=own_window)
+
+    def addVehicleTab(self, new_tab_object, vehicle_name: str, own_window=False):
+        if not own_window:
             self.tabHolderWidget.addTab(new_tab_object, vehicle_name)
             self.tabHolderWidget.setCurrentIndex(self.tabHolderWidget.count() - 1)
             self.tabHolderWidget.setCurrentIndex(1)
         else:
-            new_tab_object = tab(vehicle_name)
             new_tab_object.show()
 
         self.tabObjects.append(new_tab_object)
