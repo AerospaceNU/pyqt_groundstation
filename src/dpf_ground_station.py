@@ -26,6 +26,7 @@ from src.MainTabs.offload_tab import OffloadTab
 from src.MainTabs.rocket_primary_tab import RocketPrimaryTab
 from src.MainTabs.settings_tab import SettingsTab
 from src.MainTabs.side_tab_holder import SideTabHolder
+from src.MainTabs.database_view_tab import DatabaseViewTab
 
 from src.Modules.data_interface_core import ThreadedModuleCore
 
@@ -137,7 +138,7 @@ class DPFGUI:
 
         # List of tabs that can be dynamically created
         self.tabClasses = {
-            "Settings": SideTabHolder,
+            "Settings": SettingsTab,
             "Diagnostic": DiagnosticTab,
             "Rocket Primary": RocketPrimaryTab,
             "Graph": GraphsTab,
@@ -168,8 +169,7 @@ class DPFGUI:
         # Set up settings tab
         settings_tab = SideTabHolder("Settings")
         settings_tab.addSubTab("Custom Settings", SettingsTab("Custom Settings"))
-
-
+        settings_tab.addSubTab("Database View", DatabaseViewTab("Database View"))  # Keep this one last
         self.addVehicleTab(settings_tab, "Settings", False)
 
     def run(self):
