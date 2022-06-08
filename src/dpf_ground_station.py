@@ -56,8 +56,7 @@ def serial_port_callback_name(device):
     return "set_{}_serial_port".format(device)
 
 
-CUSTOM_THEMES = ["themes/high_contrast_light.xml", "themes/old_dark_mode.xml", "themes/old_no_borders.xml", "themes/old_green_text.xml", "themes/dont_click_this_one.xml"]
-
+CUSTOM_THEMES = list(map(lambda it: os.path.join("themes", it), os.listdir("themes")))
 
 class DPFGUI:
     def __init__(self):
