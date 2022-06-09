@@ -36,7 +36,6 @@ def download_tile(x, y, z):
 
 
 def download_tile_as_cv2(x, y, z):
-    print(exists(get_file_path(x,y,z)))
     if exists(get_file_path(x, y, z)):
         cv2_img = cv2.imread(get_file_path(x, y, z), cv2.IMREAD_UNCHANGED)
     else:
