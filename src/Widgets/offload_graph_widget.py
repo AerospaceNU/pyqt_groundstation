@@ -206,7 +206,7 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
 
     def refreshTable(self):
         self.recreate_table(self.getFlights())
-        self.refreshTheme()
+        self.updateAfterThemeSet()
         self.updateButtons()
 
     def add(self, widget, layout=None, onClick=None):
@@ -300,11 +300,6 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
                 self.simButton.setEnabled(has_post)
                 self.graphButton.setEnabled(has_post)
                 self.postButton.setEnabled(flight[1] == "Yes")
-
-    # def updateData(self, vehicle_data, updated_data):
-    #     if self.isDictValueUpdated("flights_list"):
-    #         self.recreate_table(self.getFlights())
-    #         self.refreshTheme()
 
     def customUpdateAfterThemeSet(self):
         self.altitudeGraph.setBackground(self.palette().color(self.backgroundRole()))

@@ -161,7 +161,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         if self.isDictValueUpdated("flights_list"):
             flight_list_str = self.getDictValueUsingSourceKey("flights_list")
             self.recreate_table(flight_list_str)
-            self.refreshTheme()
+            self.updateAfterThemeSet()
 
     def parseOffloadHelp(self, cli_str: str):
         # Filter for lines that start with | and split by return characters
