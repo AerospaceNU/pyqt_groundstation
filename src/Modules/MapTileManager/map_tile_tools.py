@@ -77,10 +77,10 @@ def get_all_tiles_in_box(bounding_box, zoom, exclude_list=None, save_local_copy=
             tile_name = get_tile_name(x, y, zoom)
 
             if tile_name not in exclude_list:
-                print("downloading " + tile_name)
                 tile = download_tile_as_cv2(x, y, zoom)
 
                 if save_local_copy:
+                    print("saving " + tile_name)
                     cv2.imwrite(get_file_path(x, y, zoom), tile)
 
                 out_dict[tile_name] = tile
