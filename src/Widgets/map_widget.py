@@ -110,8 +110,8 @@ class MapWidget(CustomQWidgetBase):
                 self.has_datum = True
 
             if self.has_datum:
-                    ned = navpy.lla2ned(lat, lon, 0, self.datum[0], self.datum[1], 0)
-                    self.map_draw_widget.setXY(ned[1], ned[0], position_name=source)
+                ned = navpy.lla2ned(lat, lon, 0, self.datum[0], self.datum[1], 0)
+                self.map_draw_widget.setXY(ned[1], ned[0], position_name=source)
 
         self.map_draw_widget.setHeading(heading)
 
@@ -294,31 +294,19 @@ class MapImageBackground(QLabel):
             columns_to_add_right = int(columns_to_add_right * width_ratio)
 
             if ros_to_add_top > 0:
-                extra_rows_top = numpy.zeros(
-                    (ros_to_add_top, subset.shape[1], subset.shape[2]),
-                    dtype=numpy.uint8,
-                )
+                extra_rows_top = numpy.zeros((ros_to_add_top, subset.shape[1], subset.shape[2]), dtype=numpy.uint8)
                 extra_rows_top[:] = BACKGROUND_COLOR
                 subset = numpy.concatenate((extra_rows_top, subset), axis=0)
             if rows_to_add_bottom > 0:
-                extra_rows_bottom = numpy.zeros(
-                    (rows_to_add_bottom, subset.shape[1], subset.shape[2]),
-                    dtype=numpy.uint8,
-                )
+                extra_rows_bottom = numpy.zeros((rows_to_add_bottom, subset.shape[1], subset.shape[2]), dtype=numpy.uint8)
                 extra_rows_bottom[:] = BACKGROUND_COLOR
                 subset = numpy.concatenate((subset, extra_rows_bottom), axis=0)
             if columns_to_add_left > 0:
-                extra_rows_left = numpy.zeros(
-                    (subset.shape[0], columns_to_add_left, subset.shape[2]),
-                    dtype=numpy.uint8,
-                )
+                extra_rows_left = numpy.zeros((subset.shape[0], columns_to_add_left, subset.shape[2]), dtype=numpy.uint8)
                 extra_rows_left[:] = BACKGROUND_COLOR
                 subset = numpy.concatenate((subset, extra_rows_left), axis=1)
             if columns_to_add_right > 0:
-                extra_rows_right = numpy.zeros(
-                    (subset.shape[0], columns_to_add_right, subset.shape[2]),
-                    dtype=numpy.uint8,
-                )
+                extra_rows_right = numpy.zeros((subset.shape[0], columns_to_add_right, subset.shape[2]), dtype=numpy.uint8)
                 extra_rows_right[:] = BACKGROUND_COLOR
                 subset = numpy.concatenate((extra_rows_right, subset), axis=1)
         else:
@@ -329,12 +317,7 @@ class MapImageBackground(QLabel):
         self.setMinimumSize(window_width, window_height)
 
         rgb_image = cv2.cvtColor(subset, cv2.COLOR_BGR2RGBA)
-        convert_to_qt_format = QtGui.QImage(
-            rgb_image.data,
-            rgb_image.shape[1],
-            rgb_image.shape[0],
-            QtGui.QImage.Format_RGBA8888,
-        )
+        convert_to_qt_format = QtGui.QImage(rgb_image.data, rgb_image.shape[1], rgb_image.shape[0], QtGui.QImage.Format_RGBA8888)
         convert_to_qt_format = QtGui.QPixmap.fromImage(convert_to_qt_format)
         self.setPixmap(convert_to_qt_format)
 
@@ -519,40 +502,16 @@ class MapDrawWidget(QWidget):
         """Converts a point in the real world to a position on the screen"""
         size_ratio = self.height() / self.width()
 
-        out_x = interpolate(
-            x,
-            (self.min_axis_value / size_ratio) - self.origin_offset_meters[0],
-            (self.max_axis_value / size_ratio) - self.origin_offset_meters[0],
-            self.padding + 10,
-            self.width() - self.padding,
-        )
-        out_y = interpolate(
-            y,
-            self.min_axis_value - self.origin_offset_meters[1],
-            self.max_axis_value - self.origin_offset_meters[1],
-            self.height() - (self.padding + 10),
-            self.padding,
-        )
+        out_x = interpolate(x, (self.min_axis_value / size_ratio) - self.origin_offset_meters[0], (self.max_axis_value / size_ratio) - self.origin_offset_meters[0], self.padding + 10, self.width() - self.padding)
+        out_y = interpolate(y, self.min_axis_value - self.origin_offset_meters[1], self.max_axis_value - self.origin_offset_meters[1], self.height() - (self.padding + 10), self.padding)
         return [int(out_x), int(out_y)]
 
     def drawLocationToPoint(self, x, y):
         """Should be the opposite of the function above"""
         size_ratio = self.height() / self.width()
 
-        out_x = interpolate(
-            x,
-            self.padding + 10,
-            self.width() - self.padding,
-            (self.min_axis_value / size_ratio) - self.origin_offset_meters[0],
-            (self.max_axis_value / size_ratio) - self.origin_offset_meters[0],
-        )
-        out_y = interpolate(
-            y,
-            self.height() - (self.padding + 10),
-            self.padding,
-            self.min_axis_value - self.origin_offset_meters[1],
-            self.max_axis_value - self.origin_offset_meters[1],
-        )
+        out_x = interpolate(x, self.padding + 10, self.width() - self.padding, (self.min_axis_value / size_ratio) - self.origin_offset_meters[0], (self.max_axis_value / size_ratio) - self.origin_offset_meters[0])
+        out_y = interpolate(y, self.height() - (self.padding + 10), self.padding, self.min_axis_value - self.origin_offset_meters[1], self.max_axis_value - self.origin_offset_meters[1])
         return [out_x, out_y]
 
     def setHeading(self, heading):
@@ -572,9 +531,7 @@ class MapDrawWidget(QWidget):
         # Get distance to last point in history
         if len(self.oldPoints) > 0:
             last_point_in_list = self.oldPoints[0]
-            distance = distance_between_points(
-                x, y, last_point_in_list[0], last_point_in_list[1]
-            )
+            distance = distance_between_points(x, y, last_point_in_list[0], last_point_in_list[1])
         else:
             distance = 0
 
@@ -584,13 +541,9 @@ class MapDrawWidget(QWidget):
         if len(self.oldPoints) == 0:
             self.oldPoints = [[x, y]]
         else:
-            if (
-                    time.time() > self.lastPointTime + self.newPointInterval
-                    or distance > self.newPointSpacing
-            ):
-                self.oldPoints = [
-                                     [x, y]
-                                 ] + self.oldPoints  # [:self.pointsToKeep] We keep all the points now
+            if time.time() > self.lastPointTime + self.newPointInterval or distance > self.newPointSpacing:
+                self.oldPoints = [[x, y]] + self.oldPoints
+                # [:self.pointsToKeep] We keep all the points now
                 self.lastPointTime = time.time()
 
         # Figure out how many decimals to use on the axis scales

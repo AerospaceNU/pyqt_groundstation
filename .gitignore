@@ -5,6 +5,7 @@
 *__pycache__
 output/
 sim_input/
+tile_cache/
 
 # Files
 *parsed_messages.txt

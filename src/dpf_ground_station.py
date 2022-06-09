@@ -45,6 +45,7 @@ from src.Widgets import (
     vehicle_status_widget,
     video_widget,
     navball_widget,
+    map_download_widget,
 )
 
 if sys.platform == "linux":  # I don't even know anymore
@@ -57,6 +58,7 @@ def serial_port_callback_name(device):
 
 
 CUSTOM_THEMES = list(map(lambda it: os.path.join("themes", it), os.listdir("themes")))
+
 
 class DPFGUI:
     def __init__(self):
@@ -129,6 +131,7 @@ class DPFGUI:
             "Offload GUI": board_usb_offloader_widget.BoardCliWrapper,
             "CLI USB Console": complete_console_widget.CLIUSBInterface,
             "Navball Widget": navball_widget.NavballWidget,
+            "Map Download": map_download_widget.MapDownload,
         }
 
         # List of tabs that can be dynamically created

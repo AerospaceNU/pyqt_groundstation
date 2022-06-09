@@ -1,6 +1,7 @@
 import time
 import urllib.request
 from urllib.request import Request
+from os.path import exists
 
 import cv2
 import numpy
@@ -26,19 +27,22 @@ def download_tile(x, y, z):
     return urllib.request.urlopen(request).read()
 
 
-def download_and_save_tile(x, y, z):
-    data = download_tile(x, y, z)
-
-    f = open("{0}-{1}-{2}.png".format(z, x, y), "wb")
-    f.write(data)
-    f.close()
+# def download_and_save_tile(x, y, z):
+#     data = download_tile(x, y, z)
+#
+#     f = open("{0}-{1}-{2}.png".format(z, x, y), "wb")
+#     f.write(data)
+#     f.close()
 
 
 def download_tile_as_cv2(x, y, z):
-    data = download_tile(x, y, z)
-
-    nparr = numpy.frombuffer(data, numpy.uint8)
-    cv2_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    print(exists(get_file_path(x,y,z)))
+    if exists(get_file_path(x, y, z)):
+        cv2_img = cv2.imread(get_file_path(x, y, z), cv2.IMREAD_UNCHANGED)
+    else:
+        data = download_tile(x, y, z)
+        nparr = numpy.frombuffer(data, numpy.uint8)
+        cv2_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
     return cv2_img
 
@@ -56,8 +60,12 @@ def get_tile_name(x, y, zoom):
     return "{0},{1},{2}".format(zoom, x, y)
 
 
-def get_all_tiles_in_box(bounding_box, zoom, exclude_list=None):
-    if exclude_list is None:
+def get_file_path(x, y, zoom):
+    return "tile_cache/{}.png".format(get_tile_name(x, y, zoom))
+
+
+def get_all_tiles_in_box(bounding_box, zoom, exclude_list=None, save_local_copy=False):
+    if exclude_list is None or save_local_copy:
         exclude_list = []
 
     [x_min, x_max, y_min, y_max] = bounding_box
@@ -69,12 +77,25 @@ def get_all_tiles_in_box(bounding_box, zoom, exclude_list=None):
             tile_name = get_tile_name(x, y, zoom)
 
             if tile_name not in exclude_list:
+                print("downloading " + tile_name)
                 tile = download_tile_as_cv2(x, y, zoom)
+
+                if save_local_copy:
+                    cv2.imwrite(get_file_path(x, y, zoom), tile)
+
                 out_dict[tile_name] = tile
 
                 time.sleep(0.01)  # Space out url requests a bit
 
     return out_dict
+
+
+def get_tiles_at_all_zoom_levels(lower_left_lla, upper_right_lla, save_local_copy=False):
+    time.sleep(0.1)
+
+    for i in range(10, 20):
+        tile_set = get_bounding_box_tiles(lower_left_lla, upper_right_lla, i)
+        get_all_tiles_in_box(tile_set, i, save_local_copy=save_local_copy)
 
 
 def stitch_all_tiles_in_box(bounding_box, zoom, tile_database):
