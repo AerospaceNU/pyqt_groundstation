@@ -68,4 +68,3 @@ class ButtonPanel(custom_q_widget_base.CustomQWidgetBase):
 
         for widget in [self.resetGraphButton, self.clearMapButton, self.resetDatumButton, self.resetOriginButton]:
             widget.setStyleSheet("QPushButton {font: 8pt Arial; margin:-1px; padding-left: 3px; padding-right: 3px; padding-top: 4px; padding-bottom: 4px;}")
-

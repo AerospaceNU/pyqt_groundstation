@@ -6,7 +6,7 @@ import navpy
 import numpy
 from PyQt5 import QtGui
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QBrush, QColor, QMouseEvent, QPainter, QPen, QPixmap, QPolygon
+from PyQt5.QtGui import QBrush, QColor, QMouseEvent, QPainter, QPen, QPolygon
 from PyQt5.QtWidgets import QGridLayout, QLabel, QMenu, QWidget
 
 from src.constants import Constants
@@ -19,9 +19,7 @@ from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
 BACKGROUND_COLOR = (255, 144, 30)  # BGR for OpenCV
 
-EXTRA_POSITION_SOURCES = {
-    "egg_finder": [Constants.egg_finder_latitude, Constants.egg_finder_longitude]
-}
+EXTRA_POSITION_SOURCES = {"egg_finder": [Constants.egg_finder_latitude, Constants.egg_finder_longitude]}
 
 
 class MapWidget(CustomQWidgetBase):
@@ -218,7 +216,7 @@ class MapImageBackground(QLabel):
         win_ur_same = self.last_window_ur == self.window_top_right
         win_bl_same = self.last_window_bl == self.window_bottom_left
 
-        is_map_same = (map_ur_same and map_bl_same and win_ur_same and win_bl_same and not self.has_new_map_image)
+        is_map_same = map_ur_same and map_bl_same and win_ur_same and win_bl_same and not self.has_new_map_image
 
         self.has_new_map_image = False
         self.last_map_ur = self.map_image_top_right

@@ -3,26 +3,19 @@ Offload Graph
 """
 
 import os
-import time
 import shutil
 from os import listdir
 from os.path import isfile, join
-from re import template
 
 import pandas as pd
 import pyqtgraph
 from PyQt5 import QtCore
-from PyQt5.QtCore import QEvent, Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QFileDialog,
-    QGridLayout,
     QHBoxLayout,
     QLabel,
-    QLineEdit,
-    QListView,
-    QListWidget,
-    QListWidgetItem,
     QPushButton,
     QTableWidget,
     QTableWidgetItem,
@@ -32,14 +25,9 @@ from pyqtgraph import PlotWidget
 from qtrangeslider import QRangeSlider
 
 from src.constants import Constants
-from src.data_helpers import (
-    first_index_in_list_larger_than,
-    get_qcolor_from_string,
-    get_well_formatted_rgb_string,
-    interpolate,
-)
+from src.data_helpers import first_index_in_list_larger_than, interpolate
 from src.python_avionics.model.fcb_offload_analyzer import FcbOffloadAnalyzer
-from src.Widgets import custom_q_widget_base, graph_widget
+from src.Widgets import custom_q_widget_base
 
 PEN_COLORS = ["red", "blue", "green", "magenta"]
 

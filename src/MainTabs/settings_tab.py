@@ -3,7 +3,7 @@ Settings tab.  Pretty useless right now
 """
 
 from src.MainTabs.main_tab_common import TabCommon
-from src.Widgets import board_usb_offloader_widget, control_station_status
+from src.Widgets import control_station_status
 from src.Widgets.local_sim_widget import LocalSimWidget
 
 

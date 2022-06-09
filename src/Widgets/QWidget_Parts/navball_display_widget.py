@@ -4,17 +4,70 @@ I literally have no idea what any of the opengl stuff does
 
 import math
 import os
+
 import cv2
+from OpenGL.raw.GL.VERSION.GL_1_0 import (
+    GL_CLAMP,
+    GL_COLOR_BUFFER_BIT,
+    GL_COLOR_MATERIAL,
+    GL_CONSTANT_ATTENUATION,
+    GL_CULL_FACE,
+    GL_DEPTH_BUFFER_BIT,
+    GL_DEPTH_TEST,
+    GL_DIFFUSE,
+    GL_LIGHT0,
+    GL_LIGHTING,
+    GL_LINEAR_ATTENUATION,
+    GL_MODELVIEW,
+    GL_MODULATE,
+    GL_NEAREST,
+    GL_POSITION,
+    GL_PROJECTION,
+    GL_REPEAT,
+    GL_RGB,
+    GL_SMOOTH,
+    GL_TEXTURE_2D,
+    GL_TEXTURE_ENV,
+    GL_TEXTURE_ENV_MODE,
+    GL_TEXTURE_MAG_FILTER,
+    GL_TEXTURE_MIN_FILTER,
+    GL_TEXTURE_WRAP_S,
+    GL_TEXTURE_WRAP_T,
+    GL_TRUE,
+    GL_UNPACK_ALIGNMENT,
+    GL_UNSIGNED_BYTE,
+    glClear,
+    glDisable,
+    glEnable,
+    glLightf,
+    glLightfv,
+    glMatrixMode,
+    glPixelStorei,
+    glPopMatrix,
+    glPushMatrix,
+    glRotatef,
+    glShadeModel,
+    glTexEnvf,
+    glTexImage2D,
+    glTexParameterf,
+)
+from OpenGL.raw.GL.VERSION.GL_1_1 import glBindTexture, glDeleteTextures, glGenTextures
+from OpenGL.raw.GLU import (
+    GLU_SMOOTH,
+    gluDeleteQuadric,
+    gluLookAt,
+    gluNewQuadric,
+    gluPerspective,
+    gluQuadricNormals,
+    gluQuadricTexture,
+    gluSphere,
+)
 from PyQt5.QtCore import QPoint
 from PyQt5.QtGui import QPolygon, QRegion
+from PyQt5.QtWidgets import QOpenGLWidget, QWidget
 
-from PyQt5.QtWidgets import QWidget, QOpenGLWidget
-
-from OpenGL.GL import *
-from OpenGL.GLU import *
-
+from src.data_helpers import interpolate, quaternion_to_euler_angle
 from src.Widgets.QWidget_Parts.basic_image_display import BasicImageDisplay
-from src.data_helpers import quaternion_to_euler_angle, interpolate
 
 
 class NavballDisplayWidget(QOpenGLWidget):
@@ -92,7 +145,7 @@ class NavballDisplayWidget(QOpenGLWidget):
         glEnable(GL_LIGHT0)
 
         glMatrixMode(GL_PROJECTION)
-        gluPerspective(40., 1., 1., 40.)
+        gluPerspective(40.0, 1.0, 1.0, 40.0)
         glMatrixMode(GL_MODELVIEW)
         gluLookAt(0, 0, 3, 0, 0, 0, 0, 1, 0)  # The third argument is zoom
         glPushMatrix()
@@ -143,7 +196,7 @@ class NavballDisplayWidget(QOpenGLWidget):
         glPopMatrix()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
     application = QApplication([])  # PyQt Application object

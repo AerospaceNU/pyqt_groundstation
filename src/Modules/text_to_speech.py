@@ -73,7 +73,7 @@ class TextToSpeech(ThreadedModuleCore):
             log_message = "Altitude: {} meters".format(int(altitude))
             self.speak_message(log_message)
         elif state in DESCENT_LOGGING_STATES and time.time() - self.descent_interval_seconds > self.last_speech_time:
-            log_message = ("Altitude: {0} meters, Descent rate: {1} meters per second".format(int(altitude), abs(int(v_speed))))
+            log_message = "Altitude: {0} meters, Descent rate: {1} meters per second".format(int(altitude), abs(int(v_speed)))
             self.speak_message(log_message)
         else:
             return

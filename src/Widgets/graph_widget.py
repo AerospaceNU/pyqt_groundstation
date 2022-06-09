@@ -5,7 +5,7 @@ import pyqtgraph
 from PyQt5.QtWidgets import QGridLayout, QWidget
 from pyqtgraph import PlotWidget
 
-from src.data_helpers import first_index_in_list_larger_than, get_qcolor_from_string
+from src.data_helpers import first_index_in_list_larger_than
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
 PEN_COLORS = ["red", "blue", "green", "magenta"]

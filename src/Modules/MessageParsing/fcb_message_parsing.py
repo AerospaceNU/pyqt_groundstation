@@ -223,7 +223,7 @@ class CLIDataMessage(BaseMessage):
 
     def parseMessage(self, data):
         length = data[0]
-        trimmed_data = data[1: length + 1]
+        trimmed_data = data[1 : length + 1]
         dictionary = {}
 
         try:

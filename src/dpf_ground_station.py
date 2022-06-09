@@ -13,10 +13,8 @@ import time
 import serial.tools.list_ports
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget, QWidget
-
 from qt_material import apply_stylesheet, list_themes
 
-import src.data_helpers
 from src.constants import Constants
 from src.MainTabs.diagnostic_tab import DiagnosticTab
 from src.MainTabs.graphs_tab import GraphsTab
@@ -36,7 +34,9 @@ from src.Widgets import (
     graph_widget,
     line_cutter_control,
     local_sim_widget,
+    map_download_widget,
     map_widget,
+    navball_widget,
     placeholder,
     pyro_display_widget,
     reconfigure_widget,
@@ -44,8 +44,6 @@ from src.Widgets import (
     text_box_drop_down_widget,
     vehicle_status_widget,
     video_widget,
-    navball_widget,
-    map_download_widget,
 )
 
 if sys.platform == "linux":  # I don't even know anymore

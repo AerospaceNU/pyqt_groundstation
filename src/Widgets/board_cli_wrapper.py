@@ -15,7 +15,6 @@ from PyQt5.QtWidgets import (
 )
 
 from src.constants import Constants
-from src.data_helpers import get_qcolor_from_string, get_well_formatted_rgb_string
 from src.Widgets import custom_q_widget_base
 
 

@@ -3,7 +3,7 @@ Console
 """
 
 from PyQt5 import QtGui
-from PyQt5.QtGui import QColor, QFont, QPainter, QPalette
+from PyQt5.QtGui import QColor, QFont, QPainter
 from PyQt5.QtWidgets import QWidget
 
 from src.Widgets import custom_q_widget_base

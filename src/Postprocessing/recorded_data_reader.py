@@ -45,7 +45,7 @@ class RecordedDataReader(object):
                 run_number += 1
             else:
                 try:
-                    nan = float("nan")
+                    nan = float("nan")  # noqa: F841
                     timestamp = line.split(" ")[0][0:-1]
                     packet_type = line.split(timestamp)[1].split("{")[0][2:].strip()  # don't even ask
                     packet_data = eval("{" + line.split("{")[1])
@@ -88,8 +88,6 @@ class RecordedDataReader(object):
                 logging_callback("Indexing recorded dat: {0:.2f}% done".format(100 * data.index(line) / len(data)))
                 last_logging_time = time.time()
                 logging_callback(f"Indxing took {time.time() - startTime} seconds")
-
-            
 
         self.fields = list(packet_data.keys())
         self.packetIndex = 0

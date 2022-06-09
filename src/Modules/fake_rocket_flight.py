@@ -7,8 +7,8 @@ import navpy
 import numpy as np
 
 from src.constants import Constants
-from src.Modules.fcb_data_interface_core import FCBDataInterfaceCore
 from src.data_helpers import quaternion_to_euler_angle
+from src.Modules.fcb_data_interface_core import FCBDataInterfaceCore
 
 # Internal states for the physics state machine
 PRE_FLIGHT = 0
@@ -171,8 +171,8 @@ class FakeFlight(FCBDataInterfaceCore):
             packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_state_key)] = fcb_state
             packet[Constants.makeLineCutterString(cutter, Constants.photoresistor_key)] = light
             packet[Constants.makeLineCutterString(cutter, Constants.photoresistor_threshold_key)] = 500
-            packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_cut_1)] = (self.state < DROGUE or self.altitude > 500)
-            packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_cut_2)] = (self.state < DROGUE or self.altitude > 1000)
+            packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_cut_1)] = self.state < DROGUE or self.altitude > 500
+            packet[Constants.makeLineCutterString(cutter, Constants.line_cutter_cut_2)] = self.state < DROGUE or self.altitude > 1000
 
         self.handleParsedData("Sim flight packet", packet)
 
