@@ -5,21 +5,10 @@ import time
 
 import cv2
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QPixmap
-from PyQt5.QtWidgets import (
-    QComboBox,
-    QVBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QWidget,
-)
-
-from src.Widgets import custom_q_widget_base
-from src.Widgets.QWidget_Parts.basic_image_display import BasicImageDisplay
+from PyQt5.QtWidgets import QLabel, QPushButton, QVBoxLayout, QWidget
 
 from src.constants import Constants
+from src.Widgets import custom_q_widget_base
 
 
 class MapDownload(custom_q_widget_base.CustomQWidgetBase):

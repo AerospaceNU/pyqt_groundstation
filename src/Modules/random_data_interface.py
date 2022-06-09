@@ -61,7 +61,7 @@ class RandomDataInterface(ThreadedModuleCore):
         self.data_dictionary["status"] = int((float(self.i) / 360.0) * 3)
 
         self.data_dictionary[Constants.fcb_battery_voltage] = ((float(self.i) / 360.0) * 5) + 11
-        self.data_dictionary[Constants.fcb_memory_usage] = ((float(self.i) / 360.0) * 1)
+        self.data_dictionary[Constants.fcb_memory_usage] = (float(self.i) / 360.0) * 1
 
         self.data_dictionary["pyro_continuity"] = [
             False,

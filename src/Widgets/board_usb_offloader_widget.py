@@ -15,7 +15,6 @@ from PyQt5.QtWidgets import (
 )
 
 from src.constants import Constants
-from src.data_helpers import get_qcolor_from_string, get_well_formatted_rgb_string
 from src.Widgets import custom_q_widget_base
 
 
@@ -135,7 +134,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         if self.isDictValueUpdated("flights_list"):
             flight_list_str = self.getDictValueUsingSourceKey("flights_list")
             self.recreate_table(flight_list_str)
-            self.refreshTheme()
+            self.updateAfterThemeSet()
 
     def parseOffloadHelp(self, cli_str: str):
         # Filter for lines that start with | and split by return characters

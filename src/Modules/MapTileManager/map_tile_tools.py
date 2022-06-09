@@ -1,7 +1,7 @@
 import time
 import urllib.request
-from urllib.request import Request
 from os.path import exists
+from urllib.request import Request
 
 import cv2
 import numpy

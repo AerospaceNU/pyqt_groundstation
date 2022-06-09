@@ -8,9 +8,9 @@ from src.Modules.MapTileManager.map_tile_tools import (
     get_all_tiles_in_box,
     get_bounding_box_tiles,
     get_edges_for_tile_set,
+    get_tiles_at_all_zoom_levels,
     get_zoom_level_from_pixels_per_meter,
     stitch_all_tiles_in_box,
-    get_tiles_at_all_zoom_levels
 )
 
 

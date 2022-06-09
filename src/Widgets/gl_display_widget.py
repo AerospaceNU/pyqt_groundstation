@@ -84,8 +84,7 @@ class ThreeDDisplay(CustomQWidgetBase):
 
         points, faces = self.loadSTL(filename)
         meshdata = gl.MeshData(vertexes=points, faces=faces)
-        mesh = gl.GLMeshItem(meshdata=meshdata, smooth=True, drawFaces=True, drawEdges=False, edgeColor=(0, 0, 0.5, 0.1),
-                             shader='shaded')
+        mesh = gl.GLMeshItem(meshdata=meshdata, smooth=True, drawFaces=True, drawEdges=False, edgeColor=(0, 0, 0.5, 0.1), shader="shaded")
         self.viewer.addItem(mesh)
 
         self.currentSTL = mesh

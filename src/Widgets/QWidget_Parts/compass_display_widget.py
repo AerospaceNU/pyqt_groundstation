@@ -15,7 +15,10 @@ class CompassDisplayWidget(QLabel):
         dirName = os.path.dirname(__file__)
         dirName = os.path.abspath(os.path.join(dirName, "../.."))
         compass = cv2.imread("{}/Assets/compass.png".format(dirName), cv2.IMREAD_UNCHANGED)
-        arrowImg = cv2.resize(cv2.imread("{}/Assets/arrow.png".format(dirName), cv2.IMREAD_UNCHANGED)[900:2100, 900:2100], (self.size, int(self.size / 2)), )
+        arrowImg = cv2.resize(
+            cv2.imread("{}/Assets/arrow.png".format(dirName), cv2.IMREAD_UNCHANGED)[900:2100, 900:2100],
+            (self.size, int(self.size / 2)),
+        )
 
         self.compassImage = basic_image_display.BasicImageDisplay(compass, self.size, parent=self)
         self.arrowImage = basic_image_display.BasicImageDisplay(arrowImg, self.size, parent=self)

@@ -8,16 +8,10 @@ import copy
 
 from PyQt5 import QtGui
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QColor, QMouseEvent, QPainter
-from PyQt5.QtWidgets import QMenu, QWidget, QFrame
+from PyQt5.QtGui import QMouseEvent
+from PyQt5.QtWidgets import QFrame, QMenu, QWidget
 
-from src.data_helpers import (
-    check_type,
-    clamp,
-    get_rgb_from_string,
-    get_value_from_dictionary,
-    make_stylesheet_string,
-)
+from src.data_helpers import check_type, clamp, get_value_from_dictionary
 
 
 class SourceKeyData(object):

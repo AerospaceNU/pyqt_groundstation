@@ -14,9 +14,7 @@ from src.constants import Constants
 from src.data_helpers import get_value_from_dictionary, interpolate
 from src.Modules.data_interface_core import ThreadedModuleCore
 
-EXTRA_POSITION_SOURCES = [
-    [Constants.egg_finder_latitude, Constants.egg_finder_longitude, Constants.egg_finder_age]
-]
+EXTRA_POSITION_SOURCES = [[Constants.egg_finder_latitude, Constants.egg_finder_longitude, Constants.egg_finder_age]]
 
 
 def decimal_degrees_to_deg_min(decimal_degrees):
@@ -41,7 +39,12 @@ def format_lat_lon_for_nmea(latitude, longitude):
     else:
         lon_sign = "W"
 
-    return [decimal_degrees_to_deg_min(latitude), lat_sign, decimal_degrees_to_deg_min(longitude), lon_sign, ]
+    return [
+        decimal_degrees_to_deg_min(latitude),
+        lat_sign,
+        decimal_degrees_to_deg_min(longitude),
+        lon_sign,
+    ]
 
 
 class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
@@ -85,7 +88,26 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
             if latitude != 0 and longitude != 0 and message_age < 5:
                 [lat_min, lat_sign, lon_min, lon_sign] = format_lat_lon_for_nmea(latitude, longitude)
                 # time, lat, lon, fix quality, satellites, hdop, alt, alt_unit, height above wgs84, height unit, DGPS time, DGPS station
-                msg = pynmea2.GGA("GP", "GGA", (time_str, lat_min, lat_sign, lon_min, lon_sign, "1", "04", "2.6", str(altitude), "M", "0", "M", "", "0000",))
+                msg = pynmea2.GGA(
+                    "GP",
+                    "GGA",
+                    (
+                        time_str,
+                        lat_min,
+                        lat_sign,
+                        lon_min,
+                        lon_sign,
+                        "1",
+                        "04",
+                        "2.6",
+                        str(altitude),
+                        "M",
+                        "0",
+                        "M",
+                        "",
+                        "0000",
+                    ),
+                )
                 self.send_bluetooth(str(msg))
 
             time.sleep(1)

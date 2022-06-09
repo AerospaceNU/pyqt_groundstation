@@ -81,8 +81,14 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
 
             # Filter ground station lat and lon
             if Constants.ground_station_latitude_key in dictionary and Constants.ground_station_longitude_key in dictionary:
-                self.ground_station_position_filter.new_gps_coords(dictionary[Constants.ground_station_latitude_key], dictionary[Constants.ground_station_longitude_key], )
-                [new_lat, new_lon, ] = self.ground_station_position_filter.get_filtered_position_output()
+                self.ground_station_position_filter.new_gps_coords(
+                    dictionary[Constants.ground_station_latitude_key],
+                    dictionary[Constants.ground_station_longitude_key],
+                )
+                [
+                    new_lat,
+                    new_lon,
+                ] = self.ground_station_position_filter.get_filtered_position_output()
                 dictionary[Constants.ground_station_latitude_key] = new_lat
                 dictionary[Constants.ground_station_longitude_key] = new_lon
 
@@ -106,7 +112,7 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
                     rssi_val = rssi_val.strip(" db")
                     try:
                         dictionary[Constants.rssi_val_key] = float(rssi_val)
-                    except:
+                    except ValueError:
                         pass
 
             self.data_dictionary.update(dictionary)

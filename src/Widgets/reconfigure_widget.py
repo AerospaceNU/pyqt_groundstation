@@ -108,4 +108,3 @@ class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
             self.dropDownWidget.clear()
             self.dropDownWidget.addItems(menu_item_list)
         self.menuItems = menu_item_list
-

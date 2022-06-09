@@ -4,7 +4,7 @@ Top bar of primary display to show vehicle status
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QWidget
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from src.constants import Constants
 from src.data_helpers import round_to_string
@@ -46,7 +46,9 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         layout.addWidget(self.prop_battery_graph)
         layout.addWidget(self.line_cutter_batt_1_graph)
         layout.addWidget(self.line_cutter_batt_2_graph)
-        layout.addWidget(self.fcb_memory_graph, )
+        layout.addWidget(
+            self.fcb_memory_graph,
+        )
 
         layout.setContentsMargins(1, 1, 1, 1)
         self.setLayout(layout)

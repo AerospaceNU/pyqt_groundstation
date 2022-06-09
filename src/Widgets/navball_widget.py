@@ -2,12 +2,12 @@
 Widget for buttons
 """
 
-from PyQt5.QtWidgets import QWidget, QGridLayout
-from src.Widgets.QWidget_Parts.navball_display_widget import NavballDisplayWidget
+from PyQt5.QtWidgets import QGridLayout, QWidget
 
-from src.Widgets import custom_q_widget_base
-from src.data_helpers import get_value_from_dictionary
 from src.constants import Constants
+from src.data_helpers import get_value_from_dictionary
+from src.Widgets import custom_q_widget_base
+from src.Widgets.QWidget_Parts.navball_display_widget import NavballDisplayWidget
 
 
 class NavballWidget(custom_q_widget_base.CustomQWidgetBase):

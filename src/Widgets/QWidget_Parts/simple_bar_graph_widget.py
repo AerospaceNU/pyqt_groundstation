@@ -79,7 +79,7 @@ class SimpleBarGraphWidget(QLabel):
         )
 
         painter.setPen(QPen(QColor(100, 100, 100), 0, Qt.SolidLine))
-        
+
         painter.setBrush(QBrush(self.palette().button().color(), Qt.SolidPattern))
 
         topY = 2 * padding + fontHeight

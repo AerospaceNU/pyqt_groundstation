@@ -2,7 +2,7 @@
 profile = "black"
 
 [tool.black]
-line_length = 250
+line-length = 250
 
 [tool.mypy]
 strict = true

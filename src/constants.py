@@ -142,23 +142,23 @@ class Constants:
         longitude_key = "gps_long"
         gps_alt_key = "gps_alt"
         vertical_speed_key = "vel_z"
-        # ground_speed_key = "gps_" 
+        # ground_speed_key = "gps_"
 
         # TODO average both
-        acceleration_x_key = "imu1_accel_x_real" 
-        acceleration_y_key = "imu1_accel_y_real" 
-        acceleration_z_key = "imu1_accel_z_real" 
-        rotational_velocity_x_key = "imu1_gyro_x_real" 
-        rotational_velocity_y_key = "imu1_gyro_y_real" 
-        rotational_velocity_z_key = "imu1_gyro_z_real" 
-        magnetometer_x_key = "imu1_mag_x_real" 
-        magnetometer_y_key = "imu1_mag_y_real" 
-        magnetometer_z_key = "imu1_mag_z_real" 
+        acceleration_x_key = "imu1_accel_x_real"
+        acceleration_y_key = "imu1_accel_y_real"
+        acceleration_z_key = "imu1_accel_z_real"
+        rotational_velocity_x_key = "imu1_gyro_x_real"
+        rotational_velocity_y_key = "imu1_gyro_y_real"
+        rotational_velocity_z_key = "imu1_gyro_z_real"
+        magnetometer_x_key = "imu1_mag_x_real"
+        magnetometer_y_key = "imu1_mag_y_real"
+        magnetometer_z_key = "imu1_mag_z_real"
 
-        barometer_pressure_key = "baro1_pres" 
+        barometer_pressure_key = "baro1_pres"
         barometer_pressure_2_key = "baro2_pres"
 
-        fcb_state_number_key = "state" 
+        fcb_state_number_key = "state"
 
     @staticmethod
     def makeLineCutterString(line_cutter_number, line_cutter_key):
