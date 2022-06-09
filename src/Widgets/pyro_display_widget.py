@@ -11,8 +11,8 @@ from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
 
 class PyroWidget(CustomQWidgetBase):
-    def __init__(self, parent_widget=None):
-        super().__init__(parent_widget)
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
         self.xBuffer = 0
         self.yBuffer = 0

@@ -2,29 +2,22 @@
 Code used in all vehicle tabs
 """
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QWidget
 
 from src.Widgets import custom_q_widget_base
 
 
-class TabCommon(QWidget):
-    def __init__(self, tab_name: str, parent=None):
+class TabCommon(custom_q_widget_base.CustomQWidgetBase):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.setObjectName("tab_{}".format(tab_name))
 
-        self.vehicleName = tab_name
+        self.vehicleName = ""
         self.isActiveTab = False
-        self.isClosed = False
 
         self.widgetsCreated = 0
         self.widgetList = []
 
-    def setIsActiveTab(self, is_active):
-        self.isActiveTab = is_active
-
-    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
-        super().closeEvent(a0)
-        self.isClosed = True
+    def rightClickMenu(self, e):
+        return
 
     def updateVehicleData(self, data, console_data, updated_data, recorded_data):
         """The update function that should not be overridden"""
@@ -39,11 +32,7 @@ class TabCommon(QWidget):
         callbacks = []
 
         for widget in self.widgetList:
-            widget.setVehicleData(vehicle_data, updated_data, recorded_data)
-            widget.updateConsole(console_data)
-            widget.coreUpdate()
-
-            callbacks += widget.getCallbackEvents()
+            callbacks += widget.updateVehicleData(vehicle_data, console_data, updated_data, recorded_data)
 
         self.customUpdateVehicleData(data)
 
@@ -55,7 +44,7 @@ class TabCommon(QWidget):
         """The update function that should be overridden"""
         pass
 
-    def addWidget(self, widget: custom_q_widget_base, widget_name=None) -> custom_q_widget_base.CustomQWidgetBase:
+    def addWidget(self, widget: custom_q_widget_base.CustomQWidgetBase, widget_name=None) -> custom_q_widget_base.CustomQWidgetBase:
         if widget_name is None:
             widget_name = str(type(widget)).split(".")[-1][:-2]
 
@@ -69,3 +58,5 @@ class TabCommon(QWidget):
     def updateAfterThemeSet(self):
         for widget in self.widgetList:
             widget.updateAfterThemeSet()
+
+        self.setStyleSheet("QWidget#" + self.objectName() + " {border: 0}")

@@ -257,12 +257,7 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
         self.altitude_data_arr = list(csv["pos_z"])
         if self.altitudeLine is not None:
             self.altitudeGraph.getPlotItem().removeItem(self.altitudeLine)
-        self.altitudeLine = self.altitudeGraph.plot(
-            self.altitude_time_arr,
-            self.altitude_data_arr,
-            name="Altitude (m)",
-            pen=get_pen_from_line_number(0),
-        )
+        self.altitudeLine = self.altitudeGraph.plot(self.altitude_time_arr, self.altitude_data_arr, name="Altitude (m)", pen=get_pen_from_line_number(0))
 
         self.min_x = min(self.altitude_time_arr)
         self.max_x = max(self.altitude_time_arr)

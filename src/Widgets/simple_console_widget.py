@@ -10,8 +10,8 @@ from src.Widgets import custom_q_widget_base
 
 
 class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
-    def __init__(self, widget: QWidget = None):
-        super().__init__(widget)
+    def __init__(self, parent: QWidget = None):
+        super().__init__(parent)
 
         self.data = [[]]
 

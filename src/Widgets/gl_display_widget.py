@@ -17,8 +17,8 @@ from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
 
 class ThreeDDisplay(CustomQWidgetBase):
-    def __init__(self, parent_widget=None):
-        super().__init__(parent_widget)
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
         self.title = "3d Display"
         self.currentSTL = None
@@ -84,7 +84,7 @@ class ThreeDDisplay(CustomQWidgetBase):
 
         points, faces = self.loadSTL(filename)
         meshdata = gl.MeshData(vertexes=points, faces=faces)
-        mesh = gl.GLMeshItem(meshdata=meshdata, smooth=True, drawFaces=True, drawEdges=False, edgeColor=(0, 0, 0.5, 0.1), shader="shaded")
+        mesh = gl.GLMeshItem(meshdata=meshdata, smooth=True, drawFaces=True, drawEdges=False, edgeColor=(0, 0, 0.5, 0.1), shader='shaded')
         self.viewer.addItem(mesh)
 
         self.currentSTL = mesh

@@ -13,17 +13,21 @@ import time
 import serial.tools.list_ports
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget, QWidget
+
 from qt_material import apply_stylesheet, list_themes
 
 from src.constants import Constants
-from src.MainTabs.diagnostic_tab import DiagnosticTab
-from src.MainTabs.graphs_tab import GraphsTab
-from src.MainTabs.main_tab_common import TabCommon
-from src.MainTabs.model_viewer import ModelViewer
-from src.MainTabs.offload_tab import OffloadTab
-from src.MainTabs.rocket_primary_tab import RocketPrimaryTab
-from src.MainTabs.settings_tab import SettingsTab
+from src.Widgets.MainTabs.diagnostic_tab import DiagnosticTab
+from src.Widgets.MainTabs.graphs_tab import GraphsTab
+from src.Widgets.MainTabs.main_tab_common import TabCommon
+from src.Widgets.MainTabs.offload_tab import OffloadTab
+from src.Widgets.MainTabs.rocket_primary_tab import RocketPrimaryTab
+from src.Widgets.MainTabs.settings_tab import SettingsTab
+from src.Widgets.MainTabs.side_tab_holder import SideTabHolder
+from src.Widgets.database_view import DatabaseView
+
 from src.Modules.data_interface_core import ThreadedModuleCore
+
 from src.Widgets import (
     annunciator_panel,
     board_usb_offloader_widget,
@@ -37,13 +41,14 @@ from src.Widgets import (
     map_download_widget,
     map_widget,
     navball_widget,
-    placeholder,
     pyro_display_widget,
     reconfigure_widget,
     simple_console_widget,
     text_box_drop_down_widget,
     vehicle_status_widget,
     video_widget,
+    navball_widget,
+    module_configuration,
 )
 
 if sys.platform == "linux":  # I don't even know anymore
@@ -87,7 +92,6 @@ class DPFGUI:
         self.current_playback_source = ""
 
         self.tabNames = []
-        self.placeHolderList = []
         self.tabObjects = []
 
         self.title = ""
@@ -129,6 +133,8 @@ class DPFGUI:
             "Offload GUI": board_usb_offloader_widget.BoardCliWrapper,
             "CLI USB Console": complete_console_widget.CLIUSBInterface,
             "Navball Widget": navball_widget.NavballWidget,
+            "Database View": DatabaseView,
+            "Module Configuration": module_configuration.ModuleConfiguration,
             "Map Download": map_download_widget.MapDownload,
         }
 
@@ -139,7 +145,7 @@ class DPFGUI:
             "Rocket Primary": RocketPrimaryTab,
             "Graph": GraphsTab,
             "Empty": TabCommon,
-            "Model Viewer": ModelViewer,
+            "Model Viewer": gl_display_widget.ThreeDDisplay,
             "Offload": OffloadTab,
         }
 
@@ -161,6 +167,14 @@ class DPFGUI:
 
         # Other setup tasks
         self.setUpMenuBar()
+
+        # Set up settings tab
+        settings_tab = SideTabHolder()
+        settings_tab.addSubTab("Custom Settings", SettingsTab())
+        settings_tab.addSubTab("Module Configuration", module_configuration.ModuleConfiguration())
+        settings_tab.addSubTab("Database View", DatabaseView())  # Keep this one last
+
+        self.addVehicleTab(settings_tab, "Settings")
 
     def run(self):
         """
@@ -194,14 +208,10 @@ class DPFGUI:
         insert_menu = menu_bar.addMenu("Insert")
 
         widget_menu = insert_menu.addMenu("Widget into current tab")
-        sorted_keys = list(self.widgetClasses.keys())
-        sorted_keys.sort()
-        for item in sorted_keys:
+        sorted_widgets = list(self.widgetClasses.keys())
+        sorted_widgets.sort()
+        for item in sorted_widgets:
             widget_menu.addAction(item, lambda name=item: self.makeNewWidgetInCurrentTab(name))
-
-        widget_menu_2 = insert_menu.addMenu("Widget as own window")
-        for item in sorted_keys:
-            widget_menu_2.addAction(item, lambda name=item: self.makeNewWidgetInNewWindow(name))
 
         tab_menu = insert_menu.addMenu("New Tab")
         sorted_tabs = list(self.tabClasses.keys())
@@ -209,9 +219,12 @@ class DPFGUI:
         for item in sorted_tabs:
             tab_menu.addAction(item, lambda name=item: self.addTabByTabType(name, None))
 
-        tab_menu = insert_menu.addMenu("New Tab as own window")
+        own_window_menu = insert_menu.addMenu("Own Window")
         for item in sorted_tabs:
-            tab_menu.addAction(item, lambda name=item: self.addTabByTabType(name, None, own_window=True))
+            own_window_menu.addAction(item, lambda name=item: self.addNewWidgetInNewWindow(name))
+        own_window_menu.addSeparator()
+        for item in sorted_widgets:
+            own_window_menu.addAction(item, lambda name=item: self.addNewWidgetInNewWindow(name))
 
         # Menu bar to change theme
         theme_menu = menu_bar.addMenu("Theme")
@@ -314,6 +327,8 @@ class DPFGUI:
 
         recorded_data_dict = {}
 
+        module_data = {}
+
         # Get data from interfaces
         for interface in self.module_dictionary:
             interface_object = self.module_dictionary[interface]
@@ -327,6 +342,8 @@ class DPFGUI:
                 run_name = self.current_playback_source.split(" | ")[1]
                 recorded_data_dict = interface_object.getSpecificRun(run_name)
 
+            module_data[interface] = [interface_object.enabled, self.module_load_time_dictionary[interface], interface_object.hasRecordedData()]
+
         # Send full database dictionary back to the data interfaces
         for interface in self.module_dictionary:
             try:
@@ -335,9 +352,7 @@ class DPFGUI:
             except RuntimeError:  # Sometimes there's a "dictionary changed size during iteration" error here that I don't want to debug
                 pass
 
-        # Update placeholder widgets
-        for widget in self.placeHolderList:
-            widget.update()
+        self.database_dictionary[Constants.module_data_key] = module_data
 
         # Update tabs
         tab_index_to_remove = -1
@@ -348,7 +363,6 @@ class DPFGUI:
 
         if tab_index_to_remove != -1:  # Can't do this in the loop above, because python freaks when you change the size of a list while iterating through it
             self.tabObjects.pop(tab_index_to_remove)
-            self.placeHolderList.pop(tab_index_to_remove)
 
         # set window title
         tab_index = self.tabHolderWidget.currentIndex()
@@ -376,22 +390,6 @@ class DPFGUI:
             self.database_dictionary[key] = new_dict[key]
             self.updated_data_dictionary[key] = True
 
-    def createWidgetFromName(self, widget_name, parent=None, in_new_window=False):
-        """Will create any widget from its file name!"""
-        if widget_name not in self.widgetClasses:
-            print("No widget of type {}".format(widget_name))
-            return QWidget(parent)  # Kind of a hack
-        try:
-            if in_new_window:
-                widget = self.widgetClasses[widget_name]()
-            else:
-                widget = self.widgetClasses[widget_name](parent)
-            return widget
-        except all as e:
-            print("Dynamically creating {} type widgets is not supported yet".format(widget_name))
-            print(e)
-            return QWidget(parent)
-
     def makeNewWidgetInCurrentTab(self, name):
         if name in self.widgetClasses:
             activeTab = self.getActiveTabObject()
@@ -400,13 +398,24 @@ class DPFGUI:
         else:
             print("No widget named {}".format(name))
 
-    def makeNewWidgetInNewWindow(self, name):
-        if name in self.widgetClasses:
-            activeTab = self.getActiveTabObject()
-            if activeTab is not None:
-                activeTab.addWidget(self.createWidgetFromName(name, parent=activeTab, in_new_window=True))
-        else:
-            print("No widget named {}".format(name))
+    def createWidgetFromName(self, widget_name, parent=None, in_new_window=False):
+        """Will create any widget from its file name!"""
+        try:
+            if widget_name in self.widgetClasses:
+                if in_new_window:
+                    widget = self.widgetClasses[widget_name]()
+                else:
+                    widget = self.widgetClasses[widget_name](parent)
+                return widget
+            elif widget_name in self.tabClasses:
+                return self.tabClasses[widget_name]()
+            else:
+                print("No widget of type {}".format(widget_name))
+                return None
+        except all as e:
+            print("Dynamically creating {} type widgets is not supported yet".format(widget_name))
+            print(e)
+            return None
 
     def getActiveTabObject(self) -> TabCommon:
         tab_index = self.tabHolderWidget.currentIndex()
@@ -417,32 +426,43 @@ class DPFGUI:
         else:
             return None
 
-    def addTabByTabType(self, tab_type: str, tab_name, own_window=False):
+    def addTabByTabType(self, tab_type: str, tab_name):
         if tab_name is None:
             tab_name = "{0} - {1}".format(tab_type, len(self.tabObjects))
 
         if tab_type in self.tabClasses:
             tab_class = self.tabClasses[tab_type]
-            self.addVehicleTab(tab_class, tab_name, own_window)
+            self.addVehicleTabFromClass(tab_class, tab_name)
         else:
             print("Don't have tab configuration for vehicle type {}".format(tab_type))
 
-    def addVehicleTab(self, tab, vehicle_name: str, own_window=False):
-        if not own_window:
-            new_tab_object = tab(vehicle_name, parent=self.tabHolderWidget)
-            self.tabHolderWidget.addTab(new_tab_object, vehicle_name)
-            self.tabHolderWidget.setCurrentIndex(self.tabHolderWidget.count() - 1)
-            self.tabHolderWidget.setCurrentIndex(1)
-        else:
-            new_tab_object = tab(vehicle_name)
-            new_tab_object.show()
+    def addVehicleTabFromClass(self, tab_class, vehicle_name: str):
+        new_tab_object = tab_class()
+        self.addVehicleTab(new_tab_object, vehicle_name)
+
+    def addVehicleTab(self, new_tab_object, vehicle_name: str):
+        self.tabHolderWidget.addTab(new_tab_object, vehicle_name)
+        self.tabHolderWidget.setCurrentIndex(self.tabHolderWidget.count() - 1)
+        self.tabHolderWidget.setCurrentIndex(1)
 
         self.tabObjects.append(new_tab_object)
         self.tabNames.append(vehicle_name)
+        new_tab_object.setObjectName("{0}_tab_{1}".format(vehicle_name, len(self.tabObjects)))
+        new_tab_object.vehicleName = vehicle_name
 
-        self.placeHolderList.append(placeholder.Placeholder(new_tab_object))  # Something needs to be updating for the GUI to function, so we make a silly thing to always do that
+    def addNewWidgetInNewWindow(self, name):
+        widget_object = self.createWidgetFromName(name, in_new_window=True)
 
-    def getThemes(self):
+        if widget_object is not None:
+            object_name = "{0}_{1}_isolated".format(name, len(self.tabObjects))
+            widget_object.show()
+
+            self.tabObjects.append(widget_object)
+            self.tabNames.append(object_name)
+            widget_object.setObjectName(object_name)
+
+    @staticmethod
+    def getThemes():
         return list_themes() + CUSTOM_THEMES
 
     def setThemeByName(self, name: str):

@@ -24,7 +24,6 @@ if __name__ == "__main__":
     GUI = DPFGUI()
 
     # Add tabs to GUI
-    GUI.addTabByTabType("Settings", "Settings")
     GUI.addTabByTabType("Rocket Primary", "Primary")
     GUI.addTabByTabType("Diagnostic", "Diagnostic")
     GUI.addTabByTabType("Graph", "Graphs")
