@@ -6,62 +6,10 @@ import math
 import os
 
 import cv2
-from OpenGL.raw.GL.VERSION.GL_1_0 import (
-    GL_CLAMP,
-    GL_COLOR_BUFFER_BIT,
-    GL_COLOR_MATERIAL,
-    GL_CONSTANT_ATTENUATION,
-    GL_CULL_FACE,
-    GL_DEPTH_BUFFER_BIT,
-    GL_DEPTH_TEST,
-    GL_DIFFUSE,
-    GL_LIGHT0,
-    GL_LIGHTING,
-    GL_LINEAR_ATTENUATION,
-    GL_MODELVIEW,
-    GL_MODULATE,
-    GL_NEAREST,
-    GL_POSITION,
-    GL_PROJECTION,
-    GL_REPEAT,
-    GL_RGB,
-    GL_SMOOTH,
-    GL_TEXTURE_2D,
-    GL_TEXTURE_ENV,
-    GL_TEXTURE_ENV_MODE,
-    GL_TEXTURE_MAG_FILTER,
-    GL_TEXTURE_MIN_FILTER,
-    GL_TEXTURE_WRAP_S,
-    GL_TEXTURE_WRAP_T,
-    GL_TRUE,
-    GL_UNPACK_ALIGNMENT,
-    GL_UNSIGNED_BYTE,
-    glClear,
-    glDisable,
-    glEnable,
-    glLightf,
-    glLightfv,
-    glMatrixMode,
-    glPixelStorei,
-    glPopMatrix,
-    glPushMatrix,
-    glRotatef,
-    glShadeModel,
-    glTexEnvf,
-    glTexImage2D,
-    glTexParameterf,
-)
-from OpenGL.raw.GL.VERSION.GL_1_1 import glBindTexture, glDeleteTextures, glGenTextures
-from OpenGL.raw.GLU import (
-    GLU_SMOOTH,
-    gluDeleteQuadric,
-    gluLookAt,
-    gluNewQuadric,
-    gluPerspective,
-    gluQuadricNormals,
-    gluQuadricTexture,
-    gluSphere,
-)
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+
 from PyQt5.QtCore import QPoint
 from PyQt5.QtGui import QPolygon, QRegion
 from PyQt5.QtWidgets import QOpenGLWidget, QWidget
