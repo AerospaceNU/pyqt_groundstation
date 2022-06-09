@@ -13,3 +13,5 @@ class GraphsTab(SideTabHolder):
 
         self.addSubTab("FCB Telemetry", FcbTelemetryGraphs())
         self.addSubTab("FCB Offloaded Data", FcbOffloadGraphs())
+
+        self.tab_widget.button_scroll_area.setMinimumWidth(200)

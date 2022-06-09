@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QGridLayout, QVBoxLayout, QWidget, QStackedWidget, QPushButton, QFrame, QScrollArea, QSizePolicy
+from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QStackedWidget, QPushButton, QFrame, QScrollArea, QSizePolicy
 
 
 class SideTabWidget(QWidget):
@@ -21,9 +21,9 @@ class SideTabWidget(QWidget):
         self.stacked_widget = QStackedWidget()
         self.stacked_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        main_layout = QGridLayout()
-        main_layout.addWidget(self.button_scroll_area, 0, 0)
-        main_layout.addWidget(self.stacked_widget, 0, 1)
+        main_layout = QHBoxLayout()
+        main_layout.addWidget(self.button_scroll_area)
+        main_layout.addWidget(self.stacked_widget)
         main_layout.setContentsMargins(1, 1, 1, 1)
         self.setLayout(main_layout)
 
