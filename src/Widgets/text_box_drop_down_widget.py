@@ -74,4 +74,4 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
         self.dropDownWidget.setStyleSheet(self.colorString)
 
     def customUpdateAfterThemeSet(self):
-        self.textBoxWidget.setFont(QFont("Monospace", self.fontInfo().pointSize()))
+        self.textBoxWidget.setStyleSheet("font: 10pt Monospace")
