@@ -34,7 +34,7 @@ https://www.jetbrains.com/pycharm/download
 1. [Windows] Install MSVC build tools from https://visualstudio.microsoft.com/visual-cpp-build-tools/ (for pybluez)
 2. [Linux] Install `libbluetooth-dev` and `espeak` via package manager. Something like: `sudo apt-get install libbluetooth-dev espeak`
 3. Run `install_setup.sh` from PyCharm Run Configurations (top right) or command line via `./install_setup.sh`
-4. If any error message occurs, find spot in script where error is output and try running manually.
+4. If any error message occurs, find spot in script where error is output and try running manually. For Unix systems you may need the package `python3.8-venv`.
 
 ### Configure IDE
 
@@ -102,7 +102,7 @@ Each widget class extends `custom_q_widget_base.py`, which provides all the base
 To get data from the widget overwrites the `updateData` function, which takes the GUI database dictionary as an argument.
 Each widget then gets their required data from the GUI database dictionary, and sets values accordingly.
 
-There's also an `updateInFocus` function that only runs when you're looking at the widget. 
+There's also an `updateInFocus` function that only runs when you're looking at the widget.
 Use this for computationally intensive stuff (like drawing a graph or rendering 3d images) so that it also doesn't run in the background.
 
 #### QWidget_Parts
@@ -115,7 +115,7 @@ It would be better to refactor it so that it does extend QWidget or QLabel or so
 ### Main Tabs
 To add a custom tab, extend `main_tab_common.py` and call `self.addWidget` to add widgets to the call list.
 Look at `primary_tab.py` for a nice example.
-`main_tab_common.py` extends `QWidget`, so each tab object is actually a pyqt widget. 
+`main_tab_common.py` extends `QWidget`, so each tab object is actually a pyqt widget.
 `main_tab_common` also provides framework for making sure all the Widgets get their database dictionary updated as needed.
 
 ### Modules
