@@ -13,21 +13,10 @@ import time
 import serial.tools.list_ports
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget, QWidget
-
 from qt_material import apply_stylesheet, list_themes
 
 from src.constants import Constants
-from src.Widgets.MainTabs.diagnostic_tab import DiagnosticTab
-from src.Widgets.MainTabs.graphs_tab import GraphsTab
-from src.Widgets.MainTabs.main_tab_common import TabCommon
-from src.Widgets.MainTabs.offload_tab import OffloadTab
-from src.Widgets.MainTabs.rocket_primary_tab import RocketPrimaryTab
-from src.Widgets.MainTabs.settings_tab import SettingsTab
-from src.Widgets.MainTabs.side_tab_holder import SideTabHolder
-from src.Widgets.database_view import DatabaseView
-
 from src.Modules.data_interface_core import ThreadedModuleCore
-
 from src.Widgets import (
     annunciator_panel,
     board_usb_offloader_widget,
@@ -40,6 +29,7 @@ from src.Widgets import (
     local_sim_widget,
     map_download_widget,
     map_widget,
+    module_configuration,
     navball_widget,
     pyro_display_widget,
     reconfigure_widget,
@@ -47,9 +37,15 @@ from src.Widgets import (
     text_box_drop_down_widget,
     vehicle_status_widget,
     video_widget,
-    navball_widget,
-    module_configuration,
 )
+from src.Widgets.database_view import DatabaseView
+from src.Widgets.MainTabs.diagnostic_tab import DiagnosticTab
+from src.Widgets.MainTabs.graphs_tab import GraphsTab
+from src.Widgets.MainTabs.main_tab_common import TabCommon
+from src.Widgets.MainTabs.offload_tab import OffloadTab
+from src.Widgets.MainTabs.rocket_primary_tab import RocketPrimaryTab
+from src.Widgets.MainTabs.settings_tab import SettingsTab
+from src.Widgets.MainTabs.side_tab_holder import SideTabHolder
 
 if sys.platform == "linux":  # I don't even know anymore
     if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:
@@ -450,6 +446,8 @@ class DPFGUI:
         new_tab_object.setObjectName("{0}_tab_{1}".format(vehicle_name, len(self.tabObjects)))
         new_tab_object.vehicleName = vehicle_name
 
+        new_tab_object.updateAfterThemeSet()
+
     def addNewWidgetInNewWindow(self, name):
         widget_object = self.createWidgetFromName(name, in_new_window=True)
 
@@ -460,6 +458,8 @@ class DPFGUI:
             self.tabObjects.append(widget_object)
             self.tabNames.append(object_name)
             widget_object.setObjectName(object_name)
+
+            widget_object.updateAfterThemeSet()
 
     @staticmethod
     def getThemes():
