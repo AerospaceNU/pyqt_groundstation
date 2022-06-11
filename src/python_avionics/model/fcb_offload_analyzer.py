@@ -6,7 +6,6 @@ from typing import Callable, Tuple
 import matplotlib.cm
 import matplotlib.pyplot as plt
 import numpy as np
-import numpy.typing as npt
 import pandas as pd
 from matplotlib.backend_bases import MouseButton
 

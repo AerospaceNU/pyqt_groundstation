@@ -14,6 +14,7 @@ import serial.tools.list_ports
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget, QWidget
 from qt_material import apply_stylesheet, list_themes
+from src.Widgets.offload_graph_widget import OffloadGraphWidget
 
 from src.constants import Constants
 from src.Modules.data_interface_core import ThreadedModuleCore
@@ -126,7 +127,8 @@ class DPFGUI:
             "Local Sim Helper": local_sim_widget.LocalSimWidget,
             "Line Cutter Control": line_cutter_control.LineCutterControl,
             "3d Viewer": gl_display_widget.ThreeDDisplay,
-            "Offload GUI": board_usb_offloader_widget.BoardCliWrapper,
+            "FCB Offloader": board_usb_offloader_widget.BoardCliWrapper,
+            "FCB Post-Graph": OffloadGraphWidget,
             "CLI USB Console": complete_console_widget.CLIUSBInterface,
             "Navball Widget": navball_widget.NavballWidget,
             "Database View": DatabaseView,
