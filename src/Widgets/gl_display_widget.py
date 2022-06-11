@@ -75,7 +75,8 @@ class ThreeDDisplay(CustomQWidgetBase):
         position = QVector3D(0, 0, self.altitude)
 
         self.viewer.setCameraPosition(pos=position)
-        tr.rotate(QtGui.QQuaternion(self.orientation_quaternion[0], self.orientation_quaternion[1], self.orientation_quaternion[2], self.orientation_quaternion[3]))
+        tr.rotate(90, 0, 1, 0)
+        tr.rotate(QtGui.QQuaternion(self.orientation_quaternion[0], -self.orientation_quaternion[3], self.orientation_quaternion[2], self.orientation_quaternion[1]))
         self.currentSTL.applyTransform(tr, local=True)
 
     def showSTL(self, filename):
@@ -84,7 +85,7 @@ class ThreeDDisplay(CustomQWidgetBase):
 
         points, faces = self.loadSTL(filename)
         meshdata = gl.MeshData(vertexes=points, faces=faces)
-        mesh = gl.GLMeshItem(meshdata=meshdata, smooth=True, drawFaces=True, drawEdges=False, edgeColor=(0, 0, 0.5, 0.1), shader='shaded')
+        mesh = gl.GLMeshItem(meshdata=meshdata, smooth=True, drawFaces=True, drawEdges=False, edgeColor=(0, 0, 0.5, 0.1), shader="shaded")
         self.viewer.addItem(mesh)
 
         self.currentSTL = mesh
