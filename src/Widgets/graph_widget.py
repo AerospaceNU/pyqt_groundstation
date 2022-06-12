@@ -113,6 +113,7 @@ class GraphWidget(CustomQWidgetBase):
                         self.data_dictionary[source] = [float("nan")] + self.data_dictionary[source][slice_index:]
         else:
             for source in self.sourceDictionary:
+                print(f"Updating recorded data for source {source}")
                 [data_series, time_series] = self.getRecordedDictDataUsingSourceKey(source)
 
                 if len(data_series) > 0 and len(data_series) == len(time_series):

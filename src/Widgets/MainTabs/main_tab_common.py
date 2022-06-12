@@ -1,12 +1,12 @@
 """
 Code used in all vehicle tabs
 """
+from typing import List
 from PyQt5 import QtGui
 
-from src.Widgets import custom_q_widget_base
+from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
-
-class TabCommon(custom_q_widget_base.CustomQWidgetBase):
+class TabCommon(CustomQWidgetBase):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -14,12 +14,12 @@ class TabCommon(custom_q_widget_base.CustomQWidgetBase):
         self.isActiveTab = False
 
         self.widgetsCreated = 0
-        self.widgetList = []
+        self.widgetList: List[CustomQWidgetBase] = []
 
     def rightClickMenu(self, e):
         return
 
-    def updateVehicleData(self, data, console_data, updated_data, recorded_data):
+    def updateVehicleData(self, data, console_data, updated_data):
         """The update function that should not be overridden"""
         if isinstance(data, dict):
             vehicle_data = data
@@ -32,7 +32,7 @@ class TabCommon(custom_q_widget_base.CustomQWidgetBase):
         callbacks = []
 
         for widget in self.widgetList:
-            callbacks += widget.updateVehicleData(vehicle_data, console_data, updated_data, recorded_data)
+            callbacks += widget.updateVehicleData(vehicle_data, console_data, updated_data)
 
         self.customUpdateVehicleData(data)
 
@@ -40,11 +40,16 @@ class TabCommon(custom_q_widget_base.CustomQWidgetBase):
 
         return callbacks
 
+    def setRecordedData(self, recorded_data):
+        self.recordedData = recorded_data
+        for widget in self.widgetList:
+            widget.setRecordedData(recorded_data)
+
     def customUpdateVehicleData(self, data):
         """The update function that should be overridden"""
         pass
 
-    def addWidget(self, widget: custom_q_widget_base.CustomQWidgetBase, widget_name=None) -> custom_q_widget_base.CustomQWidgetBase:
+    def addWidget(self, widget: CustomQWidgetBase, widget_name=None) -> CustomQWidgetBase:
         if widget_name is None:
             widget_name = str(type(widget)).split(".")[-1][:-2]
 

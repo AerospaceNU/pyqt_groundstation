@@ -2,12 +2,16 @@ import os
 import time
 from os import listdir
 from os.path import isfile, join
+from typing import Dict, Iterator, List
+from unittest.mock import sentinel
 
 import pandas as pd
+from src.Modules.MessageParsing.fcb_message_parsing import lat_lon_decimal_minutes_to_decimal_degrees
 
 from src.constants import Constants
 from src.Modules.data_interface_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.comms_console_helper import CommsConsoleHelper
+from src.data_helpers import quaternion_to_euler_angle
 from src.python_avionics.exceptions import SerialPortDisconnectedError
 from src.python_avionics.model.fcb_cli import FcbCli
 from src.python_avionics.model.serial_port import SerialPort
@@ -30,6 +34,10 @@ class FCBOffloadModule(ThreadedModuleCore):
         self.callbacks_to_add.append([Constants.cli_interface_usb_key, self.cliCommand])
 
         self.cliConsole = CommsConsoleHelper()
+
+        self.replay_dict: Dict[str, List[float]] = None
+        self.replay_idx: int = 0
+        self.replay_len = 0
 
     def changeActiveSerialPort(self, portName):
         self.serial_port_name = portName
@@ -72,6 +80,9 @@ class FCBOffloadModule(ThreadedModuleCore):
         else:
             self.cliConsole.manualAddEntry("FCB USB offload module not enabled, can not run commands", False)
 
+    def getOffloadKey(self, key):
+        return self.replay_dict[f"offload_{key}"][0][self.replay_idx]
+
     def spin(self):
         if not self.serial_connection:
             self.updatePythonAvionicsSerialPort()
@@ -87,7 +98,41 @@ class FCBOffloadModule(ThreadedModuleCore):
 
                 self.cliConsole.autoAddEntry(ret, True)
 
-        time.sleep(0.1)
+        if self.replay_dict is not None:
+            if(self.replay_idx >= self.replay_len):
+                self.replay_dict = None
+            else:
+                # create a dict from recorded data
+                # This is SUCH A HACK. at each key we have a (data, time) array
+                lat = self.getOffloadKey("gps_lat")
+                long = self.getOffloadKey("gps_long")
+                alt = self.getOffloadKey("pos_z")
+                gpsalt = self.getOffloadKey("gps_alt")
+
+                vel = self.getOffloadKey("vel_x")
+
+                quat = [
+                    self.getOffloadKey("q_w"),
+                    self.getOffloadKey("q_x"),
+                    self.getOffloadKey("q_y"),
+                    self.getOffloadKey("q_z"),
+                ] # W X Y Z
+
+
+                [roll, pitch, yaw] = quaternion_to_euler_angle(quat)
+
+                lat = lat_lon_decimal_minutes_to_decimal_degrees(lat)
+                long = lat_lon_decimal_minutes_to_decimal_degrees(long)
+
+                dictionary = {Constants.latitude_key: lat, Constants.longitude_key: long, Constants.altitude_key: alt,
+                    Constants.gps_alt_key: gpsalt, Constants.orientation_quaternion_key: quat, Constants.vertical_speed_key: vel,
+                    "roll": roll, "pitch": pitch, "yaw": yaw}
+                self.data_dictionary.update(dictionary)
+
+            self.replay_idx = self.replay_idx + 2
+            time.sleep(0.015)
+        else:
+            time.sleep(0.1)
 
     def runsEveryLoop(self):
         self.data_dictionary[Constants.cli_interface_usb_key] = self.cliConsole.getList()
@@ -143,3 +188,10 @@ class FCBOffloadModule(ThreadedModuleCore):
             for key in df.keys():
                 self.recorded_data_dictionary[runName]["offload_" + key] = [list(df[key]), list(time_series)]
             self.recorded_data_dictionary[runName]["keys"] = df.keys()
+
+    def setSpecificRunSelected(self, run_name):
+        print(f"run {run_name} selected")
+        self.replay_dict = self.recorded_data_dictionary[run_name]
+        self.replay_idx = 0
+        self.replay_len = len(list(self.replay_dict.values())[0][0])
+

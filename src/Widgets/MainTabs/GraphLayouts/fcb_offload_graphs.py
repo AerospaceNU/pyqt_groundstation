@@ -12,7 +12,7 @@ class FcbOffloadGraphs(GraphLayoutCommon):
 
         layout = QGridLayout()
         layout.addWidget(self.addWidget(GraphWidget(title="Altitude", source_list=["offload_pos_z", "offload_gps_alt"], )), 1, 1)
-        layout.addWidget(self.addWidget(GraphWidget(title="Speeds", source_list=["offload_vel_z", ] )), 1, 2)
+        layout.addWidget(self.addWidget(GraphWidget(title="Speeds", source_list=["offload_vel_x", "offload_vel_y", "offload_vel_z", ] )), 1, 2)
         layout.addWidget(self.addWidget(GraphWidget(title="XYZ Accelerations", source_list=[
             "offload_imu1_accel_x_real",
             "offload_imu1_accel_y_real",

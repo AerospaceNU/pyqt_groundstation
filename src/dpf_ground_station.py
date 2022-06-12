@@ -5,15 +5,18 @@ Has all the thread control for the GUI
 """
 
 import copy
+from dataclasses import dataclass
 import os
 import random
 import sys
 import time
+from typing import Dict, List, Type, Union
 
 import serial.tools.list_ports
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget, QWidget
 from qt_material import apply_stylesheet, list_themes
+from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 from src.Widgets.offload_graph_widget import OffloadGraphWidget
 
 from src.constants import Constants
@@ -59,6 +62,11 @@ def serial_port_callback_name(device):
 
 CUSTOM_THEMES = list(map(lambda it: os.path.join("themes", it), os.listdir("themes")))
 
+# @dataclass
+# class PlaybackSource:
+#     runName: str
+#     moduleName: str
+#     dataDict: dict
 
 class DPFGUI:
     def __init__(self):
@@ -80,16 +88,16 @@ class DPFGUI:
         # List of callback function names to call.  These are called in the GUI thread during the update() function
         self.callback_queue = []
         # Dictionary of module objects {module_name: module_object, ...}
-        self.module_dictionary = {}
+        self.module_dictionary: Dict[str, ThreadedModuleCore] = {}
         # Dictionary of module load times {module_name: load_time, ...}
         self.module_load_time_dictionary = {}
         # List of modules that we don't provide a drop-down option to enable or disable
         self.hidden_modules = []
         self.playback_data_sources = []
-        self.current_playback_source = ""
+        # self.current_playback_source: PlaybackSource = PlaybackSource("", "", {})
 
         self.tabNames = []
-        self.tabObjects = []
+        self.tabObjects: List[Union[CustomQWidgetBase, TabCommon]] = []
 
         self.title = ""
 
@@ -311,7 +319,26 @@ class DPFGUI:
             self.playback_source_menu.addAction(option, lambda option_name=option: self.setCurrentPlaybackOption(option_name))
 
     def setCurrentPlaybackOption(self, option):
-        self.current_playback_source = option
+        module_name = option.split(" | ")[0]
+        run_name = option.split(" | ")[1]
+        for interface in self.module_dictionary:
+            # Look for module with the same name as was clicked
+            if module_name == interface:
+                interface_object = self.module_dictionary[interface]
+
+                recorded_data_dict = interface_object.getSpecificRun(run_name)
+                # self.current_playback_source = PlaybackSource(run_name, module_name, recorded_data_dict)
+
+                # Give new data to all tabs
+                for tab in self.tabObjects:
+                    tab.setRecordedData(recorded_data_dict)
+
+                # Tell the module we clicked on its specific run
+                interface_object.setSpecificRunSelected(run_name)
+
+                
+
+        
 
     def updateGUI(self):
         """
@@ -323,8 +350,6 @@ class DPFGUI:
 
         start_time = time.time()
 
-        recorded_data_dict = {}
-
         module_data = {}
 
         # Get data from interfaces
@@ -335,10 +360,6 @@ class DPFGUI:
                 self.playback_data_sources = list(set(self.playback_data_sources + interface_runs))
                 self.playback_data_sources.sort()
             self.updateDatabaseDictionary(interface_object.getDataDictionary())
-
-            if self.current_playback_source.split(" | ")[0] == interface:
-                run_name = self.current_playback_source.split(" | ")[1]
-                recorded_data_dict = interface_object.getSpecificRun(run_name)
 
             module_data[interface] = [interface_object.enabled, self.module_load_time_dictionary[interface], interface_object.hasRecordedData()]
 
@@ -355,7 +376,7 @@ class DPFGUI:
         # Update tabs
         tab_index_to_remove = -1
         for tab in self.tabObjects:
-            self.callback_queue += tab.updateVehicleData(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary, recorded_data_dict)
+            self.callback_queue += tab.updateVehicleData(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary)
             if tab.isClosed:
                 tab_index_to_remove = self.tabObjects.index(tab)
 
@@ -509,7 +530,7 @@ class DPFGUI:
 
         self.callbackFunctions[target].append(callback)
 
-    def addModule(self, interface_name: str, interface_class: type(ThreadedModuleCore), enabled=True, hide_toggle=False):
+    def addModule(self, interface_name: str, interface_class: Type[ThreadedModuleCore], enabled=True, hide_toggle=False):
         try:
             start_time = time.time()
 

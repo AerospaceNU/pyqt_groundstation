@@ -112,9 +112,8 @@ class CustomQWidgetBase(QFrame):
         """Called only when widget is being looked at"""
         pass
 
-    def updateVehicleData(self, vehicle_data, console_data, updated_data, recorded_data):
+    def updateVehicleData(self, vehicle_data, console_data, updated_data):
         """Called by the tab every loop.  DO NOT OVERRIDE"""
-        self.recordedData = recorded_data
         self.vehicleData = vehicle_data
         self.updated_data_dictionary = updated_data
         self.updateData(vehicle_data, updated_data)
@@ -122,6 +121,9 @@ class CustomQWidgetBase(QFrame):
         self.coreUpdate()
 
         return self.getCallbackEvents()
+
+    def setRecordedData(self, recorded_data):
+        self.recordedData = recorded_data
 
     def updateData(self, vehicle_data, updated_data):
         """Called every loop with new vehicle database dictionary"""

@@ -60,6 +60,10 @@ class ThreadedModuleCore(threading.Thread):
     def hasRecordedData(self):
         return bool(self.recorded_data_dictionary)
 
+    def setSpecificRunSelected(self, run_name):
+        """ Override to provide custon replay functionality"""
+        pass
+
     def setConsoleCallback(self, callback):
         self.console_callback = callback
 
