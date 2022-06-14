@@ -1,6 +1,7 @@
 import os
-
+import math
 import cv2
+
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPolygon, QRegion
 from PyQt5.QtWidgets import QLabel, QWidget
@@ -136,6 +137,9 @@ class AttitudeDisplayWidget(QLabel):
         self.rollIndicatorImage.setRotation(self.roll)  # Set roll image
 
     def setRPY(self, roll, pitch, _):
+        roll = math.degrees(roll)
+        pitch = math.degrees(pitch)
+
         if pitch > 180:
             pitch -= 360
 

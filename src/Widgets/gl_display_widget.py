@@ -2,6 +2,7 @@
 Displays pyro continuity
 """
 
+import math
 import numpy as np
 import PyQt5.QtCore as QtCore
 import pyqtgraph as pqg
@@ -12,7 +13,7 @@ from pyqtgraph.Qt import QtGui
 from stl import mesh
 
 from src.constants import Constants
-from src.data_helpers import get_value_from_dictionary
+from src.data_helpers import get_value_from_dictionary, euler_to_quaternion
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
 
@@ -74,9 +75,11 @@ class ThreeDDisplay(CustomQWidgetBase):
 
         position = QVector3D(0, 0, self.altitude)
 
+        rotation_quaternion = euler_to_quaternion(0, math.radians(90), 0)
+
         self.viewer.setCameraPosition(pos=position)
-        tr.rotate(90, 0, 1, 0)
-        tr.rotate(QtGui.QQuaternion(self.orientation_quaternion[0], -self.orientation_quaternion[3], self.orientation_quaternion[2], self.orientation_quaternion[1]))
+        tr.rotate(QtGui.QQuaternion(self.orientation_quaternion[0], self.orientation_quaternion[1], self.orientation_quaternion[2], self.orientation_quaternion[3]))
+        tr.rotate(QtGui.QQuaternion(rotation_quaternion[0], rotation_quaternion[1], rotation_quaternion[2], rotation_quaternion[3]))
         self.currentSTL.applyTransform(tr, local=True)
 
     def showSTL(self, filename):
@@ -85,7 +88,7 @@ class ThreeDDisplay(CustomQWidgetBase):
 
         points, faces = self.loadSTL(filename)
         meshdata = gl.MeshData(vertexes=points, faces=faces)
-        mesh = gl.GLMeshItem(meshdata=meshdata, smooth=True, drawFaces=True, drawEdges=False, edgeColor=(0, 0, 0.5, 0.1), shader="shaded")
+        mesh = gl.GLMeshItem(meshdata=meshdata, smooth=True, drawFaces=True, drawEdges=False, edgeColor=(0, 0, 0.5, 0.1), shader='shaded')
         self.viewer.addItem(mesh)
 
         self.currentSTL = mesh

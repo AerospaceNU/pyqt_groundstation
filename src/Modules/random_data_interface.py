@@ -8,6 +8,8 @@ from src.constants import Constants
 from src.Modules.data_interface_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.gps_position_filter import GPSPositionFilter
 
+from src.data_helpers import euler_to_quaternion
+
 
 class RandomDataInterface(ThreadedModuleCore):
     """
@@ -39,15 +41,16 @@ class RandomDataInterface(ThreadedModuleCore):
         else:
             k = 0
 
-        self.data_dictionary["roll"] = self.i
-        self.data_dictionary["pitch"] = 10
-        self.data_dictionary["yaw"] = self.i
+        self.data_dictionary["roll"] = math.radians(self.i)
+        self.data_dictionary["pitch"] = math.radians(10)
+        self.data_dictionary["yaw"] = math.radians(self.i)
         self.data_dictionary[Constants.altitude_key] = float(self.i) / 80.0 - 10
         self.data_dictionary["ground_speed"] = k
         self.data_dictionary["v_speed"] = (self.i / 15) - 10
         self.data_dictionary["acceleration"] = (self.i / 60) - 5
         self.data_dictionary["j"] = self.j
         self.data_dictionary["slowSweep"] = 1 - float(self.j) / 180.0
+        self.data_dictionary[Constants.orientation_quaternion_key] = euler_to_quaternion(self.data_dictionary['roll'], self.data_dictionary['pitch'], self.data_dictionary['yaw'])
 
         # Generate lat-lon coords
         e = math.cos(math.radians(self.j)) * r * self.t

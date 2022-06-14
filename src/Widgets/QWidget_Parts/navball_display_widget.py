@@ -69,12 +69,14 @@ class NavballDisplayWidget(QOpenGLWidget):
         self.setMask(region)
 
     def setOrientation(self, quaternion):
-        [self.roll, self.pitch, self.yaw] = quaternion_to_euler_angle(quaternion)
+        [roll, pitch, yaw] = quaternion_to_euler_angle(quaternion)
+        self.setRPY(roll, pitch, yaw)
 
     def setRPY(self, roll, pitch, yaw):
-        self.roll = roll
-        self.pitch = pitch
-        self.yaw = yaw
+        """roll, pitch, yaw in radians"""
+        self.roll = math.degrees(roll)
+        self.pitch = math.degrees(pitch)
+        self.yaw = math.degrees(yaw)
 
     def initializeGL(self):
         """Sets up environment, camera position, and lighting"""
@@ -153,6 +155,7 @@ if __name__ == "__main__":
     navball = NavballDisplayWidget()
 
     navball.yaw = -90
+    navball.pitch = 90
 
     mainWindow.setCentralWidget(navball)
     mainWindow.show()
