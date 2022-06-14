@@ -7,7 +7,7 @@ import navpy
 import numpy as np
 
 from src.constants import Constants
-from src.data_helpers import quaternion_to_euler_angle
+from src.data_helpers import quaternion_to_euler_angle, euler_to_quaternion
 from src.Modules.fcb_data_interface_core import FCBDataInterfaceCore
 
 # Internal states for the physics state machine
@@ -52,7 +52,8 @@ class FakeFlight(FCBDataInterfaceCore):
         self.last_loop_time = time.time()
         self.launch_time = 0
 
-        self.quaternion_wxyz = np.array([1, 0, 0, 0])
+        quaternion_init = euler_to_quaternion(0, math.radians(90), 0)
+        self.quaternion_wxyz = np.array(quaternion_init)
         self.filter = ahrs.filters.AngularRate()
 
     def runOnEnableAndDisable(self):
@@ -152,11 +153,12 @@ class FakeFlight(FCBDataInterfaceCore):
         packet[Constants.fcb_state_number_key] = fcb_state
 
         # janky quaternion
-        packet[Constants.rotational_velocity_z_key] = self.vertical_velocity / 10.0
-        self.quaternion_wxyz = self.filter.update(self.quaternion_wxyz, np.array([0, 0, packet[Constants.rotational_velocity_z_key]]))
+        packet[Constants.rotational_velocity_x_key] = self.vertical_velocity / 10.0
+        self.quaternion_wxyz = self.filter.update(self.quaternion_wxyz, np.array([packet[Constants.rotational_velocity_x_key], 0, 0]))
 
         packet[Constants.orientation_quaternion_key] = self.quaternion_wxyz
         rpy = quaternion_to_euler_angle(self.quaternion_wxyz)
+
         packet[Constants.roll_position_key] = rpy[0]
         packet[Constants.pitch_position_key] = rpy[1]
         packet[Constants.yaw_position_key] = rpy[2]

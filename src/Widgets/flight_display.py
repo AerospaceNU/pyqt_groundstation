@@ -17,6 +17,8 @@ from src.Widgets.QWidget_Parts import (
     v_speed_indicator_widget,
 )
 
+from src.data_helpers import get_value_from_dictionary
+
 
 class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, parent: QWidget = None, use_navball_widget=True, compass_and_text=True):
@@ -37,6 +39,9 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.addSourceKey("speed", float, Constants.ground_speed_key, default_value=0, hide_in_drop_down=True)
         self.addSourceKey("vspeed", float, Constants.vertical_speed_key, default_value=0, hide_in_drop_down=True)
         self.addSourceKey("accel", float, Constants.acceleration_key, default_value=0, hide_in_drop_down=True)
+
+        self.orientationQuaternion = None
+        self.quaternionUpdateAllowed = use_navball_widget
 
         self.SpeedTextBox = QLabel()
         self.VSpeedTextBox = QLabel()
@@ -104,6 +109,9 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         self.setMaximumHeight(self.scale * v_scale_factor + 40)
         self.setMaximumWidth(int(self.scale * 2 + 40))
 
+    def updateData(self, vehicle_data, updated_data):
+        self.orientationQuaternion = get_value_from_dictionary(vehicle_data, Constants.orientation_quaternion_key, None)
+
     def updateInFocus(self):
         roll = self.getDictValueUsingSourceKey("roll")
         pitch = self.getDictValueUsingSourceKey("pitch")
@@ -113,7 +121,11 @@ class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
         v_speed = self.getDictValueUsingSourceKey("vspeed")
         acceleration = self.getDictValueUsingSourceKey("accel") / 9.8  # m/s^2 to g
 
-        self.HUDWidget.setRPY(roll, pitch, yaw)
+        if self.quaternionUpdateAllowed and self.orientationQuaternion is not None:
+            self.HUDWidget.setOrientation(self.orientationQuaternion)
+        else:
+            self.HUDWidget.setRPY(roll, pitch, yaw)
+
         self.AltitudeWidget.setValue(altitude)
         self.SpeedWidget.setValue(ground_speed)
         self.VSpeedWidget.setValue(v_speed)
