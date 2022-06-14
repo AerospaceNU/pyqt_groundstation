@@ -68,7 +68,7 @@ class MapWidget(CustomQWidgetBase):
             menu.addAction("Enable Map Dragging", lambda enabled=True: self.map_draw_widget.setDraggingEnabled(enabled))
 
     def updateData(self, vehicle_data, updated_data):
-        heading = float(get_value_from_dictionary(vehicle_data, Constants.yaw_position_key, 0))
+        heading = math.degrees(float(get_value_from_dictionary(vehicle_data, Constants.yaw_position_key, 0)))
         gs_lat = self.getValueIfUpdatedUsingSourceKey("groundstation_lat")
         gs_lon = self.getValueIfUpdatedUsingSourceKey("groundstation_lon")
         latitude = self.getDictValueUsingSourceKey("vehicle_lat")
