@@ -4,6 +4,7 @@
 Main file to run the GUI
 """
 
+from src.Modules.prop_websocket_interface import PropWebsocketInterface
 from src.dpf_ground_station import DPFGUI
 from src.Modules.android_phone_bluetooth_interface import AndroidPhoneBluetoothInterface
 from src.Modules.desktop_simulation_interface import LocalSimulationFlightInterface
@@ -51,6 +52,7 @@ if __name__ == "__main__":
         hide_toggle=False,
     )
     GUI.addModule("Map Interface", MapInterface, enabled=True, hide_toggle=True)
+    GUI.addModule("Prop websocket thing", PropWebsocketInterface, enabled=True, hide_toggle=False)
 
     # Run GUI, and wait until its killed
     GUI.run()

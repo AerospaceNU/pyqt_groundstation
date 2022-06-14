@@ -304,6 +304,10 @@ class DPFGUI:
 
     def refreshSerialDevices(self):
         serial_ports = [comport for comport in serial.tools.list_ports.comports()]
+        class FakePort:
+            device = "localhost"
+            description = "local computer"
+        serial_ports.append(FakePort())
         self.serial_devices_menu.clear()
 
         for device in self.serial_devices:
