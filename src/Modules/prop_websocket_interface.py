@@ -1,5 +1,6 @@
 import time
 from src.Modules.data_interface_core import ThreadedModuleCore
+from src.constants import Constants
 import websockets, asyncio, json
 
 class PropWebsocketInterface(ThreadedModuleCore):
@@ -42,5 +43,12 @@ class PropWebsocketInterface(ThreadedModuleCore):
                     data_str = await websocket.recv()
                     parsed = json.loads(data_str)
                     print(parsed)
+
+                    self.data_dictionary[Constants.raw_message_data_key] = {
+                        "Prop data": 
+                            [[key, str(parsed["data"][key])] for key in parsed["data"]]
+                        
+                    }
+
         except Exception as e:
             print(e)
