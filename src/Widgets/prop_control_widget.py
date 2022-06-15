@@ -68,6 +68,7 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         self.setBatchOpts()
         self.mode_switch[1].currentTextChanged.connect(self.setTestOpts)
         self.setTestOpts()
+        self.mode_pushbutton[2].clicked.connect(self.setState)
 
 
         for i in range(len(propellant_types)):
@@ -108,8 +109,16 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         self.mode_switch[2].clear()
         self.mode_switch[2].addItems(self.test_map_dict[batchkey][testkey]) # Adds the actual states
 
+    def setState(self):
+        payload = {
+            "command": "SET_STATE",
+            "newState": self.mode_switch[2].currentText()
+        }
+        self.callPropCommand(json.dumps(payload))
+
     def updateData(self, vehicle_data, updated_data):
         pass
 
     def callPropCommand(self, command):
+        print(f"sending {command} to prop")
         self.callbackEvents.append([Constants.prop_command_key, command])
