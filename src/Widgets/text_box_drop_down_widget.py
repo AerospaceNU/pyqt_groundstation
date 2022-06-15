@@ -25,7 +25,7 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
         self.xBuffer = 0
         self.yBuffer = 0
         self.colorString = ""
-        self.autoSize = True
+        self.autoSize = auto_size
 
         self.source = Constants.raw_message_data_key
 
@@ -63,6 +63,7 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
         out_string = out_string[:-1]  # Remove last character
 
         self.textBoxWidget.setText(out_string)
+
         if self.autoSize:
             self.adjustSize()
 

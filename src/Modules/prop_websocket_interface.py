@@ -74,8 +74,12 @@ class PropWebsocketInterface(ThreadedModuleCore):
         try:
             if self.serial_port == "":
                 return
+
+            self.logToConsole("Attempting to connect to prop stand at {}".format(self.serial_port), 1)
             async with websockets.connect(self.serial_port) as websocket:
                 connected = True
+                self.logToConsole("Got connection to prop stand at {}".format(self.serial_port), 1)
+
                 while connected:
                     try:
                         data_str = await websocket.recv()

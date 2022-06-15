@@ -2,7 +2,7 @@
 Tab that has all the prop stuff
 
 """
-from PyQt5.QtWidgets import QGridLayout
+from PyQt5.QtWidgets import QGridLayout, QSizePolicy
 
 from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets.simple_console_widget import SimpleConsoleWidget
@@ -19,15 +19,16 @@ class PropViewTab(TabCommon):
         self.setLayout(layout)
 
         prop_control_widget = self.addWidget(PropControlWidget())
+        prop_graphs = self.addWidget(PropStandGraphs())
+        text_box_widget = self.addWidget(TextBoxDropDownWidget(auto_size=False))
+        console = self.addWidget(SimpleConsoleWidget())
+
+        prop_graphs.layout().setContentsMargins(0, 0, 0, 0)
+        text_box_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        console.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         layout.addWidget(prop_control_widget, 0, 0, 1, 2)
         layout.addWidget(self.addWidget(AnnunciatorPanel()), 1, 0, 1, 1)
-        layout.addWidget(self.addWidget(TextBoxDropDownWidget(auto_size=False)), 1, 1, 1, 1)
-        layout.addWidget(self.addWidget(SimpleConsoleWidget()), 2, 0, 1, 2)
-
-        graph_layout = QGridLayout()
-        graph_layout.addWidget(self.addWidget(PropStandGraphs()), 1, 1)
-
-        graph_layout.setContentsMargins(0, 0, 0, 0)
-
-        layout.addLayout(graph_layout, 0, 3, 3, 1)
+        layout.addWidget(text_box_widget, 1, 1, 1, 1)
+        layout.addWidget(console, 2, 0, 1, 2)
+        layout.addWidget(prop_graphs, 0, 3, 3, 1)
