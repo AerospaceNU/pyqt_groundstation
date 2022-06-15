@@ -106,8 +106,9 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
     def setTestOpts(self):
         batchkey = self.mode_switch[0].currentText()
         testkey = self.mode_switch[1].currentText()
-        self.mode_switch[2].clear()
-        self.mode_switch[2].addItems(self.test_map_dict[batchkey][testkey]) # Adds the actual states
+        if len(testkey) > 0 and len(batchkey) > 0:
+            self.mode_switch[2].clear()
+            self.mode_switch[2].addItems(self.test_map_dict[batchkey][testkey]) # Adds the actual states
 
     def setState(self):
         payload = {
