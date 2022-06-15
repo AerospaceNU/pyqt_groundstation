@@ -22,7 +22,30 @@ class PropWebsocketInterface(ThreadedModuleCore):
         self.loop.run_until_complete(self.mainLoop())
 
     def parseData(self, data):
-        self.data_dictionary[Constants.raw_message_data_key] = {"Prop data": [[key, str(data["data"][key])] for key in data["data"]]}
+        sensor_data = data['data']
+
+        drop_down_data = {}
+
+        sensor_types = list(sensor_data.keys())
+        for sensor_type in sensor_types:
+            sensor_names = list(sensor_data[sensor_type].keys())
+            drop_down_data[sensor_type] = []
+
+            for sensor_name in sensor_names:
+                sensor_values = sensor_data[sensor_type][sensor_name]
+
+                if "sensorReading" in sensor_values:
+                    sensor_reading = sensor_values["sensorReading"]
+                elif "valveState" in sensor_values:
+                    sensor_reading = sensor_values["valveState"]
+                else:
+                    sensor_reading = "NO DATA"
+
+                sensor_key = "{0}::{1}".format(sensor_type, sensor_name)
+                self.data_dictionary[sensor_key] = sensor_reading
+                drop_down_data[sensor_type].append([sensor_key, sensor_reading])
+
+        self.data_dictionary[Constants.raw_message_data_key] = drop_down_data.copy()
 
     async def mainLoop(self):
         try:
@@ -34,9 +57,11 @@ class PropWebsocketInterface(ThreadedModuleCore):
                     try:
                         data_str = await websocket.recv()
                         parsed = json.loads(data_str)
-                        print(parsed)
 
                         self.parseData(parsed)
+
+                        if not self.should_be_running:
+                            connected = False
                     except Exception as e:
                         connected = False
                         self.logToConsole("Lost connection to prop stand: {}".format(e), 2)
