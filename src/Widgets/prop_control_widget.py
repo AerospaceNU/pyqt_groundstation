@@ -41,9 +41,9 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         send_override.setDisabled(True)
         layout.addWidget(send_override, 1, 2, 1, 1, QtCore.Qt.AlignCenter)
         self.send_override = send_override
+        self.override_checkbox = override_checkbox
         override_checkbox.clicked.connect(self.overrideClicked)
         override_checkbox.setChecked(False)
-        self.override_checkbox = override_checkbox
         
         self.mode_switch: typing.List[QComboBox] = []
         self.mode_pushbutton: typing.List[QPushButton] = []
@@ -70,7 +70,7 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         self.setTestOpts()
         self.mode_pushbutton[2].clicked.connect(self.setState)
 
-
+        self.prop_comboboxes = []
         for i in range(len(propellant_types)):
             propellant_name = propellant_types[i]
             for j in range(len(valve_types)):
@@ -79,6 +79,7 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
                 valve_name_widget = QLabel()
                 valve_control_widget = QComboBox()
                 valve_state_widget = QLabel()
+                self.prop_comboboxes.append(valve_control_widget)
 
                 valve_name_widget.setText("{0} {1}".format(propellant_name, valve_name))
                 valve_control_widget.addItems(valve_options)
@@ -91,12 +92,18 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
                 layout.addWidget(valve_control_widget, row, column + 1)
                 layout.addWidget(valve_state_widget, row, column + 2)
 
+        # Last so we can set state
+        self.overrideClicked()
+
     def overrideClicked(self):
         override = self.override_checkbox.isChecked()
         self.send_override.setDisabled(not override)
         for i in range(len(self.mode_switch)):
             self.mode_switch[i].setDisabled(override)
             self.mode_pushbutton[i].setDisabled(override)
+
+        for combo in self.prop_comboboxes:
+            combo.setDisabled(not override)
 
     def setBatchOpts(self):
         key = self.mode_switch[0].currentText()
