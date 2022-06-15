@@ -41,7 +41,7 @@ class PropWebsocketInterface(ThreadedModuleCore):
                 else:
                     sensor_reading = "NO DATA"
 
-                sensor_key = "{0}::{1}".format(sensor_type, sensor_name)
+                sensor_key = sensor_name
                 self.data_dictionary[sensor_key] = sensor_reading
                 drop_down_data[sensor_type].append([sensor_key, sensor_reading])
 
