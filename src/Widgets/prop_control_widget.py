@@ -11,6 +11,8 @@ import PyQt5.QtCore as QtCore
 from src.constants import Constants
 from src.Widgets import custom_q_widget_base
 
+from src.data_helpers import get_value_from_dictionary
+
 
 class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, parent: QWidget = None):
@@ -70,16 +72,20 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         self.mode_pushbutton[2].clicked.connect(self.setState)
 
         self.prop_comboboxes = {}
+        self.valve_state_boxes = {}
+
         for i in range(len(propellant_types)):
             propellant_name = propellant_types[i]
             for j in range(len(valve_types)):
-                valve_name = valve_types[j]
-                valve_name_text = "{0} {1}".format(propellant_name, valve_name)
+                valve_type = valve_types[j]
+                valve_name_text = "{0} {1}".format(propellant_name, valve_type)
+                valve_name = propellant_name.lower()[0:3] + valve_type
 
                 valve_name_widget = QLabel()
                 valve_control_widget = QComboBox()
                 valve_state_widget = QLabel()
-                self.prop_comboboxes[valve_name_text] = valve_control_widget
+                self.prop_comboboxes[valve_name] = valve_control_widget
+                self.valve_state_boxes[valve_name] = valve_state_widget
 
                 valve_name_widget.setText(valve_name_text)
                 valve_control_widget.addItems(valve_options)
@@ -121,8 +127,7 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         active_elements = {}
 
         for box in self.prop_comboboxes:
-            valve_name = box[0:3].lower() + box.split(" ")[1]  # Its kinda hacky
-            active_elements[valve_name] = self.prop_comboboxes[box].currentText().upper()
+            active_elements[box] = self.prop_comboboxes[box].currentText().upper()
 
         payload = {"command": "SET_ACTIVE_ELEMENTS", "activeElements": active_elements}
         self.callPropCommand(json.dumps(payload))
@@ -132,7 +137,9 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         self.callPropCommand(json.dumps(payload))
 
     def updateData(self, vehicle_data, updated_data):
-        pass
+        for valve_name in self.valve_state_boxes:
+            valve_state = get_value_from_dictionary(vehicle_data, valve_name, "UNKNOWN")
+            self.valve_state_boxes[valve_name].setText(valve_state)
 
     def callPropCommand(self, command):
         self.callbackEvents.append([Constants.prop_command_key, command])
