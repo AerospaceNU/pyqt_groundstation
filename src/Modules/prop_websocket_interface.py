@@ -13,7 +13,14 @@ class PropWebsocketInterface(ThreadedModuleCore):
         self.nextCheckTime = time.time()
         self.loop = asyncio.new_event_loop()
 
+        self.callbacks_to_add.append([Constants.prop_command_key, self.propCommandCallback])
+
+        self.command_queue = []
+
         self.primary_module = True
+
+    def propCommandCallback(self, command):
+        self.command_queue.append(command)
 
     def changeWsServer(self, name):
         self.serial_port = f"ws://{name}:9002"
@@ -22,30 +29,46 @@ class PropWebsocketInterface(ThreadedModuleCore):
         self.loop.run_until_complete(self.mainLoop())
 
     def parseData(self, data):
-        sensor_data = data['data']
+        if 'data' in data:
+            sensor_data = data['data']
 
-        drop_down_data = {}
+            drop_down_data = {}
 
-        sensor_types = list(sensor_data.keys())
-        for sensor_type in sensor_types:
-            sensor_names = list(sensor_data[sensor_type].keys())
-            drop_down_data[sensor_type] = []
+            sensor_types = list(sensor_data.keys())
+            for sensor_type in sensor_types:
+                sensor_names = list(sensor_data[sensor_type].keys())
+                drop_down_data[sensor_type] = []
 
-            for sensor_name in sensor_names:
-                sensor_values = sensor_data[sensor_type][sensor_name]
+                for sensor_name in sensor_names:
+                    sensor_values = sensor_data[sensor_type][sensor_name]
 
-                if "sensorReading" in sensor_values:
-                    sensor_reading = sensor_values["sensorReading"]
-                elif "valveState" in sensor_values:
-                    sensor_reading = sensor_values["valveState"]
-                else:
-                    sensor_reading = "NO DATA"
+                    if "sensorReading" in sensor_values:
+                        sensor_reading = sensor_values["sensorReading"]
+                    elif "valveState" in sensor_values:
+                        sensor_reading = sensor_values["valveState"]
+                    else:
+                        sensor_reading = "NO DATA"
 
-                sensor_key = sensor_name
-                self.data_dictionary[sensor_key] = sensor_reading
-                drop_down_data[sensor_type].append([sensor_key, sensor_reading])
+                    sensor_key = sensor_name
+                    self.data_dictionary[sensor_key] = sensor_reading
+                    drop_down_data[sensor_type].append([sensor_key, sensor_reading])
 
-        self.data_dictionary[Constants.raw_message_data_key] = drop_down_data.copy()
+            self.data_dictionary[Constants.raw_message_data_key] = drop_down_data.copy()
+        elif 'command' in data:
+            command = data['command']
+
+            if command == 'STATE_TRANSITION':
+                transition_data = data['transition']
+
+                new_state = transition_data['newState']
+                old_state = transition_data['oldState']
+
+                self.logToConsole("Test stand state transition: {0} -> {1}".format(old_state, new_state), 1)
+            else:
+                self.logToConsole("Unrecognized command message from stand: {}".format(data), 1)
+        else:
+            self.logToConsole("Unrecognized message from stand: {}".format(data), 1)
+            return
 
     async def mainLoop(self):
         try:
@@ -59,6 +82,13 @@ class PropWebsocketInterface(ThreadedModuleCore):
                         parsed = json.loads(data_str)
 
                         self.parseData(parsed)
+
+                        self.logToConsoleThrottle("Still getting data from prop test stand", 0, 5)
+
+                        if len(self.command_queue) > 0:
+                            data_to_send = self.command_queue.pop(0)
+                            self.logToConsole("Sending command to test stand:\n{}".format(data_to_send), 1)
+                            await websocket.send(data_to_send)
 
                         if not self.should_be_running:
                             connected = False

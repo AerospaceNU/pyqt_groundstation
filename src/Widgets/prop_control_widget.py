@@ -23,7 +23,6 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         mode_options = ["Test", "Batch", "State"]
         self.test_map_dict: dict = json.load(open("src/Assets/prop_states.json"))
 
-
         self.widget_list = []
 
         layout = QGridLayout()
@@ -34,17 +33,17 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         title_widget.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(title_widget, 0, 0, 1, 6)
 
-
         override_checkbox = QCheckBox(text="Override valves?")
         layout.addWidget(override_checkbox, 1, 0, 1, 2, QtCore.Qt.AlignCenter)
         send_override = QPushButton(text="Set active elements")
         send_override.setDisabled(True)
+        send_override.clicked.connect(self.sendOverrideClicked)
         layout.addWidget(send_override, 1, 2, 1, 1, QtCore.Qt.AlignCenter)
         self.send_override = send_override
         self.override_checkbox = override_checkbox
         override_checkbox.clicked.connect(self.overrideClicked)
         override_checkbox.setChecked(False)
-        
+
         self.mode_switch: typing.List[QComboBox] = []
         self.mode_pushbutton: typing.List[QPushButton] = []
         for i in range(len(mode_options)):
@@ -70,18 +69,19 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         self.setTestOpts()
         self.mode_pushbutton[2].clicked.connect(self.setState)
 
-        self.prop_comboboxes = []
+        self.prop_comboboxes = {}
         for i in range(len(propellant_types)):
             propellant_name = propellant_types[i]
             for j in range(len(valve_types)):
                 valve_name = valve_types[j]
+                valve_name_text = "{0} {1}".format(propellant_name, valve_name)
 
                 valve_name_widget = QLabel()
                 valve_control_widget = QComboBox()
                 valve_state_widget = QLabel()
-                self.prop_comboboxes.append(valve_control_widget)
+                self.prop_comboboxes[valve_name_text] = valve_control_widget
 
-                valve_name_widget.setText("{0} {1}".format(propellant_name, valve_name))
+                valve_name_widget.setText(valve_name_text)
                 valve_control_widget.addItems(valve_options)
                 valve_state_widget.setText("Unknown")
 
@@ -103,30 +103,36 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
             self.mode_pushbutton[i].setDisabled(override)
 
         for combo in self.prop_comboboxes:
-            combo.setDisabled(not override)
+            self.prop_comboboxes[combo].setDisabled(not override)
 
     def setBatchOpts(self):
         key = self.mode_switch[0].currentText()
         self.mode_switch[1].clear()
-        self.mode_switch[1].addItems(self.test_map_dict[key]) # Adds "KERO_FILL", "PURGE", etc
+        self.mode_switch[1].addItems(self.test_map_dict[key])  # Adds "KERO_FILL", "PURGE", etc
 
     def setTestOpts(self):
-        batchkey = self.mode_switch[0].currentText()
-        testkey = self.mode_switch[1].currentText()
-        if len(testkey) > 0 and len(batchkey) > 0:
+        batch_key = self.mode_switch[0].currentText()
+        test_key = self.mode_switch[1].currentText()
+        if len(test_key) > 0 and len(batch_key) > 0:
             self.mode_switch[2].clear()
-            self.mode_switch[2].addItems(self.test_map_dict[batchkey][testkey]) # Adds the actual states
+            self.mode_switch[2].addItems(self.test_map_dict[batch_key][test_key])  # Adds the actual states
+
+    def sendOverrideClicked(self):
+        active_elements = {}
+
+        for box in self.prop_comboboxes:
+            valve_name = box[0:3].lower() + box.split(" ")[1]  # Its kinda hacky
+            active_elements[valve_name] = self.prop_comboboxes[box].currentText().upper()
+
+        payload = {"command": "SET_ACTIVE_ELEMENTS", "activeElements": active_elements}
+        self.callPropCommand(json.dumps(payload))
 
     def setState(self):
-        payload = {
-            "command": "SET_STATE",
-            "newState": self.mode_switch[2].currentText()
-        }
+        payload = {"command": "SET_STATE", "newState": self.mode_switch[2].currentText()}
         self.callPropCommand(json.dumps(payload))
 
     def updateData(self, vehicle_data, updated_data):
         pass
 
     def callPropCommand(self, command):
-        print(f"sending {command} to prop")
         self.callbackEvents.append([Constants.prop_command_key, command])
