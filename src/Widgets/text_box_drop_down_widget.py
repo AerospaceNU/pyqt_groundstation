@@ -10,7 +10,7 @@ from src.Widgets import custom_q_widget_base
 
 
 class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
-    def __init__(self, parent: QWidget = None, auto_size=True):
+    def __init__(self, parent: QWidget = None, auto_size=True, round_to_decimals=3):
         super().__init__(parent)
 
         self.textBoxWidget = QLabel()
@@ -26,6 +26,7 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
         self.yBuffer = 0
         self.colorString = ""
         self.autoSize = auto_size
+        self.round_to_decimals = round_to_decimals
 
         self.source = Constants.raw_message_data_key
 
@@ -56,7 +57,15 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
 
         for line in data_to_print:
             spaces = " " * (longest_line - len(line[0]) + 2)  # Add two extra spaces to everything
-            new_line = "{0}{2}{1}\n".format(line[0], str(line[1]).lstrip(), spaces)
+
+            # Try to round the value if we can
+            value = str(line[1]).lstrip()
+            try:
+                value = str(round(float(value), self.round_to_decimals))
+            except:
+                pass
+
+            new_line = "{0}{2}{1}\n".format(line[0], value, spaces)
 
             out_string = out_string + new_line
 

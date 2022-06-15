@@ -20,7 +20,7 @@ class PropViewTab(TabCommon):
 
         prop_control_widget = self.addWidget(PropControlWidget())
         prop_graphs = self.addWidget(PropStandGraphs())
-        text_box_widget = self.addWidget(TextBoxDropDownWidget(auto_size=False))
+        text_box_widget = self.addWidget(TextBoxDropDownWidget(auto_size=False, round_to_decimals=3))
         console = self.addWidget(SimpleConsoleWidget())
 
         prop_graphs.layout().setContentsMargins(0, 0, 0, 0)
