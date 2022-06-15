@@ -15,12 +15,16 @@ class PropWebsocketInterface(ThreadedModuleCore):
 
         self.callbacks_to_add.append([Constants.prop_command_key, self.propCommandCallback])
 
+        self.connected = False
         self.command_queue = []
 
         self.primary_module = True
 
     def propCommandCallback(self, command):
-        self.command_queue.append(command)
+        if self.connected:
+            self.command_queue.append(command)
+        else:
+            self.logToConsole("Not connected to test stand, can't send command", 2, override_disabled_check=True)
 
     def changeWsServer(self, name):
         self.serial_port = f"ws://{name}:9002"
@@ -77,10 +81,10 @@ class PropWebsocketInterface(ThreadedModuleCore):
 
             self.logToConsole("Attempting to connect to prop stand at {}".format(self.serial_port), 1)
             async with websockets.connect(self.serial_port) as websocket:
-                connected = True
+                self.connected = True
                 self.logToConsole("Got connection to prop stand at {}".format(self.serial_port), 1)
 
-                while connected:
+                while self.connected:
                     try:
                         data_str = await websocket.recv()
                         parsed = json.loads(data_str)
@@ -95,9 +99,9 @@ class PropWebsocketInterface(ThreadedModuleCore):
                             await websocket.send(data_to_send)
 
                         if not self.should_be_running:
-                            connected = False
+                            self.connected = False
                     except Exception as e:
-                        connected = False
+                        self.connected = False
                         self.logToConsole("Lost connection to prop stand: {}".format(e), 2)
 
         except Exception as e:
