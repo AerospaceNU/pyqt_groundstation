@@ -41,6 +41,7 @@ from src.Widgets import (
     text_box_drop_down_widget,
     vehicle_status_widget,
     video_widget,
+    prop_control_widget,
 )
 from src.Widgets.database_view import DatabaseView
 from src.Widgets.MainTabs.diagnostic_tab import DiagnosticTab
@@ -61,6 +62,7 @@ def serial_port_callback_name(device):
 
 
 CUSTOM_THEMES = list(map(lambda it: os.path.join("themes", it), os.listdir("themes")))
+
 
 # @dataclass
 # class PlaybackSource:
@@ -142,6 +144,7 @@ class DPFGUI:
             "Database View": DatabaseView,
             "Module Configuration": module_configuration.ModuleConfiguration,
             "Map Download": map_download_widget.MapDownload,
+            "Prop System Control": prop_control_widget.PropControlWidget,
         }
 
         # List of tabs that can be dynamically created
@@ -304,9 +307,12 @@ class DPFGUI:
 
     def refreshSerialDevices(self):
         serial_ports = [comport for comport in serial.tools.list_ports.comports()]
+
+        # TODO: RE-work serial ports to also do network stuff
         class FakePort:
             device = "localhost"
             description = "local computer"
+
         serial_ports.append(FakePort())
         self.serial_devices_menu.clear()
 
@@ -339,10 +345,6 @@ class DPFGUI:
 
                 # Tell the module we clicked on its specific run
                 interface_object.setSpecificRunSelected(run_name)
-
-                
-
-        
 
     def updateGUI(self):
         """
