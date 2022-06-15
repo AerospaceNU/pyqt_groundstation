@@ -30,6 +30,7 @@ if __name__ == "__main__":
     GUI.addTabByTabType("Graph", "Graphs")
     GUI.addTabByTabType("Offload", "Offload")
     GUI.addTabByTabType("Model Viewer", "AeroNU: The 3D Experience")
+    GUI.addTabByTabType("Prop Control", "Prop Control")
 
     # Load in modules
     GUI.addModule("Serial Ground Station", GroundStationDataInterface, enabled=True)

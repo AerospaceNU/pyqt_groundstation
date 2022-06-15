@@ -51,6 +51,7 @@ from src.Widgets.MainTabs.offload_tab import OffloadTab
 from src.Widgets.MainTabs.rocket_primary_tab import RocketPrimaryTab
 from src.Widgets.MainTabs.settings_tab import SettingsTab
 from src.Widgets.MainTabs.side_tab_holder import SideTabHolder
+from src.Widgets.MainTabs.prop_view_tab import PropViewTab
 
 if sys.platform == "linux":  # I don't even know anymore
     if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:
@@ -156,6 +157,7 @@ class DPFGUI:
             "Empty": TabCommon,
             "Model Viewer": gl_display_widget.ThreeDDisplay,
             "Offload": OffloadTab,
+            "Prop Control": PropViewTab,
         }
 
         # Set some object names for all the core stuff
@@ -310,10 +312,11 @@ class DPFGUI:
 
         # TODO: RE-work serial ports to also do network stuff
         class FakePort:
-            device = "localhost"
-            description = "local computer"
+            def __init__(self, device_name, description):
+                self.device = device_name
+                self.description = description
 
-        serial_ports.append(FakePort())
+        serial_ports.append(FakePort('localhost', 'local computer'))
         self.serial_devices_menu.clear()
 
         for device in self.serial_devices:
@@ -472,7 +475,7 @@ class DPFGUI:
 
         self.tabObjects.append(new_tab_object)
         self.tabNames.append(vehicle_name)
-        new_tab_object.setObjectName("{0}_tab_{1}".format(vehicle_name, len(self.tabObjects)))
+        new_tab_object.setObjectName("{0}_tab_{1}".format(vehicle_name, len(self.tabObjects)).replace(" ", "_"))
         new_tab_object.vehicleName = vehicle_name
 
         new_tab_object.updateAfterThemeSet()
@@ -481,7 +484,7 @@ class DPFGUI:
         widget_object = self.createWidgetFromName(name, in_new_window=True)
 
         if widget_object is not None:
-            object_name = "{0}_{1}_isolated".format(name, len(self.tabObjects))
+            object_name = "{0}_{1}_isolated".format(name, len(self.tabObjects)).replace(" ", "_")
             widget_object.show()
 
             self.tabObjects.append(widget_object)

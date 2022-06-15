@@ -6,6 +6,7 @@ from PyQt5 import QtGui
 
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
+
 class TabCommon(CustomQWidgetBase):
     def __init__(self, parent=None):
         super().__init__(parent)

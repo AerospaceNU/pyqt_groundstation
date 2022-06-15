@@ -10,7 +10,7 @@ from src.Widgets import custom_q_widget_base
 
 
 class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
-    def __init__(self, parent: QWidget = None):
+    def __init__(self, parent: QWidget = None, auto_size=True):
         super().__init__(parent)
 
         self.textBoxWidget = QLabel()
@@ -25,6 +25,7 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
         self.xBuffer = 0
         self.yBuffer = 0
         self.colorString = ""
+        self.autoSize = True
 
         self.source = Constants.raw_message_data_key
 
@@ -62,7 +63,8 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
         out_string = out_string[:-1]  # Remove last character
 
         self.textBoxWidget.setText(out_string)
-        self.adjustSize()
+        if self.autoSize:
+            self.adjustSize()
 
     def setMenuItems(self, menu_item_list):
         if len(menu_item_list) > 0:

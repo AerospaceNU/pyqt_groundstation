@@ -1,0 +1,10 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<resources>
+  <color name="primaryColor">#FA9600</color> <!-- Header text -->
+  <color name="primaryLightColor">#0000FF</color> <!-- Highlight -->
+  <color name="secondaryColor">#96FF00</color> <!-- Title bar -->
+  <color name="secondaryLightColor">#96FF00</color> <!-- Border -->
+  <color name="secondaryDarkColor">#FFFF00</color> <!-- Background -->
+  <color name="primaryTextColor">#C8C800</color> <!-- Highlighted text color -->
+  <color name="secondaryTextColor">#FA9600</color> <!-- Text color -->
+</resources>
