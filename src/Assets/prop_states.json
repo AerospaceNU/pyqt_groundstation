@@ -1,0 +1,114 @@
+{
+    "Water flow": {
+        "KERO_FILL": [
+            "KER_FILL",
+            "KER_POST_FILL"
+        ],
+        "LOX_FILL": [
+            "LOX_FILL",
+            "LOX_POST_FILL"
+        ],
+        "LOX_PRESSFLOW": [
+            "ONLINE_SAFE",
+            "LOX_READY_TO_PRESSURIZE",
+            "LOX_PRESSURIZING",
+            "LOX_FLOW",
+            "LOX_READY_TO_PRESSURIZE",
+            "ONLINE_SAFE"
+        ],
+        "KERO_PRESSFLOW": [
+            "ONLINE_SAFE",
+            "KER_READY_TO_PRESSURIZE",
+            "KER_PRESSURIZING",
+            "KER_FLOW",
+            "KER_READY_TO_PRESSURIZE",
+            "ONLINE_SAFE"
+        ],
+        "PURGE": [
+            "ONLINE_SAFE",
+            "LOX_ENGINE_PURGE",
+            "KER_ENGINE_PURGE",
+            "ALL_ENGINE_PURGE",
+            "LOX_TANK_PURGE",
+            "KER_TANK_PURGE",
+            "ALL_TANK_PURGE"
+        ],
+        "ALL_PRESSFLOW": [
+            "ONLINE_SAFE",
+            "ALL_READY_TO_PRESSURIZE",
+            "ALL_PRESSURIZING",
+            "ALL_FLOW",
+            "ALL_READY_TO_PRESSURIZE",
+            "ONLINE_SAFE"
+        ]
+    },
+    "LN2": {
+        "LN2_FILL_LIBRARY": [
+            "LOX_ALL_OPEN",
+            "LOX_FILL_VENTx2",
+            "LOX_FILL_VENTx1",
+            "LOX_ALL_CLOSED",
+            "LOX_FLOW_PRESSURIZED",
+            "LOX_FLOW_UNPRESSURIZED",
+            "LOX_ALL_VENTS"
+        ],
+        "LN2_FILL_FLOW_FIRST": [
+            "LOX_ALL_OPEN",
+            "LOX_FILL_VENTx2",
+            "LOX_FILL_VENTx1",
+            "LOX_ALL_CLOSED",
+            "LOX_FLOW_PRESSURIZED",
+            "LOX_ALL_OPEN"
+        ],
+        "LN2_FILL_TANK_FIRST": [
+            "LOX_FILL_VENTx2",
+            "LOX_FILL_VENTx1",
+            "LOX_ALL_CLOSED",
+            "LOX_FLOW_PRESSURIZED",
+            "LOX_ALL_OPEN"
+        ],
+        "LN2_FILL_PURGES": [
+            "LOX_ALL_VENTS",
+            "LOX_ALL_OPEN",
+            "LOX_FLOW_PRESSURIZED",
+            "LOX_FLOW_UNPRESSURIZED"
+        ]
+    },
+    "Cold flow": {
+        "KERO_FILL": [
+            "KER_FILL",
+            "KER_POST_FILL"
+        ],
+        "LOX_FILL": [
+            "LOX_FILL",
+            "LOX_POST_FILL"
+        ],
+        "LOX_PRESSFLOW": [
+            "ONLINE_SAFE",
+            "LOX_READY_TO_PRESSURIZE",
+            "LOX_PRESSURIZING",
+            "LOX_FLOW",
+            "LOX_PRESSURIZING",
+            "LOX_READY_TO_PRESSURIZE",
+            "ONLINE_SAFE"
+        ],
+        "KERO_PRESSFLOW": [
+            "ONLINE_SAFE",
+            "KER_READY_TO_PRESSURIZE",
+            "KER_PRESSURIZING",
+            "KER_FLOW",
+            "KER_PRESSURIZING",
+            "ONLINE_SAFE"
+        ],
+        "PURGE": [
+            "ONLINE_SAFE",
+            "LOX_PURGE",
+            "KER_PURGE"
+        ],
+        "FULL_PURGE": [
+            "ONLINE_SAFE",
+            "LOX_FULL_PURGE",
+            "KER_FULL_PURGE"
+        ]
+    }
+}
