@@ -44,7 +44,7 @@ if __name__ == "__main__":
     GUI.addModule("Fake Flight", FakeFlight, enabled=False)
     GUI.addModule("Random Data for Debugging", RandomDataInterface, enabled=False, hide_toggle=False)
     GUI.addModule("Map Interface", MapInterface, enabled=True, hide_toggle=True)
-    GUI.addModule("Prop websocket thing", PropWebsocketInterface, enabled=True, hide_toggle=False)
+    GUI.addModule("Prop websocket thing", PropWebsocketInterface, enabled=False, hide_toggle=False)
 
     # Run GUI, and wait until its killed
     GUI.run()
