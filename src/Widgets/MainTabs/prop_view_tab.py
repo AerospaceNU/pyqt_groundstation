@@ -25,6 +25,8 @@ class PropViewTab(TabCommon):
 
         prop_graphs.layout().setContentsMargins(0, 0, 0, 0)
         text_box_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        text_box_widget.setMaximumHeight(300)
+        text_box_widget.setMaximumWidth(400)
         console.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         layout.addWidget(prop_control_widget, 0, 0, 1, 2)
