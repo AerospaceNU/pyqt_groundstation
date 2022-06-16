@@ -62,6 +62,8 @@ class GraphWidget(CustomQWidgetBase):
 
         self.updatePlot()
 
+        self.plot_line_index = 0
+
         layout = QGridLayout()
         layout.addWidget(self.graphWidget)
         self.setLayout(layout)
@@ -125,7 +127,24 @@ class GraphWidget(CustomQWidgetBase):
 
     def updateInFocus(self):
         """Only re-draw graph if we're looking at it"""
-        self.updatePlot()
+        self.updatePlotStaggered()
+
+    def updatePlotStaggered(self):
+        """Updates one line at a time"""
+        keys = list(self.data_dictionary.keys())
+        key = keys[self.plot_line_index]
+        num_keys = len(keys)
+
+        if time.time() - self.last_update_time < (self.update_interval/float(num_keys)):  # Don't re-draw graphs to quickly
+            return
+        self.last_update_time = time.time()
+
+        self.updatePlotLine(key)
+
+        if self.plot_line_index < num_keys - 1:
+            self.plot_line_index += 1
+        else:
+            self.plot_line_index = 0
 
     def updatePlot(self):
         """Actually updates lines on plot"""
@@ -135,30 +154,33 @@ class GraphWidget(CustomQWidgetBase):
         self.last_update_time = time.time()
 
         for data_name in self.data_dictionary:
-            data_label = self.sourceDictionary[data_name].key_name
-            if data_name not in self.plot_line_dictionary:
-                self.plot_line_dictionary[data_name] = self.graphWidget.plot(self.time_dictionary[data_name], self.data_dictionary[data_name], name=data_label, pen=get_pen_from_line_number(len(self.plot_line_dictionary)))
-            if self.plot_line_dictionary[data_name].name() != data_label:
-                index = list(self.plot_line_dictionary.keys()).index(data_name)  # The index of the line that we're working on
+            self.updatePlotLine(data_name)
 
-                self.plot_line_dictionary[data_name].opts["name"] = data_label  # Force change theform name of the line
-                self.graphWidget.getPlotItem().legend.items[index][1].setText(data_label)  # Change the name of the legend item
-                self.data_dictionary[data_name] = [float("nan")]  # Reset the data history
-                self.time_dictionary[data_name] = [0]
+    def updatePlotLine(self, data_name):
+        data_label = self.sourceDictionary[data_name].key_name
+        if data_name not in self.plot_line_dictionary:
+            self.plot_line_dictionary[data_name] = self.graphWidget.plot(self.time_dictionary[data_name], self.data_dictionary[data_name], name=data_label, pen=get_pen_from_line_number(len(self.plot_line_dictionary)))
+        if self.plot_line_dictionary[data_name].name() != data_label:
+            index = list(self.plot_line_dictionary.keys()).index(data_name)  # The index of the line that we're working on
 
-            # Connect=finite allows NaN values to be skipped
-            if self.min_x is None and self.max_x is None:  # No restrictions
-                self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name], self.data_dictionary[data_name], connect="finite")
-            elif self.min_x is None:  # No minimum, truncate maximum
-                max_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.max_x)
-                self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][0:max_index], self.data_dictionary[data_name][0:max_index], connect="finite")
-            elif self.max_x is None:  # No maximum, truncate minimum
-                min_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.min_x)
-                self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][min_index:], self.data_dictionary[data_name][min_index:], connect="finite")
-            else:  # Truncate both max and min
-                max_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.max_x)
-                min_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.min_x)
-                self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][min_index:max_index], self.data_dictionary[data_name][min_index:max_index], connect="finite")
+            self.plot_line_dictionary[data_name].opts["name"] = data_label  # Force change theform name of the line
+            self.graphWidget.getPlotItem().legend.items[index][1].setText(data_label)  # Change the name of the legend item
+            self.data_dictionary[data_name] = [float("nan")]  # Reset the data history
+            self.time_dictionary[data_name] = [0]
+
+        # Connect=finite allows NaN values to be skipped
+        if self.min_x is None and self.max_x is None:  # No restrictions
+            self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name], self.data_dictionary[data_name], connect="finite")
+        elif self.min_x is None:  # No minimum, truncate maximum
+            max_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.max_x)
+            self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][0:max_index], self.data_dictionary[data_name][0:max_index], connect="finite")
+        elif self.max_x is None:  # No maximum, truncate minimum
+            min_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.min_x)
+            self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][min_index:], self.data_dictionary[data_name][min_index:], connect="finite")
+        else:  # Truncate both max and min
+            max_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.max_x)
+            min_index = first_index_in_list_larger_than(self.time_dictionary[data_name], self.min_x)
+            self.plot_line_dictionary[data_name].setData(self.time_dictionary[data_name][min_index:max_index], self.data_dictionary[data_name][min_index:max_index], connect="finite")
 
     def setHistoryLength(self, history_length):
         self.max_time_to_keep = history_length
@@ -254,4 +276,3 @@ class GraphWidget(CustomQWidgetBase):
                     option_list.append(key)
 
         return option_list
-
