@@ -28,6 +28,7 @@ class GraphTabControl(custom_q_widget_base.CustomQWidgetBase):
         self.enableGraphButton.setText("Disable Graph Updating")
         self.historyLabelBox = QLabel()
         self.historyTextBox = QLineEdit()
+        self.historyTextBox.setText("50")
 
         self.rangeSlider = QRangeSlider(Qt.Horizontal)
         self.rangeSlider.setRange(0, 1000)

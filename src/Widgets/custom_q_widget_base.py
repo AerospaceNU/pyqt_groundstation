@@ -29,16 +29,12 @@ class CustomQWidgetBase(QFrame):
         super().__init__(widget)
 
         self.isInLayout = widget is None
-
+        self.isClosed = False
         self.isClicked = False
         self.draggable = True
         self.activeOffset = [0, 0]
 
         self.callbackEvents = []
-        self.tabName = ""
-
-        self.isClosed = False
-
         self.vehicleData = {}
         self.recordedData = {}
         self.updated_data_dictionary = {}  # Tracks which keys are new since the last GUI loop

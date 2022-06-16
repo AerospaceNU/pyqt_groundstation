@@ -77,6 +77,7 @@ class Constants:
     fcb_memory_usage = "fcb_memory"
 
     prop_battery_voltage = "prop_battery_voltage"
+    prop_command_key = "prop_command"
 
     message_age_key = "message_age"
     message_time_key = "message_time"

@@ -3,6 +3,7 @@ A rewrite of primary_tab to be more useful on a rocket
 """
 
 from PyQt5.QtWidgets import QGridLayout, QSizePolicy
+from src.Widgets.prop_control_widget import PropControlWidget
 
 from src.constants import Constants
 from src.Widgets.MainTabs.main_tab_common import TabCommon

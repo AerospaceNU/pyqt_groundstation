@@ -42,7 +42,7 @@ class SideTabWidget(QWidget):
 
     def goToTabByName(self, name):
         index = self.tab_names.index(name)
-        self.goToTabByIndex(index)
+        self.setCurrentTabIndex(index)
 
-    def goToTabByIndex(self, index):
+    def setCurrentTabIndex(self, index):
         self.stacked_widget.setCurrentIndex(index)

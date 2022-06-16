@@ -4,6 +4,7 @@
 Main file to run the GUI
 """
 
+from src.Modules.prop_websocket_interface import PropWebsocketInterface
 from src.dpf_ground_station import DPFGUI
 from src.Modules.android_phone_bluetooth_interface import AndroidPhoneBluetoothInterface
 from src.Modules.desktop_simulation_interface import LocalSimulationFlightInterface
@@ -29,6 +30,7 @@ if __name__ == "__main__":
     GUI.addTabByTabType("Graph", "Graphs")
     GUI.addTabByTabType("Offload", "Offload")
     GUI.addTabByTabType("Model Viewer", "AeroNU: The 3D Experience")
+    GUI.addTabByTabType("Prop Control", "Prop Control")
 
     # Load in modules
     GUI.addModule("Serial Ground Station", GroundStationDataInterface, enabled=True)
@@ -38,19 +40,11 @@ if __name__ == "__main__":
     GUI.addModule("Text To Speech", TextToSpeech, enabled=False)
     GUI.addModule("Laptop Status Monitor", LaptopStatusMonitor, hide_toggle=True)
     GUI.addModule("Local Simulation", LocalSimulationFlightInterface, enabled=False)
-    GUI.addModule(
-        "Ground Station Recorded Data",
-        GroundStationRecordedDataInterface,
-        enabled=False,
-    )
+    GUI.addModule("Ground Station Recorded Data", GroundStationRecordedDataInterface, enabled=False)
     GUI.addModule("Fake Flight", FakeFlight, enabled=False)
-    GUI.addModule(
-        "Random Data for Debugging",
-        RandomDataInterface,
-        enabled=False,
-        hide_toggle=False,
-    )
+    GUI.addModule("Random Data for Debugging", RandomDataInterface, enabled=False, hide_toggle=False)
     GUI.addModule("Map Interface", MapInterface, enabled=True, hide_toggle=True)
+    GUI.addModule("Prop websocket thing", PropWebsocketInterface, enabled=False, hide_toggle=False)
 
     # Run GUI, and wait until its killed
     GUI.run()

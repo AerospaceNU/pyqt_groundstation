@@ -41,6 +41,7 @@ from src.Widgets import (
     text_box_drop_down_widget,
     vehicle_status_widget,
     video_widget,
+    prop_control_widget,
 )
 from src.Widgets.database_view import DatabaseView
 from src.Widgets.MainTabs.diagnostic_tab import DiagnosticTab
@@ -50,6 +51,7 @@ from src.Widgets.MainTabs.offload_tab import OffloadTab
 from src.Widgets.MainTabs.rocket_primary_tab import RocketPrimaryTab
 from src.Widgets.MainTabs.settings_tab import SettingsTab
 from src.Widgets.MainTabs.side_tab_holder import SideTabHolder
+from src.Widgets.MainTabs.prop_view_tab import PropViewTab
 
 if sys.platform == "linux":  # I don't even know anymore
     if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:
@@ -61,6 +63,7 @@ def serial_port_callback_name(device):
 
 
 CUSTOM_THEMES = list(map(lambda it: os.path.join("themes", it), os.listdir("themes")))
+
 
 # @dataclass
 # class PlaybackSource:
@@ -142,6 +145,7 @@ class DPFGUI:
             "Database View": DatabaseView,
             "Module Configuration": module_configuration.ModuleConfiguration,
             "Map Download": map_download_widget.MapDownload,
+            "Prop System Control": prop_control_widget.PropControlWidget,
         }
 
         # List of tabs that can be dynamically created
@@ -153,6 +157,7 @@ class DPFGUI:
             "Empty": TabCommon,
             "Model Viewer": gl_display_widget.ThreeDDisplay,
             "Offload": OffloadTab,
+            "Prop Control": PropViewTab,
         }
 
         # Set some object names for all the core stuff
@@ -304,6 +309,16 @@ class DPFGUI:
 
     def refreshSerialDevices(self):
         serial_ports = [comport for comport in serial.tools.list_ports.comports()]
+
+        # TODO: RE-work serial ports to also do network stuff
+        class FakePort:
+            def __init__(self, device_name, description):
+                self.device = device_name
+                self.description = description
+
+        serial_ports.append(FakePort('localhost', 'Local Computer'))
+        serial_ports.append(FakePort('raspberrypi.local', 'Test Stand'))
+        serial_ports.append(FakePort('169.254.90.98', 'RPi'))
         self.serial_devices_menu.clear()
 
         for device in self.serial_devices:
@@ -311,7 +326,7 @@ class DPFGUI:
 
             for port in serial_ports:
                 device_menu.addAction("{0}: {1}".format(port.device, port.description), lambda portName=port.device, device_name=device: self.setActiveSerialPort(portName, device_name))
-                device_menu.addAction("Disconnect", lambda portName="", device_name=device: self.setActiveSerialPort(portName, device_name))  # Kind of a hack
+            device_menu.addAction("Disconnect", lambda portName="", device_name=device: self.setActiveSerialPort(portName, device_name))  # Kind of a hack
 
     def playbackOptionsMenu(self):
         self.playback_source_menu.clear()
@@ -335,10 +350,6 @@ class DPFGUI:
 
                 # Tell the module we clicked on its specific run
                 interface_object.setSpecificRunSelected(run_name)
-
-                
-
-        
 
     def updateGUI(self):
         """
@@ -425,6 +436,8 @@ class DPFGUI:
                     widget = self.widgetClasses[widget_name]()
                 else:
                     widget = self.widgetClasses[widget_name](parent)
+
+                widget.updateAfterThemeSet()
                 return widget
             elif widget_name in self.tabClasses:
                 return self.tabClasses[widget_name]()
@@ -466,7 +479,7 @@ class DPFGUI:
 
         self.tabObjects.append(new_tab_object)
         self.tabNames.append(vehicle_name)
-        new_tab_object.setObjectName("{0}_tab_{1}".format(vehicle_name, len(self.tabObjects)))
+        new_tab_object.setObjectName("{0}_tab_{1}".format(vehicle_name, len(self.tabObjects)).replace(" ", "_"))
         new_tab_object.vehicleName = vehicle_name
 
         new_tab_object.updateAfterThemeSet()
@@ -475,7 +488,7 @@ class DPFGUI:
         widget_object = self.createWidgetFromName(name, in_new_window=True)
 
         if widget_object is not None:
-            object_name = "{0}_{1}_isolated".format(name, len(self.tabObjects))
+            object_name = "{0}_{1}_isolated".format(name, len(self.tabObjects)).replace(" ", "_")
             widget_object.show()
 
             self.tabObjects.append(widget_object)

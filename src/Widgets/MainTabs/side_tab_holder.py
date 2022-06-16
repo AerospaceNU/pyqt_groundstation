@@ -22,6 +22,8 @@ class SideTabHolder(TabCommon):
     def addSubTab(self, tab_name: str, tab_object: CustomQWidgetBase):
         self.tab_widget.addTab(tab_name, tab_object)
         super(SideTabHolder, self).addWidget(tab_object, tab_name)
+        self.tab_widget.setCurrentTabIndex(len(self.tab_widget.tab_names) - 1)
+        self.tab_widget.setCurrentTabIndex(0)
 
     def customUpdateVehicleData(self, data):
         for widget in self.widgetList:

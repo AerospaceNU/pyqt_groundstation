@@ -1,9 +1,6 @@
 from src.Widgets.MainTabs.main_tab_common import TabCommon
-from src.Widgets.custom_q_widget_base import CustomQWidgetBase
-from PyQt5.QtWidgets import QGridLayout
 from src.Widgets.graph_tab_control import GraphTabControl
 from src.Widgets.graph_widget import GraphWidget
-from src.constants import Constants
 from src.data_helpers import interpolate
 
 
@@ -23,6 +20,9 @@ class GraphLayoutCommon(TabCommon):
         for widget in self.widgetList:
             if type(widget) == GraphWidget:
                 widget.clearGraph()
+
+        # Reset slider position as well
+        self.graphControlWidget.rangeSlider.setSliderPosition([0, 1000])
 
     def onSliderValueChange(self, data):
         self.slider_min = data[0]
