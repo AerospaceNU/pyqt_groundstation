@@ -318,6 +318,7 @@ class DPFGUI:
 
         serial_ports.append(FakePort('localhost', 'Local Computer'))
         serial_ports.append(FakePort('raspberrypi.local', 'Test Stand'))
+        serial_ports.append(FakePort('169.254.90.98', 'RPi'))
         self.serial_devices_menu.clear()
 
         for device in self.serial_devices:
