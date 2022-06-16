@@ -5,7 +5,7 @@ import pyqtgraph
 from PyQt5.QtWidgets import QGridLayout, QWidget
 from pyqtgraph import PlotWidget
 
-from src.data_helpers import first_index_in_list_larger_than
+from src.data_helpers import check_type, first_index_in_list_larger_than
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
 PEN_COLORS = ["red", "blue", "green", "magenta"]
@@ -242,3 +242,16 @@ class GraphWidget(CustomQWidgetBase):
             self.graphWidget.setTitle(self.title, color=self.palette().placeholderText().color())
 
         self.graphWidget.setStyleSheet("border: 0")
+
+    def getAvailableSourceOptions(self, source):
+        option_list = super().getAvailableSourceOptions(source)
+        value_type = self.sourceDictionary[source].value_type
+
+        if self.recorded_data_mode:
+            for key in self.recordedData:
+                # Check if the first datapoint is castable to float
+                if check_type(self.recordedData[key][1][0], value_type):
+                    option_list.append(key)
+
+        return option_list
+

@@ -44,3 +44,4 @@ class FcbOffloadGraphs(GraphLayoutCommon):
         layout.addWidget(self.addWidget(GraphWidget(title="Battery", source_list=["offload_battery_voltage"])), 3, 3)
         layout.addWidget(self.graphControlWidget, 4, 1, 1, 3)
         self.setLayout(layout)
+        self.graphControlWidget.recordedDataModeSelect.setCurrentIndex(1)

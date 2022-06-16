@@ -179,13 +179,11 @@ class FCBOffloadModule(ThreadedModuleCore):
             if runName not in self.recorded_data_dictionary:
                 self.recorded_data_dictionary[runName] = {}
 
-            # # TOTAL HACK, but the member names are the same as what the FCB expects
-            # # and the member values are keys in the dataframe
-            # offload_map = [a for a in dir(Constants.OffloadConstants) if not a.startswith("__")]
-            # for key in offload_map:
-            #     self.recorded_data_dictionary[runName][getattr(Constants, key)] = [list(df[getattr(Constants.OffloadConstants, key)]), list(time_series)]
-
             for key in df.keys():
+                key = str(key)
+                if ("imu" in key and "_real" not in key) or \
+                        ("high_g" in key and "_real" not in key):
+                    continue
                 self.recorded_data_dictionary[runName]["offload_" + key] = [list(df[key]), list(time_series)]
             self.recorded_data_dictionary[runName]["keys"] = df.keys()
 
