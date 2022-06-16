@@ -174,7 +174,7 @@ class FCBOffloadModule(ThreadedModuleCore):
             runName = file.replace("-output-post.csv", "")
             df = pd.read_csv(join(mypath, file), index_col=0)
 
-            time_series = df["timestamp_s"] / 1000.0
+            time_series = df["timestamp_s"] # no longer /1000
 
             if runName not in self.recorded_data_dictionary:
                 self.recorded_data_dictionary[runName] = {}
