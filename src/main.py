@@ -4,6 +4,8 @@
 Main file to run the GUI
 """
 
+import sys
+
 from src.Modules.prop_websocket_interface import PropWebsocketInterface
 from src.dpf_ground_station import DPFGUI
 from src.Modules.android_phone_bluetooth_interface import AndroidPhoneBluetoothInterface
@@ -12,9 +14,7 @@ from src.Modules.egg_finder_radio_interface import EggFinderRadioInterface
 from src.Modules.fake_rocket_flight import FakeFlight
 from src.Modules.fcb_offload_module import FCBOffloadModule
 from src.Modules.ground_station_data_interface import GroundStationDataInterface
-from src.Modules.ground_station_recorded_data_interface import (
-    GroundStationRecordedDataInterface,
-)
+from src.Modules.ground_station_recorded_data_interface import GroundStationRecordedDataInterface
 from src.Modules.laptop_status_monitor import LaptopStatusMonitor
 from src.Modules.map_interface import MapInterface
 from src.Modules.random_data_interface import RandomDataInterface
@@ -29,7 +29,10 @@ if __name__ == "__main__":
     GUI.addTabByTabType("Diagnostic", "Diagnostic")
     GUI.addTabByTabType("Graph", "Graphs")
     GUI.addTabByTabType("Offload", "Offload")
-    # GUI.addTabByTabType("Model Viewer", "AeroNU: The 3D Experience")
+
+    if sys.platform != "win32":
+        GUI.addTabByTabType("Model Viewer", "AeroNU: The 3D Experience")
+
     GUI.addTabByTabType("Prop Control", "Prop Control")
 
     # Load in modules
