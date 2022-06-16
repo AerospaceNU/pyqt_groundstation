@@ -126,7 +126,7 @@ class GraphWidget(CustomQWidgetBase):
 
     def updateInFocus(self):
         """Only re-draw graph if we're looking at it"""
-        self.updatePlotStaggered()
+        self.updatePlot()
 
     def updatePlotStaggered(self):
         """Updates one line at a time"""
