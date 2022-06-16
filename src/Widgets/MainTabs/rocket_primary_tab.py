@@ -23,7 +23,7 @@ class RocketPrimaryTab(TabCommon):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
 
-        self.FlightDisplay = self.addWidget(flight_display.FlightDisplay(compass_and_text=False))
+        self.FlightDisplay = self.addWidget(flight_display.FlightDisplay(compass_and_text=False, use_navball_widget=False))
         self.StatusBar = self.addWidget(vehicle_status_widget.VehicleStatusWidget())
         self.VideoPanel = self.addWidget(video_widget.VideoWidget())
         self.Annunciator = self.addWidget(annunciator_panel.AnnunciatorPanel())
