@@ -1,7 +1,11 @@
 import time
+
+import asyncio
+import json
+import websockets
+
 from src.Modules.data_interface_core import ThreadedModuleCore
 from src.constants import Constants
-import websockets, asyncio, json
 
 
 class PropWebsocketInterface(ThreadedModuleCore):
