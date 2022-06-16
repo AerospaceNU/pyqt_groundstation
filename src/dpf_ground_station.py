@@ -316,7 +316,8 @@ class DPFGUI:
                 self.device = device_name
                 self.description = description
 
-        serial_ports.append(FakePort('localhost', 'local computer'))
+        serial_ports.append(FakePort('localhost', 'Local Computer'))
+        serial_ports.append(FakePort('raspberrypi.local', 'Test Stand'))
         self.serial_devices_menu.clear()
 
         for device in self.serial_devices:
@@ -324,7 +325,7 @@ class DPFGUI:
 
             for port in serial_ports:
                 device_menu.addAction("{0}: {1}".format(port.device, port.description), lambda portName=port.device, device_name=device: self.setActiveSerialPort(portName, device_name))
-                device_menu.addAction("Disconnect", lambda portName="", device_name=device: self.setActiveSerialPort(portName, device_name))  # Kind of a hack
+            device_menu.addAction("Disconnect", lambda portName="", device_name=device: self.setActiveSerialPort(portName, device_name))  # Kind of a hack
 
     def playbackOptionsMenu(self):
         self.playback_source_menu.clear()
@@ -434,6 +435,8 @@ class DPFGUI:
                     widget = self.widgetClasses[widget_name]()
                 else:
                     widget = self.widgetClasses[widget_name](parent)
+
+                widget.updateAfterThemeSet()
                 return widget
             elif widget_name in self.tabClasses:
                 return self.tabClasses[widget_name]()

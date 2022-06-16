@@ -28,6 +28,7 @@ class PropWebsocketInterface(ThreadedModuleCore):
 
     def changeWsServer(self, name):
         self.serial_port = f"ws://{name}:9002"
+        self.connected = False
 
     def spin(self):
         self.loop.run_until_complete(self.mainLoop())
