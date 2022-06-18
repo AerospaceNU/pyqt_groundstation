@@ -212,6 +212,7 @@ class DPFGUI:
 
         # Get main menu bar object
         menu_bar = self.mainWindow.menuBar()
+        menu_bar.setNativeMenuBar(False)
         file_menu = menu_bar.addMenu("File")
         file_menu.addAction("Quit", self.stop)
 
