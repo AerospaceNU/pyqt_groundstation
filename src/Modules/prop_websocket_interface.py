@@ -5,6 +5,7 @@ import json
 import websockets
 
 from src.Modules.data_interface_core import ThreadedModuleCore
+from src.Modules.DataInterfaceTools.annunciator_helper import AnnunciatorHelper
 from src.constants import Constants
 
 
@@ -16,6 +17,8 @@ class PropWebsocketInterface(ThreadedModuleCore):
         self.serial_port = ""
         self.nextCheckTime = time.time()
         self.loop = asyncio.new_event_loop()
+
+        self.annunciator = AnnunciatorHelper()
 
         self.callbacks_to_add.append([Constants.prop_command_key, self.propCommandCallback])
 
@@ -109,10 +112,22 @@ class PropWebsocketInterface(ThreadedModuleCore):
                         self.connected = False
                         self.logToConsole("Lost connection to prop stand: {}".format(e), 2)
 
+                    self.updateAnnunciator()
+
         except Exception as e:
             self.logToConsole("Couldn't connect to prop stand: {}".format(e), 2)
+
+        self.updateAnnunciator()
 
         if not self.should_be_running:
             self.loop.stop()
         else:
             time.sleep(1)
+
+    def updateAnnunciator(self):
+        if self.connected:
+            self.annunciator.setAnnunciator(0, "Test Stand Connection", 0, "Connected to test stand at {}".format(self.serial_port))
+        else:
+            self.annunciator.setAnnunciator(0, "Test Stand Connection", 2, "No connection to test stand at {}".format(self.serial_port))
+
+        self.data_dictionary[Constants.primary_annunciator] = self.annunciator.getList()
