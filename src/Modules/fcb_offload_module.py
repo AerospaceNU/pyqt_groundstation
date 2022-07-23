@@ -49,27 +49,21 @@ class FCBOffloadModule(ThreadedModuleCore):
 
     def updatePythonAvionicsSerialPort(self):
         try:
-            self.logToConsole(
+            self.logger.info(
                 "Attempting to connect to FCB over USB at port {}".format(self.serial_port_name),
-                1,
-                True,
             )
             self.closeSerialPort()
             port_object = SerialPort(self.serial_port_name)
             self.python_avionics_fcb_cli.serial_port = port_object
             self.serial_connection = True
-            self.logToConsole(
+            self.logger.info(
                 "Successfully connected to FCB over USB at port {}".format(self.serial_port_name),
-                1,
-                True,
             )
             port_object.port.flushInput()
             port_object.port.flushOutput()
         except Exception:
-            self.logToConsole(
-                "Unable to connect to FCB over USB at port {0}".format(self.serial_port_name),
-                2,
-                True,
+            self.logger.error(
+                "Unable to connect to FCB over USB at port {0}".format(self.serial_port_name)
             )
             self.serial_connection = False
 

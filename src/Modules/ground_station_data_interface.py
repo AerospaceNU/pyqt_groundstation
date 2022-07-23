@@ -1,8 +1,10 @@
+import logging
 import struct
 import time
 
 import serial
 import serial.tools.list_ports
+from src.CustomLogging.dpf_logger import SerialLogger
 
 from src.constants import Constants
 from src.Modules.DataInterfaceTools.comms_console_helper import CommsConsoleHelper
@@ -38,10 +40,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
 
         self.outgoing_serial_queue = []
 
-        self.raw_data_file = open("raw_data.txt", "a+")
-        self.parsed_messages_file = open("parsed_messages.txt", "a+")
-        self.raw_data_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%m-%d %H:%M:%S")))
-        self.parsed_messages_file.write("\n\nRUN START {}\n\n".format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        self.serial_logger = SerialLogger(self.__class__.__name__)
 
         self.serial_devices["Ground Station"] = self.changeActiveSerialPort
 
@@ -75,11 +74,11 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         try:
             data = int(data)
             self.outgoing_serial_queue.append(createRadioBandCommandMessage(0xFF, self.active_radio, data))
-            self.logToConsole("Switching to band {}".format(data), 1, True)
+            self.logger.info("Switching to band {}".format(data))
             self.active_radio_bands[self.active_radio] = data
             self.radio_reconfigure_page.updateLine("Radio Band", "int", data)
         except Exception as e:
-            self.logToConsole("Could not switch to band {0}: {1}".format(data, e), 1, True)
+            self.logger.error("Could not switch to band {0}: {1}".format(data, e))
             print(e)
 
     def onRadioSwitch(self, data):
@@ -90,14 +89,14 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
 
         if data in RADIO_NAMES:
             self.active_radio = data
-            self.logToConsole("Switching to {} radio".format(RADIO_NAMES[data]), 1, True)
+            self.logger.info("Switching to {} radio".format(RADIO_NAMES[data]))
             self.radio_reconfigure_page.updateLine("Radio Band", "int", int(self.active_radio_bands[data]))
         else:
-            self.logToConsole("Unknown radio id {}".format(data), 1)
+            self.logger.warning("Unknown radio id {}".format(data))
 
     def spin(self):
         if self.nextCheckTime <= time.time():
-            self.logToConsole("Trying to connect to ground station on {}".format(self.serial_port), 0)
+            self.logger.info("Trying to connect to ground station on {}".format(self.serial_port))
             try:
                 self.serial = serial.Serial(self.serial_port, self.baud_rate, timeout=0.01)  # Set the serial port timeout really small, so we only get one message at a time
                 self.connected = True
@@ -107,10 +106,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 self.nextCheckTime = time.time() + 1
                 self.serial.close()
             except IOError:
-                self.logToConsole(
-                    "Could not connect to ground station on port {}".format(self.serial_port),
-                    2,
-                )
+                self.logger.warning("Could not connect to ground station on port {}".format(self.serial_port))
                 self.nextCheckTime = time.time() + 5
 
         self.connected = False
@@ -129,19 +125,19 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 if time.time() - self.last_data_time > 5:  # Timeout checks on any data, not just good data
                     self.logToConsoleAndCheck(
                         "Ground station on port {} timed out".format(self.serial_port),
-                        2,
+                        logging.ERROR,
                     )
                     self.has_data = False
                     self.good_fcb_data = False
                 time.sleep(0.01)
-            self.logToConsole(
+            self.logger.info(
                 "Disconnected from ground station on port {}".format(self.serial_port),
-                2,
+                logging.ERROR,
             )
         except IOError:
-            self.logToConsole(
+            self.logger.info(
                 "Lost connection to ground station on port {}".format(self.serial_port),
-                2,
+                logging.ERROR,
             )
             self.connected = False
 
@@ -161,23 +157,22 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 self.cliConsole.autoAddEntry(dictionary[Constants.cli_string_key], from_remote=True)
 
             if not success:
-                self.logToConsole("Could not parse message: {0}".format(message_type), 1)
+                self.logger.warning("Could not parse message: {0}".format(message_type))
                 self.good_fcb_data = False
             elif not crc:
-                self.logToConsole("Bad CRC for {} message".format(message_type), 1)
+                self.logger.warning("Bad CRC for {} message".format(message_type))
                 self.logMessageToFile(message_type, dictionary)
                 self.handleParsedData(message_type, dictionary, update_on_bad_crc=False)
             else:
-                self.logToConsole("New [{0}] message".format(message_type), 0)
+                self.logger.info("New [{0}] message".format(message_type))
                 self.logMessageToFile(message_type, dictionary)
                 self.handleParsedData(message_type, dictionary)
 
             if not fcb_message_parsing.is_ground_station_message(message_type):
                 self.has_data = True
         except struct.error as e:
-            self.logToConsole(
+            self.logger.warning(
                 "Can't parse message (length: {1} bytes):\n{0}".format(e, len(raw_bytes)),
-                1,
             )
 
     def readData(self):
@@ -192,7 +187,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.serial.flushInput()
 
         if self.log_to_file:
-            self.raw_data_file.write("{0}: {1}\n".format(time.strftime("%H:%M:%S"), str(raw_bytes)))
+            self.serial_logger.write_raw(raw_bytes)
 
         self.last_data_time = time.time()
 
@@ -212,8 +207,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
 
     def logMessageToFile(self, message_type, parsed_message):
         if self.log_to_file:
-            self.parsed_messages_file.write("{0}: {1} {2}\n".format(time.strftime("%H:%M:%S"), message_type, str(parsed_message)))
+            self.serial_logger.write_parsed(message_type, str(parsed_message))
 
     def closeOut(self):
-        self.raw_data_file.close()
-        self.parsed_messages_file.close()
+        self.serial_logger.close()

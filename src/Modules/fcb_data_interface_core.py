@@ -122,7 +122,7 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
         if self.last_good_data_time < time.time() - 5 and self.has_data:
             self.has_data = False
             self.good_fcb_data = False
-            self.logToConsoleAndCheck("FCB Data Timed out", 1)
+            self.logToConsoleAndCheck("FCB Data Timed out")
 
         if self.connected:
             self.annunciator.setAnnunciator(0, "GS Connection", 0, "Connected to ground station")

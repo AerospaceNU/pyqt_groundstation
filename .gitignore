@@ -14,3 +14,4 @@ tile_cache/
 *config.ini
 *external_flash.dat
 *internal_flash.dat
+logs/

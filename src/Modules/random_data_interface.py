@@ -101,7 +101,7 @@ class RandomDataInterface(ThreadedModuleCore):
         self.data_dictionary[Constants.raw_message_data_key] = diagnostics
 
         if self.i % 10 == 1:
-            self.logToConsole(str(random.random()), int(random.random() * 3))
+            self.logger.info(str(random.random()))
 
         time.sleep(0.02)
 

@@ -4,12 +4,12 @@ Tab that has all the prop stuff
 """
 from PyQt5.QtWidgets import QGridLayout, QSizePolicy
 
-from src.Widgets.MainTabs.main_tab_common import TabCommon
-from src.Widgets.simple_console_widget import SimpleConsoleWidget
-from src.Widgets.text_box_drop_down_widget import TextBoxDropDownWidget
-from src.Widgets.prop_control_widget import PropControlWidget
 from src.Widgets.annunciator_panel import AnnunciatorPanel
 from src.Widgets.MainTabs.GraphLayouts.prop_stand_graphs import PropStandGraphs
+from src.Widgets.MainTabs.main_tab_common import TabCommon
+from src.Widgets.prop_control_widget import PropControlWidget
+from src.Widgets.simple_console_widget import SimpleConsoleWidget
+from src.Widgets.text_box_drop_down_widget import TextBoxDropDownWidget
 
 
 class PropViewTab(TabCommon):

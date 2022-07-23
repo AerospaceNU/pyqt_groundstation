@@ -22,13 +22,13 @@ class LocalSimulationFlightInterface(GroundStationDataInterface):
     def runOnEnableAndDisable(self):
         if self.enabled:
             try:
-                self.logToConsole("Attempting to connect to local simulation at {0}:{1}".format(HOST, PORT), 1)
+                self.logger.info("Attempting to connect to local simulation at {0}:{1}".format(HOST, PORT))
                 time.sleep(0.5)  # Sometimes we get enabled before the sim process is up
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Connects the socket when module is enabled
                 self.socket.connect((HOST, PORT))
-                self.logToConsole("Connected to local simulation at {0}:{1}".format(HOST, PORT), 1)
+                self.logger.info("Connected to local simulation at {0}:{1}".format(HOST, PORT))
             except Exception as e:
-                self.logToConsole("Could not connect to local simulation at {0}:{1}.  {2}".format(HOST, PORT, e), 2)
+                self.logger.warning("Could not connect to local simulation at {0}:{1}.  {2}".format(HOST, PORT, e))
                 self.enabled = False
         else:
             self.socket.close()
@@ -49,7 +49,7 @@ class LocalSimulationFlightInterface(GroundStationDataInterface):
             data = self.recv_size()
             self.parseData(data)
         except Exception as e:
-            self.logToConsole("Couldn't parse local simulation message: {0}, closing connection".format(e), 2)
+            self.logger.error("Couldn't parse local simulation message: {0}, closing connection".format(e))
             self.enabled = False
 
         self.updateEveryEnabledLoop()

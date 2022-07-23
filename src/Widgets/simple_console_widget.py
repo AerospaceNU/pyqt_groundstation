@@ -5,6 +5,7 @@ Console
 from PyQt5 import QtGui
 from PyQt5.QtGui import QColor, QFont, QPainter
 from PyQt5.QtWidgets import QWidget
+import logging
 
 from src.Widgets import custom_q_widget_base
 
@@ -34,11 +35,11 @@ class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
                 color = line[1]
                 self.maxLineWidth = max(self.maxLineWidth, len(line[0]))
 
-                if color == 0:
+                if color == logging.INFO or color == logging.DEBUG:
                     painter.setPen(self.palette().text().color())
-                elif color == 1:
+                elif color == logging.WARNING:
                     painter.setPen(QColor("yellow"))
-                elif color == 2:
+                elif color == logging.ERROR:
                     painter.setPen(QColor("red"))
                 else:
                     painter.setPen(QColor("blue"))

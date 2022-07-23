@@ -1,3 +1,4 @@
+import logging
 import time
 
 import asyncio
@@ -8,6 +9,7 @@ from src.Modules.data_interface_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.annunciator_helper import AnnunciatorHelper
 from src.constants import Constants
 
+from src.CustomLogging.prop_logger import PropLogger
 
 class PropWebsocketInterface(ThreadedModuleCore):
 
@@ -17,6 +19,8 @@ class PropWebsocketInterface(ThreadedModuleCore):
         self.serial_port = ""
         self.nextCheckTime = time.time()
         self.loop = asyncio.new_event_loop()
+        
+        self.serial_logger = PropLogger()
 
         self.annunciator = AnnunciatorHelper()
 
@@ -31,7 +35,7 @@ class PropWebsocketInterface(ThreadedModuleCore):
         if self.connected:
             self.command_queue.append(command)
         else:
-            self.logToConsole("Not connected to test stand, can't send command", 2, override_disabled_check=True)
+            self.logger.error("Not connected to test stand, can't send command")
 
     def changeWsServer(self, name):
         self.serial_port = f"ws://{name}:9002"
@@ -41,6 +45,9 @@ class PropWebsocketInterface(ThreadedModuleCore):
         self.loop.run_until_complete(self.mainLoop())
 
     def parseData(self, data):
+        # Log every message
+        self.serial_logger.log_ws_msg(data)
+
         if 'data' in data:
             sensor_data = data['data']
 
@@ -75,11 +82,11 @@ class PropWebsocketInterface(ThreadedModuleCore):
                 new_state = transition_data['newState']
                 old_state = transition_data['oldState']
 
-                self.logToConsole("Test stand state transition: {0} -> {1}".format(old_state, new_state), 1)
+                self.logger.info("Test stand state transition: {0} -> {1}".format(old_state, new_state))
             else:
-                self.logToConsole("Unrecognized command message from stand: {}".format(data), 1)
+                self.logger.warning("Unrecognized command message from stand: {}".format(data))
         else:
-            self.logToConsole("Unrecognized message from stand: {}".format(data), 1)
+            self.logger.warning("Unrecognized message from stand: {}".format(data))
             return
 
     async def mainLoop(self):
@@ -87,10 +94,10 @@ class PropWebsocketInterface(ThreadedModuleCore):
             if self.serial_port == "":
                 return
 
-            self.logToConsole("Attempting to connect to prop stand at {}".format(self.serial_port), 1)
+            self.logger.info("Attempting to connect to prop stand at {}".format(self.serial_port))
             async with websockets.connect(self.serial_port) as websocket:
                 self.connected = True
-                self.logToConsole("Got connection to prop stand at {}".format(self.serial_port), 1)
+                self.logger.info("Got connection to prop stand at {}".format(self.serial_port))
 
                 while self.connected:
                     try:
@@ -99,23 +106,23 @@ class PropWebsocketInterface(ThreadedModuleCore):
 
                         self.parseData(parsed)
 
-                        self.logToConsoleThrottle("Still getting data from prop test stand", 0, 5)
+                        self.logToConsoleThrottle("Still getting data from prop test stand", logging.DEBUG, 5)
 
                         if len(self.command_queue) > 0:
                             data_to_send = self.command_queue.pop(0)
-                            self.logToConsole("Sending command to test stand:\n{}".format(data_to_send), 1)
+                            self.logger.warning("Sending command to test stand:\n{}".format(data_to_send))
                             await websocket.send(data_to_send)
 
                         if not self.should_be_running:
                             self.connected = False
                     except Exception as e:
                         self.connected = False
-                        self.logToConsole("Lost connection to prop stand: {}".format(e), 2)
+                        self.logger.error("Lost connection to prop stand: {}".format(e))
 
                     self.updateAnnunciator()
 
         except Exception as e:
-            self.logToConsole("Couldn't connect to prop stand: {}".format(e), 2)
+            self.logger.error("Couldn't connect to prop stand: {}".format(e))
 
         self.updateAnnunciator()
 

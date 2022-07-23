@@ -20,9 +20,9 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
         if self.enabled:
             self.reader = RecordedDataReader(
                 load_slower=True,
-                logging_callback=lambda data, level=1: self.logToConsole(data, level, override_disabled_check=True),
+                logging_callback=lambda data, level=1: self.logger.info(data, level),
             )
-            self.logToConsole("Done indexing recorded data", 1, override_disabled_check=True)
+            self.logger.info("Done indexing recorded data")
 
             self.reader.setPacketIndex(0)
 
@@ -51,7 +51,7 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
         self.has_data = True
 
         [packet_type, parsed_packet] = self.reader.getNextPacket()
-        self.logToConsole("New [{0}] message".format(packet_type), 0)
+        self.logger.info("New [{0}] message".format(packet_type))
 
         # We changed how crc is logged at some point, so this is needed to look at old data
         if Constants.crc_key in parsed_packet and parsed_packet[Constants.crc_key] == "1":

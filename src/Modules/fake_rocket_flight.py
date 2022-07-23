@@ -1,3 +1,4 @@
+import logging
 import math
 import random
 import time
@@ -82,12 +83,12 @@ class FakeFlight(FCBDataInterfaceCore):
             fcb_state = Constants.PREFLIGHT_STATE_INDEX  # Pre flight
 
             countdown_time = int(self.launch_time - time.time()) + 1
-            self.logToConsoleThrottle("Launching in {}".format(countdown_time), 1, 1)
+            self.logToConsoleThrottle("Launching in {}".format(countdown_time), logging.DEBUG, 1)
 
             if time.time() > self.launch_time:
                 self.launch_time = time.time()
                 self.state = BOOST
-                self.logToConsole("Launching", 1)
+                self.logger.info("Launching")
         elif self.state == BOOST:
             self.vertical_velocity += self.boost_accel * loop_time
             measured_acceleration = self.boost_accel - self.gravity
@@ -95,7 +96,7 @@ class FakeFlight(FCBDataInterfaceCore):
 
             if time.time() - self.launch_time > self.boost_duration:
                 self.state = COAST
-                self.logToConsole("Burnout", 1)
+                self.logger.info("Burnout")
         elif self.state == COAST:
             self.vertical_velocity += self.gravity * loop_time
             measured_acceleration = 0
@@ -103,7 +104,7 @@ class FakeFlight(FCBDataInterfaceCore):
 
             if self.vertical_velocity < 0:
                 self.state = DROGUE
-                self.logToConsole("Apogee", 1)
+                self.logger.info("Apogee")
         elif self.state == DROGUE:
             self.vertical_velocity = max(self.vertical_velocity + self.gravity * loop_time, self.drogue_speed)  # Clamp at drogue speed
             measured_acceleration = random.uniform(0, 9.8)
@@ -114,7 +115,7 @@ class FakeFlight(FCBDataInterfaceCore):
 
             if self.altitude < 100:
                 self.state = MAIN
-                self.logToConsole("Main deploy", 1)
+                self.logger.info("Main deploy")
         elif self.state == MAIN:
             self.vertical_velocity = min(self.vertical_velocity + self.main_deploy_accel * loop_time, self.main_speed)
             measured_acceleration = random.uniform(0, 9.8)
@@ -123,7 +124,7 @@ class FakeFlight(FCBDataInterfaceCore):
 
             if self.altitude < 0:
                 self.state = LANDED
-                self.logToConsole("Landed", 1)
+                self.logger.info("Landed")
         elif self.state == LANDED:
             measured_acceleration = -self.gravity
             self.altitude = 0

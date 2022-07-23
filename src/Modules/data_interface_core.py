@@ -7,6 +7,8 @@ All modules added to the GUI NEED to extend this class (or one of its subclasses
 import threading
 import time
 
+from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER
+
 
 class ThreadedModuleCore(threading.Thread):
     """
@@ -21,6 +23,7 @@ class ThreadedModuleCore(threading.Thread):
 
     def __init__(self):
         super().__init__()
+        self.logger = MAIN_GUI_LOGGER.get_logger(self.__class__.__name__)
         self.data_dictionary = {}
         self.gui_full_data_dictionary = {}
         self.recorded_data_dictionary = {}  # {run_name: {run_dict}}
@@ -31,7 +34,6 @@ class ThreadedModuleCore(threading.Thread):
         self.was_enabled = True
         self.primary_module = False  # Only one module with this set to true should run at a time
 
-        self.console_callback = None
         self.last_console_message = ""
         self.last_log_time = 0
 
@@ -64,25 +66,15 @@ class ThreadedModuleCore(threading.Thread):
         """ Override to provide custon replay functionality"""
         pass
 
-    def setConsoleCallback(self, callback):
-        self.console_callback = callback
-
-    def logToConsoleAndCheck(self, value, level):
+    def logToConsoleAndCheck(self, message, level):
         """Logs to console if the message isn't the same as the last message"""
-        if value != self.last_console_message:
-            self.logToConsole(value, level)
+        if message != self.last_console_message:
+            self.logger.log(level, message)
 
-    def logToConsole(self, value, level, override_disabled_check=False):
-        """Logs data to GUI Console"""
-        if self.enabled or override_disabled_check:
-            if self.console_callback is not None:
-                self.console_callback("{0}: {1}".format(time.strftime("%H:%M:%S"), value), level)
-                self.last_console_message = value
-
-    def logToConsoleThrottle(self, value, level, interval):
+    def logToConsoleThrottle(self, message, level, interval):
         """Logs data to GUI Console once per interval"""
         if time.time() - interval > self.last_log_time:
-            self.logToConsole(value, level)
+            self.logger.log(level, message)
             self.last_log_time = time.time()
 
     def setEnabled(self, enabled):

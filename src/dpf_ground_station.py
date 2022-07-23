@@ -5,7 +5,7 @@ Has all the thread control for the GUI
 """
 
 import copy
-from dataclasses import dataclass
+import logging
 import os
 import random
 import sys
@@ -16,10 +16,10 @@ import serial.tools.list_ports
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget, QWidget
 from qt_material import apply_stylesheet, list_themes
-from src.Widgets.custom_q_widget_base import CustomQWidgetBase
-from src.Widgets.offload_graph_widget import OffloadGraphWidget
 
+import src.config
 from src.constants import Constants
+from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER
 from src.Modules.data_interface_core import ThreadedModuleCore
 from src.Widgets import (
     annunciator_panel,
@@ -35,23 +35,25 @@ from src.Widgets import (
     map_widget,
     module_configuration,
     navball_widget,
+    prop_control_widget,
     pyro_display_widget,
     reconfigure_widget,
     simple_console_widget,
     text_box_drop_down_widget,
     vehicle_status_widget,
     video_widget,
-    prop_control_widget,
 )
+from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 from src.Widgets.database_view import DatabaseView
 from src.Widgets.MainTabs.diagnostic_tab import DiagnosticTab
 from src.Widgets.MainTabs.graphs_tab import GraphsTab
 from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets.MainTabs.offload_tab import OffloadTab
+from src.Widgets.MainTabs.prop_view_tab import PropViewTab
 from src.Widgets.MainTabs.rocket_primary_tab import RocketPrimaryTab
 from src.Widgets.MainTabs.settings_tab import SettingsTab
 from src.Widgets.MainTabs.side_tab_holder import SideTabHolder
-from src.Widgets.MainTabs.prop_view_tab import PropViewTab
+from src.Widgets.offload_graph_widget import OffloadGraphWidget
 
 if sys.platform == "linux":  # I don't even know anymore
     if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:
@@ -70,6 +72,7 @@ CUSTOM_THEMES = list(map(lambda it: os.path.join("themes", it), os.listdir("them
 #     runName: str
 #     moduleName: str
 #     dataDict: dict
+
 
 class DPFGUI:
     def __init__(self):
@@ -98,6 +101,11 @@ class DPFGUI:
         self.hidden_modules = []
         self.playback_data_sources = []
         # self.current_playback_source: PlaybackSource = PlaybackSource("", "", {})
+
+        # Set up logging hooks to play into the console
+        MAIN_GUI_LOGGER.add_custom_handler(self.addLogMessage)
+
+        self.logger: logging.Logger = MAIN_GUI_LOGGER.get_logger(__name__)
 
         self.tabNames = []
         self.tabObjects: List[Union[CustomQWidgetBase, TabCommon]] = []
@@ -187,6 +195,8 @@ class DPFGUI:
 
         self.addVehicleTab(settings_tab, "Settings")
 
+        self.logger.info("Ground station started!")
+
     def run(self):
         """
         Function called in main when its ready to run the GUI
@@ -266,6 +276,7 @@ class DPFGUI:
         self.serial_devices_ports[device_name] = port_name
 
         if port_name == "":  # Don't need to do anything more if we're disconnecting this device
+            src.config.ConfigSaver.save("serial_ports", device_name, "")
             return
 
         # Otherwise, make sure no one else is using the port
@@ -276,12 +287,14 @@ class DPFGUI:
                 self.callback_queue.append([callback, ""])
                 self.serial_devices_ports[device] = ""
 
+        src.config.ConfigSaver.save("serial_ports", device_name, port_name)
+
     def toggleModuleEnabledState(self, module_name):
         if module_name in self.module_dictionary:
             interface = self.module_dictionary[module_name]
             self.enableOrDisableModule(module_name, not interface.enabled)
         else:
-            self.updateConsole("Module {} does not exist".format(module_name), 2)
+            self.logger.error("Module {} does not exist".format(module_name))
 
     def enableOrDisableModule(self, module_name, enabled):
         if module_name in self.module_dictionary:
@@ -293,8 +306,10 @@ class DPFGUI:
                 for target_module_name in self.module_dictionary:
                     if target_module_name != module_name and self.module_dictionary[target_module_name].primary_module:
                         self.module_dictionary[target_module_name].setEnabled(False)
+
+            src.config.ConfigSaver.save("modules", module_name, str(enabled))
         else:
-            self.updateConsole("Module {} does not exist".format(module_name), 2)
+            self.logger.error("Module {} does not exist".format(module_name))
 
     def refreshDataInterfaces(self):
         self.modules_menu.clear()
@@ -317,9 +332,9 @@ class DPFGUI:
                 self.device = device_name
                 self.description = description
 
-        serial_ports.append(FakePort('localhost', 'Local Computer'))
-        serial_ports.append(FakePort('raspberrypi.local', 'Test Stand'))
-        serial_ports.append(FakePort('169.254.90.98', 'RPi'))
+        serial_ports.append(FakePort("localhost", "Local Computer"))
+        serial_ports.append(FakePort("raspberrypi.local", "Test Stand"))
+        serial_ports.append(FakePort("169.254.90.98", "RPi"))
         self.serial_devices_menu.clear()
 
         for device in self.serial_devices:
@@ -485,6 +500,8 @@ class DPFGUI:
 
         new_tab_object.updateAfterThemeSet()
 
+        self.logger.info("Added tab [{0}] of type [{1}]".format(vehicle_name, type(new_tab_object)))
+
     def addNewWidgetInNewWindow(self, name):
         widget_object = self.createWidgetFromName(name, in_new_window=True)
 
@@ -498,6 +515,8 @@ class DPFGUI:
 
             widget_object.updateAfterThemeSet()
 
+            self.logger.info("Adding new widget of type [{0}] in own window".format(type(widget_object)))
+
     @staticmethod
     def getThemes():
         return list_themes() + CUSTOM_THEMES
@@ -506,8 +525,9 @@ class DPFGUI:
         if name in self.getThemes():
             apply_stylesheet(self.application, theme=name)
             self.updateAfterThemeSet()
+            self.logger.info(f"Set theme to {name}")
         else:
-            print("No Theme named {}".format(name))
+            self.logger.info("No Theme named {}".format(name))
 
     def updateAfterThemeSet(self):
         self.application.setStyleSheet(self.application.styleSheet() + "\nQSlider:horizontal { background: none; } QSlider:horizontal { background: none; }")
@@ -517,6 +537,9 @@ class DPFGUI:
 
     def updateConsole(self, value, level):
         self.ConsoleData = ([[value, level]] + self.ConsoleData)[:40]
+
+    def addLogMessage(self, record: logging.LogRecord, msg: str):
+        self.updateConsole(record.asctime.split(" ")[1] + ": " + msg, record.levelno)
 
     def enableModuleCallback(self, data):
         data = data.split(",")
@@ -549,7 +572,6 @@ class DPFGUI:
             start_time = time.time()
 
             interface_object = interface_class()
-            interface_object.setConsoleCallback(self.updateConsole)
             interface_object.setEnabled(enabled)
 
             interface_object.start()
@@ -566,8 +588,14 @@ class DPFGUI:
                 self.addCallback(callback_name, callback_function)
                 if device not in self.serial_devices:
                     self.serial_devices.append(device)
-                    self.serial_devices_ports[device] = ""  # Want to start everything up unconnected
-                    self.setActiveSerialPort("", device)  # Force the module to comply with our demands
+
+                    # We used to force everything to start unconnected, but I don't actually
+                    # see a reason to now that we save the last port
+                    default_name = src.config.ConfigSaver.get("serial_ports", device, "")
+                    default_name = str(default_name)
+
+                    self.serial_devices_ports[device] = default_name  # Want to start everything up unconnected
+                    self.setActiveSerialPort(default_name, device)  # Force the module to comply with our demands
 
             if hide_toggle:
                 self.hidden_modules.append(interface_name)
@@ -576,10 +604,18 @@ class DPFGUI:
 
             delta_time = time.time() - start_time
             self.module_load_time_dictionary[interface_name] = delta_time
+
+            src.config.ConfigSaver.setDefault("modules", interface_name, str(enabled))
+
+            self.logger.info("Loaded Module [{0}] of type [{1}] in {2} seconds".format(interface_name, interface_class, delta_time))
         except Exception as e:  # Should catch a lot of errors loading in modules
-            error_string = "Could not load module {0} of type {1}: {2}".format(interface_name, interface_class, e)
-            print(error_string)
-            self.updateConsole(error_string, 2)
+            error_string = "Could not load module [{0}] of type [{1}]: [{2}]".format(interface_name, interface_class, e)
+            self.logger.error(error_string)
+
+    def loadSettings(self):
+        for module in self.module_dictionary:
+            mod_en = src.config.ConfigSaver.get("modules", module) == "True"
+            self.enableOrDisableModule(module, mod_en)
 
     def clearConsole(self, _):  # Need a empty arg to fit with callback system
         self.ConsoleData = [[]]

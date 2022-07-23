@@ -128,28 +128,28 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
             port = self.server_sock.getsockname()[1]
             uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
             ble.advertise_service(self.server_sock, "TestServer", service_id=uuid, service_classes=[uuid, ble.SERIAL_PORT_CLASS], profiles=[ble.SERIAL_PORT_PROFILE])
-            self.logToConsole("Starting Bluetooth", 1)
+            self.logger.info("Starting Bluetooth")
         except ble.BluetoothError as e:
-            self.logToConsole("Can't start bluetooth: {}".format(e), 2)
+            self.logger.error("Can't start bluetooth: {}".format(e))
             if "permission" in str(e).lower() and sys.platform == "linux":
-                self.logToConsole("Linux permission error for bluetooth, try running [sudo chmod o+rw /var/run/sdp]", 2)
+                self.logger.error("Linux permission error for bluetooth, try running [sudo chmod o+rw /var/run/sdp]")
             can_start = False
 
         # Wait for connections, and add them to the client list
         while self.should_be_running and can_start:
             if self.enabled and not self.bluetooth_running:
-                self.logToConsole("Waiting for connection on RFCOMM channel {}".format(port), 0)
+                self.logger.info("Waiting for connection on RFCOMM channel {}".format(port), 0)
             if not self.enabled and self.bluetooth_running:
-                self.logToConsole("No longer advertising bluetooth on channel {}".format(port), 1, override_disabled_check=True)
+                self.logger.warning("No longer advertising bluetooth on channel {}".format(port))
 
             if self.enabled:
                 self.bluetooth_running = True
                 try:
                     client_socket, client_info = self.server_sock.accept()
                     self.client_sock_list.append(client_socket)
-                    self.logToConsole("Accepted connection from {}".format(client_info), 1)
+                    self.logger.info("Accepted connection from {}".format(client_info), 1)
                 except ble.BluetoothError as e:
-                    self.logToConsole("Bluetooth error: {}".format(e), 1)
+                    self.logger.info("Bluetooth error: {}".format(e), 1)
             else:
                 time.sleep(1)
                 self.bluetooth_running = False
@@ -164,7 +164,7 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
             try:
                 client_socket.send(data_string)
             except Exception:
-                self.logToConsole("Lost connection to one bluetooth device", 2)
+                self.logger.error("Lost connection to one bluetooth device")
                 client_socket.close()
                 self.client_sock_list.remove(client_socket)
 
