@@ -491,7 +491,7 @@ class DPFGUI:
     def addVehicleTab(self, new_tab_object, vehicle_name: str):
         self.tabHolderWidget.addTab(new_tab_object, vehicle_name)
         self.tabHolderWidget.setCurrentIndex(self.tabHolderWidget.count() - 1)
-        self.tabHolderWidget.setCurrentIndex(1)
+        self.tabHolderWidget.setCurrentIndex(1) # Why do we default to 1???
 
         self.tabObjects.append(new_tab_object)
         self.tabNames.append(vehicle_name)
@@ -616,6 +616,16 @@ class DPFGUI:
         for module in self.module_dictionary:
             mod_en = src.config.ConfigSaver.get("modules", module) == "True"
             self.enableOrDisableModule(module, mod_en)
+
+        lastIdx = src.config.ConfigSaver.get("gui", "current_tab")
+        if not lastIdx:
+            lastIdx = 1
+        self.tabHolderWidget.setCurrentIndex(int(lastIdx)) # Why do we default to 1???
+
+        # Only attach change listener after everything's loaded
+        self.tabHolderWidget.currentChanged.connect(lambda: 
+            src.config.ConfigSaver.save("gui", "current_tab", self.tabHolderWidget.currentIndex()))
+
 
     def clearConsole(self, _):  # Need a empty arg to fit with callback system
         self.ConsoleData = [[]]
