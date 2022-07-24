@@ -64,6 +64,9 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
             layout.addWidget(mode_switch, 3, column, 1, 2)
             layout.addWidget(mode_button, 4, column, 1, 2)
 
+        # Min width for State column
+        layout.setColumnMinimumWidth(2 * 2, 140)
+
         self.mode_switch[0].addItems(self.test_map_dict.keys())
         self.mode_switch[0].currentTextChanged.connect(self.setBatchOpts)
         self.setBatchOpts()
