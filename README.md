@@ -17,7 +17,8 @@ PyQt based GUI program for the DPF rocket (and other stuff?).
 
 ### Download & Install Python
 
-1. Go to https://www.python.org/downloads/ and download the version specified in `install_setup.sh` (Right now, 3.8)
+1. Go to https://www.python.org/downloads/ and download the version specified in `install_setup.sh` (Right now, that's [Python 3.8.10](https://www.python.org/downloads/release/python-3810/))
+Note that if you're on Linux, you'll need to follow [these steps](https://www.linuxcapable.com/how-to-install-python-3-8-on-ubuntu-22-04-lts/)
 2. Install the downloaded python executable. If given an option, add python to your PATH
 
 ### Import Project into IDE
@@ -50,7 +51,7 @@ https://www.jetbrains.com/pycharm/download
 2. Run the installer
 3. Open VSCode, then go to file->open folder->pyqt_groundstation
 4. When prompted install the Python plugin -- if not, click the 4 blocks on the menu bar and search for Python by Microsoft
-5. Select the Python 3.8 interpreter you installed above in the bottom right corner once that loads
+5. Open a Python file, and select the Python 3.8 interpreter you installed above in the bottom right corner once that loads
 
 ### Install Virtual Environment, Requirements
 
@@ -59,7 +60,8 @@ If you're doing prop test stand stuff, you don't have to do steps 1 or 2.
 1. [Windows, rockets only] Install MSVC build tools from https://visualstudio.microsoft.com/visual-cpp-build-tools/ (for pybluez) 
 2. [Linux, rockets only] Install `libbluetooth-dev` and `espeak` via package manager. Something like: `sudo apt-get install libbluetooth-dev espeak`
 3. Run `install_setup.sh` from PyCharm Run Configurations (top right) or command line via `./install_setup.sh`
-4. If any error message occurs, find spot in script where error is output and try running manually. For Unix systems you may need the package `python3.8-venv`.
+You may need to give it the path to your Python executable, this can be found with `which python3.8` on Linux at least. 
+4. If any error message occurs, find spot in script where error is output and try running manually. For Unix systems you may need the package `python3.8-venv`!
 
 ### Run GUI
 
