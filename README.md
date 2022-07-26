@@ -17,38 +17,49 @@ PyQt based GUI program for the DPF rocket (and other stuff?).
 
 ### Download & Install Python
 
-1. Go to https://www.python.org/downloads/ and download the version specified in `install_setup.sh`
+1. Go to https://www.python.org/downloads/ and download the version specified in `install_setup.sh` (Right now, 3.8)
 2. Install the downloaded python executable. If given an option, add python to your PATH
 
 ### Import Project into IDE
 
-*It is recommended for developers to use PyCharm for better support of development tools.*
+PyCharm or IntelliJ Ultimate has good Python support and will do type hinting, supports finding definitions of functions,
+and other fun things. In my experience, VSCode is smaller and faster, and still has descent Python support.
+
+#### Pycharm
 
 1. Download PyCharm Community Edition here:
 https://www.jetbrains.com/pycharm/download
 2. Install PyCharm using default settings
 3. Go to `File->Open` and select the pyqt_groundstation` folder
 
-### Install Virtual Environment, Requirements
-
-1. [Windows] Install MSVC build tools from https://visualstudio.microsoft.com/visual-cpp-build-tools/ (for pybluez)
-2. [Linux] Install `libbluetooth-dev` and `espeak` via package manager. Something like: `sudo apt-get install libbluetooth-dev espeak`
-3. Run `install_setup.sh` from PyCharm Run Configurations (top right) or command line via `./install_setup.sh`
-4. If any error message occurs, find spot in script where error is output and try running manually. For Unix systems you may need the package `python3.8-venv`.
-
-### Configure IDE
-
-#### Interpreter
+##### Interpreter -- PyCharm
 
 1. In PyCharm, click on `File->Settings->Project: pyqt_groundstation->Project Interpreter`.
 2. Click on the gear in the top right, then `Add->Existing Environment`. For the interpreter, select `PATH_TO_VENV/.venv/(Scripts or bin)/python.exe`.
 3. Click Apply.
 
-#### Integrated Python Tools
+##### Integrated Python Tools -- PyCharm
 
 1. Click on `File->Settings->Tools->Python Integrated Tools`
 2. Set `Package requirements file` to `requirements.txt`
 3. Set `Docstring format` to `reStructuredText`
+
+#### VSCode
+
+1. [Download VSCode](https://code.visualstudio.com/download)
+2. Run the installer
+3. Open VSCode, then go to file->open folder->pyqt_groundstation
+4. When prompted install the Python plugin -- if not, click the 4 blocks on the menu bar and search for Python by Microsoft
+5. Select the Python 3.8 interpreter you installed above in the bottom right corner once that loads
+
+### Install Virtual Environment, Requirements
+
+If you're doing prop test stand stuff, you don't have to do steps 1 or 2.
+
+1. [Windows, rockets only] Install MSVC build tools from https://visualstudio.microsoft.com/visual-cpp-build-tools/ (for pybluez) 
+2. [Linux, rockets only] Install `libbluetooth-dev` and `espeak` via package manager. Something like: `sudo apt-get install libbluetooth-dev espeak`
+3. Run `install_setup.sh` from PyCharm Run Configurations (top right) or command line via `./install_setup.sh`
+4. If any error message occurs, find spot in script where error is output and try running manually. For Unix systems you may need the package `python3.8-venv`.
 
 ### Run GUI
 
