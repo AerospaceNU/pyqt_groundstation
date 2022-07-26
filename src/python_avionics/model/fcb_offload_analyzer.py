@@ -285,6 +285,5 @@ if __name__ == "__main__":
         select_time_limits_cb=_select_time_limits,
     )
     post_processed_filepath = analyzer.analyze()
-
     if args.graph:
         _graph_data(post_processed_filepath)
