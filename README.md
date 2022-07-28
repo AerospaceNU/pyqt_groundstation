@@ -57,18 +57,22 @@ https://www.jetbrains.com/pycharm/download
 
 If you're doing prop test stand stuff, you don't have to do steps 1 or 2.
 
-1. [Windows, rockets only] Install MSVC build tools from https://visualstudio.microsoft.com/visual-cpp-build-tools/ (for pybluez) 
+1. [Windows, rockets only] Install MSVC build tools from https://visualstudio.microsoft.com/visual-cpp-build-tools/ (for pybluez)
 2. [Linux, rockets only] Install `libbluetooth-dev` and `espeak` and `python3.8-dev` via package manager. Something like: `sudo apt-get install libbluetooth-dev espeak python3.8-dev`
 3. Run `install_setup.sh` from PyCharm Run Configurations (top right) or command line via `./install_setup.sh`
-You may need to give it the path to your Python executable, this can be found with `which python3.8` on Linux at least. 
-4. If any error message occurs, find spot in script where error is output and try running manually. For Unix systems you may need the package `python3.8-venv`!
+You may need to give it the path to your Python executable, this can be found with `which python3.8` on Linux at least.
+4. If any error message occurs, find spot in script where error is output and try running manually. For Unix systems you may need the package `python3.8-venv` or `gcc`!
+
+### Known issues under Linux
+
+Under Ubuntu 22.04 (at least with the new Wayland), Qt is still pretty buggy. I had to install `sudo apt install libxcb-xinerama0` [source](https://stackoverflow.com/questions/68036484/qt6-qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-thou) and also run with `XDG_SESSION_TYPE=x11 python -m src.main`.
 
 ### Run GUI
 
 1. Activate virtual environment using (Linux) `source .venv/bin/activate` or (Windows) `.\\venv\\bin\\activate.ps1` (or .bat if using command prompt instead of powershell). You should now see a (.venv) prefix to the command prompt, like this:
 
 ```
-(.venv) matt@matt-Inspiron-15-5510:~/Documents/pyqt_groundstation$ 
+(.venv) matt@matt-Inspiron-15-5510:~/Documents/pyqt_groundstation$
 ```
 
 2. Run `python -m src.main` on command line

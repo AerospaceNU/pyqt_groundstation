@@ -5,6 +5,8 @@ import time
 from sys import stdout
 from typing import Callable, List
 
+from src.CustomLogging.prop_logger import PropLogger
+
 
 # Used to log to the console widget
 class CustomHandler(logging.Handler):
@@ -31,6 +33,7 @@ class DpfLogger:
 
     LOGGERS: List[logging.Logger] = []
     CUSTOM_HANDLERS: List[Callable[[logging.LogRecord], None]] = []
+    formatter = logging.Formatter("%(asctime)s : %(levelname)s : %(name)s::%(funcName)s -> %(message)s")
 
     def __init__(self) -> None:
 
@@ -44,9 +47,25 @@ class DpfLogger:
 
         self.stream = logging.StreamHandler(stdout)
         self.file = logging.FileHandler(f"{filename}", mode="a")
-        formatter = logging.Formatter("%(asctime)s : %(levelname)s : %(name)s::%(funcName)s -> %(message)s")
-        self.stream.setFormatter(formatter)
-        self.file.setFormatter(formatter)
+        self.stream.setFormatter(DpfLogger.formatter)
+        self.file.setFormatter(DpfLogger.formatter)
+
+    def change_dir(self):
+        """
+        Update the file logger to the newLOGS_SUBDIR
+        """
+        if not os.path.exists(LOGS_SUBDIR):
+            os.mkdir(LOGS_SUBDIR)
+
+        filename = f"{LOGS_SUBDIR}/logs.txt"
+        file2 = logging.FileHandler(f"{filename}", mode="a")
+        file2.setFormatter(DpfLogger.formatter)
+
+        for logger in DpfLogger.LOGGERS:
+            logger.removeHandler(self.file)
+            logger.addHandler(file2)
+
+        self.file = file2
 
     # Pass in __name__
     def get_logger(self, name) -> logging.Logger:
@@ -72,12 +91,16 @@ class DpfLogger:
 
 
 MAIN_GUI_LOGGER = DpfLogger()
+PROP_LOGGER = PropLogger(LOGS_SUBDIR)
 
 
 class SerialLogger:
+    LOGGERS = {}
 
     # Pass __name__ again
     def __init__(self, name) -> None:
+        SerialLogger.LOGGERS[name] = self
+        self.name = name
         self.raw_data_file = open(f"{LOGS_SUBDIR}/{name}_raw.txt", "a+")
         self.parsed_messages_file = open(f"{LOGS_SUBDIR}/{name}_parsed.txt", "a+")
 
@@ -93,3 +116,20 @@ class SerialLogger:
     def close(self):
         self.raw_data_file.close()
         self.parsed_messages_file.close()
+
+
+def set_test_name(test):
+    # Need to CD into a new directory with a new name
+    global LOGS_SUBDIR
+    LOGS_SUBDIR = f"logs/{START_TIME.strftime('%m-%d-%Y_%H-%M-%S')}_{test}"
+
+    # Need to change ever logger
+    MAIN_GUI_LOGGER.change_dir()
+    for logger in SerialLogger.LOGGERS:
+        # We just need to call the ctor, really
+        logger = SerialLogger.LOGGERS[logger]
+        logger.close()
+        logger.__init__(logger.name)
+
+    # I kinda hate this
+    PROP_LOGGER.__init__(LOGS_SUBDIR)

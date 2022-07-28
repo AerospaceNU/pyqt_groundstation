@@ -4,14 +4,21 @@ Prop Control Widget
 
 import json
 import typing
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QComboBox, QGridLayout, QLabel, QWidget, QPushButton, QCheckBox
+
 import PyQt5.QtCore as QtCore
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QGridLayout,
+    QLabel,
+    QPushButton,
+    QWidget,
+)
 
 from src.constants import Constants
-from src.Widgets import custom_q_widget_base
-
 from src.data_helpers import get_value_from_dictionary
+from src.Widgets import custom_q_widget_base
 
 
 class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
@@ -24,8 +31,6 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
 
         mode_options = ["Test", "Batch", "State"]
         self.test_map_dict: dict = json.load(open("src/Assets/prop_states.json"))
-
-        self.widget_list = []
 
         layout = QGridLayout()
         self.setLayout(layout)

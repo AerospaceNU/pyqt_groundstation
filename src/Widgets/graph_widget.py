@@ -6,14 +6,10 @@ from PyQt5.QtWidgets import QGridLayout, QWidget
 from pyqtgraph import PlotWidget
 
 from src.data_helpers import check_type, first_index_in_list_larger_than
+from src.Modules.DataInterfaceTools.pyqtgraph_helper import get_pen_from_line_number
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
 PEN_COLORS = ["red", "blue", "green", "magenta"]
-
-
-def get_pen_from_line_number(line_number):
-    index = line_number % len(PEN_COLORS)
-    return pyqtgraph.mkPen(color=PEN_COLORS[index])
 
 
 def rgb_to_hex(rgb):
@@ -134,7 +130,7 @@ class GraphWidget(CustomQWidgetBase):
         key = keys[self.plot_line_index]
         num_keys = len(keys)
 
-        if time.time() - self.last_update_time < (self.update_interval/float(num_keys)):  # Don't re-draw graphs to quickly
+        if time.time() - self.last_update_time < (self.update_interval / float(num_keys)):  # Don't re-draw graphs to quickly
             return
         self.last_update_time = time.time()
 

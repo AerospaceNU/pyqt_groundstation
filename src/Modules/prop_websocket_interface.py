@@ -1,26 +1,25 @@
+import asyncio
+import json
 import logging
 import time
 
-import asyncio
-import json
 import websockets
 
+from src.constants import Constants
+from src.CustomLogging.dpf_logger import PROP_LOGGER
 from src.Modules.data_interface_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.annunciator_helper import AnnunciatorHelper
-from src.constants import Constants
 
-from src.CustomLogging.prop_logger import PropLogger
 
 class PropWebsocketInterface(ThreadedModuleCore):
-
     def __init__(self):
         super().__init__()
         self.serial_devices["Prop Websocket"] = self.changeWsServer
         self.serial_port = ""
         self.nextCheckTime = time.time()
         self.loop = asyncio.new_event_loop()
-        
-        self.serial_logger = PropLogger()
+
+        self.serial_logger = PROP_LOGGER
 
         self.annunciator = AnnunciatorHelper()
 
@@ -48,8 +47,8 @@ class PropWebsocketInterface(ThreadedModuleCore):
         # Log every message
         self.serial_logger.log_ws_msg(data)
 
-        if 'data' in data:
-            sensor_data = data['data']
+        if "data" in data:
+            sensor_data = data["data"]
 
             drop_down_data = {}
 
@@ -73,14 +72,14 @@ class PropWebsocketInterface(ThreadedModuleCore):
                     drop_down_data[sensor_type].append([sensor_key, sensor_reading])
 
             self.data_dictionary[Constants.raw_message_data_key] = drop_down_data.copy()
-        elif 'command' in data:
-            command = data['command']
+        elif "command" in data:
+            command = data["command"]
 
-            if command == 'STATE_TRANSITION':
-                transition_data = data['transition']
+            if command == "STATE_TRANSITION":
+                transition_data = data["transition"]
 
-                new_state = transition_data['newState']
-                old_state = transition_data['oldState']
+                new_state = transition_data["newState"]
+                old_state = transition_data["oldState"]
 
                 self.logger.info("Test stand state transition: {0} -> {1}".format(old_state, new_state))
             else:

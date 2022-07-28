@@ -26,15 +26,9 @@ from qtrangeslider import QRangeSlider
 
 from src.constants import Constants
 from src.data_helpers import first_index_in_list_larger_than, interpolate
+from src.Modules.DataInterfaceTools.pyqtgraph_helper import get_pen_from_line_number
 from src.python_avionics.model.fcb_offload_analyzer import FcbOffloadAnalyzer
 from src.Widgets import custom_q_widget_base
-
-PEN_COLORS = ["red", "blue", "green", "magenta"]
-
-
-def get_pen_from_line_number(line_number):
-    index = line_number % len(PEN_COLORS)
-    return pyqtgraph.mkPen(color=PEN_COLORS[index])
 
 
 def rgb_to_hex(rgb):

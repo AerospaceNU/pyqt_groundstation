@@ -2,13 +2,12 @@ import csv
 import json
 import time
 
-import src.CustomLogging.dpf_logger as dpf_logger
-
 
 class PropLogger:
-    def __init__(self) -> None:
+    def __init__(self, subdir) -> None:
         self.file_idx = 0
-        other_filename = dpf_logger.LOGS_SUBDIR + "/PROP_OTHER_MSGS.txt"
+        self.subdir = subdir
+        other_filename = subdir + "/PROP_OTHER_MSGS.txt"
         self.other_writer = open(other_filename, "a")
         self.csv_file_handle = None
 
@@ -19,8 +18,6 @@ class PropLogger:
 
     def get_columns(self, msg_json):
         csv_fields = ["timeStamp", "currentState", "engineSequence"]
-
-        csv_data = [msg_json[field] for field in csv_fields]
 
         sensor_types = ["loadCellSensors", "pressureSensors", "tempSensors", "valves"]
 
@@ -44,7 +41,7 @@ class PropLogger:
         # Files are cheap
         if csv_fields != self.last_columns:
             self.last_columns = csv_fields
-            save_path = dpf_logger.LOGS_SUBDIR + f"/PROP_DATA_{self.file_idx}.txt"
+            save_path = self.subdir + f"/PROP_DATA_{self.file_idx}.txt"
             self.file_idx = self.file_idx + 1
             if self.csv_file_handle is not None:
                 self.csv_file_handle.close()
@@ -75,7 +72,3 @@ class PropLogger:
             self.other_writer.write("ERROR at time" + str(round(time.time())) + "\n")
             self.other_writer.write(str(e))
             self.other_writer.write("\n")
-
-
-if __name__ == "__main__":
-    PropLogger().get_columns("")
