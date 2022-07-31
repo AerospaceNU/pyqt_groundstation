@@ -2,7 +2,7 @@ import pyqtgraph
 
 PEN_COLORS = ["red", "blue", "green", "magenta"]
 
-LINE_WIDTH = 3
+LINE_WIDTH = 2
 
 
 def get_pen_from_line_number(line_number):

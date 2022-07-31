@@ -49,12 +49,15 @@ class PropSequencerWidget(custom_q_widget_base.CustomQWidgetBase):
         self.abort_button = QPushButton(text="Abort Sequece")
         layout.addWidget(self.abort_button, 2, 0, 1, 3)
 
+        sequence_button.clicked.connect(self.setSequenceClicked)
+        self.abort_button.clicked.connect(self.abortClicked)
+
     def abortClicked(self):
         payload = {"command": "ABORT_SEQUENCE"}
         self.callPropCommand(json.dumps(payload))
 
     def setSequenceClicked(self):
-        payload = {"command": "START_SEQUENCE", "sequence": self.sequence_dropdown}
+        payload = {"command": "START_SEQUENCE", "sequence": self.sequence_dropdown.currentText()}
         self.callPropCommand(json.dumps(payload))
 
     def callPropCommand(self, command):
