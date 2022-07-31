@@ -16,6 +16,7 @@ import serial.tools.list_ports
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget, QWidget
 from qt_material import apply_stylesheet, list_themes
+from src.Widgets.logger_config_widget import LoggerConfigWidget
 
 import src.config
 from src.constants import Constants
@@ -154,6 +155,7 @@ class DPFGUI:
             "Module Configuration": module_configuration.ModuleConfiguration,
             "Map Download": map_download_widget.MapDownload,
             "Prop System Control": prop_control_widget.PropControlWidget,
+            "Logging Configurator": LoggerConfigWidget,
         }
 
         # List of tabs that can be dynamically created

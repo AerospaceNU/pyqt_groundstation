@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import math
 import time
 
 import websockets
@@ -70,6 +71,11 @@ class PropWebsocketInterface(ThreadedModuleCore):
                     sensor_key = sensor_name
                     self.data_dictionary[sensor_key] = sensor_reading
                     drop_down_data[sensor_type].append([sensor_key, sensor_reading])
+
+            # Venturi hack
+            reading = math.sqrt(2*806.4 * (max(self.data_dictionary["loxVenturi"], 1e-6) * 6894.757)) *2.27e-5
+            drop_down_data['pressureSensors'].append(["loxVenturi_scaled", reading])
+            self.data_dictionary['loxVenturi_scaled'] = reading
 
             self.data_dictionary[Constants.raw_message_data_key] = drop_down_data.copy()
 

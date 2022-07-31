@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import (
 from src.constants import Constants
 from src.data_helpers import get_value_from_dictionary
 from src.Widgets import custom_q_widget_base
+from src.config import ConfigSaver
 
 # TITLE
 # Override? Set active elements
@@ -92,22 +93,24 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         # self.splitters = [topsplit, bottomsplitter]
 
         self.mode_switch: typing.List[QComboBox] = []
-        self.mode_pushbutton: typing.List[QPushButton] = []
+        self.mode_pushbutton: QPushButton = []
         for i in range(len(mode_options)):
             column = i * 2
 
             mode_label = QLabel()
             mode_switch = QComboBox()
-            mode_button = QPushButton()
 
             mode_label.setText("Current {}: ".format(mode_options[i]))
-            mode_button.setText("Set {}".format(mode_options[i]))
             self.mode_switch.append(mode_switch)
-            self.mode_pushbutton.append(mode_button)
 
             layout.addWidget(mode_label, MODE_LABEL_ROW, column, 1, 2)
             layout.addWidget(mode_switch, MODE_SWITCH_ROW, column, 1, 2)
-            layout.addWidget(mode_button, MODE_BUTTON_ROW, column, 1, 2)
+
+        # Just button to set state, it's gunna look whack but that's OK
+        mode_button = QPushButton()
+        mode_button.setText("Set State")
+        self.mode_pushbutton = mode_button
+        layout.addWidget(mode_button, MODE_BUTTON_ROW, 0, 1, 6)
 
         # Min width for State column
         layout.setColumnMinimumWidth(2 * 2, 140)
@@ -117,7 +120,7 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         self.setBatchOpts()
         self.mode_switch[1].currentTextChanged.connect(self.setTestOpts)
         self.setTestOpts()
-        self.mode_pushbutton[2].clicked.connect(self.setState)
+        self.mode_pushbutton.clicked.connect(self.setState)
 
         self.prop_comboboxes = {}
         self.valve_state_boxes = {}
@@ -154,7 +157,8 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         self.send_override.setDisabled(not override)
         for i in range(len(self.mode_switch)):
             self.mode_switch[i].setDisabled(override)
-            self.mode_pushbutton[i].setDisabled(override)
+
+        self.mode_pushbutton.setDisabled(override)
 
         for combo in self.prop_comboboxes:
             self.prop_comboboxes[combo].setDisabled(not override)
