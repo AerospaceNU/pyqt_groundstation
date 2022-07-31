@@ -72,6 +72,10 @@ class PropWebsocketInterface(ThreadedModuleCore):
                     drop_down_data[sensor_type].append([sensor_key, sensor_reading])
 
             self.data_dictionary[Constants.raw_message_data_key] = drop_down_data.copy()
+
+            for key in ['currentState', 'engineSequence']:
+                    self.data_dictionary[f"ecs_{key}"] = data[key]
+
         elif "command" in data:
             command = data["command"]
 

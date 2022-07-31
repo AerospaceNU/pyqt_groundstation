@@ -56,4 +56,4 @@ class PropViewTab(TabCommon):
         layout.addWidget(prop_graphs, 0, 1)
 
         # HACK!! Set the left scrolling area's width to the min size of the component plus some padding
-        scroll_area.setMinimumWidth(scrolling_vbox.minimumSize().width() + 30)
+        scroll_area.setMinimumWidth(scrolling_vbox.minimumSize().width() + 60)

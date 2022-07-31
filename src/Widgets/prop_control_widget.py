@@ -14,16 +14,36 @@ from PyQt5.QtWidgets import (
     QLabel,
     QPushButton,
     QWidget,
+    QFrame
 )
 
 from src.constants import Constants
 from src.data_helpers import get_value_from_dictionary
 from src.Widgets import custom_q_widget_base
 
+# TITLE
+# Override? Set active elements
+# split
+# Current state: foobar  current sequence foobar
+# split
+# label label label
+# switch switch switch
 
 class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
+
+        # Row defines
+        TITLE_ROW = 0
+        OVERRIDE_ROW = 1
+
+        STATE_ROW = 2
+
+        MODE_LABEL_ROW = 3
+        MODE_SWITCH_ROW = 4
+        MODE_BUTTON_ROW = 5
+
+        VALVE_DISPLAY_START = 8
 
         valve_types = ["Pressurant", "Purge", "Vent", "Flow", "Drip"]
         propellant_types = ["LOX", "Kerosene"]
@@ -51,6 +71,26 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         override_checkbox.clicked.connect(self.overrideClicked)
         override_checkbox.setChecked(False)
 
+        # Current state/sequence display, wrapped in a widget to make borders
+        statedisplaywidget = QFrame(self)
+        row = QGridLayout()
+        statedisplaywidget.setLayout(row)
+        statelabellabel = QLabel(text="Current state:")
+        self.state_label = QLabel(text="Foobar")
+        row.addWidget(statelabellabel, STATE_ROW, 0, 1, 1)
+        row.addWidget(self.state_label, STATE_ROW, 1, 1, 2)
+        sequencelabellabel = QLabel(text="Current sequence:")
+        self.sequence_label = QLabel(text="Foobar")
+        row.addWidget(sequencelabellabel, STATE_ROW, 3, 1, 1)
+        row.addWidget(self.sequence_label, STATE_ROW, 4, 1, 2)
+        layout.addWidget(statedisplaywidget, STATE_ROW, 0, 1, 6)
+
+        # topsplit = QSplitter(QtCore.Qt.Horizontal)
+        # bottomsplitter = QSplitter(QtCore.Qt.Horizontal)
+        # layout.addWidget(topsplit, STATE_ROW-1, 0, 1, 6)
+        # layout.addWidget(bottomsplitter, STATE_ROW+1, 0, 1, 6)
+        # self.splitters = [topsplit, bottomsplitter]
+
         self.mode_switch: typing.List[QComboBox] = []
         self.mode_pushbutton: typing.List[QPushButton] = []
         for i in range(len(mode_options)):
@@ -65,9 +105,9 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
             self.mode_switch.append(mode_switch)
             self.mode_pushbutton.append(mode_button)
 
-            layout.addWidget(mode_label, 2, column, 1, 2)
-            layout.addWidget(mode_switch, 3, column, 1, 2)
-            layout.addWidget(mode_button, 4, column, 1, 2)
+            layout.addWidget(mode_label, MODE_LABEL_ROW, column, 1, 2)
+            layout.addWidget(mode_switch, MODE_SWITCH_ROW, column, 1, 2)
+            layout.addWidget(mode_button, MODE_BUTTON_ROW, column, 1, 2)
 
         # Min width for State column
         layout.setColumnMinimumWidth(2 * 2, 140)
@@ -100,7 +140,7 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
                 valve_state_widget.setText("Unknown")
 
                 column = 3 * i
-                row = j + 5
+                row = j + VALVE_DISPLAY_START
 
                 layout.addWidget(valve_name_widget, row, column)
                 layout.addWidget(valve_control_widget, row, column + 1)
@@ -149,5 +189,27 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
             valve_state = get_value_from_dictionary(vehicle_data, valve_name, "UNKNOWN")
             self.valve_state_boxes[valve_name].setText(valve_state)
 
+        self.state_label.setText(get_value_from_dictionary(vehicle_data, 'ecs_currentState', 'UNKNOWN'))        
+        self.sequence_label.setText(get_value_from_dictionary(vehicle_data, 'ecs_engineSequence', 'UNKNOWN'))        
+
     def callPropCommand(self, command):
         self.callbackEvents.append([Constants.prop_command_key, command])
+
+
+if __name__ == "__main__":
+
+    from PyQt5.QtWidgets import QApplication, QMainWindow
+
+    application = QApplication([])  # PyQt Application object
+    mainWindow = QMainWindow()  # PyQt MainWindow widget
+
+    navball = PropControlWidget()
+    navball.customUpdateAfterThemeSet()
+
+    # navball.yaw = -90
+    # navball.pitch = 90
+
+    mainWindow.setCentralWidget(navball)
+    mainWindow.show()
+
+    application.exec_()
