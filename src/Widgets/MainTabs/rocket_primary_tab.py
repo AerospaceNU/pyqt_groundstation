@@ -7,7 +7,6 @@ import sys
 from PyQt5.QtWidgets import QGridLayout, QSizePolicy
 
 from src.constants import Constants
-from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets import (
     annunciator_panel,
     button_panel,
@@ -18,16 +17,17 @@ from src.Widgets import (
     vehicle_status_widget,
     video_widget,
 )
+from src.Widgets.MainTabs.main_tab_common import TabCommon
 
 
 class RocketPrimaryTab(TabCommon):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
 
-        if sys.platform == "win32":  # PyOpenGL is really sad on Windows
-            use_navball = False
-        else:
+        if sys.platform == "linux":  # PyOpenGL is really sad on Windows and Mac, only run on Linux
             use_navball = True
+        else:
+            use_navball = False
 
         self.FlightDisplay = self.addWidget(flight_display.FlightDisplay(compass_and_text=False, use_navball_widget=use_navball))
         self.StatusBar = self.addWidget(vehicle_status_widget.VehicleStatusWidget())
