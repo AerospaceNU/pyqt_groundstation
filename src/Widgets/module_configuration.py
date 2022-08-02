@@ -1,9 +1,8 @@
 """
-Starts up a scroll area that shows all the data in the database dictionary
+Widget for showing information about module
 """
 from PyQt5 import QtCore
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout, QScrollArea, QWidget, QPushButton
+from PyQt5.QtWidgets import QLabel, QPushButton, QGridLayout
 
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
@@ -11,43 +10,21 @@ from src.constants import Constants
 from src.data_helpers import get_value_from_dictionary
 
 
-class ModuleConfigLine(QWidget):
-    def __init__(self):
-        super(ModuleConfigLine, self).__init__()
-
-        self.nameBox = QLabel()
-        self.loadTimeBox = QLabel()
-        self.enableButton = QPushButton()
-
-        self.enableButton.setText("True")
-
-        layout = QHBoxLayout()
-        layout.addWidget(self.nameBox)
-        layout.addWidget(self.loadTimeBox)
-        layout.addWidget(self.enableButton)
-
-        self.setLayout(layout)
-
-    def setName(self, name):
-        if name != self.nameBox.text():
-            self.nameBox.setText(name)
-            self.nameBox.adjustSize()
-            self.updateStyle()
-
-    def updateStyle(self):
-        self.nameBox.setAlignment(QtCore.Qt.AlignVCenter)
-        self.nameBox.setStyleSheet("font: 12pt")
-
-
 class ModuleConfiguration(CustomQWidgetBase):
     def __init__(self, parent=None):
         super().__init__(widget=parent)
 
-        self.listOfLines = []
         self.moduleData = {}
 
-        self.layout = QVBoxLayout()
+        self.nameBoxList = []
+        self.loadTimeBoxList = []
+        self.enableButtonList = []
+        self.hasRecordedDataBoxList = []
+        self.moduleNameList = []
+
+        self.layout = QGridLayout()
         self.setLayout(self.layout)
+        self.layout.setContentsMargins(10, 5, 10, 5)
 
     def updateData(self, vehicle_data, updated_data):
         self.moduleData = get_value_from_dictionary(vehicle_data, Constants.module_data_key, {})
@@ -60,17 +37,89 @@ class ModuleConfiguration(CustomQWidgetBase):
             load_time = line_data[1]
             has_recorded_data = line_data[2]
 
-            if i >= len(self.listOfLines):
-                line_object = ModuleConfigLine()
-                self.listOfLines.append(line_object)
-                self.layout.addWidget(line_object)
-                line_object.updateStyle()
-                line_object.show()
+            if i >= len(self.nameBoxList):
+                name_box = QLabel()
+                load_time_box = QLabel()
+                enable_button = QPushButton()
+                has_recorded_data_box = QLabel()
 
-            self.listOfLines[i].setName(line_name)
+                layout_row = len(self.nameBoxList)
+                self.layout.addWidget(name_box, layout_row, 0)
+                self.layout.addWidget(load_time_box, layout_row, 1)
+                self.layout.addWidget(enable_button, layout_row, 2)
+                self.layout.addWidget(has_recorded_data_box, layout_row, 3)
+
+                self.nameBoxList.append(name_box)
+                self.loadTimeBoxList.append(load_time_box)
+                self.enableButtonList.append(enable_button)
+                self.hasRecordedDataBoxList.append(has_recorded_data_box)
+                self.moduleNameList.append(line_name)
+
+                enable_button.clicked.connect(lambda a, index=i: self.enableButtonCallback(a, index))
+
+            self.setName(i, line_name)
+            self.setLoadTime(i, load_time)
+            self.setEnabledText(i, enabled)
+            self.setHasRecordedData(i, has_recorded_data)
 
             i += 1
 
+    def enableButtonCallback(self, a, button_index):
+        module_name = self.moduleNameList[button_index]
+        enabled = self.enableButtonList[button_index].text().lower() == "enabled"
+
+        self.callbackEvents.append(["enable_module", "{0},{1}".format(module_name, not enabled)])
+
+    def setName(self, index, name):
+        name_box = self.nameBoxList[index]
+
+        if name != name_box.text():
+            name_box.setText(name)
+            name_box.adjustSize()
+            self.updateStyle(index)
+
+    def setLoadTime(self, index, load_time):
+        load_time = str(round(float(load_time), 5))
+        load_time_box = self.loadTimeBoxList[index]
+        box_text = "Load Time: {}s".format(load_time)
+
+        if box_text != load_time_box.text():
+            load_time_box.setText(box_text)
+            load_time_box.adjustSize()
+            self.updateStyle(index)
+
+    def setEnabledText(self, index, enabled):
+        if enabled:
+            enabled_text = "Enabled"
+        else:
+            enabled_text = "Disabled"
+
+        enabled_button = self.enableButtonList[index]
+
+        if enabled_text != enabled_button.text():
+            enabled_button.setText(enabled_text)
+
+    def setHasRecordedData(self, index, has_recorded_data):
+        box_text = "Has recorded data: {}".format(has_recorded_data)
+        recorded_data_box = self.hasRecordedDataBoxList[index]
+
+        if box_text != recorded_data_box.text():
+            recorded_data_box.setText(box_text)
+            recorded_data_box.adjustSize()
+            self.updateStyle(index)
+
     def customUpdateAfterThemeSet(self):
-        for line in self.listOfLines:
-            line.updateStyle()
+        for i in range(len(self.nameBoxList)):
+            self.updateStyle(i)
+
+    def updateStyle(self, index):
+        name_box = self.nameBoxList[index]
+        load_time_box = self.loadTimeBoxList[index]
+        has_recorded_data_box = self.hasRecordedDataBoxList[index]
+
+        name_box.setAlignment(QtCore.Qt.AlignVCenter)
+        name_box.setStyleSheet("font: 12pt")
+        load_time_box.setAlignment(QtCore.Qt.AlignVCenter)
+        load_time_box.setStyleSheet("font: 12pt")
+        has_recorded_data_box.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        has_recorded_data_box.setStyleSheet("font: 12pt")

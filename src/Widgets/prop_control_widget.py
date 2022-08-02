@@ -10,17 +10,16 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QCheckBox,
     QComboBox,
+    QFrame,
     QGridLayout,
     QLabel,
     QPushButton,
     QWidget,
-    QFrame
 )
 
 from src.constants import Constants
 from src.data_helpers import get_value_from_dictionary
 from src.Widgets import custom_q_widget_base
-from src.config import ConfigSaver
 
 # TITLE
 # Override? Set active elements
@@ -29,6 +28,7 @@ from src.config import ConfigSaver
 # split
 # label label label
 # switch switch switch
+
 
 class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, parent: QWidget = None):
@@ -193,8 +193,8 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
             valve_state = get_value_from_dictionary(vehicle_data, valve_name, "UNKNOWN")
             self.valve_state_boxes[valve_name].setText(valve_state)
 
-        self.state_label.setText(get_value_from_dictionary(vehicle_data, 'ecs_currentState', 'UNKNOWN'))        
-        self.sequence_label.setText(get_value_from_dictionary(vehicle_data, 'ecs_engineSequence', 'UNKNOWN'))        
+        self.state_label.setText(get_value_from_dictionary(vehicle_data, "ecs_currentState", "UNKNOWN"))
+        self.sequence_label.setText(get_value_from_dictionary(vehicle_data, "ecs_engineSequence", "UNKNOWN"))
 
     def callPropCommand(self, command):
         self.callbackEvents.append([Constants.prop_command_key, command])

@@ -39,7 +39,7 @@ class LoggerControlWidget(custom_q_widget_base.CustomQWidgetBase):
 
         layout.addWidget(QLabel(text="Test Name"), 1, 0, 1, 1)
         self.textedit = QTextEdit()
-        self.textedit.setText(ConfigSaver.get("logging", "testname", "UNKNOWN"))
+        self.textedit.setText(self.widgetSettings.get("testname", "UNKNOWN"))
         self.textedit.setMaximumHeight(40)
         layout.addWidget(self.textedit, 1, 1, 1, 1)
 
@@ -49,5 +49,5 @@ class LoggerControlWidget(custom_q_widget_base.CustomQWidgetBase):
 
     def onClick(self):
         testName = self.textedit.toPlainText()
-        ConfigSaver.save("logging", "testname", testName)
+        self.widgetSettings.save("testname", testName)
         set_test_name(testName)

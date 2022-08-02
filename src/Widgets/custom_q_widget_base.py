@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import QFrame, QMenu, QWidget
 from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER
 
 from src.data_helpers import check_type, clamp, get_value_from_dictionary
+from src.config import ConfigSaver
 
 
 class SourceKeyData(object):
@@ -31,6 +32,7 @@ class CustomQWidgetBase(QFrame):
     def __init__(self, widget: QWidget = None):
         super().__init__(widget)
 
+        self.widgetSettings = ConfigSaver(self.__class__.__name__)
         self.logger: logging.Logger = MAIN_GUI_LOGGER.get_logger(self.__class__.__name__)
 
         self.isInLayout = widget is None

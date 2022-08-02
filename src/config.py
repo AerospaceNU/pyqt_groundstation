@@ -9,50 +9,47 @@ def format_key(key: str):
 
 
 class ConfigSaver:
-    @staticmethod
-    def save(section: str, key: str, data: str):
-        key = format_key(key)
-        if section not in config:
-            config[section] = {}
+    def __init__(self, section: str):
+        self.section = section
 
-        config[section][key] = str(data)
+    def getSections(self):
+        return config.sections()
+
+    def save(self, key: str, data: str):
+        key = format_key(key)
+        if self.section not in config:
+            config[self.section] = {}
+
+        config[self.section][key] = str(data)
 
         with open("config.ini", "w") as configfile:
             config.write(configfile)
 
-    @staticmethod
-    def setDefault(section: str, key: str, data: str):
+    def setDefault(self, key: str, data: str):
         key = format_key(key)
-        if section not in config:
-            config[section] = {}
+        if self.section not in config:
+            config[self.section] = {}
 
-        if key not in config[section]:
-            config[section][key] = str(data)
+        if key not in config[self.section]:
+            config[self.section][key] = str(data)
 
             with open("config.ini", "w") as configfile:
                 config.write(configfile)
 
-    @staticmethod
-    def get(section: str, key: str, default=None):
+    def get(self, key: str, default=None):
         key = format_key(key)
-        if section not in config:
+        if self.section not in config:
             if default is None:
                 return None
             else:
-                config[section] = {}
+                config[self.section] = {}
 
         # Default set but section may or may not exist
-
-        if key not in config[section]:
+        if key not in config[self.section]:
             if default is not None:
-                ConfigSaver.save(section, key, default)
+                self.save(key, default)
                 return default
             else:
                 return None
 
-        return config[section][key]
-
-
-# ConfigSaver.save("f", "o", "3")
-# print(ConfigSaver.get("foo","bar"))
-# print(type(ConfigSaver.get("foo","bar")))
+        return config[self.section][key]

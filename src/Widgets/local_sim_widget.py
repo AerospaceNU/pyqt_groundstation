@@ -10,7 +10,6 @@ import psutil
 import PyQt5.QtCore as QtCore
 from PyQt5.QtWidgets import QFileDialog, QGridLayout, QLabel, QLineEdit, QPushButton
 
-from src.config import ConfigSaver
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
 
@@ -89,14 +88,14 @@ class LocalSimWidget(CustomQWidgetBase):
 
     def loadFromConfig(self):
         for idx, name in enumerate(self.pathNames):
-            oldPath = ConfigSaver.get("SimWidget", name.replace(" ", "_"))
+            oldPath = self.widgetSettings.get(name.replace(" ", "_"))
             if oldPath is not None and oldPath != "":
                 self.paths[idx].setText(oldPath)
             else:
                 self.paths[idx].setText(self.defaults[idx])
 
     def savePath(self, idx):
-        ConfigSaver.save("SimWidget", self.pathNames[idx].replace(" ", "_"), self.paths[idx].text())
+        self.widgetSettings.save(self.pathNames[idx].replace(" ", "_"), self.paths[idx].text())
 
     def saveAll(self):
         for i in range(len(self.pathNames)):

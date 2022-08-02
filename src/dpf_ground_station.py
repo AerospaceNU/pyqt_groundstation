@@ -18,6 +18,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget, QWidge
 from qt_material import apply_stylesheet, list_themes
 from src.Widgets.logger_config_widget import LoggerConfigWidget
 
+from src.config import ConfigSaver
+
 import src.config
 from src.constants import Constants
 from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER
@@ -112,6 +114,10 @@ class DPFGUI:
         self.tabObjects: List[Union[CustomQWidgetBase, TabCommon]] = []
 
         self.title = ""
+
+        self.overallSettings = ConfigSaver("Overall")
+        self.serialPortSettings = ConfigSaver("Serial Ports")
+        self.moduleSettings = ConfigSaver("Modules")
 
         self.application = QApplication([])  # PyQt Application object
         self.mainWindow = QMainWindow()  # PyQt MainWindow widget
@@ -278,7 +284,7 @@ class DPFGUI:
         self.serial_devices_ports[device_name] = port_name
 
         if port_name == "":  # Don't need to do anything more if we're disconnecting this device
-            src.config.ConfigSaver.save("serial_ports", device_name, "")
+            self.serialPortSettings.save(device_name, "")
             return
 
         # Otherwise, make sure no one else is using the port
@@ -289,7 +295,7 @@ class DPFGUI:
                 self.callback_queue.append([callback, ""])
                 self.serial_devices_ports[device] = ""
 
-        src.config.ConfigSaver.save("serial_ports", device_name, port_name)
+        self.serialPortSettings.save(device_name, port_name)
 
     def toggleModuleEnabledState(self, module_name):
         if module_name in self.module_dictionary:
@@ -309,7 +315,7 @@ class DPFGUI:
                     if target_module_name != module_name and self.module_dictionary[target_module_name].primary_module:
                         self.module_dictionary[target_module_name].setEnabled(False)
 
-            src.config.ConfigSaver.save("modules", module_name, str(enabled))
+            self.moduleSettings.save(module_name, str(enabled))
         else:
             self.logger.error("Module {} does not exist".format(module_name))
 
@@ -493,7 +499,7 @@ class DPFGUI:
     def addVehicleTab(self, new_tab_object, vehicle_name: str):
         self.tabHolderWidget.addTab(new_tab_object, vehicle_name)
         self.tabHolderWidget.setCurrentIndex(self.tabHolderWidget.count() - 1)
-        self.tabHolderWidget.setCurrentIndex(1) # Why do we default to 1???
+        self.tabHolderWidget.setCurrentIndex(1)  # Why do we default to 1???
 
         self.tabObjects.append(new_tab_object)
         self.tabNames.append(vehicle_name)
@@ -593,7 +599,7 @@ class DPFGUI:
 
                     # We used to force everything to start unconnected, but I don't actually
                     # see a reason to now that we save the last port
-                    default_name = src.config.ConfigSaver.get("serial_ports", device, "")
+                    default_name = self.serialPortSettings.get(device, "")
                     default_name = str(default_name)
 
                     self.serial_devices_ports[device] = default_name  # Want to start everything up unconnected
@@ -607,7 +613,7 @@ class DPFGUI:
             delta_time = time.time() - start_time
             self.module_load_time_dictionary[interface_name] = delta_time
 
-            src.config.ConfigSaver.setDefault("modules", interface_name, str(enabled))
+            self.moduleSettings.setDefault(interface_name, str(enabled))
 
             self.logger.info("Loaded Module [{0}] of type [{1}] in {2} seconds".format(interface_name, interface_class, delta_time))
         except Exception as e:  # Should catch a lot of errors loading in modules
@@ -616,18 +622,16 @@ class DPFGUI:
 
     def loadSettings(self):
         for module in self.module_dictionary:
-            mod_en = src.config.ConfigSaver.get("modules", module) == "True"
+            mod_en = self.moduleSettings.get(module) == "True"
             self.enableOrDisableModule(module, mod_en)
 
-        lastIdx = src.config.ConfigSaver.get("gui", "current_tab")
+        lastIdx = self.overallSettings.get("current_tab")
         if not lastIdx:
             lastIdx = 1
-        self.tabHolderWidget.setCurrentIndex(int(lastIdx)) # Why do we default to 1???
+        self.tabHolderWidget.setCurrentIndex(int(lastIdx))  # Why do we default to 1???
 
         # Only attach change listener after everything's loaded
-        self.tabHolderWidget.currentChanged.connect(lambda: 
-            src.config.ConfigSaver.save("gui", "current_tab", self.tabHolderWidget.currentIndex()))
-
+        self.tabHolderWidget.currentChanged.connect(lambda: self.overallSettings.save("current_tab", self.tabHolderWidget.currentIndex()))
 
     def clearConsole(self, _):  # Need a empty arg to fit with callback system
         self.ConsoleData = [[]]
