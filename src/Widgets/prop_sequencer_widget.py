@@ -4,22 +4,11 @@ Shows the current sequence and abort status
 """
 
 import json
-import typing
-from os import abort
 
 import PyQt5.QtCore as QtCore
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import (
-    QCheckBox,
-    QComboBox,
-    QGridLayout,
-    QLabel,
-    QPushButton,
-    QWidget,
-)
+from PyQt5.QtWidgets import QComboBox, QGridLayout, QLabel, QPushButton, QWidget
 
 from src.constants import Constants
-from src.data_helpers import get_value_from_dictionary
 from src.Widgets import custom_q_widget_base
 
 

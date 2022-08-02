@@ -62,7 +62,7 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
             value = str(line[1]).lstrip()
             try:
                 value = str(round(float(value), self.round_to_decimals))
-            except:
+            except Exception:
                 pass
 
             new_line = "{0}{2}{1}\n".format(line[0], value, spaces)

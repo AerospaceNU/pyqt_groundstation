@@ -1,7 +1,7 @@
-import os
 import math
-import cv2
+import os
 
+import cv2
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPolygon, QRegion
 from PyQt5.QtWidgets import QLabel, QWidget

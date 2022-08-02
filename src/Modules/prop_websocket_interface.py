@@ -73,14 +73,14 @@ class PropWebsocketInterface(ThreadedModuleCore):
                     drop_down_data[sensor_type].append([sensor_key, sensor_reading])
 
             # Venturi hack
-            reading = math.sqrt(2*806.4 * (max(self.data_dictionary["loxVenturi"], 1e-6) * 6894.757)) *2.27e-5
-            drop_down_data['pressureSensors'].append(["loxVenturi_scaled", reading])
-            self.data_dictionary['loxVenturi_scaled'] = reading
+            reading = math.sqrt(2 * 806.4 * (max(self.data_dictionary["loxVenturi"], 1e-6) * 6894.757)) * 2.27e-5
+            drop_down_data["pressureSensors"].append(["loxVenturi_scaled", reading])
+            self.data_dictionary["loxVenturi_scaled"] = reading
 
             self.data_dictionary[Constants.raw_message_data_key] = drop_down_data.copy()
 
-            for key in ['currentState', 'engineSequence']:
-                    self.data_dictionary[f"ecs_{key}"] = data[key]
+            for key in ["currentState", "engineSequence"]:
+                self.data_dictionary[f"ecs_{key}"] = data[key]
 
         elif "command" in data:
             command = data["command"]

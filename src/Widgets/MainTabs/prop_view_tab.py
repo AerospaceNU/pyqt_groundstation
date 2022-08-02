@@ -3,7 +3,7 @@ Tab that has all the prop stuff
 
 """
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QGridLayout, QLabel, QScrollArea, QSizePolicy, QWidget
+from PyQt5.QtWidgets import QGridLayout, QScrollArea, QSizePolicy, QWidget
 
 from src.Widgets.annunciator_panel import AnnunciatorPanel
 from src.Widgets.MainTabs.GraphLayouts.prop_stand_graphs import PropStandGraphs

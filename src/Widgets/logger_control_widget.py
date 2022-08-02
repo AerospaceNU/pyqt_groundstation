@@ -3,26 +3,10 @@ Prop Sequencer Widget
 Shows the current sequence and abort status
 """
 
-import json
-import typing
-from os import abort
-
 import PyQt5.QtCore as QtCore
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import (
-    QCheckBox,
-    QComboBox,
-    QGridLayout,
-    QLabel,
-    QPushButton,
-    QTextEdit,
-    QWidget,
-)
+from PyQt5.QtWidgets import QGridLayout, QLabel, QPushButton, QTextEdit, QWidget
 
-from src.config import ConfigSaver
-from src.constants import Constants
-from src.CustomLogging.dpf_logger import DpfLogger, set_test_name
-from src.data_helpers import get_value_from_dictionary
+from src.CustomLogging.dpf_logger import set_test_name
 from src.Widgets import custom_q_widget_base
 
 

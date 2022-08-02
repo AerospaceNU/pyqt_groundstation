@@ -6,7 +6,6 @@ import json
 import typing
 
 import PyQt5.QtCore as QtCore
-from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -35,9 +34,6 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         super().__init__(parent)
 
         # Row defines
-        TITLE_ROW = 0
-        OVERRIDE_ROW = 1
-
         STATE_ROW = 2
 
         MODE_LABEL_ROW = 3

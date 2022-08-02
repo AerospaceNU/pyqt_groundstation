@@ -2,7 +2,6 @@
 Code used in all vehicle tabs
 """
 from typing import List
-from PyQt5 import QtGui
 
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 

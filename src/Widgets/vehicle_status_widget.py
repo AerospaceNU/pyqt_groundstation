@@ -3,7 +3,6 @@ Top bar of primary display to show vehicle status
 """
 
 from PyQt5 import QtCore
-from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from src.constants import Constants

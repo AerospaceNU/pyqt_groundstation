@@ -2,16 +2,17 @@ import os
 import time
 from os import listdir
 from os.path import isfile, join
-from typing import Dict, Iterator, List
-from unittest.mock import sentinel
+from typing import Dict, List
 
 import pandas as pd
-from src.Modules.MessageParsing.fcb_message_parsing import lat_lon_decimal_minutes_to_decimal_degrees
 
 from src.constants import Constants
+from src.data_helpers import quaternion_to_euler_angle
 from src.Modules.data_interface_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.comms_console_helper import CommsConsoleHelper
-from src.data_helpers import quaternion_to_euler_angle
+from src.Modules.MessageParsing.fcb_message_parsing import (
+    lat_lon_decimal_minutes_to_decimal_degrees,
+)
 from src.python_avionics.exceptions import SerialPortDisconnectedError
 from src.python_avionics.model.fcb_cli import FcbCli
 from src.python_avionics.model.serial_port import SerialPort
@@ -62,9 +63,7 @@ class FCBOffloadModule(ThreadedModuleCore):
             port_object.port.flushInput()
             port_object.port.flushOutput()
         except Exception:
-            self.logger.error(
-                "Unable to connect to FCB over USB at port {0}".format(self.serial_port_name)
-            )
+            self.logger.error("Unable to connect to FCB over USB at port {0}".format(self.serial_port_name))
             self.serial_connection = False
 
     def cliCommand(self, command):
@@ -93,7 +92,7 @@ class FCBOffloadModule(ThreadedModuleCore):
                 self.cliConsole.autoAddEntry(ret, True)
 
         if self.replay_dict is not None:
-            if(self.replay_idx >= self.replay_len):
+            if self.replay_idx >= self.replay_len:
                 self.replay_dict = None
             else:
                 # create a dict from recorded data
@@ -110,17 +109,24 @@ class FCBOffloadModule(ThreadedModuleCore):
                     self.getOffloadKey("q_x"),
                     self.getOffloadKey("q_y"),
                     self.getOffloadKey("q_z"),
-                ] # W X Y Z
-
+                ]  # W X Y Z
 
                 [roll, pitch, yaw] = quaternion_to_euler_angle(quat)
 
                 lat = lat_lon_decimal_minutes_to_decimal_degrees(lat)
                 long = lat_lon_decimal_minutes_to_decimal_degrees(long)
 
-                dictionary = {Constants.latitude_key: lat, Constants.longitude_key: long, Constants.altitude_key: alt,
-                    Constants.gps_alt_key: gpsalt, Constants.orientation_quaternion_key: quat, Constants.vertical_speed_key: vel,
-                    "roll": roll, "pitch": pitch, "yaw": yaw}
+                dictionary = {
+                    Constants.latitude_key: lat,
+                    Constants.longitude_key: long,
+                    Constants.altitude_key: alt,
+                    Constants.gps_alt_key: gpsalt,
+                    Constants.orientation_quaternion_key: quat,
+                    Constants.vertical_speed_key: vel,
+                    "roll": roll,
+                    "pitch": pitch,
+                    "yaw": yaw,
+                }
                 self.data_dictionary.update(dictionary)
 
             self.replay_idx = self.replay_idx + 2
@@ -168,7 +174,7 @@ class FCBOffloadModule(ThreadedModuleCore):
             runName = file.replace("-output-post.csv", "")
             df = pd.read_csv(join(mypath, file), index_col=0)
 
-            time_series = df["timestamp_s"] # no longer /1000
+            time_series = df["timestamp_s"]  # no longer /1000
             time_series = time_series - time_series.iloc[0]
 
             if runName not in self.recorded_data_dictionary:
@@ -176,8 +182,7 @@ class FCBOffloadModule(ThreadedModuleCore):
 
             for key in df.keys():
                 key = str(key)
-                if ("imu" in key and "_real" not in key) or \
-                        ("high_g" in key and "_real" not in key):
+                if ("imu" in key and "_real" not in key) or ("high_g" in key and "_real" not in key):
                     continue
                 self.recorded_data_dictionary[runName]["offload_" + key] = [list(df[key]), list(time_series)]
             self.recorded_data_dictionary[runName]["keys"] = df.keys()
@@ -187,4 +192,3 @@ class FCBOffloadModule(ThreadedModuleCore):
         self.replay_dict = self.recorded_data_dictionary[run_name]
         self.replay_idx = 0
         self.replay_len = len(list(self.replay_dict.values())[0][0])
-

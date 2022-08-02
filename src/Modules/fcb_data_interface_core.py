@@ -6,7 +6,10 @@ from src.Modules.DataInterfaceTools.annunciator_helper import AnnunciatorHelper
 from src.Modules.DataInterfaceTools.diagnostics_box_helper import DiagnosticsBoxHelper
 from src.Modules.DataInterfaceTools.gps_position_filter import GPSPositionFilter
 from src.Modules.DataInterfaceTools.median_filter import MedianFilter
-from src.Modules.MessageParsing.fcb_message_parsing import get_fcb_state_from_state_num, is_ground_station_message
+from src.Modules.MessageParsing.fcb_message_parsing import (
+    get_fcb_state_from_state_num,
+    is_ground_station_message,
+)
 
 KEYS_TO_FILTER = [
     Constants.altitude_key,

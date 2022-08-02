@@ -2,10 +2,11 @@
 Console
 """
 
+import logging
+
 from PyQt5 import QtGui
 from PyQt5.QtGui import QColor, QFont, QPainter
 from PyQt5.QtWidgets import QWidget
-import logging
 
 from src.Widgets import custom_q_widget_base
 

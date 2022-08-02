@@ -12,10 +12,9 @@ from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QFrame, QMenu, QWidget
 
-from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER
-
-from src.data_helpers import check_type, clamp, get_value_from_dictionary
 from src.config import ConfigSaver
+from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER
+from src.data_helpers import check_type, clamp, get_value_from_dictionary
 
 
 class SourceKeyData(object):

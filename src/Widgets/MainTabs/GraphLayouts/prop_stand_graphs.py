@@ -1,9 +1,7 @@
-from src.Widgets.MainTabs.GraphLayouts.graph_layout import GraphLayoutCommon
 from PyQt5.QtWidgets import QGridLayout
-from src.Widgets.graph_tab_control import GraphTabControl
+
 from src.Widgets.graph_widget import GraphWidget
-from src.constants import Constants
-from src.data_helpers import interpolate
+from src.Widgets.MainTabs.GraphLayouts.graph_layout import GraphLayoutCommon
 
 
 class PropStandGraphs(GraphLayoutCommon):

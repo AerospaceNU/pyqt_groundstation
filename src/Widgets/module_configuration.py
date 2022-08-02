@@ -2,12 +2,11 @@
 Widget for showing information about module
 """
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QLabel, QPushButton, QGridLayout
-
-from src.Widgets.custom_q_widget_base import CustomQWidgetBase
+from PyQt5.QtWidgets import QGridLayout, QLabel, QPushButton
 
 from src.constants import Constants
 from src.data_helpers import get_value_from_dictionary
+from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
 
 class ModuleConfiguration(CustomQWidgetBase):

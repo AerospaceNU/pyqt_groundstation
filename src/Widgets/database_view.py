@@ -2,7 +2,7 @@
 Starts up a scroll area that shows all the data in the database dictionary
 """
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QLabel, QGridLayout, QScrollArea
+from PyQt5.QtWidgets import QGridLayout, QLabel, QScrollArea
 
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 

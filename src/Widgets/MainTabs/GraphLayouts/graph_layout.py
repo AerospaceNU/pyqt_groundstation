@@ -1,7 +1,7 @@
-from src.Widgets.MainTabs.main_tab_common import TabCommon
+from src.data_helpers import interpolate
 from src.Widgets.graph_tab_control import GraphTabControl
 from src.Widgets.graph_widget import GraphWidget
-from src.data_helpers import interpolate
+from src.Widgets.MainTabs.main_tab_common import TabCommon
 
 
 class GraphLayoutCommon(TabCommon):

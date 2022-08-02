@@ -10,3 +10,4 @@ extend-ignore =
     D400, # First line should end with a period
     D401, # First line should be in imperative mood
     D401b, # First line should be in imperative mood; try rephrasing
+    F405, # Temporary because star imports with OpenGL are annoying to fix

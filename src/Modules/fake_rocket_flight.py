@@ -8,7 +8,7 @@ import navpy
 import numpy as np
 
 from src.constants import Constants
-from src.data_helpers import quaternion_to_euler_angle, euler_to_quaternion
+from src.data_helpers import euler_to_quaternion, quaternion_to_euler_angle
 from src.Modules.fcb_data_interface_core import FCBDataInterfaceCore
 
 # Internal states for the physics state machine

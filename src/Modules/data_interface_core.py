@@ -63,7 +63,7 @@ class ThreadedModuleCore(threading.Thread):
         return bool(self.recorded_data_dictionary)
 
     def setSpecificRunSelected(self, run_name):
-        """ Override to provide custon replay functionality"""
+        """Override to provide custon replay functionality"""
         pass
 
     def logToConsoleAndCheck(self, message, level):

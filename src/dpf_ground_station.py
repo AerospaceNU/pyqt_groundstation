@@ -14,13 +14,10 @@ from typing import Dict, List, Type, Union
 
 import serial.tools.list_ports
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget
 from qt_material import apply_stylesheet, list_themes
-from src.Widgets.logger_config_widget import LoggerConfigWidget
 
 from src.config import ConfigSaver
-
-import src.config
 from src.constants import Constants
 from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER
 from src.Modules.data_interface_core import ThreadedModuleCore
@@ -48,6 +45,7 @@ from src.Widgets import (
 )
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 from src.Widgets.database_view import DatabaseView
+from src.Widgets.logger_config_widget import LoggerConfigWidget
 from src.Widgets.MainTabs.diagnostic_tab import DiagnosticTab
 from src.Widgets.MainTabs.graphs_tab import GraphsTab
 from src.Widgets.MainTabs.main_tab_common import TabCommon

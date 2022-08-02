@@ -6,10 +6,8 @@ import math
 import os
 
 import cv2
-
-from OpenGL.GL import *
-from OpenGL.GLU import *
-
+from OpenGL.GL import *  # noqa: F403
+from OpenGL.GLU import *  # noqa: F403
 from PyQt5.QtCore import QPoint
 from PyQt5.QtGui import QPolygon, QRegion
 from PyQt5.QtWidgets import QOpenGLWidget, QWidget

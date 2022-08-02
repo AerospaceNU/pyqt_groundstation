@@ -1,7 +1,6 @@
 import math
 import time
 
-import pyqtgraph
 from PyQt5.QtWidgets import QGridLayout, QWidget
 from pyqtgraph import PlotWidget
 

@@ -5,10 +5,9 @@ import time
 import navpy
 
 from src.constants import Constants
+from src.data_helpers import euler_to_quaternion
 from src.Modules.data_interface_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.gps_position_filter import GPSPositionFilter
-
-from src.data_helpers import euler_to_quaternion
 
 
 class RandomDataInterface(ThreadedModuleCore):
@@ -50,7 +49,7 @@ class RandomDataInterface(ThreadedModuleCore):
         self.data_dictionary["acceleration"] = (self.i / 60) - 5
         self.data_dictionary["j"] = self.j
         self.data_dictionary["slowSweep"] = 1 - float(self.j) / 180.0
-        self.data_dictionary[Constants.orientation_quaternion_key] = euler_to_quaternion(self.data_dictionary['roll'], self.data_dictionary['pitch'], self.data_dictionary['yaw'])
+        self.data_dictionary[Constants.orientation_quaternion_key] = euler_to_quaternion(self.data_dictionary["roll"], self.data_dictionary["pitch"], self.data_dictionary["yaw"])
 
         # Generate lat-lon coords
         e = math.cos(math.radians(self.j)) * r * self.t

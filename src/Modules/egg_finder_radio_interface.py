@@ -4,9 +4,9 @@ import time
 import pynmea2
 import serial
 import serial.tools.list_ports
-from src.CustomLogging.dpf_logger import SerialLogger
 
 from src.constants import Constants
+from src.CustomLogging.dpf_logger import SerialLogger
 from src.Modules.data_interface_core import ThreadedModuleCore
 
 

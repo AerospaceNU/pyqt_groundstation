@@ -1,13 +1,13 @@
 """
 Blank tab with diagnostic boxes
 """
-from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets import (
     pyro_display_widget,
     reconfigure_widget,
     simple_console_widget,
     text_box_drop_down_widget,
 )
+from src.Widgets.MainTabs.main_tab_common import TabCommon
 
 
 class DiagnosticTab(TabCommon):

@@ -4,9 +4,9 @@ import time
 
 import serial
 import serial.tools.list_ports
-from src.CustomLogging.dpf_logger import SerialLogger
 
 from src.constants import Constants
+from src.CustomLogging.dpf_logger import SerialLogger
 from src.Modules.DataInterfaceTools.comms_console_helper import CommsConsoleHelper
 from src.Modules.DataInterfaceTools.reconfigure_helper import ReconfigurePage
 from src.Modules.fcb_data_interface_core import FCBDataInterfaceCore

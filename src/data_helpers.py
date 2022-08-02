@@ -15,7 +15,7 @@ def clamp(value, minValue, maxValue):
 
 def vector_length(x, y):
     """Returns length of vector [x, y]"""
-    return math.sqrt(x ** 2 + y ** 2)
+    return math.sqrt(x**2 + y**2)
 
 
 def quaternion_to_euler_angle(quaternion):

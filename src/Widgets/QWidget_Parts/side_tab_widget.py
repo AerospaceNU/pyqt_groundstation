@@ -1,4 +1,12 @@
-from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QStackedWidget, QPushButton, QFrame, QScrollArea, QSizePolicy
+from PyQt5.QtWidgets import (
+    QHBoxLayout,
+    QPushButton,
+    QScrollArea,
+    QSizePolicy,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 
 class SideTabWidget(QWidget):
