@@ -7,7 +7,7 @@ import time
 import websockets
 
 from src.constants import Constants
-from src.CustomLogging.dpf_logger import PROP_LOGGER
+from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER, PROP_LOGGER
 from src.Modules.data_interface_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.annunciator_helper import AnnunciatorHelper
 
@@ -148,3 +148,28 @@ class PropWebsocketInterface(ThreadedModuleCore):
             self.annunciator.setAnnunciator(0, "Test Stand Connection", 2, "No connection to test stand at {}".format(self.serial_port))
 
         self.data_dictionary[Constants.primary_annunciator] = self.annunciator.getList()
+
+    def getSpecificRun(self, run_name):
+        big_dict = {}
+        import os
+
+        import pandas
+
+        for file in os.listdir(f"logs/{run_name}"):
+            if file.startswith("PROP_DATA_"):
+                csv = pandas.read_csv(f"logs/{run_name}/{file}")
+                time_series = csv["timeStamp"] / 1000
+                time_series = time_series - time_series.iloc[0]
+                for key in csv.keys():
+                    # If key in dict, just set -- otherwise, append
+                    if key not in big_dict:
+                        big_dict[key] = [list(csv[key]), list(time_series)]
+                    else:
+                        big_dict[key][0].append(list(csv[key]))
+                        big_dict[key][1].append(list(time_series))
+
+        return big_dict
+
+    def setSpecificRunSelected(self, run_name):
+        # TODO load from file
+        pass

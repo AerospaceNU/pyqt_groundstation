@@ -189,6 +189,7 @@ class DPFGUI:
         # Add callback to clear console
         self.addCallback("clear_console", self.clearConsole)
         self.addCallback("enable_module", self.enableModuleCallback)
+        self.addCallback(Constants.set_recorded_data_callback_id, self.setRecordedDataAndInterfaceCallback)
 
         # Other setup tasks
         self.setUpMenuBar()
@@ -358,20 +359,7 @@ class DPFGUI:
     def setCurrentPlaybackOption(self, option):
         module_name = option.split(" | ")[0]
         run_name = option.split(" | ")[1]
-        for interface in self.module_dictionary:
-            # Look for module with the same name as was clicked
-            if module_name == interface:
-                interface_object = self.module_dictionary[interface]
-
-                recorded_data_dict = interface_object.getSpecificRun(run_name)
-                # self.current_playback_source = PlaybackSource(run_name, module_name, recorded_data_dict)
-
-                # Give new data to all tabs
-                for tab in self.tabObjects:
-                    tab.setRecordedData(recorded_data_dict)
-
-                # Tell the module we clicked on its specific run
-                interface_object.setSpecificRunSelected(run_name)
+        self.setRecordedDataAndInterfaceCallback((module_name, run_name))
 
     def updateGUI(self):
         """
@@ -552,6 +540,23 @@ class DPFGUI:
         module_name = data[0]
         module_enabled = data[1].lower() == "true"
         self.enableOrDisableModule(module_name, module_enabled)
+
+    def setRecordedDataAndInterfaceCallback(self, data):
+        module_name, run_name = data
+
+        for interface in self.module_dictionary:
+            # Look for module with the same name as was clicked
+            if module_name == interface:
+                interface_object = self.module_dictionary[interface]
+
+                recorded_data_dict = interface_object.getSpecificRun(run_name)
+
+                # Give new data to all tabs
+                for tab in self.tabObjects:
+                    tab.setRecordedData(recorded_data_dict)
+
+                # Tell the module we clicked on its specific run
+                interface_object.setSpecificRunSelected(run_name)
 
     def processCallbacks(self):
         callbacks = copy.deepcopy(self.callback_queue)

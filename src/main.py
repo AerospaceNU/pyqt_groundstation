@@ -6,6 +6,7 @@ Main file to run the GUI
 
 import sys
 
+from src.constants import Constants
 from src.dpf_ground_station import DPFGUI
 from src.Modules.android_phone_bluetooth_interface import AndroidPhoneBluetoothInterface
 from src.Modules.desktop_simulation_interface import LocalSimulationFlightInterface
@@ -50,7 +51,7 @@ if __name__ == "__main__":
     GUI.addModule("Fake Flight", FakeFlight, enabled=False)
     GUI.addModule("Random Data for Debugging", RandomDataInterface, enabled=False, hide_toggle=False)
     GUI.addModule("Map Interface", MapInterface, enabled=True, hide_toggle=True)
-    GUI.addModule("Prop websocket thing", PropWebsocketInterface, enabled=False, hide_toggle=False)
+    GUI.addModule(Constants.InterfaceNames.prop_websocket, PropWebsocketInterface, enabled=False, hide_toggle=False)
 
     GUI.loadSettings()
 

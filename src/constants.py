@@ -125,6 +125,21 @@ class Constants:
     map_tile_manager_key = "map_tile_manager"
     enable_module_key = "enable_module"
     module_data_key = "module_data"
+    set_recorded_data_callback_id = "set_recorded_data_and_interface"
+
+    class InterfaceNames:
+        ground_station_data = "Serial Ground Station"
+        egg_finder = "Egg Finder Radio"
+        fcb_offload = "FCB Offload"
+        android_bluetooth = "Android Phone Bluetooth"
+        text_speech = "Text To Speech"
+        laptop_status = "Laptop Status Monitor"
+        local_sim = "Local Simulation"
+        ground_station_recorded_data = "Ground Station Recorded Data"
+        fake_flight = "Fake Flight"
+        random_data = "Random Data for Debugging"
+        map_interface = "Map Interface"
+        prop_websocket = "Prop Websocket Interface"
 
     # Line cutter stuff
     MAX_LINE_CUTTERS = 4
