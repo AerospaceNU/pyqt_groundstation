@@ -32,6 +32,7 @@ class PropWebsocketInterface(ThreadedModuleCore):
         self.primary_module = True
 
     def propCommandCallback(self, command):
+        self.logger.debug(f"Trying to queue command: {command}")
         if self.connected:
             self.command_queue.append(command)
         else:

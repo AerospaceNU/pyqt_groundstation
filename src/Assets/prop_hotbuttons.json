@@ -1,0 +1,4 @@
+{
+    "sequences": ["FLOW_STARTUP", "FLOW_SHUTDOWN"],
+    "states": ["KERO_ENGINE_PURGE", "LOX_ENGINE_PURGE"]
+}

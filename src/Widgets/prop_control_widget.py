@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QFrame,
     QGridLayout,
+    QHBoxLayout,
     QLabel,
     QPushButton,
     QWidget,
@@ -20,13 +21,9 @@ from src.constants import Constants
 from src.data_helpers import get_value_from_dictionary
 from src.Widgets import custom_q_widget_base
 
-# TITLE
-# Override? Set active elements
-# split
-# Current state: foobar  current sequence foobar
-# split
-# label label label
-# switch switch switch
+
+def make_lambda(callback, arg):
+    return lambda: callback(arg)
 
 
 class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
@@ -36,10 +33,10 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         # Row defines
         STATE_ROW = 2
 
-        MODE_LABEL_ROW = 3
-        MODE_SWITCH_ROW = 4
-        MODE_BUTTON_ROW = 5
-
+        MODE_LABEL_ROW = 4
+        MODE_SWITCH_ROW = 5
+        STATE_BUTTON_ROW = 6
+        HOTBUTTON_HBOX_ROW = 7
         VALVE_DISPLAY_START = 8
 
         valve_types = ["Pressurant", "Purge", "Vent", "Flow", "Drip"]
@@ -106,7 +103,35 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         mode_button = QPushButton()
         mode_button.setText("Set State")
         self.mode_pushbutton = mode_button
-        layout.addWidget(mode_button, MODE_BUTTON_ROW, 0, 1, 6)
+        layout.addWidget(mode_button, STATE_BUTTON_ROW, 0, 1, 6)
+
+        # QFrame to hold the hot buttons
+        hotbuttonFrame = QFrame()
+        layout.addWidget(hotbuttonFrame, HOTBUTTON_HBOX_ROW, 0, 1, 6)
+        hotbuttonhbox = QHBoxLayout()
+        hotbuttonFrame.setLayout(hotbuttonhbox)
+        self.hot_buttons = []
+
+        hotbutton_allowed = QCheckBox(text="Allow hotbuttons")
+        hotbuttonhbox.addWidget(hotbutton_allowed)
+        hotbutton_allowed.clicked.connect(lambda: [s.setDisabled(not hotbutton_allowed.isChecked()) for s in self.hot_buttons])
+        hotbutton_allowed.setChecked(False)
+
+        hotbuttons = json.load(open("src/Assets/prop_hotbuttons.json"))
+        for category in hotbuttons:
+            for buttonText in hotbuttons[category]:
+                button = QPushButton(text=buttonText)
+                # TODO hook button press up
+                hotbuttonhbox.addWidget(button)
+                self.hot_buttons.append(button)
+                button.setDisabled(True)
+
+                # Python lambda closures are dumb, so we need to use make_lambda or the lambda is bound
+                # to whatever the last button we clicked is.
+                if category == "sequences":
+                    button.clicked.connect(make_lambda(self.setSequenceFromString, buttonText))
+                else:  # state
+                    button.clicked.connect(make_lambda(self.setStateFromString, buttonText))
 
         # Min width for State column
         layout.setColumnMinimumWidth(2 * 2, 140)
@@ -181,7 +206,14 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         self.callPropCommand(json.dumps(payload))
 
     def setState(self):
-        payload = {"command": "SET_STATE", "newState": self.mode_switch[2].currentText()}
+        self.setStateFromString(self.mode_switch[2].currentText())
+
+    def setStateFromString(self, state: str):
+        payload = {"command": "SET_STATE", "newState": state}
+        self.callPropCommand(json.dumps(payload))
+
+    def setSequenceFromString(self, sequence: str):
+        payload = {"command": "START_SEQUENCE", "sequence": sequence}
         self.callPropCommand(json.dumps(payload))
 
     def updateData(self, vehicle_data, updated_data):
