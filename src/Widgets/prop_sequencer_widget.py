@@ -6,10 +6,11 @@ Shows the current sequence and abort status
 import json
 
 import PyQt5.QtCore as QtCore
-from PyQt5.QtWidgets import QComboBox, QGridLayout, QLabel, QPushButton, QWidget
+from PyQt5.QtWidgets import QComboBox, QGridLayout, QLabel, QPushButton, QWidget, QProgressBar
 
 from src.constants import Constants
 from src.Widgets import custom_q_widget_base
+from src.data_helpers import clamp, get_value_from_dictionary
 
 
 class PropSequencerWidget(custom_q_widget_base.CustomQWidgetBase):
@@ -41,6 +42,13 @@ class PropSequencerWidget(custom_q_widget_base.CustomQWidgetBase):
         sequence_button.clicked.connect(self.setSequenceClicked)
         self.abort_button.clicked.connect(self.abortClicked)
 
+        # show progress
+        progresslabel = QLabel("Sequence Progress")
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setValue(0)
+        layout.addWidget(progresslabel, 3, 0, 1, 1)
+        layout.addWidget(self.progress_bar, 3, 1, 1, 2)
+
     def abortClicked(self):
         payload = {"command": "ABORT_SEQUENCE"}
         self.callPropCommand(json.dumps(payload))
@@ -52,5 +60,6 @@ class PropSequencerWidget(custom_q_widget_base.CustomQWidgetBase):
     def callPropCommand(self, command):
         self.callbackEvents.append([Constants.prop_command_key, command])
 
-    # def customUpdateAfterThemeSet(self):
-    #     self.abort_button.setStyleSheet(self.abort_button.styleSheet() + " background-color:red")
+    def updateData(self, vehicle_data, updated_data):
+        progress_percent = clamp(int(get_value_from_dictionary(vehicle_data, "ecs_sequenceProgress", 0) * 100), 0, 100)
+        self.progress_bar.setValue(progress_percent)

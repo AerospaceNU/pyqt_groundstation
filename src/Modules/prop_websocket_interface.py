@@ -80,7 +80,7 @@ class PropWebsocketInterface(ThreadedModuleCore):
 
             self.data_dictionary[Constants.raw_message_data_key] = drop_down_data.copy()
 
-            for key in ["currentState", "engineSequence"]:
+            for key in ["currentState", "engineSequence", "sequenceProgress", "recordedAbort"]:
                 self.data_dictionary[f"ecs_{key}"] = data[key]
 
         elif "command" in data:

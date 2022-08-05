@@ -71,12 +71,16 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         statedisplaywidget.setLayout(row)
         statelabellabel = QLabel(text="Current state:")
         self.state_label = QLabel(text="Foobar")
-        row.addWidget(statelabellabel, STATE_ROW, 0, 1, 1)
-        row.addWidget(self.state_label, STATE_ROW, 1, 1, 2)
+        row.addWidget(statelabellabel, 0, 0, 1, 1)
+        row.addWidget(self.state_label, 0, 1, 1, 2)
         sequencelabellabel = QLabel(text="Current sequence:")
         self.sequence_label = QLabel(text="Foobar")
-        row.addWidget(sequencelabellabel, STATE_ROW, 3, 1, 1)
-        row.addWidget(self.sequence_label, STATE_ROW, 4, 1, 2)
+        row.addWidget(sequencelabellabel, 0, 3, 1, 1)
+        row.addWidget(self.sequence_label, 0, 4, 1, 2)
+        abortlabellabel = QLabel(text="Last abort:")
+        self.abort_label = QLabel(text="Foobar")
+        row.addWidget(abortlabellabel, 0, 6, 1, 1)
+        row.addWidget(self.abort_label, 0, 7, 1, 2)
         layout.addWidget(statedisplaywidget, STATE_ROW, 0, 1, 6)
 
         # topsplit = QSplitter(QtCore.Qt.Horizontal)
@@ -223,6 +227,7 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
 
         self.state_label.setText(get_value_from_dictionary(vehicle_data, "ecs_currentState", "UNKNOWN"))
         self.sequence_label.setText(get_value_from_dictionary(vehicle_data, "ecs_engineSequence", "UNKNOWN"))
+        self.abort_label.setText(get_value_from_dictionary(vehicle_data, "ecs_recordedAbort", "UNKNOWN"))
 
     def callPropCommand(self, command):
         self.callbackEvents.append([Constants.prop_command_key, command])
