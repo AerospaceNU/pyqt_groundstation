@@ -43,5 +43,6 @@ runFlake8() {
 }
 
 runMypy() {
-  mypy src/
+  # mypy src/
+  mypy src/python_avionics
 }

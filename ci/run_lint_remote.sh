@@ -10,5 +10,5 @@ runIsort
 successCheck "Isort check"
 runFlake8
 successCheck "Flake8 check"
-#runMypy
-#successCheck "Mypy check"
+runMypy
+successCheck "Mypy check"

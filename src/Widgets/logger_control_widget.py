@@ -9,7 +9,6 @@ import PyQt5.QtCore as QtCore
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QCheckBox,
-    QGridLayout,
     QHBoxLayout,
     QLabel,
     QLineEdit,

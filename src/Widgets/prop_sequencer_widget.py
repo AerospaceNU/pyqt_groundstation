@@ -6,11 +6,18 @@ Shows the current sequence and abort status
 import json
 
 import PyQt5.QtCore as QtCore
-from PyQt5.QtWidgets import QComboBox, QGridLayout, QLabel, QPushButton, QWidget, QProgressBar
+from PyQt5.QtWidgets import (
+    QComboBox,
+    QGridLayout,
+    QLabel,
+    QProgressBar,
+    QPushButton,
+    QWidget,
+)
 
 from src.constants import Constants
-from src.Widgets import custom_q_widget_base
 from src.data_helpers import clamp, get_value_from_dictionary
+from src.Widgets import custom_q_widget_base
 
 
 class PropSequencerWidget(custom_q_widget_base.CustomQWidgetBase):

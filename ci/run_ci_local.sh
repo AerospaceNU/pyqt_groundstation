@@ -13,7 +13,7 @@ runIsort
 successCheck "Isort check"
 runFlake8
 successCheck "Flake8 check"
-#runMypy
-#successCheck "Mypy check"
+runMypy
+successCheck "Mypy check"
 
 read -p "CI Checks Passed! Press Enter Key to Complete..."
