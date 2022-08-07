@@ -44,6 +44,7 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         valve_options = ["Open", "Closed"]
 
         mode_options = ["Test", "Batch", "State"]
+        self.mode_options = mode_options
         self.test_map_dict: dict = json.load(open("src/Assets/prop_states.json"))
 
         layout = QGridLayout()
@@ -141,11 +142,23 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         layout.setColumnMinimumWidth(2 * 2, 140)
 
         self.mode_switch[0].addItems(self.test_map_dict.keys())
+        # Set the current test dropdown to the last saved, or zero by default
+        self.mode_switch[0].setCurrentIndex(self.widgetSettings.get(mode_options[0], 0, type=int))
         self.mode_switch[0].currentTextChanged.connect(self.setBatchOpts)
+
+        # Load the batch dropdown based on current test
         self.setBatchOpts()
+
+        # Set the current batch dropdown to the last saved, or zero by default
+        self.mode_switch[1].setCurrentIndex(self.widgetSettings.get(mode_options[1], 0, type=int))
+
         self.mode_switch[1].currentTextChanged.connect(self.setTestOpts)
         self.setTestOpts()
         self.mode_pushbutton.clicked.connect(self.setState)
+
+        # Set the state dropdown based on last saved
+        self.mode_switch[2].setCurrentIndex(self.widgetSettings.get(mode_options[2], 0, type=int))
+        self.mode_switch[2].currentTextChanged.connect(lambda: self.widgetSettings.save(self.mode_options[2], self.mode_switch[2].currentIndex()))
 
         self.prop_comboboxes = {}
         self.valve_state_boxes = {}
@@ -189,11 +202,17 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
             self.prop_comboboxes[combo].setDisabled(not override)
 
     def setBatchOpts(self):
+        # Batch dropdown just changed, so save it
+        self.widgetSettings.save(self.mode_options[0], self.mode_switch[0].currentIndex())
+
         key = self.mode_switch[0].currentText()
         self.mode_switch[1].clear()
         self.mode_switch[1].addItems(self.test_map_dict[key])  # Adds "KERO_FILL", "PURGE", etc
 
     def setTestOpts(self):
+        # Test dropdown just changed, so save it
+        self.widgetSettings.save(self.mode_options[1], self.mode_switch[1].currentIndex())
+
         batch_key = self.mode_switch[0].currentText()
         test_key = self.mode_switch[1].currentText()
         if len(test_key) > 0 and len(batch_key) > 0:

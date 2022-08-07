@@ -36,7 +36,7 @@ class ConfigSaver:
             with open("config.ini", "w") as configfile:
                 config.write(configfile)
 
-    def get(self, key: str, default=None):
+    def get(self, key: str, default=None, type=str):
         key = format_key(key)
         if self.section not in config:
             if default is None:
@@ -52,4 +52,5 @@ class ConfigSaver:
             else:
                 return None
 
-        return config[self.section][key]
+        string_ret = config[self.section][key]
+        return type(string_ret)
