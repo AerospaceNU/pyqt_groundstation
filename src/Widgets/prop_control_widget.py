@@ -268,4 +268,8 @@ if __name__ == "__main__":
     mainWindow.setCentralWidget(navball)
     mainWindow.show()
 
+    from qt_material import apply_stylesheet
+
+    apply_stylesheet(application, theme="themes/old_dark_mode.xml")
+
     application.exec_()

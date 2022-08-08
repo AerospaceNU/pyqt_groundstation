@@ -42,7 +42,7 @@ class PropViewTab(TabCommon):
 
         # Scroll Area Properties
         scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(scroll_widget)
 
@@ -57,3 +57,23 @@ class PropViewTab(TabCommon):
 
         # HACK!! Set the left scrolling area's width to the min size of the component plus some padding
         scroll_area.setMinimumWidth(scrolling_vbox.minimumSize().width() + 60)
+
+
+if __name__ == "__main__":
+
+    from PyQt5.QtWidgets import QApplication, QMainWindow
+
+    application = QApplication([])  # PyQt Application object
+    mainWindow = QMainWindow()  # PyQt MainWindow widget
+
+    navball = PropViewTab()
+
+    mainWindow.setCentralWidget(navball)
+    mainWindow.show()
+
+    from qt_material import apply_stylesheet
+
+    apply_stylesheet(application, theme="themes/high_contrast_light.xml")
+    navball.customUpdateAfterThemeSet()
+
+    application.exec_()

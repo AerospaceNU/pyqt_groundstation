@@ -37,17 +37,14 @@ class PropSequencerWidget(custom_q_widget_base.CustomQWidgetBase):
         # Need a row with Set Sequence: [ dropdown with json contents ]
         # and a big old ABORT SEQUENCE button
 
-        layout.addWidget(QLabel(text="Set Sequence:"), 1, 0, 1, 1)
+        layout.addWidget(QLabel(text="Set Sequence"), 1, 0, 1, 1)
         self.sequence_dropdown = QComboBox()
         self.sequence_dropdown.addItems(self.test_map_dict["sequences"])
-        layout.addWidget(self.sequence_dropdown, 1, 1, 1, 1)
+        layout.addWidget(self.sequence_dropdown, 1, 1, 1, 2)
         sequence_button = QPushButton(text="Set Sequence")
-        layout.addWidget(sequence_button, 1, 2, 1, 1)
-        self.abort_button = QPushButton(text="Abort Sequece")
-        layout.addWidget(self.abort_button, 2, 0, 1, 3)
+        layout.addWidget(sequence_button, 2, 0, 1, 3)
 
         sequence_button.clicked.connect(self.setSequenceClicked)
-        self.abort_button.clicked.connect(self.abortClicked)
 
         # show progress
         progresslabel = QLabel("Sequence Progress")
@@ -55,6 +52,13 @@ class PropSequencerWidget(custom_q_widget_base.CustomQWidgetBase):
         self.progress_bar.setValue(0)
         layout.addWidget(progresslabel, 3, 0, 1, 1)
         layout.addWidget(self.progress_bar, 3, 1, 1, 2)
+
+        # Abort button after a spacer
+        layout.setVerticalSpacing(20)
+        self.abort_button = QPushButton(text="Abort Sequece")
+        self.abort_button.clicked.connect(self.abortClicked)
+        layout.addWidget(self.abort_button, 5, 0, 1, 3)
+        self.abort_button.setProperty("class", "danger")
 
     def abortClicked(self):
         payload = {"command": "ABORT_SEQUENCE"}
