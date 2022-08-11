@@ -2,6 +2,8 @@
 .idea/
 .mypy_cache/
 .venv/
+,vs
+.vscode
 *__pycache__
 output/
 sim_input/
