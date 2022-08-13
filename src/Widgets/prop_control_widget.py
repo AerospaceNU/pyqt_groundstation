@@ -41,7 +41,7 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
 
         valve_types = ["Pressurant", "Purge", "Vent", "Flow", "Drip"]
         propellant_types = ["LOX", "Kerosene"]
-        valve_options = ["Open", "Closed"]
+        valve_options = ["OPEN", "CLOSED"]
 
         mode_options = ["Test", "Batch", "State"]
         self.mode_options = mode_options
@@ -160,8 +160,8 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         self.mode_switch[2].setCurrentIndex(self.widgetSettings.get(mode_options[2], 0, type=int))
         self.mode_switch[2].currentTextChanged.connect(lambda: self.widgetSettings.save(self.mode_options[2], self.mode_switch[2].currentIndex()))
 
-        self.prop_comboboxes = {}
-        self.valve_state_boxes = {}
+        self.prop_comboboxes: typing.Dict[QComboBox] = {}
+        self.valve_state_boxes: typing.Dict[QLabel] = {}
 
         for i in range(len(propellant_types)):
             propellant_name = propellant_types[i]
@@ -175,6 +175,8 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
                 valve_state_widget = QLabel()
                 self.prop_comboboxes[valve_name] = valve_control_widget
                 self.valve_state_boxes[valve_name] = valve_state_widget
+
+                valve_state_widget.text
 
                 valve_name_widget.setText(valve_name_text)
                 valve_control_widget.addItems(valve_options)
@@ -200,6 +202,13 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
 
         for combo in self.prop_comboboxes:
             self.prop_comboboxes[combo].setDisabled(not override)
+
+        if override:
+            # Set all override dropdowns to current valve states
+            for valve_name in self.prop_comboboxes:
+                # Coboboxes = the dropdown you select desired state from
+                # state_boxes = label showing current state
+                self.prop_comboboxes[valve_name].setCurrentText(self.valve_state_boxes[valve_name].text())
 
     def setBatchOpts(self):
         # Batch dropdown just changed, so save it
