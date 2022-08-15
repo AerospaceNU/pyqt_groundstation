@@ -1,4 +1,4 @@
 {
-    "sequences": ["FLOW_STARTUP", "FLOW_SHUTDOWN"],
-    "states": ["KERO_ENGINE_PURGE", "LOX_ENGINE_PURGE"]
+    "sequences": ["PURGE_ABORT", "NO_PURGE_ABORT"],
+    "states": ["ONLINE_SAFE"]
 }

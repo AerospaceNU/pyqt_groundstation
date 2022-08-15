@@ -62,8 +62,15 @@ class PropWebsocketInterface(ThreadedModuleCore):
                 for sensor_name in sensor_names:
                     sensor_values = sensor_data[sensor_type][sensor_name]
 
-                    if "sensorReading" in sensor_values:
-                        sensor_reading = sensor_values["sensorReading"]
+                    if "sensorReading" in sensor_values or "rawCounts" in sensor_values:
+                        if "sensorReading" in sensor_values:
+                            sensor_reading = sensor_values["sensorReading"]
+                        if "rawCounts" in sensor_values:
+                            raw = sensor_values["rawCounts"]
+                            self.data_dictionary[sensor_name + "_raw"] = raw
+                            if "raw" not in drop_down_data:
+                                drop_down_data["raw"] = []
+                            drop_down_data["raw"].append([sensor_name, raw])
                     elif "valveState" in sensor_values:
                         sensor_reading = sensor_values["valveState"]
                     else:
@@ -81,7 +88,8 @@ class PropWebsocketInterface(ThreadedModuleCore):
             self.data_dictionary[Constants.raw_message_data_key] = drop_down_data.copy()
 
             for key in ["currentState", "engineSequence", "sequenceProgress", "recordedAbort"]:
-                self.data_dictionary[f"ecs_{key}"] = data[key]
+                if key in data:
+                    self.data_dictionary[f"ecs_{key}"] = data[key]
 
         elif "command" in data:
             command = data["command"]

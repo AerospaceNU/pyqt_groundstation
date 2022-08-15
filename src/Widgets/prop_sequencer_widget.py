@@ -55,7 +55,7 @@ class PropSequencerWidget(custom_q_widget_base.CustomQWidgetBase):
 
         # Abort button after a spacer
         layout.setVerticalSpacing(20)
-        self.abort_button = QPushButton(text="Abort Sequece")
+        self.abort_button = QPushButton(text="Stop Sequence")
         self.abort_button.clicked.connect(self.abortClicked)
         layout.addWidget(self.abort_button, 5, 0, 1, 3)
         self.abort_button.setProperty("class", "danger")

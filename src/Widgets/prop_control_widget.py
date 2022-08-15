@@ -39,7 +39,7 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         HOTBUTTON_HBOX_ROW = 7
         VALVE_DISPLAY_START = 8
 
-        valve_types = ["Pressurant", "Purge", "Vent", "Flow", "Drip"]
+        valve_types = ["Pressurant", "Purge", "Vent", "Flow"]
         propellant_types = ["LOX", "Kerosene"]
         valve_options = ["OPEN", "CLOSED"]
 

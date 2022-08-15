@@ -9,8 +9,8 @@ class PropStandGraphs(GraphLayoutCommon):
         super().__init__(parent=parent)
 
         layout = QGridLayout()
-        layout.addWidget(self.addWidget(GraphWidget(title="Kerosene Pressure", source_list=["kerInletDucer", "kerPintleDucer", "kerTankDucer", "kerVenturi"])), 1, 1)
-        layout.addWidget(self.addWidget(GraphWidget(title="LOX Pressure", source_list=["loxInletDucer", "loxPintleDucer", "loxTankDucer", "loxVenturi"])), 1, 2)
+        layout.addWidget(self.addWidget(GraphWidget(title="Kerosene Pressure", source_list=["kerTankDucer", "kerInletDucer", "kerPintleDucer", "kerVenturi", "kerRegDucer"])), 1, 1)
+        layout.addWidget(self.addWidget(GraphWidget(title="LOX Pressure", source_list=["loxTankDucer", "loxInletDucer", "loxPintleDucer", "loxVenturi", "loxRegDucer"])), 1, 2)
         layout.addWidget(self.addWidget(GraphWidget(title="Other Pressure", source_list=["pneumaticDucer", "purgeDucer"])), 1, 3)
         layout.addWidget(self.addWidget(GraphWidget(title="Load Cell", source_list=["loadCell"])), 2, 1)
         layout.addWidget(self.addWidget(GraphWidget(title="Manifold Thermocouples", source_list=["manifoldInletThermo", "manifoldOutletThermo"])), 2, 2)

@@ -1,6 +1,6 @@
 import pyqtgraph
 
-PEN_COLORS = ["red", "blue", "green", "magenta"]
+PEN_COLORS = ["red", "blue", "green", "magenta", "pink"]
 
 LINE_WIDTH = 2
 

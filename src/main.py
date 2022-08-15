@@ -34,8 +34,8 @@ if __name__ == "__main__":
     GUI.addTabByTabType("Offload", "Offload")
 
     # OpenGL is really slow on everything but linux, it seems
-    if sys.platform == "linux":
-        GUI.addTabByTabType("Model Viewer", "AeroNU: The 3D Experience")
+    # if sys.platform == "linux":
+    #     GUI.addTabByTabType("Model Viewer", "AeroNU: The 3D Experience")
 
     GUI.addTabByTabType("Prop Control", "Prop Control")
 
