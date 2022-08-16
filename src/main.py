@@ -4,8 +4,6 @@
 Main file to run the GUI
 """
 
-import sys
-
 from src.constants import Constants
 from src.dpf_ground_station import DPFGUI
 from src.Modules.android_phone_bluetooth_interface import AndroidPhoneBluetoothInterface

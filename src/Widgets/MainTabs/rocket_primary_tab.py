@@ -2,8 +2,6 @@
 A rewrite of primary_tab to be more useful on a rocket
 """
 
-import sys
-
 from PyQt5.QtWidgets import QGridLayout, QSizePolicy
 
 from src.constants import Constants
