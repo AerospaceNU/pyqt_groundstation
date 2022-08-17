@@ -8,6 +8,7 @@ import websockets
 
 from src.constants import Constants
 from src.CustomLogging.dpf_logger import PROP_LOGGER
+from src.data_helpers import get_value_from_dictionary
 from src.Modules.data_interface_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.annunciator_helper import AnnunciatorHelper
 
@@ -154,6 +155,12 @@ class PropWebsocketInterface(ThreadedModuleCore):
             self.annunciator.setAnnunciator(0, "Test Stand Connection", 0, "Connected to test stand at {}".format(self.serial_port))
         else:
             self.annunciator.setAnnunciator(0, "Test Stand Connection", 2, "No connection to test stand at {}".format(self.serial_port))
+
+        voltage = get_value_from_dictionary(self.data_dictionary, "relayPowerVoltage", 0)
+        if voltage > 3:
+            self.annunciator.setAnnunciator(1, "Relay buck reg voltage", 0, f"Buck reg voltage OK")
+        else:
+            self.annunciator.setAnnunciator(1, "Relay buck reg voltage", 2, "Buck reg voltage too low!")
 
         self.data_dictionary[Constants.primary_annunciator] = self.annunciator.getList()
 
