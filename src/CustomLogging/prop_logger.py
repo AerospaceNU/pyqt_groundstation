@@ -16,7 +16,7 @@ class PropLogger:
         self.last_columns = ""
 
     def get_columns(self, msg_json):
-        csv_fields = ["timeStamp", "currentState", "engineSequence"]
+        csv_fields = ["timeStamp", "currentState", "engineSequence", "teensyCount", "adcboardCount", "lastTeensyTime", "lastAdcboardTime"]
 
         sensor_types = ["loadCellSensors", "pressureSensors", "tempSensors", "valves"]
 

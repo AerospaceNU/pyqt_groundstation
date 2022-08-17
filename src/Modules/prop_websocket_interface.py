@@ -86,11 +86,14 @@ class PropWebsocketInterface(ThreadedModuleCore):
             drop_down_data["pressureSensors"].append(["loxVenturi_scaled", reading])
             self.data_dictionary["loxVenturi_scaled"] = reading
 
-            self.data_dictionary[Constants.raw_message_data_key] = drop_down_data.copy()
-
-            for key in ["currentState", "engineSequence", "sequenceProgress", "recordedAbort"]:
+            # Add an "info" dropdown option
+            drop_down_data["info"] = []
+            for key in ["currentState", "engineSequence", "sequenceProgress", "recordedAbort", "teensyCount", "adcboardCount", "lastTeensyTime", "lastAdcboardTime"]:
                 if key in data:
                     self.data_dictionary[f"ecs_{key}"] = data[key]
+                    drop_down_data["info"].append([key, data[key]])
+
+            self.data_dictionary[Constants.raw_message_data_key] = drop_down_data.copy()
 
         elif "command" in data:
             command = data["command"]
