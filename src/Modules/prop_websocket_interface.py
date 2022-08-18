@@ -161,7 +161,7 @@ class PropWebsocketInterface(ThreadedModuleCore):
 
         voltage = get_value_from_dictionary(self.data_dictionary, "relayPowerVoltage", 0)
         if voltage > 3:
-            self.annunciator.setAnnunciator(1, "Relay buck reg voltage", 0, f"Buck reg voltage OK")
+            self.annunciator.setAnnunciator(1, "Relay buck reg voltage", 0, "Buck reg voltage OK")
         else:
             self.annunciator.setAnnunciator(1, "Relay buck reg voltage", 2, "Buck reg voltage too low!")
 

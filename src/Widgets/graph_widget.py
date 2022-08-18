@@ -1,5 +1,6 @@
 import math
 import time
+from copy import copy
 
 from PyQt5.QtWidgets import QGridLayout, QWidget
 from pyqtgraph import PlotWidget
@@ -20,12 +21,15 @@ def empty_function(a):
 
 
 class GraphWidget(CustomQWidgetBase):
-    def __init__(self, parent_widget: QWidget = None, source_list=None, title=None, time_history=0):
+    def __init__(self, parent_widget: QWidget = None, source_list=None, title=None, time_history=0, start_min=None, start_max=None):
         super().__init__(parent_widget)
 
         if source_list is None:
             source_list = []
-
+        self.has_range_preset = start_min is not None and start_max is not None
+        self.auto_range = self.has_range_preset
+        self.range_preset = {"min": start_min, "max": start_max}
+        self.data_range = copy(self.range_preset)
         self.graphWidget = PlotWidget(enableMenu=True)
         self.graphWidget.setLabel("bottom", "Time (s)")
         self.graphWidget.showGrid(x=True, y=True)
@@ -54,7 +58,7 @@ class GraphWidget(CustomQWidgetBase):
         self.plot_line_dictionary = {}  # Stores the plot line objects
         self.start_time = time.time()
         self.last_update_time = time.time()
-
+        self.graphWidget.getPlotItem().vb.sigRangeChangedManually.connect(self.stopAutomaticRange)
         self.updatePlot()
 
         self.plot_line_index = 0
@@ -70,6 +74,9 @@ class GraphWidget(CustomQWidgetBase):
 
         self.show()
 
+    def stopAutomaticRange(self):
+        self.auto_range = False
+
     def setPlaybackMode(self, use_recorded_data):
         self.recorded_data_mode = use_recorded_data
 
@@ -82,7 +89,10 @@ class GraphWidget(CustomQWidgetBase):
                     if source not in self.data_dictionary:
                         self.data_dictionary[source] = [float("nan")]
                         self.time_dictionary[source] = [float("nan")]
-
+                    elif self.auto_range:
+                        self.data_range["min"] = min(self.data_range["min"], value)
+                        self.data_range["max"] = max(self.data_range["max"], value)
+                        self.graphWidget.setYRange(**self.data_range)
                     # <sarcasm> This logic makes perfect sense </sarcasm>
                     # The base goal is to make the last value in the array a nan when the data isn't updated so the graph x axis keeps updating
                     # We need 4 cases because we don't want to overwrite any data, and we don't want NaNs anywhere other than the last spot
@@ -184,6 +194,8 @@ class GraphWidget(CustomQWidgetBase):
 
     def addCustomMenuItems(self, menu, e):
         menu.addAction("Clear graph", self.clearGraph)
+        if self.has_range_preset:
+            menu.addAction("Reset to Min/Max Preset", self.setToPreset)
         menu.addAction("Add Line", self.addLineToPlot)
         remove_line_menu = menu.addMenu("Remove line")
         menu.addSeparator()
@@ -211,6 +223,12 @@ class GraphWidget(CustomQWidgetBase):
         self.time_dictionary = {}
         self.data_dictionary = {}
         self.start_time = time.time()
+        self.setToPreset()
+
+    def setToPreset(self):
+        self.auto_range = self.has_range_preset
+        if self.auto_range:
+            self.data_range = copy(self.range_preset)
 
     def getNumberOfLines(self):
         return len(self.data_dictionary)
