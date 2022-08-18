@@ -20,7 +20,7 @@ class PropLogger:
 
         sensor_types = ["loadCellSensors", "pressureSensors", "tempSensors", "valves"]
 
-        sensor_values = [msg_json[v] for v in csv_fields]
+        sensor_values = [msg_json[v] for v in csv_fields if v in msg_json]
 
         for type_ in sensor_types:
             for sensor in msg_json["data"][type_]:
