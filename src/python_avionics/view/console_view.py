@@ -49,3 +49,13 @@ class ConsoleView:
             except ValueError:
                 print("Invalid flight number entered")
         return flight_num
+
+    @staticmethod
+    def cli_erase_print(erase_help_str: str) -> None:
+        """
+        Print erase msg
+
+        :param offload_help_str: String used to check erase status
+        :return: Nothing
+        """
+        print(erase_help_str)

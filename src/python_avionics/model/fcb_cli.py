@@ -30,6 +30,7 @@ class FcbCli:
     _SIM_COMMAND = "--sim"
     _SENSE_COMMAND = "--sense"
     _SHUTDOWN_COMMAND = "--shutdown"
+    _ERASE_FLASH_COMMAND = "--erase"
 
     OUTPUT_DIR = "output"
 
@@ -114,6 +115,11 @@ class FcbCli:
             help="Prevent FCB from doing anything else. FCB won't actually shut off, " "but it won't do or respond to anything",
         )
 
+        subparsers.add_parser(
+            "erase",
+            help="Erases entire FCB flash",
+        )
+
         # Parse arguments
         commands = shlex.split(command, posix=False)
         parsed_args, commands = command_parser.parse_known_args(commands)
@@ -137,6 +143,9 @@ class FcbCli:
             return "Success"
         if parsed_args.command == "shutdown":
             self.run_shutdown()
+            return "Success"
+        if parsed_args.command == "erase":
+            self.run_erase()
             return "Success"
         else:
             return "Failed. Invalid Command"
@@ -233,6 +242,23 @@ class FcbCli:
             # Only keep things if timestamp isn't 0xFF
             if unpacked_data[0] < (2 << 32) - 1:
                 csv_writer.writerow(unpacked_data)
+
+    def run_erase(self) -> None:
+        """
+        Erases FCB flash
+        """
+        self.serial_port.write(self._linebreak(self._ERASE_FLASH_COMMAND).encode("utf-8"))
+        if not self._read_ack():
+            raise FcbNoAckError(fcb_command=self._ERASE_FLASH_COMMAND)
+        help_bytes = self.serial_port.read(size=10000)
+        help_str = "" if not help_bytes else help_bytes.decode("utf-8")
+        # Read from FCB once per second until complete msg is read
+        while not self._has_complete(search_str=help_str):
+            if not help_bytes:
+                raise FcbIncompleteError(fcb_command=self._ERASE_FLASH_COMMAND)
+            ConsoleView.cli_erase_print(help_str)
+            help_bytes = self.serial_port.read(size=10000)
+            help_str = "" if not help_bytes else help_bytes.decode("utf-8")
 
     def run_sim(self, flight_filepath: str) -> None:
         """
