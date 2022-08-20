@@ -37,6 +37,7 @@
         {"name": "loadCell", "pos": [900, 680], "unit": "lb"},
         {"name" : "kerTankDucer", "pos": [1500, 425], "unit": "psi"},
         {"name" : "kerVenturi", "pos": [1425, 625], "unit": "psi"},
+        {"name" : "kerVenturi_scaled", "pos": [1425, 645], "unit": "kg/s"},
         {"name" : "kerInletDucer", "pos": [1010, 860], "unit": "psi"},
         {"name" : "kerPintleDucer", "pos": [1010, 725], "unit": "psi"},
         {"name" : "loxTankDucer", "pos": [225, 425], "unit": "psi"},
