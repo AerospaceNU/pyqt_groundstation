@@ -1,0 +1,57 @@
+{
+    "nodeGroups": {
+        "LOX": "blue",
+        "KER": "yellow",
+        "GN2": "green",
+        "ENGINE": "purple"
+    },
+    "nodes": {
+        "valves": [
+            {"name": "kerFlow", "pos": [1400, 710], "flow": "vertical", "label": "right"},
+            {"name": "kerPressurant", "pos": [1250, 150], "flow": "horizontal", "label": "below"},
+            {"name": "kerPurge", "pos": [1250, 700], "flow": "vertical", "label": "right"},
+            {"name": "kerVent", "pos": [1500, 100], "flow": "vertical", "label": "right"},
+            {"name": "loxFlow", "pos": [500, 710], "flow": "vertical", "label": "left"},
+            {"name": "loxPressurant", "pos": [650, 150], "flow": "horizontal", "label": "below"},
+            {"name": "loxPurge", "pos": [750, 700], "flow": "vertical", "label": "left"},
+            {"name": "loxVent", "pos": [400, 100], "flow": "vertical", "label": "left"}
+
+        ],
+        "rectangles": [
+            {"name": "GN2 \r\n Pressurant \r\n Tank", "pos":[950, 100], "dim": [125, 125], "group":  "GN2"},
+            {"name": "LOX\r\n Tank", "pos":[500, 425], "dim": [150, 350], "group": "LOX"},
+            {"name": "KER \r\nTank", "pos":[1400, 425], "dim": [150, 350], "group": "KER"},
+            {"name": "GN2 \r\nPurge \r\nTank", "pos":[950, 500], "dim": [125, 125], "group": "GN2"},
+            {"name": "Engine", "pos":[950, 800], "dim": [100, 200], "group": "ENGINE"}
+        ]
+    },
+    "edges": {
+        "GN2": [[[950, 100], [950, 150]], [[950, 150], [1500, 150]], [[1500, 150], [1500, 100]], [[1400, 150], [1400, 400]],
+        [[950, 150], [400, 150]], [[400, 150], [400, 100]], [[500, 150], [500, 400]],
+        [[950, 500], [950, 600]], [[950, 600], [750, 600]], [[750, 600], [750, 750]],
+        [[950, 600], [1250, 600]], [[1250, 600], [1250, 850]]],
+        "LOX": [[[500, 500], [500, 750]], [[500, 750], [950, 750]]],
+        "KER": [[[1400, 500], [1400, 850]], [[1400, 850], [950, 850]]]
+    },
+    "data_labels": [
+        {"name": "loadCell", "pos": [900, 680], "unit": "lb"},
+        {"name" : "kerTankDucer", "pos": [1500, 425], "unit": "psi"},
+        {"name" : "kerVenturi", "pos": [1425, 625], "unit": "psi"},
+        {"name" : "kerInletDucer", "pos": [1010, 860], "unit": "psi"},
+        {"name" : "kerPintleDucer", "pos": [1010, 725], "unit": "psi"},
+        {"name" : "loxTankDucer", "pos": [225, 425], "unit": "psi"},
+        {"name" : "loxVenturi", "pos": [280, 625], "unit": "psi"},
+        {"name" : "loxVenturi_scaled", "pos": [280, 645], "unit": "kg/s"},
+        {"name" : "loxInletDucer", "pos": [700, 775], "unit": "psi"},
+        {"name" : "n2pressDucer", "pos": [880, 175], "unit": "psi"},
+        {"name" : "kerInletTC", "pos": [1010, 880], "unit": "°C"},
+        {"name" : "purgeDucer", "pos": [900, 625], "unit": "psi"},
+        {"name" : "kerOutletTC", "pos": [1010, 745], "unit": "°C"},
+        {"name" : "loxTankTC", "pos": [225, 445], "unit": "°C"},
+        {"name" : "plume1TC", "pos": [900, 935], "unit": "°C"},
+        {"name" : "plume2TC", "pos": [900, 955], "unit": "°C"},
+        {"name" : "throatTC", "pos": [900, 915], "unit": "°C"},
+        {"name" : "loxRegDucer", "pos": [700, 120], "unit": "psi"},
+        {"name" : "kerRegDucer", "pos": [1050, 120], "unit": "psi"}
+    ]
+}

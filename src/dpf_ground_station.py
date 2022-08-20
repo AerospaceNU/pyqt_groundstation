@@ -50,6 +50,7 @@ from src.Widgets.MainTabs.diagnostic_tab import DiagnosticTab
 from src.Widgets.MainTabs.graphs_tab import GraphsTab
 from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets.MainTabs.offload_tab import OffloadTab
+from src.Widgets.MainTabs.prop_schematic_tab import PropSchematicTab
 from src.Widgets.MainTabs.prop_view_tab import PropViewTab
 from src.Widgets.MainTabs.rocket_primary_tab import RocketPrimaryTab
 from src.Widgets.MainTabs.settings_tab import SettingsTab
@@ -172,6 +173,7 @@ class DPFGUI:
             "Model Viewer": gl_display_widget.ThreeDDisplay,
             "Offload": OffloadTab,
             "Prop Control": PropViewTab,
+            "Prop Schematic": PropSchematicTab,
         }
 
         # Set some object names for all the core stuff
