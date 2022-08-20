@@ -1,7 +1,7 @@
 {
     "sequences": [
-        "LOX_VENT_FLUTTER_x5",
-        "KER_VENT_FLUTTER_x5",
+        "LOX_VENT_FLUTTER_x2",
+        "KER_VENT_FLUTTER_x2",
         "FIRE_3s",
         "FIRE_15s",
         "PURGE_ABORT",
