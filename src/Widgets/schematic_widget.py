@@ -35,7 +35,7 @@ class SchematicWidget(CustomQWidgetBase):
                 mapped_pair = list(map(lambda point: self._scaled_remap(point), line_pair))
                 self.painter.drawLine(*(mapped_pair[0] + mapped_pair[1]))
 
-        self.painter.setPen(Qt.GlobalColor.white)
+        self.painter.setPen(old_pen)
         for valve in schematic["nodes"]["valves"]:
             self._draw_valve(valve)
 
