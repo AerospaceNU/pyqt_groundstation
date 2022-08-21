@@ -49,6 +49,7 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
 
         layout = QGridLayout()
         self.setLayout(layout)
+        layout.setVerticalSpacing(10)
 
         title_widget = QLabel()
         title_widget.setText("Prop System Control")
@@ -119,6 +120,8 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
 
         hotbutton_allowed = QCheckBox(text="Allow hotbuttons")
         hotbuttonhbox.addWidget(hotbutton_allowed)
+        # Add horizontal spacing around hotbuttons
+        hotbuttonhbox.setSpacing(50)
         hotbutton_allowed.clicked.connect(lambda: [s.setDisabled(not hotbutton_allowed.isChecked()) for s in self.hot_buttons])
         hotbutton_allowed.setChecked(False)
 
@@ -135,8 +138,13 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
                 # to whatever the last button we clicked is.
                 if category == "sequences":
                     button.clicked.connect(make_lambda(self.setSequenceFromString, buttonText))
+                    if buttonText == "PURGE_ABORT":
+                        button.setProperty("class", "danger")
                 else:  # state
                     button.clicked.connect(make_lambda(self.setStateFromString, buttonText))
+
+        # Add some vertical padding above/below hotbuttons
+        hotbuttonFrame.setMinimumHeight(hotbuttonhbox.sizeHint().height() + 30)
 
         # Min width for State column
         layout.setColumnMinimumWidth(2 * 2, 140)

@@ -74,3 +74,40 @@ class PropSequencerWidget(custom_q_widget_base.CustomQWidgetBase):
     def updateData(self, vehicle_data, updated_data):
         progress_percent = clamp(int(get_value_from_dictionary(vehicle_data, "ecs_sequenceProgress", 0) * 100), 0, 100)
         self.progress_bar.setValue(progress_percent)
+
+
+if __name__ == "__main__":
+    global i
+    i = 0
+
+    from PyQt5.QtCore import QTimer
+    from PyQt5.QtWidgets import QApplication, QMainWindow
+
+    application = QApplication([])  # PyQt Application object
+    mainWindow = QMainWindow()  # PyQt MainWindow widget
+
+    navball = PropSequencerWidget()
+
+    # navball.yaw = -90
+    # navball.pitch = 90
+
+    mainWindow.setCentralWidget(navball)
+    mainWindow.show()
+
+    from qt_material import apply_stylesheet
+
+    # apply_stylesheet(application, theme="themes/old_dark_mode.xml")
+    apply_stylesheet(application, theme="themes/high_contrast_light.xml")
+    navball.customUpdateAfterThemeSet()
+
+    timer = QTimer()
+
+    def timeout():
+        global i
+        navball.updateData({"ecs_sequenceProgress": i}, {})
+        i = i + 0.02
+
+    timer.timeout.connect(timeout)
+    timer.start(50)
+
+    application.exec_()

@@ -83,11 +83,11 @@ class PropWebsocketInterface(ThreadedModuleCore):
 
             # Venturi hack
             loxFlowKgPSec = math.sqrt(2 * 806.4 * (max(self.data_dictionary["loxVenturi"], 1e-6) * 6894.757)) * 2.20e-5
-            kerFlowKgPSec = math.sqrt(2 * 778 * (max(self.data_dictionary["loxVenturi"], 1e-6) * 6894.757)) * 1.87e-5
+            kerFlowKgPSec = math.sqrt(2 * 778 * (max(self.data_dictionary["kerVenturi"], 1e-6) * 6894.757)) * 1.87e-5
 
             drop_down_data["pressureSensors"].append(["loxVenturi_scaled", loxFlowKgPSec])
             self.data_dictionary["loxVenturi_scaled"] = loxFlowKgPSec
-            drop_down_data["pressureSensors"].append(["kerVenturi_scaled", loxFlowKgPSec])
+            drop_down_data["pressureSensors"].append(["kerVenturi_scaled", kerFlowKgPSec])
             self.data_dictionary["kerVenturi_scaled"] = kerFlowKgPSec
 
             # Add an "info" dropdown option
