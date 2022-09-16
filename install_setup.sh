@@ -39,6 +39,13 @@ successCheck "Pip installation"
 pip install -r requirements.txt
 successCheck "Required package installation"
 
+# Custom pip installation
+if [ $OSTYPE != 'msys' ];
+then
+  pip install pybluez==0.23
+  successCheck "Custom package installation"
+fi
+
 # Install pre-commit
 pre-commit install
 successCheck "Pre-commit installation"
