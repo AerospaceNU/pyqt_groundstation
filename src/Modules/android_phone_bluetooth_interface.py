@@ -138,7 +138,7 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
         # Wait for connections, and add them to the client list
         while self.should_be_running and can_start:
             if self.enabled and not self.bluetooth_running:
-                self.logger.info("Waiting for connection on RFCOMM channel {}".format(port), 0)
+                self.logger.info("Waiting for connection on RFCOMM channel {}".format(port))
             if not self.enabled and self.bluetooth_running:
                 self.logger.warning("No longer advertising bluetooth on channel {}".format(port))
 
@@ -147,9 +147,9 @@ class AndroidPhoneBluetoothInterface(ThreadedModuleCore):
                 try:
                     client_socket, client_info = self.server_sock.accept()
                     self.client_sock_list.append(client_socket)
-                    self.logger.info("Accepted connection from {}".format(client_info), 1)
+                    self.logger.info("Accepted connection from {}".format(client_info))
                 except ble.BluetoothError as e:
-                    self.logger.info("Bluetooth error: {}".format(e), 1)
+                    self.logger.info("Bluetooth error: {}".format(e))
             else:
                 time.sleep(1)
                 self.bluetooth_running = False
