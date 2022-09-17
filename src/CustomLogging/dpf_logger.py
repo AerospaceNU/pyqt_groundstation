@@ -148,9 +148,11 @@ class SerialLogger:
 
     def write_raw(self, bytes):
         self.raw_data_file.write("{0}: {1}\n".format(time.strftime("%H:%M:%S"), str(bytes)))
+        self.raw_data_file.flush()
 
     def write_parsed(self, message_type, parsed_message):
         self.parsed_messages_file.write("{0}: {1} {2}\n".format(time.strftime("%H:%M:%S"), message_type, str(parsed_message)))
+        self.parsed_messages_file.flush()
 
     def close(self):
         self.raw_data_file.close()
