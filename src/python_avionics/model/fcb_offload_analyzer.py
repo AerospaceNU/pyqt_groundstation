@@ -279,7 +279,8 @@ if __name__ == "__main__":
         fcb.run_offload(args.offload_flight_name, flight_idx)
 
     # Post-process offloaded data
-    process_filepath = args.process_filepath if args.process_filepath else os.path.join(FcbCli.OUTPUT_DIR, f"{args.offload_flight_name}-output.csv")
+    # Hard coding FCB for now but we might want to make this dynamic in the future
+    process_filepath = args.process_filepath if args.process_filepath else os.path.join(FcbCli.OUTPUT_DIR, f"{args.offload_flight_name}-output-FCB.csv")
     analyzer = FcbOffloadAnalyzer(
         offload_data_filepath=process_filepath,
         select_time_limits_cb=_select_time_limits,

@@ -99,12 +99,11 @@ class Constants:
 
     invalid_fcb_state_name = "Invalid FCB State"
     fcb_state_names = [
-        "Cli Calibrate",
         "Cli Erase Flash",
         "CLI Offload",
         "Ascent",
-        "Initialize",
         "Descent",
+        "Initialize",
         "Post Flight",
         "Pre Flight",
         "Sim Temp State",
