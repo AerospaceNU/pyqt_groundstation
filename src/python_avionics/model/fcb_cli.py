@@ -243,13 +243,13 @@ class FcbCli:
         log_struct_full_size = max(log_struct_sizes)
         while True:
             packed_data = input_bin_file.read(log_struct_full_size)
+            if len(packed_data) == 0:
+                break
             try:
                 packet_type = int(packed_data[0])
                 unpacked_data = struct.unpack(log_struct_strs[packet_type], packed_data[0 : log_struct_sizes[packet_type]])
-            except struct.error:
-                break
-            except IndexError:
-                break  # Packet type invalid
+            except (struct.error, IndexError):
+                continue
             # Only keep things if timestamp isn't 0xFF
             if unpacked_data[1] < (2 << 32) - 1:
                 csv_writers[packet_type].writerow(unpacked_data)
