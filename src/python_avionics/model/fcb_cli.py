@@ -1,5 +1,6 @@
 """Handles all FCB-related communication tasks and initial processing of those tasks"""
 import csv
+import json
 import os
 import shlex
 import struct
@@ -225,13 +226,28 @@ class FcbCli:
         if complete_str != self._COMPLETE:
             raise FcbIncompleteError(fcb_command=self._OFFLOAD_FLIGHT_COMMAND)
 
-        # Open and read binary file line by line, saving to csvs
+        # Read binary file metadata
+        input_bin_file = open(output_bin_filepath, "rb")
+        metadata_struct_str = f"<{''.join([prop.unpack_str for prop in self._metadata_struct])}"
+        metadata_struct_size = struct.Struct(metadata_struct_str).size
+        packed_data = input_bin_file.read(metadata_struct_size)
+        if len(packed_data) == 0:
+            raise RuntimeError("No metadata read from FCB")
+        unpacked_data = struct.unpack(metadata_struct_str, packed_data)
 
+        # Save binary metadata to json file
+        output_json_filepath = os.path.join("output", f"{flight_name}-metadata.json")
+        if os.path.isfile(output_json_filepath):
+            raise FileExistsError(output_json_filepath)
+        output_json_file = open(output_json_filepath, "w", newline="")
+        json_dict = dict([(element.name, value) for element, value in zip(self._metadata_struct, unpacked_data)])
+        json.dump(json_dict, output_json_file, indent=4)
+
+        # Open and read binary file line by line, saving to csvs
         output_csv_filepaths = [os.path.join("output", f"{flight_name}-output-{log_type}.csv") for log_type in self.LOG_TYPES]
         for filepath in output_csv_filepaths:
             if os.path.isfile(filepath):
                 raise FileExistsError(filepath)
-        input_bin_file = open(output_bin_filepath, "rb")
         output_csv_files = [open(filepath, "w", newline="") for filepath in output_csv_filepaths]
         csv_writers = [csv.writer(csv_file) for csv_file in output_csv_files]
         log_struct_strs: List[str] = ["" for _ in self.LOG_TYPES]
@@ -409,6 +425,21 @@ class FcbCli:
         rx_str = "" if not rx_bytes else rx_bytes.decode("utf-8")
         if not self._has_complete(search_str=rx_str):
             raise FcbIncompleteError(fcb_command=self._SHUTDOWN_COMMAND)
+
+    @property
+    def _metadata_struct(self) -> List[UnpackProperty]:
+        """
+        Get FCB metadata struct format.
+
+        :return: List of metadata struct types
+        """
+        return [
+            UnpackProperty("pressure_ref", "d"),
+            UnpackProperty("launched", "B"),
+            UnpackProperty("gps_timestamp", "Q"),
+            UnpackProperty("apogee_timestamp", "Q"),
+            UnpackProperty("trigger_fire_status", "B"),
+        ]
 
     @property
     def _sensor_data_struct_str(self) -> str:

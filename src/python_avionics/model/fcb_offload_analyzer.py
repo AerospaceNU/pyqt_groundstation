@@ -185,6 +185,7 @@ def _graph_data(post_processed_file: str) -> None:
     df.plot(x="timestamp_s", y="pos_z", ax=ax6[0])
     ax6[0].set_xlabel("")
     ax6[0].set_ylabel("m")
+    ax6[0].set_title("Trigger Events")
     df.plot(x="timestamp_s", y="vel_z", ax=ax6[1])
     ax6[1].set_xlabel("")
     ax6[1].set_ylabel("m/s")
