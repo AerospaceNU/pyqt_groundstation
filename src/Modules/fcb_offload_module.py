@@ -40,6 +40,8 @@ class FCBOffloadModule(ThreadedModuleCore):
         self.replay_idx: int = 0
         self.replay_len = 0
 
+        self.nextCheckTime = time.time()
+
     def changeActiveSerialPort(self, portName):
         self.serial_port_name = portName
         self.serial_connection = False
@@ -49,6 +51,12 @@ class FCBOffloadModule(ThreadedModuleCore):
             self.python_avionics_fcb_cli.serial_port.port.close()
 
     def updatePythonAvionicsSerialPort(self):
+        if self.python_avionics_fcb_cli.serial_port is not None:
+            if self.python_avionics_fcb_cli.serial_port.is_open():
+                return
+        else:
+            return
+
         try:
             self.logger.info(
                 "Attempting to connect to FCB over USB at port {}".format(self.serial_port_name),
@@ -64,6 +72,7 @@ class FCBOffloadModule(ThreadedModuleCore):
             port_object.port.flushOutput()
         except Exception:
             self.logger.error("Unable to connect to FCB over USB at port {0}".format(self.serial_port_name))
+            self.nextCheckTime = time.time() + 4
             self.serial_connection = False
 
     def cliCommand(self, command):
