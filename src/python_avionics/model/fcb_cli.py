@@ -236,6 +236,7 @@ class FcbCli:
         unpacked_data = struct.unpack(metadata_struct_str, packed_data)
 
         # Save binary metadata to json file
+        # TODO: Make JSON human-readable
         output_json_filepath = os.path.join("output", f"{flight_name}-metadata.json")
         if os.path.isfile(output_json_filepath):
             raise FileExistsError(output_json_filepath)
@@ -433,13 +434,24 @@ class FcbCli:
 
         :return: List of metadata struct types
         """
-        return [
+        ret = [
             UnpackProperty("pressure_ref", "d"),
+            UnpackProperty("gravity_ref", "B"),
             UnpackProperty("launched", "B"),
             UnpackProperty("gps_timestamp", "Q"),
             UnpackProperty("apogee_timestamp", "Q"),
             UnpackProperty("trigger_fire_status", "B"),
         ]
+        for trig_num in range(8):
+            ret.extend([UnpackProperty(f"mode_{trig_num}", "B"), UnpackProperty(f"port_{trig_num}", "B"), UnpackProperty(f"flags_{trig_num}", "H"), UnpackProperty(f"config_val_{trig_num}", "d")])
+        ret.extend(
+            [
+                UnpackProperty("ground_elev_m", "d"),
+                UnpackProperty("ground_temp_c", "d"),
+                UnpackProperty("radio_channel", "i"),
+            ]
+        )
+        return ret
 
     @property
     def _sensor_data_struct_str(self) -> str:
