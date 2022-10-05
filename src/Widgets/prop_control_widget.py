@@ -31,7 +31,7 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         super().__init__(parent)
 
         # Row defines
-        STATE_ROW = 2
+        STATE_ROW = 3
 
         MODE_LABEL_ROW = 4
         MODE_SWITCH_ROW = 5
@@ -54,14 +54,14 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         title_widget = QLabel()
         title_widget.setText("Prop System Control")
         title_widget.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(title_widget, 0, 0, 1, 6)
+        layout.addWidget(title_widget, 0, 1, 1, 3)
 
         override_checkbox = QCheckBox(text="Override valves?")
-        layout.addWidget(override_checkbox, 1, 0, 1, 2, QtCore.Qt.AlignCenter)
+        layout.addWidget(override_checkbox, 1, 1, 1, 3, QtCore.Qt.AlignCenter)
         send_override = QPushButton(text="Set active elements")
         send_override.setDisabled(True)
         send_override.clicked.connect(self.sendOverrideClicked)
-        layout.addWidget(send_override, 1, 2, 1, 1, QtCore.Qt.AlignCenter)
+        layout.addWidget(send_override, 1, 2, 1, 3, QtCore.Qt.AlignCenter)
         self.send_override = send_override
         self.override_checkbox = override_checkbox
         override_checkbox.clicked.connect(self.overrideClicked)
