@@ -249,6 +249,7 @@ class PyroInfoMessage(BaseMessage):
     messageData = [
         [UINT_8_TYPE, Constants.pyro_continuity, parse_pyro_continuity_byte],
         [UINT_8_TYPE, Constants.pyro_fire_status, parse_pyro_fire_status],
+        [UINT_8_TYPE, Constants.flash_usage],
     ]
 
 

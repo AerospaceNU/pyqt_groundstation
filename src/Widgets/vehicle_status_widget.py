@@ -26,7 +26,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.prop_battery_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="Prop Batt", minValue=0, maxValue=10)
         self.line_cutter_batt_1_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="LC1 Batt", minValue=3.7, maxValue=4.2)
         self.line_cutter_batt_2_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="LC2 Batt", minValue=3.7, maxValue=4.2)
-        self.fcb_memory_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="FCB Mem", minValue=0, maxValue=1, barColor="rgb(255,0,0)")
+        self.flash_usage_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="FCB Flash", minValue=0, maxValue=100, barColor="rgb(255,0,0)")
 
         layout = QHBoxLayout()
         layout.addWidget(self.statusBox)
@@ -45,9 +45,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         layout.addWidget(self.prop_battery_graph)
         layout.addWidget(self.line_cutter_batt_1_graph)
         layout.addWidget(self.line_cutter_batt_2_graph)
-        layout.addWidget(
-            self.fcb_memory_graph,
-        )
+        layout.addWidget(self.flash_usage_graph)
 
         layout.setContentsMargins(1, 1, 1, 1)
         self.setLayout(layout)
@@ -68,7 +66,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.addSourceKey("prop_voltage", float, Constants.prop_battery_voltage, -1, hide_in_drop_down=True)
         self.addSourceKey("lc1_voltage", float, Constants.makeLineCutterString(0, Constants.battery_voltage_key), -1, hide_in_drop_down=False)
         self.addSourceKey("lc2_voltage", float, Constants.makeLineCutterString(1, Constants.battery_voltage_key), -1, hide_in_drop_down=False)
-        self.addSourceKey("fcb_mem", float, Constants.fcb_memory_usage, -1, hide_in_drop_down=True)
+        self.addSourceKey("flash_usage", float, Constants.flash_usage, -1, hide_in_drop_down=True)
 
         self.customUpdateAfterThemeSet()
 
@@ -94,7 +92,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.fcb_state_box.adjustSize()
         self.modeBox.adjustSize()
 
-        for widget in [self.fcb_battery_graph, self.prop_battery_graph, self.line_cutter_batt_1_graph, self.line_cutter_batt_2_graph, self.fcb_memory_graph]:
+        for widget in [self.fcb_battery_graph, self.prop_battery_graph, self.line_cutter_batt_1_graph, self.line_cutter_batt_2_graph, self.flash_usage_graph]:
             widget.setTextColor(self.palette().text().color())
             widget.adjustSize()
 
@@ -110,7 +108,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         prop_voltage = self.getDictValueUsingSourceKey("prop_voltage")
         lc1_voltage = self.getDictValueUsingSourceKey("lc1_voltage")
         lc2_voltage = self.getDictValueUsingSourceKey("lc2_voltage")
-        fcb_mem = self.getDictValueUsingSourceKey("fcb_mem")
+        flash_usage = self.getDictValueUsingSourceKey("flash_usage")
 
         if fault_status == 2:
             self.statusBox.setStyleSheet("color: red; font: {}pt Monospace".format(self.widgetSize))
@@ -137,10 +135,10 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         self.prop_battery_graph.fixWidth(0.7)
         self.line_cutter_batt_1_graph.fixWidth(0.7)
         self.line_cutter_batt_2_graph.fixWidth(0.7)
-        self.fcb_memory_graph.fixWidth(0.7)
+        self.flash_usage_graph.fixWidth(0.7)
 
         self.fcb_battery_graph.setValue(fcb_voltage)
         self.prop_battery_graph.setValue(prop_voltage)
         self.line_cutter_batt_1_graph.setValue(lc1_voltage)
         self.line_cutter_batt_2_graph.setValue(lc2_voltage)
-        self.fcb_memory_graph.setValue(fcb_mem)
+        self.flash_usage_graph.setValue(flash_usage)

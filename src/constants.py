@@ -14,6 +14,7 @@ class Constants:
     fcb_state_number_key = "fcb_state_number"
     pyro_continuity = "pyro_continuity"
     pyro_fire_status = "pyro_status"
+    flash_usage = "flash_usage"
     software_version_key = "software_version"
     serial_number_key = "board_serial_number"
     timestamp_ms_key = "time_stamp_ms"

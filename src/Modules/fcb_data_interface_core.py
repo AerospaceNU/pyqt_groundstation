@@ -33,6 +33,7 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
         self.has_data = False
         self.good_fcb_data = False
         self.good_radio_crc = False
+        self.flash_usage_level = 100
 
         self.has_lat_and_lon = False
 
@@ -66,6 +67,9 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
 
         if Constants.crc_key in dictionary:
             self.good_radio_crc = str(dictionary[Constants.crc_key]).lower() == "good"
+
+        if Constants.flash_usage in dictionary:
+            self.flash_usage_level = dictionary[Constants.flash_usage]
 
         # Most of this data only updates if we have a good crc
         if self.good_radio_crc or update_on_bad_crc:
@@ -153,6 +157,13 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
             self.annunciator.setAnnunciator(4, "GS GPS Fix", 0, "Valid GPS Fix")
         else:
             self.annunciator.setAnnunciator(4, "GS GPS Fix", 1, "No GPS Fix")
+
+        if self.flash_usage_level < 70:
+            self.annunciator.setAnnunciator(5, "FCB Flash Usage", 0, "FCB Flash Usage less than 70%")
+        elif self.flash_usage_level < 80:
+            self.annunciator.setAnnunciator(5, "FCB Flash Usage", 1, "FCB Flash Usage over 70%")
+        else:
+            self.annunciator.setAnnunciator(5, "FCB Flash Usage", 2, "FCB Flash Usage over 80%")
 
         self.data_dictionary[Constants.primary_annunciator] = self.annunciator.getList()
 
