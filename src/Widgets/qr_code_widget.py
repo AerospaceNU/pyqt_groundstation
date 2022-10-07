@@ -1,7 +1,7 @@
 import PyQt5.QtCore as QtCore
 import qrcode
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QCheckBox, QLabel, QVBoxLayout
+from PyQt5.QtWidgets import QCheckBox, QComboBox, QGridLayout, QLabel
 
 from src.constants import Constants
 from src.data_helpers import get_value_from_dictionary
@@ -33,11 +33,16 @@ class RocketLocationQrCode(CustomQWidgetBase):
     def __init__(self, widget=None):
         super().__init__(widget)
         self.label = QLabel(self)
-        layout = QVBoxLayout(self)
+        self.label2 = QLabel(self)
+        layout = QGridLayout(self)
         self.button = QCheckBox(text="Pause updastes")
+        self.mode_combo_box = QComboBox()
+        self.mode_combo_box.addItems(["Google", "Apple", "Raw"])
         self.update_qr = True
-        layout.addWidget(self.button)
-        layout.addWidget(self.label)
+        layout.addWidget(self.button, 0, 0)
+        layout.addWidget(self.mode_combo_box, 1, 0)
+        layout.addWidget(self.label, 2, 0, 1, 1)
+        layout.addWidget(self.label2, 3, 0, 1, 1)
 
     def setQrText(self, text):
         self.label.setPixmap(qrcode.make(text, image_factory=Image).pixmap())
@@ -48,8 +53,17 @@ class RocketLocationQrCode(CustomQWidgetBase):
 
         latitude = get_value_from_dictionary(vehicle_data, Constants.latitude_key, 0)
         longitude = get_value_from_dictionary(vehicle_data, Constants.longitude_key, 0)
-        text = f"https://www.google.com/maps/place/{latitude}+{longitude}"
+        idx = self.mode_combo_box.currentIndex()
+
+        if idx == 0:
+            text = f"https://www.google.com/maps/place/{latitude}+{longitude}"
+        elif idx == 1:
+            text = f"http://maps.apple.com/?address={latitude},{longitude}"
+        else:
+            text = f"{latitude},{longitude}"
+
         self.setQrText(text)
+        self.label2.setText(text)
 
 
 if __name__ == "__main__":

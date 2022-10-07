@@ -37,6 +37,7 @@ from src.Widgets import (
     navball_widget,
     prop_control_widget,
     pyro_display_widget,
+    qr_code_widget,
     reconfigure_widget,
     simple_console_widget,
     text_box_drop_down_widget,
@@ -161,6 +162,7 @@ class DPFGUI:
             "Map Download": map_download_widget.MapDownload,
             "Prop System Control": prop_control_widget.PropControlWidget,
             "Logging Configurator": LoggerConfigWidget,
+            "QR Code Generator": qr_code_widget.RocketLocationQrCode,
         }
 
         # List of tabs that can be dynamically created
