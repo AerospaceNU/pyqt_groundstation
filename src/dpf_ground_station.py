@@ -192,6 +192,7 @@ class DPFGUI:
         self.addCallback("clear_console", self.clearConsole)
         self.addCallback("enable_module", self.enableModuleCallback)
         self.addCallback(Constants.set_recorded_data_callback_id, self.setRecordedDataAndInterfaceCallback)
+        self.addCallback("create_widget_new_window", self.addNewWidgetInNewWindow)
 
         # Other setup tasks
         self.setUpMenuBar()
@@ -501,11 +502,16 @@ class DPFGUI:
 
         self.logger.info("Added tab [{0}] of type [{1}]".format(vehicle_name, type(new_tab_object)))
 
-    def addNewWidgetInNewWindow(self, name):
-        widget_object = self.createWidgetFromName(name, in_new_window=True)
+    def addNewWidgetInNewWindow(self, name_or_clazz):
+        if isinstance(name_or_clazz, str):
+            # String, use normal create function
+            widget_object = self.createWidgetFromName(name_or_clazz, in_new_window=True)
+        else:
+            # Call constructor of class object we were given
+            widget_object = name_or_clazz()
 
         if widget_object is not None:
-            object_name = "{0}_{1}_isolated".format(name, len(self.tabObjects)).replace(" ", "_")
+            object_name = "{0}_{1}_isolated".format(name_or_clazz, len(self.tabObjects)).replace(" ", "_")
             widget_object.show()
 
             self.tabObjects.append(widget_object)

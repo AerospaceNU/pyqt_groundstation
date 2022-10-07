@@ -1,7 +1,7 @@
 import PyQt5.QtCore as QtCore
 import qrcode
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QLabel, QVBoxLayout
+from PyQt5.QtWidgets import QCheckBox, QLabel, QVBoxLayout
 
 from src.constants import Constants
 from src.data_helpers import get_value_from_dictionary
@@ -34,12 +34,18 @@ class RocketLocationQrCode(CustomQWidgetBase):
         super().__init__(widget)
         self.label = QLabel(self)
         layout = QVBoxLayout(self)
+        self.button = QCheckBox(text="Pause updastes")
+        self.update_qr = True
+        layout.addWidget(self.button)
         layout.addWidget(self.label)
 
     def setQrText(self, text):
         self.label.setPixmap(qrcode.make(text, image_factory=Image).pixmap())
 
     def updateData(self, vehicle_data, updated_data):
+        if self.button.isChecked():
+            return
+
         latitude = get_value_from_dictionary(vehicle_data, Constants.latitude_key, 0)
         longitude = get_value_from_dictionary(vehicle_data, Constants.longitude_key, 0)
         text = f"https://www.google.com/maps/place/{latitude}+{longitude}"

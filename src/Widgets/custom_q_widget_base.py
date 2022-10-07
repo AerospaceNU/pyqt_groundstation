@@ -53,8 +53,22 @@ class CustomQWidgetBase(QFrame):
         super().closeEvent(a0)
         self.isClosed = True
 
+    def popOut(self):
+        """
+        Hide ourself and ask the base GUI to make a new copy in a new window
+        """
+
+        # We used to hide ourselves, but that's a bit annoying unless we
+        # set up a way to pop widgets back in
+        # self.hide()
+
+        # Little sketchy but whatever -- give the callback the clazz to instantiate
+        self.requestCallback("create_widget_new_window", self.__class__)
+
     def rightClickMenu(self, e: QPoint):
         menu = QMenu()
+
+        menu.addAction("Pop into own window", self.popOut)
 
         if not self.isInLayout:
             if self.draggable:
