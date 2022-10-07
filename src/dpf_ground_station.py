@@ -316,6 +316,9 @@ class DPFGUI:
                     if target_module_name != module_name and self.module_dictionary[target_module_name].primary_module:
                         self.module_dictionary[target_module_name].setEnabled(False)
 
+                        # Save the fact that we had to disable this module at another's request
+                        self.moduleSettings.save(target_module_name, str(False))
+
             self.moduleSettings.save(module_name, str(enabled))
         else:
             self.logger.error("Module {} does not exist".format(module_name))
@@ -633,7 +636,6 @@ class DPFGUI:
         lastIdx = self.overallSettings.get("current_tab")
         if not lastIdx:
             lastIdx = 1
-        self.tabHolderWidget.setCurrentIndex(int(lastIdx))  # Why do we default to 1???
 
         # Only attach change listener after everything's loaded
         self.tabHolderWidget.currentChanged.connect(lambda: self.overallSettings.save("current_tab", self.tabHolderWidget.currentIndex()))

@@ -20,6 +20,7 @@ pyqtchart>=5.15.5
 pyqtgraph~=0.12.3
 pyserial>=3.5
 pyttsx3>=2.90
+qrcode
 qt-material>=2.12
 qtrangeslider[pyqt5]>=0.1.5
 websockets~=10.3

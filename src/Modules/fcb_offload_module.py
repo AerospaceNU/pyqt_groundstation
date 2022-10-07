@@ -39,6 +39,7 @@ class FCBOffloadModule(ThreadedModuleCore):
         self.replay_dict: Dict[str, List[float]] = None
         self.replay_idx: int = 0
         self.replay_len = 0
+        self.replay_name_to_path = {}
 
         self.nextCheckTime = time.time()
 
@@ -176,28 +177,41 @@ class FCBOffloadModule(ThreadedModuleCore):
         mypath = "output"
         if not os.path.exists(mypath):
             return []
-        all_post_processed_files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and f.endswith("-output-post.csv")]
+        all_post_processed_files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and (f.endswith("-output-FCB-post.csv") or f.endswith("-output-post.csv"))]
 
         for file in all_post_processed_files:
             print(f"Loading flight {file}")
             runName = file.replace("-output-post.csv", "")
-            df = pd.read_csv(join(mypath, file), index_col=0)
+            runName = runName.replace("-output-FCB-post.csv", "")
 
-            time_series = df["timestamp_s"]  # no longer /1000
-            time_series = time_series - time_series.iloc[0]
-
+            self.replay_name_to_path[runName] = join(mypath, file)
             if runName not in self.recorded_data_dictionary:
                 self.recorded_data_dictionary[runName] = {}
 
-            for key in df.keys():
-                key = str(key)
-                if ("imu" in key and "_real" not in key) or ("high_g" in key and "_real" not in key):
-                    continue
-                self.recorded_data_dictionary[runName]["offload_" + key] = [list(df[key]), list(time_series)]
-            self.recorded_data_dictionary[runName]["keys"] = df.keys()
-
     def setSpecificRunSelected(self, run_name):
         print(f"run {run_name} selected")
+
+        # Nuke old dictionary
+        for key in self.recorded_data_dictionary:
+            if key is not run_name:
+                self.recorded_data_dictionary[key] = {}
+
+        # Actually load the data file
+        df = pd.read_csv(self.replay_name_to_path[run_name], index_col=0)
+
+        time_series = df["timestamp_s"]  # no longer /1000
+        time_series = time_series - time_series.iloc[0]
+
+        for key in df.keys():
+            key = str(key)
+            # Filter out IMU and high-g accelerometer raw count columns
+            if ("imu" in key and "_real" not in key) or ("high_g" in key and "_real" not in key):
+                continue
+
+            # Put column into our data dictionary prefixed with offload_
+            self.recorded_data_dictionary[run_name]["offload_" + key] = [list(df[key]), list(time_series)]
+        self.recorded_data_dictionary[run_name]["keys"] = df.keys()
+
         self.replay_dict = self.recorded_data_dictionary[run_name]
         self.replay_idx = 0
         self.replay_len = len(list(self.replay_dict.values())[0][0])
