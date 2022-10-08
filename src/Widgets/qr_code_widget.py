@@ -60,7 +60,7 @@ class RocketLocationQrCode(CustomQWidgetBase):
         elif idx == 1:
             text = f"https://maps.google.com?near={latitude}+{longitude}"
         elif idx == 2:
-            text = f"http://maps.apple.com/?address={latitude},{longitude}"
+            text = f"https://maps.apple.com/?ll={latitude},{longitude}&q=Dropped%20Pin"
         else:
             text = f"{latitude},{longitude}"
 

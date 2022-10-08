@@ -218,12 +218,19 @@ class LineCutterMessage(BaseMessage):
         return super().parseMessage(data)  # Then call the parent parseMessage function like normal
 
 
+# Super big hack! Global last cli id key. has to be global
+last_id = -1
+
+
 class CLIDataMessage(BaseMessage):
     """The payload is the string"""
 
     def parseMessage(self, data):
+        global last_id
+
         length = data[0]
-        trimmed_data = data[1 : length + 1]
+        id = data[1]
+        trimmed_data = data[2 : length + 2]
         dictionary = {}
 
         try:
@@ -231,6 +238,12 @@ class CLIDataMessage(BaseMessage):
             dictionary[Constants.cli_string_key] = string
         except Exception as e:
             print(e)
+
+        print(f"id {id} string {string}")
+        if id == last_id:
+            return {}
+
+        last_id = id
 
         return dictionary
 
