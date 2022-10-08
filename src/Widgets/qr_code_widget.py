@@ -37,7 +37,7 @@ class RocketLocationQrCode(CustomQWidgetBase):
         layout = QGridLayout(self)
         self.button = QCheckBox(text="Pause updastes")
         self.mode_combo_box = QComboBox()
-        self.mode_combo_box.addItems(["Google", "Apple", "Raw"])
+        self.mode_combo_box.addItems(["Geo", "Google", "Apple", "Raw"])
         self.update_qr = True
         layout.addWidget(self.button, 0, 0)
         layout.addWidget(self.mode_combo_box, 1, 0)
@@ -56,8 +56,10 @@ class RocketLocationQrCode(CustomQWidgetBase):
         idx = self.mode_combo_box.currentIndex()
 
         if idx == 0:
-            text = f"https://www.google.com/maps/place/{latitude}+{longitude}"
+            text = f"geo:{latitude},{longitude}"
         elif idx == 1:
+            text = f"https://maps.google.com?near={latitude}+{longitude}"
+        elif idx == 2:
             text = f"http://maps.apple.com/?address={latitude},{longitude}"
         else:
             text = f"{latitude},{longitude}"
@@ -77,12 +79,20 @@ if __name__ == "__main__":
     mainWindow.setCentralWidget(widget)
     mainWindow.show()
 
-    widget.setQrText("https://google.com")
-
     from qt_material import apply_stylesheet
 
     apply_stylesheet(application, theme="themes/old_dark_mode.xml")
     # apply_stylesheet(application, theme="themes/high_contrast_light.xml")
     widget.customUpdateAfterThemeSet()
 
+    from PyQt5.QtCore import QTimer
+
+    timer = QTimer()
+
+    def timeout():
+        # widget.setQrText("https://google.com")
+        widget.updateData({Constants.latitude_key: 44.829, Constants.longitude_key: -73.17}, {})
+
+    timer.timeout.connect(timeout)
+    timer.start(50)
     application.exec_()
