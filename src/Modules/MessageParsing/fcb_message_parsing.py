@@ -185,6 +185,38 @@ class PositionDataMessage(BaseMessage):
     ]
 
 
+class LineCutterVarsMessage(BaseMessage):
+    """uint8 number state uint32 timestamp float avgAlt avgDeltaAlt uint8 batt bool cut_1 cut_2 uint16 photoresistor"""
+
+    def parseMessage(self, data):
+        """We generate the message format after parsing which line cutter this data is for."""
+
+        unpacked_data = struct.unpack("<B", data[0:1])  # Just get the first byte
+        line_cutter_number = unpacked_data[0]
+
+        if line_cutter_number > Constants.MAX_LINE_CUTTERS:
+            return {}
+
+        self.messageData = [
+            [UINT_8_TYPE, Constants.line_cutter_number_key],
+            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, "limitVel")],
+            [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, "altitude1")],
+            [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, "altitude2")],
+            [UINT_32_TYPE, Constants.makeLineCutterString(line_cutter_number, "disreefDelay1")],
+            [UINT_32_TYPE, Constants.makeLineCutterString(line_cutter_number, "disreefDelay2")],
+            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, "pwmVoltage1")],
+            [FLOAT_TYPE, Constants.makeLineCutterString(line_cutter_number, "pwmVoltage2")],
+            [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, "pwmDuration")],
+            [UINT_16_TYPE, Constants.makeLineCutterString(line_cutter_number, "lightThreshold")],
+            [UINT_32_TYPE, Constants.makeLineCutterString(line_cutter_number, "lightTriggerTime")],
+            [UINT_32_TYPE, Constants.makeLineCutterString(line_cutter_number, "seaLevelPressure")],
+        ]
+
+        super().__init__()
+
+        return super().parseMessage(data)  # Then call the parent parseMessage function like normal
+
+
 class LineCutterMessage(BaseMessage):
     """uint8 number state uint32 timestamp float avgAlt avgDeltaAlt uint8 batt bool cut_1 cut_2 uint16 photoresistor"""
 
@@ -270,10 +302,11 @@ class PyroInfoMessage(BaseMessage):
 MESSAGE_CALLBACKS = {
     2: ["Orientation", OrientationMessage],
     3: ["Position Data", PositionDataMessage],
-    4: ["Line Cutter ", LineCutterMessage],
+    4: ["Line Cutter Data ", LineCutterMessage],
     5: ["CLI Data", CLIDataMessage],
     6: ["Alt Info & Cfg", AltitudeInfoMessage],
     7: ["Pyro Info", PyroInfoMessage],
+    8: ["Line Cutter Vars ", LineCutterVarsMessage],
 }
 
 

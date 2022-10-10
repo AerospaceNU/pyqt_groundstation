@@ -19,6 +19,7 @@ class LocalSimWidget(CustomQWidgetBase):
 
         self.xBuffer = 0
         self.yBuffer = 0
+        MIN_WIDTH = 200
 
         self.title = "Local Simulation"
         self.pathNames = [
@@ -59,7 +60,7 @@ class LocalSimWidget(CustomQWidgetBase):
 
             path = QLineEdit()
             path.setText(self.defaults[idx])
-            # path.setMinimumWidth(width)
+            path.setMinimumWidth(MIN_WIDTH)
             self.paths.append(path)
             path.returnPressed.connect(lambda idx=idx: self.savePath(idx))
 
