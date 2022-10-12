@@ -12,7 +12,6 @@ import sys
 import time
 from typing import Dict, List, Type, Union
 
-import serial.tools.list_ports
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget
 from qt_material import apply_stylesheet, list_themes
@@ -21,6 +20,7 @@ from src.config import ConfigSaver
 from src.constants import Constants
 from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER
 from src.Modules.data_interface_core import ThreadedModuleCore
+from src.usb_device_tools import get_port_list_with_fancy_names
 from src.Widgets import (
     annunciator_panel,
     board_usb_offloader_widget,
@@ -339,7 +339,8 @@ class DPFGUI:
                 self.modules_menu.addAction("Enable {}".format(interfaceName), lambda target_interface=interfaceName: self.toggleModuleEnabledState(target_interface))
 
     def refreshSerialDevices(self):
-        serial_ports = [comport for comport in serial.tools.list_ports.comports()]
+        # serial_ports = [comport for comport in serial.tools.list_ports.comports()]
+        serial_ports = get_port_list_with_fancy_names()
 
         # TODO: RE-work serial ports to also do network stuff
         class FakePort:
