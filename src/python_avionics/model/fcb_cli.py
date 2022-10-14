@@ -439,7 +439,7 @@ class FcbCli:
             UnpackProperty("gravity_ref", "B"),
             UnpackProperty("launched", "B"),
             UnpackProperty("gps_timestamp", "Q"),
-            UnpackProperty("apogee_timestamp", "Q"),
+            UnpackProperty("apogee_timestamp", "I"),
             UnpackProperty("trigger_fire_status", "B"),
         ]
         for trig_num in range(8):
