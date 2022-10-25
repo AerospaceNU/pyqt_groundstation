@@ -194,7 +194,7 @@ class LineCutterVarsMessage(BaseMessage):
         unpacked_data = struct.unpack("<B", data[0:1])  # Just get the first byte
         line_cutter_number = unpacked_data[0]
 
-        if line_cutter_number > Constants.MAX_LINE_CUTTERS:
+        if line_cutter_number > Constants.MAX_LINE_CUTTER_ID_VALID:
             return {}
 
         self.messageData = [
@@ -226,7 +226,7 @@ class LineCutterMessage(BaseMessage):
         unpacked_data = struct.unpack("<B", data[0:1])  # Just get the first byte
         line_cutter_number = unpacked_data[0]
 
-        if line_cutter_number > Constants.MAX_LINE_CUTTERS:
+        if line_cutter_number > Constants.MAX_LINE_CUTTER_ID_VALID:
             return {}
 
         self.messageData = [

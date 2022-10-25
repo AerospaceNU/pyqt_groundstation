@@ -143,6 +143,10 @@ class FakeFlight(FCBDataInterfaceCore):
         [self.latitude, self.longitude, _] = navpy.ned2lla([delta_y, delta_x, 0], self.latitude, self.longitude, 0)
         packet[Constants.latitude_key] = self.latitude
         packet[Constants.longitude_key] = self.longitude
+
+        packet[Constants.egg_finder_latitude] = self.latitude - 0.000025
+        packet[Constants.egg_finder_longitude] = self.longitude - 0.000025
+
         packet[Constants.altitude_key] = self.altitude
         packet[Constants.vertical_speed_key] = self.vertical_velocity
         packet[Constants.acceleration_key] = measured_acceleration

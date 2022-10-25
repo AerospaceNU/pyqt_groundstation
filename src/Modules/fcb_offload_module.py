@@ -52,11 +52,12 @@ class FCBOffloadModule(ThreadedModuleCore):
             self.python_avionics_fcb_cli.serial_port.port.close()
 
     def updatePythonAvionicsSerialPort(self):
-        if self.python_avionics_fcb_cli.serial_port is not None:
-            if self.python_avionics_fcb_cli.serial_port.is_open():
-                return
-        else:
-            return
+
+        # if self.python_avionics_fcb_cli.serial_port is not None:
+        #     if not self.python_avionics_fcb_cli.serial_port.is_open():
+        #         return
+        # else:
+        #     return
 
         try:
             self.logger.info(

@@ -34,25 +34,39 @@ class RocketLocationQrCode(CustomQWidgetBase):
         super().__init__(widget)
         self.label = QLabel(self)
         self.label2 = QLabel(self)
+        self.sourceDropdown = QComboBox(self)
+        self.sourceDropdown.addItems(["FCB", "Egg finder"])
+        self.sourceDropdown.setCurrentIndex(self.widgetSettings.get("QR_CODE_SOURCE", 0, int))
+        self.sourceDropdown.currentIndexChanged.connect(self.onSourceChange)
         layout = QGridLayout(self)
-        self.button = QCheckBox(text="Pause updastes")
+        self.button = QCheckBox(text="Pause updates")
         self.mode_combo_box = QComboBox()
         self.mode_combo_box.addItems(["Geo", "Google", "Apple", "Raw"])
         self.update_qr = True
         layout.addWidget(self.button, 0, 0)
         layout.addWidget(self.mode_combo_box, 1, 0)
-        layout.addWidget(self.label, 2, 0, 1, 1)
-        layout.addWidget(self.label2, 3, 0, 1, 1)
+        layout.addWidget(self.sourceDropdown, 3, 0)
+        layout.addWidget(self.label, 4, 0, 1, 1)
+        layout.addWidget(self.label2, 5, 0, 1, 1)
 
     def setQrText(self, text):
         self.label.setPixmap(qrcode.make(text, image_factory=Image).pixmap())
+
+    def onSourceChange(self):
+        self.widgetSettings.save("QR_CODE_SOURCE", self.sourceDropdown.currentIndex())
 
     def updateData(self, vehicle_data, updated_data):
         if self.button.isChecked():
             return
 
-        latitude = get_value_from_dictionary(vehicle_data, Constants.latitude_key, 0)
-        longitude = get_value_from_dictionary(vehicle_data, Constants.longitude_key, 0)
+        source = self.sourceDropdown.currentIndex()
+        if source == 0:
+            latitude = get_value_from_dictionary(vehicle_data, Constants.latitude_key, 0)
+            longitude = get_value_from_dictionary(vehicle_data, Constants.longitude_key, 0)
+        else:
+            latitude = get_value_from_dictionary(vehicle_data, Constants.egg_finder_latitude, 0)
+            longitude = get_value_from_dictionary(vehicle_data, Constants.egg_finder_longitude, 0)
+
         idx = self.mode_combo_box.currentIndex()
 
         if idx == 0:
