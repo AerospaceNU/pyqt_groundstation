@@ -24,6 +24,8 @@ class PropViewTab(TabCommon):
         console = self.addWidget(SimpleConsoleWidget())
         sequencer = self.addWidget(PropSequencerWidget())
 
+        text_box_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        text_box_widget.setMaximumWidth(1500)
         console.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         console.setMinimumHeight(200)
 
@@ -52,7 +54,7 @@ class PropViewTab(TabCommon):
         # redlines
         scrolling_vbox.addWidget(self.addWidget(AnnunciatorPanel()), 1, 1, 1, 1, Qt.AlignCenter)
         # no data
-        text_box_widget.setMinimumWidth(200)
+        text_box_widget.setMinimumWidth(500)
         text_box_widget.setMaximumWidth(700)
         text_box_widget.setMinimumHeight(500)
         text_box_widget.setMaximumHeight(600)

@@ -26,6 +26,7 @@ from src.Widgets import (
     board_usb_offloader_widget,
     complete_console_widget,
     control_station_status,
+    fire_k_widget,
     flight_display,
     gl_display_widget,
     graph_widget,
@@ -163,6 +164,7 @@ class DPFGUI:
             "Prop System Control": prop_control_widget.PropControlWidget,
             "Logging Configurator": LoggerConfigWidget,
             "QR Code Generator": qr_code_widget.RocketLocationQrCode,
+            "Fire Go/No Go": fire_k_widget.FireKWidget,
         }
 
         # List of tabs that can be dynamically created

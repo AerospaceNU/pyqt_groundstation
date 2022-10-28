@@ -49,19 +49,19 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
 
         layout = QGridLayout()
         self.setLayout(layout)
-        layout.setVerticalSpacing(10)
+        layout.setVerticalSpacing(15)
 
         title_widget = QLabel()
-        title_widget.setText("Prop System Control")
+        title_widget.setText("            Prop System Control")
         title_widget.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(title_widget, 0, 1, 1, 3)
+        layout.addWidget(title_widget, 0, 2, 1, 2)
 
         override_checkbox = QCheckBox(text="Override valves?")
         layout.addWidget(override_checkbox, 1, 1, 1, 3, QtCore.Qt.AlignCenter)
         send_override = QPushButton(text="Set active elements")
         send_override.setDisabled(True)
         send_override.clicked.connect(self.sendOverrideClicked)
-        layout.addWidget(send_override, 1, 2, 1, 3, QtCore.Qt.AlignCenter)
+        layout.addWidget(send_override, 1, 3, 1, 3, QtCore.Qt.AlignLeft)
         self.send_override = send_override
         self.override_checkbox = override_checkbox
         override_checkbox.clicked.connect(self.overrideClicked)
@@ -105,8 +105,11 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
             layout.addWidget(mode_label, MODE_LABEL_ROW, column, 1, 2)
             layout.addWidget(mode_switch, MODE_SWITCH_ROW, column, 1, 2)
 
+        # layout.setSpacing(15)
+
         # Just button to set state, it's gunna look whack but that's OK
         mode_button = QPushButton()
+        # mode_button.setGeometry(30, 300, 700, 40)
         mode_button.setText("Set State")
         self.mode_pushbutton = mode_button
         layout.addWidget(mode_button, STATE_BUTTON_ROW, 0, 1, 6)
