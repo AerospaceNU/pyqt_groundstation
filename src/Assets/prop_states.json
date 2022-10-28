@@ -1,13 +1,7 @@
 {
   "Water flow": {
-    "KERO_FILL": [
-      "KER_FILL",
-      "KER_POST_FILL"
-    ],
-    "LOX_FILL": [
-      "LOX_FILL",
-      "LOX_POST_FILL"
-    ],
+    "KERO_FILL": ["KER_FILL", "KER_POST_FILL"],
+    "LOX_FILL": ["LOX_FILL", "LOX_POST_FILL"],
     "LOX_PRESSFLOW": [
       "ONLINE_SAFE",
       "LOX_READY_TO_PRESSURIZE",
@@ -75,14 +69,8 @@
     ]
   },
   "Cold flow": {
-    "KERO_FILL": [
-      "KER_FILL",
-      "KER_POST_FILL"
-    ],
-    "LOX_FILL": [
-      "LOX_FILL",
-      "LOX_POST_FILL"
-    ],
+    "KERO_FILL": ["KER_FILL", "KER_POST_FILL"],
+    "LOX_FILL": ["LOX_FILL", "LOX_POST_FILL"],
     "LOX_PRESSFLOW": [
       "ONLINE_SAFE",
       "LOX_READY_TO_PRESSURIZE",
@@ -100,23 +88,11 @@
       "KER_PRESSURIZING",
       "ONLINE_SAFE"
     ],
-    "PURGE": [
-      "ONLINE_SAFE",
-      "LOX_PURGE",
-      "KER_PURGE"
-    ],
-    "FULL_PURGE": [
-      "ONLINE_SAFE",
-      "LOX_FULL_PURGE",
-      "KER_FULL_PURGE"
-    ]
+    "PURGE": ["ONLINE_SAFE", "LOX_PURGE", "KER_PURGE"],
+    "FULL_PURGE": ["ONLINE_SAFE", "LOX_FULL_PURGE", "KER_FULL_PURGE"]
   },
   "Hotfire": {
-    "KER_FILL": [
-      "KER_FILL",
-      "KER_POST_FILL",
-      "ONLINE_SAFE"
-    ],
+    "KER_FILL": ["KER_FILL", "KER_POST_FILL", "ONLINE_SAFE"],
     "LOX_FILL": [
       "LOX_FILL",
       "LOX_POST_FILL",
@@ -127,6 +103,7 @@
       "ONLINE_SAFE",
       "ALL_READY_TO_PRESSURIZE",
       "ALL_PRESSURIZING",
+      "ALL_ENGINE_PURGE",
       "LOX_GRAV_FLOW",
       "LOX_FILL",
       "LOX_PRESSURIZING",
