@@ -48,6 +48,7 @@ class PropWebsocketInterface(ThreadedModuleCore):
 
     def parseData(self, data):
         # Log every message
+        # print(data)
         self.serial_logger.log_ws_msg(data)
 
         if "data" in data:
@@ -82,8 +83,10 @@ class PropWebsocketInterface(ThreadedModuleCore):
                     drop_down_data[sensor_type].append([sensor_key, sensor_reading])
 
             # Venturi hack
-            loxFlowKgPSec = math.sqrt(2 * 806.4 * (max(self.data_dictionary["loxVenturi"], 1e-6) * 6894.757)) * 2.20e-5
-            kerFlowKgPSec = math.sqrt(2 * 778 * (max(self.data_dictionary["kerVenturi"], 1e-6) * 6894.757)) * 1.87e-5
+            # loxFlowKgPSec = math.sqrt(2 * 806.4 * (max(self.data_dictionary["loxVenturi"], 1e-6) * 6894.757)) * 2.20e-5
+            # kerFlowKgPSec = math.sqrt(2 * 778 * (max(self.data_dictionary["kerVenturi"], 1e-6) * 6894.757)) * 1.87e-5
+            loxFlowKgPSec = math.sqrt(2 * 806.4 * (max(get_value_from_dictionary(self.data_dictionary, "loxVenturi", 1e-6), 1e-6) * 6894.757)) * 2.20e-5
+            kerFlowKgPSec = math.sqrt(2 * 778 * (max(get_value_from_dictionary(self.data_dictionary, "kerVenturi", 1e-6), 1e-6) * 6894.757)) * 1.87e-5
 
             drop_down_data["pressureSensors"].append(["loxVenturi_scaled", loxFlowKgPSec])
             self.data_dictionary["loxVenturi_scaled"] = loxFlowKgPSec
