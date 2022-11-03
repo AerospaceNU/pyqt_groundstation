@@ -305,15 +305,16 @@ class FcbCli:
             raise FcbNoAckError(fcb_command=self._SIM_COMMAND)
 
         # Start sending sim data
-        df["time_diff"] = df["timestamp_s"].diff().fillna(0)
+        # For past version compatibility, use timestamp_s as ms if that column is in the DataFrame
+        df_timestamp_col = "timestamp_s" if "timestamp_s" in df.columns else "timestamp_ms"
+        df["time_diff"] = df[df_timestamp_col].diff().fillna(0)
         for row in df.itertuples():
             # Wait for next transmit time
             time_to_wait = max(k_min_code_loop_period_s, row.time_diff / 1000.0)
             time.sleep(time_to_wait)
             data = struct.pack(
                 self._sensor_data_struct_str,
-                row.timestamp_s,
-                row.timestamp_ms,
+                getattr(row, df_timestamp_col),
                 row.imu1_accel_x,
                 row.imu1_accel_y,
                 row.imu1_accel_z,
@@ -455,8 +456,7 @@ class FcbCli:
         :return: Struct-compatible string
         """
         pack_properties = [
-            PackProperty("timestamp_s", "L"),
-            PackProperty("timestamp_us", "L"),
+            PackProperty("timestamp_ms", "L"),
             PackProperty("imu1_accel_x_raw", "h"),
             PackProperty("imu1_accel_y_raw", "h"),
             PackProperty("imu1_accel_z_raw", "h"),
@@ -536,7 +536,6 @@ class FcbCli:
         unpack_properties: List[List[UnpackProperty]] = [
             [  # FCB Data
                 UnpackProperty("packetType", "B"),
-                UnpackProperty("timestamp_s", "I"),
                 UnpackProperty("timestamp_ms", "I"),
                 UnpackProperty("imu1_accel_x", "h"),
                 UnpackProperty("imu1_accel_y", "h"),

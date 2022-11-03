@@ -40,9 +40,10 @@ class FcbOffloadAnalyzer:
         df = pd.read_csv(self._offload_data_filepath)
 
         # Ask for data to keep of launch and trim
-        start_time, end_time = self._select_time_limits_cb(df, "timestamp_s", "pos_z")
+        df_timestamp_col = "timestamp_s" if "timestamp_s" in df.columns else "timestamp_ms"
+        start_time, end_time = self._select_time_limits_cb(df, df_timestamp_col, "pos_z")
 
-        df = df[(df["timestamp_s"] > start_time) & (df["timestamp_s"] < end_time)]
+        df = df[(df[df_timestamp_col] > start_time) & (df[df_timestamp_col] < end_time)]
 
         # Turn GPS into degrees and minutes from float
         df["gps_lat_mod"] = (np.floor(np.abs(df["gps_lat"]) / 100) + (np.abs(df["gps_lat"]) % 100 / 60)) * np.sign(df["gps_lat"])
@@ -117,41 +118,42 @@ def _graph_data(post_processed_file: str) -> None:
     :param post_processed_file: CSV file of post-processed data
     """
     df = pd.read_csv(post_processed_file)
+    df_timestamp_col = "timestamp_s" if "timestamp_s" in df.columns else "timestamp_ms"
     # IMU data
     fig, ax = plt.subplots(4)
-    df.plot(x="timestamp_s", y="baro_pres_avg", ax=ax[0])
+    df.plot(x=df_timestamp_col, y="baro_pres_avg", ax=ax[0])
     ax[0].set_xlabel("")
     ax[0].set_ylabel("bar")
-    df.plot(x="timestamp_s", y="imu_accel_x_avg", ax=ax[1])
+    df.plot(x=df_timestamp_col, y="imu_accel_x_avg", ax=ax[1])
     ax[1].set_xlabel("")
     ax[1].set_ylabel("m/s^2")
-    df.plot(x="timestamp_s", y="imu_accel_y_avg", ax=ax[2])
+    df.plot(x=df_timestamp_col, y="imu_accel_y_avg", ax=ax[2])
     ax[2].set_xlabel("")
     ax[2].set_ylabel("m/s^2")
-    df.plot(x="timestamp_s", y="imu_accel_z_avg", ax=ax[3])
+    df.plot(x=df_timestamp_col, y="imu_accel_z_avg", ax=ax[3])
     ax[3].set_xlabel("Timestamp (ms)")
     ax[3].set_ylabel("m/s^2")
     # High G Data
     fig2, ax2 = plt.subplots(4)
-    df.plot(x="timestamp_s", y="baro_pres_avg", ax=ax2[0])
+    df.plot(x=df_timestamp_col, y="baro_pres_avg", ax=ax2[0])
     ax2[0].set_xlabel("")
     ax2[0].set_ylabel("bar")
-    df.plot(x="timestamp_s", y="high_g_accel_x_real", ax=ax2[1])
+    df.plot(x=df_timestamp_col, y="high_g_accel_x_real", ax=ax2[1])
     ax2[1].set_xlabel("")
     ax2[1].set_ylabel("m/s^2")
-    df.plot(x="timestamp_s", y="high_g_accel_y_real", ax=ax2[2])
+    df.plot(x=df_timestamp_col, y="high_g_accel_y_real", ax=ax2[2])
     ax2[2].set_xlabel("")
     ax2[2].set_ylabel("m/s^2")
-    df.plot(x="timestamp_s", y="high_g_accel_z_real", ax=ax2[3])
+    df.plot(x=df_timestamp_col, y="high_g_accel_z_real", ax=ax2[3])
     ax2[3].set_xlabel("Timestamp (ms)")
     ax2[3].set_ylabel("m/s^2")
     # Baro data
     fig3, ax3 = plt.subplots(1)
-    df.plot(x="timestamp_s", y="baro1_pres", ax=ax3)
-    df.plot(x="timestamp_s", y="baro2_pres", ax=ax3)
+    df.plot(x=df_timestamp_col, y="baro1_pres", ax=ax3)
+    df.plot(x=df_timestamp_col, y="baro2_pres", ax=ax3)
     ax3.set_xlabel("")
     ax3.set_ylabel("bar")
-    # df.plot(x="timestamp_s", y="baro_temp_avg", ax=ax3[1])
+    # df.plot(x=df_timestamp_col, y="baro_temp_avg", ax=ax3[1])
     # ax3[1].set_xlabel("")
     # ax3[1].set_ylabel("celsius")
     # GPS trajectory
@@ -169,7 +171,7 @@ def _graph_data(post_processed_file: str) -> None:
     colordict = dict(zip(categories, colors))
     df["Color"] = df["state"].apply(lambda x: cmap(colordict[x]))
     df.plot(
-        x="timestamp_s",
+        x=df_timestamp_col,
         y="pos_z",
         ax=ax5,
         legend=True,
@@ -182,15 +184,15 @@ def _graph_data(post_processed_file: str) -> None:
     ax5.set_title("Rocket State")
     # Position and Velocity with marked state transitions
     fig6, ax6 = plt.subplots(2)
-    df.plot(x="timestamp_s", y="pos_z", ax=ax6[0])
+    df.plot(x=df_timestamp_col, y="pos_z", ax=ax6[0])
     ax6[0].set_xlabel("")
     ax6[0].set_ylabel("m")
     ax6[0].set_title("Trigger Events")
-    df.plot(x="timestamp_s", y="vel_z", ax=ax6[1])
+    df.plot(x=df_timestamp_col, y="vel_z", ax=ax6[1])
     ax6[1].set_xlabel("")
     ax6[1].set_ylabel("m/s")
     transitions = np.where(df.state[:-1].values != df.state[1:].values)[0]
-    vlines = [df.timestamp_s[index] for index in transitions]
+    vlines = [df[df_timestamp_col][index] for index in transitions]
     pos_min, pos_max = df["pos_z"].min(), df["pos_z"].max()
     vel_min, vel_max = df["vel_z"].min(), df["vel_z"].max()
     ax6[0].vlines(
@@ -213,7 +215,7 @@ def _graph_data(post_processed_file: str) -> None:
     )
     if "pyro_status" in df:
         pyro_events = np.where(df.pyro_status[:-1].values != df.pyro_status[1:].values)[0]
-        vlines2 = [df.timestamp_s[index] for index in pyro_events]
+        vlines2 = [df[df_timestamp_col][index] for index in pyro_events]
         ax6[0].vlines(
             x=vlines2,
             ymin=pos_min,
@@ -236,10 +238,10 @@ def _graph_data(post_processed_file: str) -> None:
     if "acc_z" in df:
         # Z Acceleration and velocity
         fig7, ax7 = plt.subplots(2)
-        df.plot(x="timestamp_s", y="acc_z", ax=ax7[0])
+        df.plot(x=df_timestamp_col, y="acc_z", ax=ax7[0])
         ax7[0].set_xlabel("")
         ax7[0].set_ylabel("m/s^2")
-        df.plot(x="timestamp_s", y="vel_z", ax=ax7[1])
+        df.plot(x=df_timestamp_col, y="vel_z", ax=ax7[1])
         ax7[1].set_xlabel("")
         ax7[1].set_ylabel("m/s")
     plt.show()
