@@ -166,8 +166,6 @@ class PropWebsocketInterface(ThreadedModuleCore):
         else:
             self.annunciator.setAnnunciator(0, "Test Stand Connection", 2, "No connection to test stand at {}".format(self.serial_port))
 
-        voltage = get_value_from_dictionary(self.data_dictionary, "relayPowerVoltage", 0)
-
         self.data_dictionary[Constants.primary_annunciator] = self.annunciator.getList()
 
     def getSpecificRun(self, run_name):
