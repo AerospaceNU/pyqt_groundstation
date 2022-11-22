@@ -142,7 +142,7 @@ class Constants:
         prop_websocket = "Prop Websocket Interface"
 
     # Line cutter stuff
-    MAX_LINE_CUTTER_ID_VALID = 24
+    MAX_LINE_CUTTER_ID_VALID = 50
 
     line_cutter_number_key = "line_cutter_number"
     line_cutter_state_key = "state"

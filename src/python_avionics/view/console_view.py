@@ -21,6 +21,8 @@ class ConsoleView:
         if len(port_list) == 0:
             print("No available ports, exiting")
             exit(-1)
+        elif len(port_list) == 1:
+            return port_list[0]
         for port in port_list:
             print(port)
         while True:

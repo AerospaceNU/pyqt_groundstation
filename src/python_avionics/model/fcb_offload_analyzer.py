@@ -33,17 +33,19 @@ class FcbOffloadAnalyzer:
 
     def analyze(self) -> str:
         """
-        Read output CSV into dataframe, get time range from user, and process into new CSV
+        Read output CSV into dataframe, post-process, and save into new CSV.
 
-        :return CSV output filepath
+        :return Output filepath
         """
         df = pd.read_csv(self._offload_data_filepath)
 
         # Ask for data to keep of launch and trim
-        df_timestamp_col = "timestamp_s" if "timestamp_s" in df.columns else "timestamp_ms"
-        start_time, end_time = self._select_time_limits_cb(df, df_timestamp_col, "pos_z")
+        start_time, end_time = self._select_time_limits_cb(df, "timestamp_s", "pos_z")
+        return FcbOffloadAnalyzer.analyzeTimeRange(df, start_time, end_time, self._offload_data_filepath)
 
-        df = df[(df[df_timestamp_col] > start_time) & (df[df_timestamp_col] < end_time)]
+    @staticmethod
+    def analyzeTimeRange(df: pd.DataFrame, start_time: float, end_time: float, offload_path: str) -> str:
+        df = df[(df["timestamp_s"] > start_time) & (df["timestamp_s"] < end_time)]
 
         # Turn GPS into degrees and minutes from float
         df["gps_lat_mod"] = (np.floor(np.abs(df["gps_lat"]) / 100) + (np.abs(df["gps_lat"]) % 100 / 60)) * np.sign(df["gps_lat"])
@@ -88,7 +90,7 @@ class FcbOffloadAnalyzer:
         df["baro_temp_avg"] = df[["baro1_temp", "baro2_temp"]].mean(axis=1)
 
         # Save to a post-processed CSV
-        output_filepath = f"{os.path.splitext(self._offload_data_filepath)[0]}-post.csv"
+        output_filepath = f"{os.path.splitext(offload_path)[0]}-post.csv"
         df.to_csv(output_filepath)
         return output_filepath
 
@@ -269,7 +271,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    if args.offload_flight_name:
+    if args.offload_flight_name and False:
         # Get port from user via console
         port_list = SerialPortManager.get_connected_ports()
         port_dev = ConsoleView.request_console_port(port_list=port_list)

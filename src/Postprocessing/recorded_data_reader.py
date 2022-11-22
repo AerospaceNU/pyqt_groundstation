@@ -29,6 +29,7 @@ class RecordedDataReader(object):
         has_first_point = False
         first_point = []
 
+        big_packet_data = {}
         packet_data = {}
         data_date = datetime.datetime.fromtimestamp(0).date()
         run_number = 0
@@ -79,6 +80,7 @@ class RecordedDataReader(object):
 
                 self.data_struct.append(packet_data)
                 self.packet_types.append(packet_type)
+                big_packet_data.update(packet_data)
 
             if load_slower and (i % 500 == 0):
                 time.sleep(0.000000001)  # This many 0s probably don't help, but this sleep keeps the file indexing from taking all the CPU resources
@@ -89,7 +91,7 @@ class RecordedDataReader(object):
                 last_logging_time = time.time()
                 logging_callback(f"Indxing took {time.time() - startTime} seconds")
 
-        self.fields = list(packet_data.keys())
+        self.fields = list(big_packet_data.keys())
         self.packetIndex = 0
 
     def parseIntoIndividualLists(self):

@@ -188,13 +188,13 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
         my_path = "output"
         if not os.path.exists(my_path):
             return []
-        flight_files = [f for f in listdir(my_path) if isfile(join(my_path, f)) and (f.endswith("-output.csv") or f.endswith("-output-post.csv"))]
+        flight_files = [f for f in listdir(my_path) if isfile(join(my_path, f)) and (f.endswith("-output-FCB.csv") or f.endswith("-output-FCB-post.csv"))]
 
         ret = []
-        for file in set(map(lambda it: it.replace("-output.csv", "").replace("-output-post.csv", ""), flight_files)):
-            has_raw = "Yes" if file + "-output.csv" in flight_files else "No"
-            has_post = "Yes" if file + "-output-post.csv" in flight_files else "No"
-            ret.append([file.replace("-output.csv", ""), has_raw, has_post])
+        for file in set(map(lambda it: it.replace("-output-FCB.csv", "").replace("-output-FCB-post.csv", ""), flight_files)):
+            has_raw = "Yes" if file + "-output-FCB.csv" in flight_files else "No"
+            has_post = "Yes" if file + "-output--FCB-post.csv" in flight_files else "No"
+            ret.append([file.replace("-output-FCB.csv", ""), has_raw, has_post])
 
         return ret
 
@@ -238,7 +238,7 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
     def onFlightSelected(self):
         flightName = self.getFlightFrom(self.downloadedTableWidget)
 
-        self.raw_file_path = os.path.join("output", f"{flightName}-output.csv")
+        self.raw_file_path = os.path.join("output", f"{flightName}-output-FCB.csv")
         if not os.path.exists(self.raw_file_path):
             return
         csv = pd.read_csv(self.raw_file_path)
