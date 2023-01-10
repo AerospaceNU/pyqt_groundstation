@@ -26,8 +26,11 @@ class DatabaseView(CustomQWidgetBase):
     def updateData(self, vehicle_data, updated_data):
         string = ""
 
+        string += "Callbacks: {0}\n\n".format(self.callback_handler.getAvailableCallbacks())
+
+        string += "Database keys:\n"
         for item in vehicle_data:
-            string += "{}: {}\n".format(str(item), vehicle_data[item])
+            string += "    {}: {}\n".format(str(item), vehicle_data[item])
 
         self.display_label.setText(string)
         self.display_label.adjustSize()

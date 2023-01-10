@@ -67,7 +67,7 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
             return
 
         self.textEntryWidget.clear()
-        self.callbackEvents.append([self.source, text])
+        self.callback_handler.requestCallback(self.source, text)
 
         if len(self.commandHistory) == 0:
             self.commandHistory = [text]

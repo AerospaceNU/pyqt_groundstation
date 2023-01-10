@@ -3,11 +3,19 @@ max-line-length = 250
 docstring-convention = pep257
 select = C,E,F,W,B,B950,#D
 extend-ignore =
-    E203, # See https://github.com/PyCQA/pycodestyle/issues/373
-    E501, # Using B950 instead
-    D104, # Missing docstring in public package
-    D105, # Missing docstring in magic method
-    D400, # First line should end with a period
-    D401, # First line should be in imperative mood
-    D401b, # First line should be in imperative mood; try rephrasing
-    F405, # Temporary because star imports with OpenGL are annoying to fix
+    E203,
+    E501,
+    D104,
+    D105,
+    D400,
+    D401,
+    F405,
+
+# See https://github.com/PyCQA/pycodestyle/issues/373
+# Using B950 instead
+# Using B950 instead
+# Missing docstring in magic method
+# First line should end with a period
+# First line should be in imperative mood
+# First line should be in imperative mood; try rephrasing
+# Temporary because star imports with OpenGL are annoying to fix

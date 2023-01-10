@@ -25,7 +25,7 @@ class PropWebsocketInterface(ThreadedModuleCore):
 
         self.annunciator = AnnunciatorHelper()
 
-        self.callbacks_to_add.append([Constants.prop_command_key, self.propCommandCallback])
+        self.callback_handler.addCallback(Constants.prop_command_key, self.propCommandCallback)
 
         self.connected = False
         self.command_queue = []

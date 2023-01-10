@@ -4,7 +4,6 @@ Central GUI sequencer
 Has all the thread control for the GUI
 """
 
-import copy
 import logging
 import os
 import random
@@ -16,6 +15,7 @@ from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget
 from qt_material import apply_stylesheet, list_themes
 
+from src.callback_handler import CallbackHandler
 from src.config import ConfigSaver
 from src.constants import Constants
 from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER
@@ -93,10 +93,6 @@ class DPFGUI:
         self.updated_data_dictionary = {}
         # List of log messages in primary console [[message, level], []...]
         self.ConsoleData = [[]]
-        # Dictionary of list of callback functions that can be called from any widget.  These are typically added by modules.  {callback_name: [function_pointer, pointer, ...], ...}
-        self.callbackFunctions = {}
-        # List of callback function names to call.  These are called in the GUI thread during the update() function
-        self.callback_queue = []
         # Dictionary of module objects {module_name: module_object, ...}
         self.module_dictionary: Dict[str, ThreadedModuleCore] = {}
         # Dictionary of module load times {module_name: load_time, ...}
@@ -119,6 +115,8 @@ class DPFGUI:
         self.overallSettings = ConfigSaver("Overall")
         self.serialPortSettings = ConfigSaver("Serial Ports")
         self.moduleSettings = ConfigSaver("Modules")
+
+        self.callback_handler = CallbackHandler()
 
         self.application = QApplication([])  # PyQt Application object
         self.mainWindow = QMainWindow()  # PyQt MainWindow widget
@@ -193,10 +191,10 @@ class DPFGUI:
         self.title = random.choice(titles)
 
         # Add callback to clear console
-        self.addCallback("clear_console", self.clearConsole)
-        self.addCallback("enable_module", self.enableModuleCallback)
-        self.addCallback(Constants.set_recorded_data_callback_id, self.setRecordedDataAndInterfaceCallback)
-        self.addCallback("create_widget_new_window", self.addNewWidgetInNewWindow)
+        self.callback_handler.addCallback("clear_console", self.clearConsole)
+        self.callback_handler.addCallback("enable_module", self.enableModuleCallback)
+        self.callback_handler.addCallback(Constants.set_recorded_data_callback_id, self.setRecordedDataAndInterfaceCallback)
+        self.callback_handler.addCallback("create_widget_new_window", self.addNewWidgetInNewWindow)
 
         # Other setup tasks
         self.setUpMenuBar()
@@ -286,7 +284,7 @@ class DPFGUI:
         """
 
         callback_name = serial_port_callback_name(device_name)
-        self.callback_queue.append([callback_name, port_name])
+        self.callback_handler.requestCallback(callback_name, port_name)
         self.serial_devices_ports[device_name] = port_name
 
         if port_name == "":  # Don't need to do anything more if we're disconnecting this device
@@ -298,7 +296,7 @@ class DPFGUI:
             port = self.serial_devices_ports[device]
             if port == port_name and device != device_name:
                 callback = serial_port_callback_name(device)
-                self.callback_queue.append([callback, ""])
+                self.callback_handler.requestCallback(callback, "")
                 self.serial_devices_ports[device] = ""
 
         self.serialPortSettings.save(device_name, port_name)
@@ -408,7 +406,7 @@ class DPFGUI:
         # Update tabs
         tab_index_to_remove = -1
         for tab in self.tabObjects:
-            self.callback_queue += tab.updateVehicleData(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary)
+            tab.updateVehicleData(self.database_dictionary, self.ConsoleData, self.updated_data_dictionary)
             if tab.isClosed:
                 tab_index_to_remove = self.tabObjects.index(tab)
 
@@ -421,7 +419,7 @@ class DPFGUI:
         self.mainWindow.setWindowTitle("[{0}] - {1}".format(active_tab, self.title))
 
         # Process callbacks
-        self.processCallbacks()
+        self.callback_handler.processCallbacks()
 
         # Set every field as not-updated
         for key in self.updated_data_dictionary:
@@ -574,26 +572,6 @@ class DPFGUI:
                 # Tell the module we clicked on its specific run
                 interface_object.setSpecificRunSelected(run_name)
 
-    def processCallbacks(self):
-        callbacks = copy.deepcopy(self.callback_queue)
-        self.callback_queue = []
-
-        for callback in callbacks:
-            if callback[0] in self.callbackFunctions:
-                callback_list = self.callbackFunctions[callback[0]]
-                for callback_function in callback_list:
-                    callback_function(callback[1])  # <sarcasm>What amazingly clean code</sarcasm>
-            else:
-                pass
-                # print("{} isn't a valid callback".format(callback[0]))  # Debugging code
-                # print(self.callbackFunctions.keys())
-
-    def addCallback(self, target, callback):
-        if target not in self.callbackFunctions:
-            self.callbackFunctions[target] = []
-
-        self.callbackFunctions[target].append(callback)
-
     def addModule(self, interface_name: str, interface_class: Type[ThreadedModuleCore], enabled=True, hide_toggle=False):
         try:
             start_time = time.time()
@@ -603,16 +581,11 @@ class DPFGUI:
 
             interface_object.start()
 
-            callbacks = interface_object.getCallbacksToAdd()
-            for callback in callbacks:
-                if len(callback) == 2:
-                    self.addCallback(callback[0], callback[1])
-
             serial_devices = interface_object.getSerialDevices()
             for device in serial_devices:
                 callback_name = serial_port_callback_name(device)
                 callback_function = serial_devices[device]
-                self.addCallback(callback_name, callback_function)
+                self.callback_handler.addCallback(callback_name, callback_function)
                 if device not in self.serial_devices:
                     self.serial_devices.append(device)
 

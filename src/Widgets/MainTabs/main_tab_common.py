@@ -29,16 +29,14 @@ class TabCommon(CustomQWidgetBase):
         if not isinstance(updated_data, dict):
             updated_data = {}
 
-        callbacks = []
-
         for widget in self.widgetList:
-            callbacks += widget.updateVehicleData(vehicle_data, console_data, updated_data)
+            widget.updateVehicleData(vehicle_data, console_data, updated_data)
 
         self.customUpdateVehicleData(data)
 
         self.update()
 
-        return callbacks
+        return []
 
     def setRecordedData(self, recorded_data):
         self.recordedData = recorded_data

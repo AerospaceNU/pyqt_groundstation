@@ -96,10 +96,10 @@ class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
 
     def resetCallback(self):
         self.resetNeeded = True
-        self.callbackEvents.append(["{}_reset".format(self.source), True])
+        self.callback_handler.requestCallback("{}_reset".format(self.source), True)
 
     def textEntryCallback(self, name, value):
-        self.callbackEvents.append(["{}_set_new".format(self.source), "{0}:{1}:{2}".format(self.selectedTarget, name, value)])
+        self.callback_handler.requestCallback("{}_set_new".format(self.source), "{0}:{1}:{2}".format(self.selectedTarget, name, value))
 
     def setMenuItems(self, menu_item_list):
         if len(menu_item_list) > 0:

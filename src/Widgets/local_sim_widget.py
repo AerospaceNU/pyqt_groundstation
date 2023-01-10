@@ -131,7 +131,7 @@ class LocalSimWidget(CustomQWidgetBase):
         self.simProcess = subprocess.Popen(args, shell=True)
         self.saveAll()
         print("Launched sim")
-        self.callbackEvents.append(["enable_module", "Local Simulation,True"])
+        self.callback_handler.requestCallback("enable_module", "Local Simulation,True")
 
     def killSim(self):
         import signal
