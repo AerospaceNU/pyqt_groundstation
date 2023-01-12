@@ -128,7 +128,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
 
     def runPythonAvionicsCommand(self, command):
         """Run this function to call usb cli commands in the module"""
-        self.callbackEvents.append([Constants.cli_interface_usb_key, command])
+        self.callback_handler.requestCallback(Constants.cli_interface_usb_key, command)
 
     def updateData(self, vehicle_data, updated_data):
         if self.isDictValueUpdated("flights_list"):

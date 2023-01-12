@@ -44,7 +44,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
 
         self.serial_devices["Ground Station"] = self.changeActiveSerialPort
 
-        self.callbacks_to_add.append([Constants.cli_interface_key, self.cliCommand])
+        self.callback_handler.addCallback(Constants.cli_interface_key, self.cliCommand)
 
         self.radio_reconfigure_page = ReconfigurePage("Serial Ground Station Config")
         self.radio_reconfigure_page.addEnumOption("radio_types", "433 MHz", RADIO_433)
@@ -56,7 +56,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
 
         reconfigure_callbacks = self.radio_reconfigure_page.getCallbackFunctions(Constants.primary_reconfigure)
         for callback in reconfigure_callbacks:
-            self.callbacks_to_add.append([callback, reconfigure_callbacks[callback]])
+            self.callback_handler.addCallback(callback, reconfigure_callbacks[callback])
 
         self.cliConsole = CommsConsoleHelper()
 

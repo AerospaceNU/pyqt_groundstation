@@ -67,7 +67,7 @@ class ModuleConfiguration(CustomQWidgetBase):
         module_name = self.moduleNameList[button_index]
         enabled = self.enableButtonList[button_index].text().lower() == "enabled"
 
-        self.callbackEvents.append(["enable_module", "{0},{1}".format(module_name, not enabled)])
+        self.callback_handler.requestCallback("enable_module", "{0},{1}".format(module_name, not enabled))
 
     def setName(self, index, name):
         name_box = self.nameBoxList[index]

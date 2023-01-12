@@ -32,7 +32,7 @@ class FCBOffloadModule(ThreadedModuleCore):
 
         self.serial_devices["FCB USB Connection"] = self.changeActiveSerialPort
 
-        self.callbacks_to_add.append([Constants.cli_interface_usb_key, self.cliCommand])
+        self.callback_handler.addCallback(Constants.cli_interface_usb_key, self.cliCommand)
 
         self.cliConsole = CommsConsoleHelper()
 

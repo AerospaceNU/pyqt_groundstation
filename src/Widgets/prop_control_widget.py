@@ -269,7 +269,7 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
         self.abort_label.setText(get_value_from_dictionary(vehicle_data, "ecs_recordedAbort", "UNKNOWN"))
 
     def callPropCommand(self, command):
-        self.callbackEvents.append([Constants.prop_command_key, command])
+        self.callback_handler.requestCallback(Constants.prop_command_key, command)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,6 @@ Custom base QWidget
 Handles everything that is needed to be common between widgets
 """
 
-import copy
 import logging
 
 from PyQt5 import QtGui
@@ -12,6 +11,7 @@ from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QFrame, QMenu, QWidget
 
+from src.callback_handler import CallbackHandler
 from src.config import ConfigSaver
 from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER
 from src.data_helpers import check_type, clamp, get_value_from_dictionary
@@ -33,6 +33,7 @@ class CustomQWidgetBase(QFrame):
 
         self.widgetSettings = ConfigSaver(self.__class__.__name__)
         self.logger: logging.Logger = MAIN_GUI_LOGGER.get_logger(self.__class__.__name__)
+        self.callback_handler = CallbackHandler()
 
         self.isInLayout = widget is None
         self.isClosed = False
@@ -40,7 +41,6 @@ class CustomQWidgetBase(QFrame):
         self.draggable = True
         self.activeOffset = [0, 0]
 
-        self.callbackEvents = []
         self.vehicleData = {}
         self.recordedData = {}
         self.updated_data_dictionary = {}  # Tracks which keys are new since the last GUI loop
@@ -63,7 +63,7 @@ class CustomQWidgetBase(QFrame):
         # self.hide()
 
         # Little sketchy but whatever -- give the callback the clazz to instantiate
-        self.requestCallback("create_widget_new_window", self.__class__)
+        self.callback_handler.requestCallback("create_widget_new_window", self.__class__)
 
     def rightClickMenu(self, e: QPoint):
         menu = QMenu()
@@ -100,7 +100,7 @@ class CustomQWidgetBase(QFrame):
         pass
 
     def requestCallback(self, callback_name, callback_data):
-        self.callbackEvents.append([callback_name, callback_data])
+        self.callback_handler.requestCallback(callback_name, callback_data)
 
     def setDraggable(self, draggable):
         if not self.isInLayout:
@@ -136,7 +136,7 @@ class CustomQWidgetBase(QFrame):
         self.updateConsole(console_data)
         self.coreUpdate()
 
-        return self.getCallbackEvents()
+        return []
 
     def setRecordedData(self, recorded_data):
         self.recordedData = recorded_data
@@ -147,12 +147,6 @@ class CustomQWidgetBase(QFrame):
 
     def updateConsole(self, data):
         pass
-
-    def getCallbackEvents(self):
-        """Returns a list of callbacks to be run in the main thread"""
-        temp = copy.deepcopy(self.callbackEvents)
-        self.callbackEvents = []
-        return temp
 
     def mousePressEvent(self, e: QMouseEvent):
         """Determines if we clicked on a widget"""

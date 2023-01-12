@@ -69,7 +69,7 @@ class PropSequencerWidget(custom_q_widget_base.CustomQWidgetBase):
         self.callPropCommand(json.dumps(payload))
 
     def callPropCommand(self, command):
-        self.callbackEvents.append([Constants.prop_command_key, command])
+        self.callback_handler.requestCallback(Constants.prop_command_key, command)
 
     def updateData(self, vehicle_data, updated_data):
         progress_percent = clamp(int(get_value_from_dictionary(vehicle_data, "ecs_sequenceProgress", 0) * 100), 0, 100)
