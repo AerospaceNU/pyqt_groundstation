@@ -86,7 +86,7 @@ if __name__ == "__main__":
 
     from qt_material import apply_stylesheet
 
-    apply_stylesheet(application, theme="themes/high_contrast_light.xml")
+    apply_stylesheet(application, theme="themes/High Contrast Light.xml")
     navball.customUpdateAfterThemeSet()
 
     application.exec_()

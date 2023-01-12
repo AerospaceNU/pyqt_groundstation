@@ -68,7 +68,9 @@ def serial_port_callback_name(device):
     return "set_{}_serial_port".format(device)
 
 
-CUSTOM_THEMES = list(map(lambda it: os.path.join("themes", it), os.listdir("themes")))
+ROOT_DIRECTORY = os.path.abspath(os.path.join(os.path.abspath(__file__), os.pardir, os.pardir))
+CUSTOM_THEMES = list(map(lambda it: os.path.join(ROOT_DIRECTORY, "themes", it), os.listdir(os.path.join(ROOT_DIRECTORY, "themes"))))
+CUSTOM_THEMES.sort()
 
 
 # @dataclass
@@ -218,7 +220,11 @@ class DPFGUI:
         Sets up the update timer, calls the PyQt exec_ function, and closes down the GUI when done
         """
 
-        self.setThemeByName("dark_cyan.xml")
+        default_theme = os.path.join("dark_cyan.xml")
+        self.overallSettings.setDefault("theme", default_theme)
+        last_theme = self.overallSettings.get("theme")
+        if not self.setThemeByName(last_theme):
+            self.setThemeByName(default_theme)
 
         # QTimer to run the update method
         timer = QTimer()
@@ -262,10 +268,29 @@ class DPFGUI:
         for item in sorted_widgets:
             own_window_menu.addAction(item, lambda name=item: self.addNewWidgetInNewWindow(name))
 
+        def addThemeCallbackToMenu(menu, theme_filepath):
+            if "/" in theme_filepath:
+                human_readable_name = theme_filepath.split("/")[-1]
+                if ".xml" in human_readable_name:
+                    human_readable_name = human_readable_name.split(".xml")[0]
+            else:
+                human_readable_name = theme_filepath
+
+            menu.addAction(human_readable_name, lambda theme_name=theme_filepath: self.setThemeByName(theme_name))
+
         # Menu bar to change theme
         theme_menu = menu_bar.addMenu("Theme")
-        for theme in self.getThemes():
-            theme_menu.addAction(theme, lambda theme_name=theme: self.setThemeByName(theme_name))
+        light_menu = theme_menu.addMenu("qt_material light")
+        dark_menu = theme_menu.addMenu("qt_material dark")
+
+        for theme in list_themes():
+            if "light_" in theme.lower():
+                addThemeCallbackToMenu(light_menu, theme)
+            else:
+                addThemeCallbackToMenu(dark_menu, theme)
+        theme_menu.addSection("Custom Themes")
+        for theme in CUSTOM_THEMES:
+            addThemeCallbackToMenu(theme_menu, theme)
 
         # Menu bar to set serial port
         # Because the available serial ports and data interfaces change after this class is created, we run a method every time we create the menu
@@ -535,9 +560,12 @@ class DPFGUI:
         if name in self.getThemes():
             apply_stylesheet(self.application, theme=name)
             self.updateAfterThemeSet()
+            self.overallSettings.save("theme", name)
             self.logger.info(f"Set theme to {name}")
+            return True
         else:
             self.logger.info("No Theme named {}".format(name))
+            return False
 
     def updateAfterThemeSet(self):
         self.application.setStyleSheet(self.application.styleSheet() + "\nQSlider:horizontal { background: none; } QSlider:horizontal { background: none; }")
