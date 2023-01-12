@@ -41,10 +41,10 @@ class FcbOffloadAnalyzer:
 
         # Ask for data to keep of launch and trim
         start_time, end_time = self._select_time_limits_cb(df, "timestamp_s", "pos_z")
-        return FcbOffloadAnalyzer.analyzeTimeRange(df, start_time, end_time, self._offload_data_filepath)
+        return self.analyze_time_range(df, start_time, end_time, self._offload_data_filepath)
 
     @staticmethod
-    def analyzeTimeRange(df: pd.DataFrame, start_time: float, end_time: float, offload_path: str) -> str:
+    def analyze_time_range(df: pd.DataFrame, start_time: float, end_time: float, offload_path: str) -> str:
         df = df[(df["timestamp_s"] > start_time) & (df["timestamp_s"] < end_time)]
 
         # Turn GPS into degrees and minutes from float
@@ -271,7 +271,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    if args.offload_flight_name and False:
+    if args.offload_flight_name:
         # Get port from user via console
         port_list = SerialPortManager.get_connected_ports()
         port_dev = ConsoleView.request_console_port(port_list=port_list)

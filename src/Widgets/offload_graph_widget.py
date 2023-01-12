@@ -270,7 +270,7 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
         if self.minXLine is None:  # We don't have data yet
             return
 
-        FcbOffloadAnalyzer.analyzeTimeRange(self.raw_file, self.minXLine.getXPos(), self.maxXLine.getXPos(), self.raw_file_path)
+        FcbOffloadAnalyzer.analyze_time_range(self.raw_file, self.minXLine.getXPos(), self.maxXLine.getXPos(), self.raw_file_path)
         self.refreshTable()
 
     def onGraphSelected(self):
