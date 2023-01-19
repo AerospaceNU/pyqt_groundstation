@@ -21,6 +21,8 @@ class CommsConsoleHelper(object):
         self.addEntry(text, from_remote)
         self.addNewEntryNextTime = True
 
+        self.queueCallback()
+
     def autoAddEntry(self, text, from_remote=False):
         """Used for the CLI radio messages"""
         if self.addNewEntryNextTime:
@@ -33,6 +35,8 @@ class CommsConsoleHelper(object):
         else:
             self.addNewEntryNextTime = False
 
+        self.queueCallback()
+
     def addEntry(self, text, from_remote):
         text = text.strip("\n")
 
@@ -40,10 +44,6 @@ class CommsConsoleHelper(object):
             self.command_history_list.append("{0}: {1}".format(time.strftime("%H:%M:%S"), text))
         else:
             self.command_history_list.append("{0}: > {1}".format(time.strftime("%H:%M:%S"), text))
-
-        # Request a new callback with the new data
-        if self.addNewEntryNextTime:
-            self.callbackHandler.requestCallback(self.callback, self.command_history_list[-1])
 
         # Limit length of command_history_list
         self.command_history_list = self.command_history_list[-self.maxLength:]
@@ -53,6 +53,11 @@ class CommsConsoleHelper(object):
             self.command_history_list[-1] += text
         else:
             self.addEntry(text, from_remote)
+
+    def queueCallback(self):
+        # Request a new callback with the new data
+        if self.addNewEntryNextTime:
+            self.callbackHandler.requestCallback(self.callback, str(self.command_history_list[-1]).strip())
 
     def getList(self):
         return self.command_history_list

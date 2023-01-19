@@ -150,7 +150,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 self.logMessageToFile(message_type, dictionary)
                 self.handleParsedData(message_type, dictionary, update_on_bad_crc=False)
             else:
-                # self.logger.info("New [{0}] message".format(message_type))
+                self.logger.info("New [{0}] message".format(message_type))
                 self.logMessageToFile(message_type, dictionary)
                 self.handleParsedData(message_type, dictionary)
 
