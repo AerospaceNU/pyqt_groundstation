@@ -89,6 +89,9 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         self.textBoxWidget.setText(outString[:-1])
         self.adjustSize()
 
+    def customUpdateAfterThemeSet(self):
+        self.textBoxWidget.setStyleSheet("font: 10pt Monospace")
+
 
 class CLIUSBInterface(CompleteConsoleWidget):
     def __init__(self, parent=None):

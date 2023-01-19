@@ -1,6 +1,7 @@
 import socket
 import time
 
+from src.Modules.MessageParsing.fcb_message_generation import createCLICommandPacket
 from src.Modules.ground_station_data_interface import GroundStationDataInterface
 
 HOST = "127.0.0.1"  # The server's hostname or IP address
@@ -16,9 +17,18 @@ class LocalSimulationFlightInterface(GroundStationDataInterface):
         super().__init__()
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        self.callback_handler.closeOut()  # Don't add callbacks for radio and band switching (Kind of a hack)
+        self.cli_queue = []
 
         self.log_to_file = False
+
+    def onRadioSwitch(self, data):
+        pass
+
+    def onBandSwitch(self, data):
+        pass
+
+    def cliCommand(self, data):
+        self.cli_queue.append(data + "\n")
 
     def runOnEnableAndDisable(self):
         if self.enabled:
@@ -52,5 +62,13 @@ class LocalSimulationFlightInterface(GroundStationDataInterface):
         except Exception as e:
             self.logger.error("Couldn't parse local simulation message: {0}, closing connection".format(e))
             self.enabled = False
+
+        if len(self.cli_queue) > 0:
+            try:
+                cli_to_send = str(self.cli_queue.pop(0))
+                self.socket.send(createCLICommandPacket(cli_to_send))
+            except Exception as e:
+                self.logger.error("Couldn't send cli message to local simulation: {0}, closing connection".format(e))
+                # self.enabled = False
 
         self.updateEveryEnabledLoop()

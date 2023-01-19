@@ -18,7 +18,7 @@ from src.Modules.MessageParsing.fcb_message_generation import (
 
 RADIO_433 = 0
 RADIO_915 = 1
-RADIO_NAMES = {0: "433 MHz", 1: "915 MHz"}
+RADIO_NAMES = {RADIO_433: "433 MHz", RADIO_915: "915 MHz"}
 
 
 class GroundStationDataInterface(FCBDataInterfaceCore):
@@ -123,32 +123,18 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 self.writeData()
                 self.updateEveryEnabledLoop()
                 if time.time() - self.last_data_time > 5:  # Timeout checks on any data, not just good data
-                    self.logToConsoleAndCheck(
-                        "Ground station on port {} timed out".format(self.serial_port),
-                        logging.ERROR,
-                    )
+                    self.logToConsoleAndCheck("Ground station on port {} timed out".format(self.serial_port), logging.ERROR)
                     self.has_data = False
                     self.good_fcb_data = False
                 time.sleep(0.01)
-            self.logger.info(
-                "Disconnected from ground station on port {}".format(self.serial_port),
-                logging.ERROR,
-            )
+            self.logger.info("Disconnected from ground station on port {}".format(self.serial_port), logging.ERROR)
         except IOError:
-            self.logger.info(
-                "Lost connection to ground station on port {}".format(self.serial_port),
-                logging.ERROR,
-            )
+            self.logger.info("Lost connection to ground station on port {}".format(self.serial_port), logging.ERROR)
             self.connected = False
 
     def parseData(self, raw_bytes):
         try:
-            [
-                success,
-                dictionary,
-                message_type,
-                crc,
-            ] = fcb_message_parsing.parse_fcb_message(raw_bytes)
+            [success, dictionary, message_type, crc] = fcb_message_parsing.parse_fcb_message(raw_bytes)
 
             if Constants.radio_id_key in dictionary and dictionary[Constants.radio_id_key] != self.active_radio:  # Data coming in over the wrong radio
                 return
@@ -171,9 +157,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
             if not fcb_message_parsing.is_ground_station_message(message_type):
                 self.has_data = True
         except struct.error as e:
-            self.logger.warning(
-                "Can't parse message (length: {1} bytes):\n{0}".format(e, len(raw_bytes)),
-            )
+            self.logger.warning("Can't parse message (length: {1} bytes):\n{0}".format(e, len(raw_bytes)))
 
     def readData(self):
         raw_bytes = self.serial.read(fcb_message_parsing.PACKET_LENGTH)  # Read in bytes
@@ -183,7 +167,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         # self.parseData(raw_bytes)
 
         for i in range(0, len(raw_bytes), fcb_message_parsing.PACKET_LENGTH):
-            self.parseData(raw_bytes[i : i + fcb_message_parsing.PACKET_LENGTH])
+            self.parseData(raw_bytes[i: i + fcb_message_parsing.PACKET_LENGTH])
         self.serial.flushInput()
 
         if self.log_to_file:
