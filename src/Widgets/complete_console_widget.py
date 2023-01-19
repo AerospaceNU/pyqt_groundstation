@@ -1,9 +1,10 @@
 """
-Text box widget
+CLI Console
 """
+
 from PyQt5 import QtCore
 from PyQt5.QtGui import QFont, QKeyEvent
-from PyQt5.QtWidgets import QGridLayout, QLabel, QLineEdit
+from PyQt5.QtWidgets import QGridLayout, QLabel, QLineEdit, QScrollArea
 
 from src.constants import Constants
 from src.data_helpers import get_value_from_dictionary
@@ -17,11 +18,13 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         self.textBoxWidget = QLabel()
         self.textEntryWidget = QLineEdit()
         self.titleBox = QLabel()
+        self.scrollArea = QScrollArea()
+        self.scrollArea.setWidget(self.textBoxWidget)
 
         layout = QGridLayout()
-        layout.addWidget(self.titleBox)
-        layout.addWidget(self.textBoxWidget)
-        layout.addWidget(self.textEntryWidget)
+        layout.addWidget(self.titleBox, 0, 0)
+        layout.addWidget(self.scrollArea, 1, 0)
+        layout.addWidget(self.textEntryWidget, 2, 0)
         self.setLayout(layout)
 
         self.textEntryWidget.returnPressed.connect(self.returnPressed)
@@ -42,6 +45,10 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         self.titleBox.setText(self.title)
         self.titleBox.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
         self.textBoxWidget.setFont(QFont("monospace", 10))
+
+        # self.scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        self.setMinimumHeight(100)
 
         self.commandHistory = []
         self.commandHistoryIndex = -1
@@ -85,6 +92,10 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
     def updateData(self, vehicle_data, updated_data):
         # data = get_value_from_dictionary(vehicle_data, self.source, [])
 
+        at_bottom = False
+        if self.scrollArea.verticalScrollBar().sliderPosition() == self.scrollArea.verticalScrollBar().maximum():
+            at_bottom = True
+
         outString = ""
         for line in self.consoleData:
             outString = outString + line
@@ -94,6 +105,13 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         self.textBoxWidget.setText(outString[:-1])
         self.textBoxWidget.adjustSize()
         self.adjustSize()
+
+        self.scrollArea.setMinimumWidth(min(self.textBoxWidget.width() + 10, 1000))
+        self.scrollArea.setMinimumHeight(min(self.textBoxWidget.height(), 500))
+
+        # Fix the scroll bar after changing all the sizes
+        if at_bottom:
+            self.scrollArea.verticalScrollBar().setSliderPosition(self.scrollArea.verticalScrollBar().maximum())
 
     def customUpdateAfterThemeSet(self):
         self.textBoxWidget.setStyleSheet("font: 10pt Monospace")
