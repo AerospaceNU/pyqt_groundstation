@@ -271,7 +271,7 @@ class CLIDataMessage(BaseMessage):
         except Exception as e:
             print(e)
 
-        print(f"id {id} string {string}")
+        # print(f"id {id} string {string}")
         if id == last_id:
             return {}
 

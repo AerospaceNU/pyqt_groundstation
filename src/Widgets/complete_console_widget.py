@@ -11,9 +11,7 @@ from src.Widgets import custom_q_widget_base
 
 
 class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
-    i = 0.0
-
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, rx_source=Constants.new_cli_message_key, tx_source=Constants.cli_interface_key):
         super().__init__(parent)
 
         self.textBoxWidget = QLabel()
@@ -34,8 +32,12 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         self.xBuffer = 0
         self.yBuffer = 0
 
-        self.source = Constants.cli_interface_key
         self.title = "FCB CLI Interface"
+        self.source = tx_source
+
+        self.callback_handler.addCallback(rx_source, self.onCliMessage)
+
+        self.consoleData = []
 
         self.titleBox.setText(self.title)
         self.titleBox.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
@@ -44,6 +46,9 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         self.commandHistory = []
         self.commandHistoryIndex = -1
         self.currentCommand = ""
+
+    def onCliMessage(self, message):
+        self.consoleData.append(message)
 
     def textEntryKeyPressEvent(self, eventQKeyEvent: QKeyEvent):
         if eventQKeyEvent.key() == 16777235:  # UP
@@ -78,15 +83,16 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         self.commandHistoryIndex = -1
 
     def updateData(self, vehicle_data, updated_data):
-        data = get_value_from_dictionary(vehicle_data, self.source, [])
+        # data = get_value_from_dictionary(vehicle_data, self.source, [])
 
         outString = ""
-        for line in data:
+        for line in self.consoleData:
             outString = outString + line
             if outString[-1] != "\n":
                 outString += "\n"
 
         self.textBoxWidget.setText(outString[:-1])
+        self.textBoxWidget.adjustSize()
         self.adjustSize()
 
     def customUpdateAfterThemeSet(self):
@@ -99,9 +105,8 @@ class CLIUSBInterface(CompleteConsoleWidget):
         Overrides the other console to provide the USB interface
         I'm not sure this is a great way to do this, but it'll work for now
         """
-        super(CLIUSBInterface, self).__init__(parent)
+        super(CLIUSBInterface, self).__init__(parent=parent, tx_source=Constants.cli_interface_usb_key, rx_source=Constants.new_usb_cli_message_key)
 
-        self.source = Constants.cli_interface_usb_key
         self.title = "FCB CLI USB Interface"
 
         self.titleBox.setText(self.title)

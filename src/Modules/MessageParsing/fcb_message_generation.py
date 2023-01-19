@@ -19,8 +19,6 @@ def createCLICommandMessage(destination, command: str):
 
 def createRadioPacket(packet_type, payload: bytes):
     payload_len = len(payload)
-    print(payload_len)
-
     return struct.pack(f"<BBBI8s{payload_len}s", packet_type, 0, 1, 2, "callsign".encode(), payload)  # Callsign needs to be 8 charecters long
 
 

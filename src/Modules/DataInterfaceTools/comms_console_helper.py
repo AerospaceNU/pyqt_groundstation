@@ -4,10 +4,15 @@ Holds a list of strings and does some automatic formatting
 
 import time
 
+from src.callback_handler import CallbackHandler
+
 
 class CommsConsoleHelper(object):
-    def __init__(self, max_length=30):
+    def __init__(self, callback, max_length=30):
         self.command_history_list = []
+
+        self.callbackHandler = CallbackHandler()
+        self.callback = callback
 
         self.addNewEntryNextTime = True
         self.maxLength = max_length
@@ -36,7 +41,12 @@ class CommsConsoleHelper(object):
         else:
             self.command_history_list.append("{0}: > {1}".format(time.strftime("%H:%M:%S"), text))
 
-        self.command_history_list = self.command_history_list[-self.maxLength :]
+        # Request a new callback with the new data
+        if self.addNewEntryNextTime:
+            self.callbackHandler.requestCallback(self.callback, self.command_history_list[-1])
+
+        # Limit length of command_history_list
+        self.command_history_list = self.command_history_list[-self.maxLength:]
 
     def addToLastEntry(self, text, from_remote=False):
         if len(self.command_history_list) > 0:

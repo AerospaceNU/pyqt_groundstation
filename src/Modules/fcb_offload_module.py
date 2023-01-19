@@ -34,7 +34,7 @@ class FCBOffloadModule(ThreadedModuleCore):
 
         self.callback_handler.addCallback(Constants.cli_interface_usb_key, self.cliCommand)
 
-        self.cliConsole = CommsConsoleHelper()
+        self.cliConsole = CommsConsoleHelper(Constants.new_usb_cli_message_key)
 
         self.replay_dict: Dict[str, List[float]] = None
         self.replay_idx: int = 0

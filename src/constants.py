@@ -97,6 +97,8 @@ class Constants:
     cli_interface_usb_key = "cli_interface_usb"
     cli_string_key = "cli_string"
     cli_flights_list_key = "fcb_flights_list"
+    new_cli_message_key = "new_cli_message"
+    new_usb_cli_message_key = "new_usb_cli_message"
 
     invalid_fcb_state_name = "Invalid FCB State"
     fcb_state_names = [
