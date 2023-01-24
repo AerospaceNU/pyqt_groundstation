@@ -22,12 +22,7 @@ class RocketPrimaryTab(TabCommon):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
 
-        # if sys.platform == "linux":  # PyOpenGL is really sad on Windows and Mac, only run on Linux
-        #     use_navball = True
-        # else:
-        use_navball = False
-
-        self.FlightDisplay = self.addWidget(flight_display.FlightDisplay(compass_and_text=False, use_navball_widget=use_navball))
+        self.FlightDisplay = self.addWidget(flight_display.FlightDisplay(compass_and_text=False))
         self.StatusBar = self.addWidget(vehicle_status_widget.VehicleStatusWidget())
         self.VideoPanel = self.addWidget(video_widget.VideoWidget())
         self.Annunciator = self.addWidget(annunciator_panel.AnnunciatorPanel())

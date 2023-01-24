@@ -19,8 +19,10 @@ from src.Widgets.QWidget_Parts import (
 
 
 class FlightDisplay(custom_q_widget_base.CustomQWidgetBase):
-    def __init__(self, parent: QWidget = None, use_navball_widget=True, compass_and_text=True):
+    def __init__(self, parent: QWidget = None, compass_and_text=True):
         super().__init__(parent)
+
+        use_navball_widget = self.widgetSettings.get("navball_enabled", False)
 
         self.scale = 200
         v_scale_factor = 1
