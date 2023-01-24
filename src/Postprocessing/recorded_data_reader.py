@@ -12,15 +12,10 @@ from src.data_helpers import vector_length
 
 
 class RecordedDataReader(object):
-    def __init__(
-        self,
-        file_name="parsed_messages.txt",
-        load_slower=False,
-        logging_callback=None,
-        logging_interval=5,
-    ):
+    def __init__(self, file_name="parsed_messages.txt", load_slower=False, logging_callback=None, logging_interval=5):
         file = open(file_name)
         data = file.readlines()
+        # data = data[27500:]
 
         self.data_struct = []
         self.packet_types = []
@@ -61,20 +56,10 @@ class RecordedDataReader(object):
                 # Calculate distance from start
                 if Constants.latitude_key in packet_data and packet_data[Constants.latitude_key] != 0:
                     if not has_first_point:
-                        first_point = [
-                            packet_data[Constants.latitude_key],
-                            packet_data[Constants.longitude_key],
-                        ]
+                        first_point = [packet_data[Constants.latitude_key], packet_data[Constants.longitude_key]]
                         has_first_point = True
 
-                    ned = navpy.lla2ned(
-                        packet_data[Constants.latitude_key],
-                        packet_data[Constants.longitude_key],
-                        0,
-                        first_point[0],
-                        first_point[1],
-                        0,
-                    )
+                    ned = navpy.lla2ned(packet_data[Constants.latitude_key], packet_data[Constants.longitude_key], 0, first_point[0], first_point[1], 0)
                     distance = vector_length(ned[0], ned[1])
                     packet_data["distance"] = distance
 
@@ -89,7 +74,7 @@ class RecordedDataReader(object):
             if logging_callback is not None and time.time() - last_logging_time > logging_interval:
                 logging_callback("Indexing recorded dat: {0:.2f}% done".format(100 * data.index(line) / len(data)))
                 last_logging_time = time.time()
-                logging_callback(f"Indxing took {time.time() - startTime} seconds")
+                logging_callback(str(f"Indexing took {time.time() - startTime} seconds"))
 
         self.fields = list(big_packet_data.keys())
         self.packetIndex = 0

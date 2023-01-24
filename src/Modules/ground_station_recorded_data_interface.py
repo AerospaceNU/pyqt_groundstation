@@ -13,15 +13,14 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
     def __init__(self):
         super().__init__()
 
+        self.file_name = ""  # "logs/01-21-2023_12-57-22/GroundStationDataInterface_parsed.txt"
+
     def startUp(self):
         pass
 
     def runOnEnableAndDisable(self):
         if self.enabled:
-            self.reader = RecordedDataReader(
-                load_slower=True,
-                logging_callback=lambda data, level=1: self.logger.info(data, level),
-            )
+            self.reader = RecordedDataReader(load_slower=True, logging_callback=self.logger.info, file_name=self.file_name)
             self.logger.info("Done indexing recorded data")
 
             self.reader.setPacketIndex(0)
