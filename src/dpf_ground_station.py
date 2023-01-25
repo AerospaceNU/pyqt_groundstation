@@ -44,6 +44,7 @@ from src.Widgets import (
     text_box_drop_down_widget,
     vehicle_status_widget,
     video_widget,
+    configurable_text_box_widget,
 )
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 from src.Widgets.database_view import DatabaseView
@@ -58,6 +59,7 @@ from src.Widgets.MainTabs.rocket_primary_tab import RocketPrimaryTab
 from src.Widgets.MainTabs.settings_tab import SettingsTab
 from src.Widgets.MainTabs.side_tab_holder import SideTabHolder
 from src.Widgets.offload_graph_widget import OffloadGraphWidget
+from src.Widgets.event_configuration import EventConfiguration
 
 if sys.platform == "linux":  # I don't even know anymore
     if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:
@@ -129,6 +131,7 @@ class DPFGUI:
         self.mainWindow.setCentralWidget(self.tabHolderWidget)
         self.mainWindow.setWindowTitle(self.title)
         self.mainWindow.resize(1920, 1080)
+        self.mainWindow.closeEvent = self.mainWindowCloseEvent  # Not sketchy at all
 
         # Make some menus that we'll need later
         self.serial_devices_menu = QMenu()
@@ -165,6 +168,8 @@ class DPFGUI:
             "Logging Configurator": LoggerConfigWidget,
             "QR Code Generator": qr_code_widget.RocketLocationQrCode,
             "Fire Go/No Go": fire_k_widget.FireKWidget,
+            "Flight Event Configuration": EventConfiguration,
+            "Core Information": configurable_text_box_widget.CoreInformation,
         }
 
         # List of tabs that can be dynamically created
@@ -654,6 +659,15 @@ class DPFGUI:
 
     def clearConsole(self, _):  # Need a empty arg to fit with callback system
         self.ConsoleData = [[]]
+
+    def mainWindowCloseEvent(self, event):
+        """
+        Runs when the main window closes.
+        Closes all other tabs, so the whole application exits.
+        """
+
+        for tab in self.tabObjects:
+            tab.close()
 
     def stop(self):
         for interface in self.module_dictionary:

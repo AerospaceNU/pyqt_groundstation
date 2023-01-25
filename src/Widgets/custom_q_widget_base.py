@@ -20,11 +20,16 @@ from src.data_helpers import check_type, clamp, get_value_from_dictionary
 class SourceKeyData(object):
     """Data structure to hold info about a source key thingy"""
 
-    def __init__(self, key_name, value_type, default_value, hide_in_drop_down):
+    def __init__(self, key_name, value_type, default_value, hide_in_drop_down, description):
         self.key_name = key_name
         self.value_type = value_type
         self.default_value = default_value
         self.hide_in_drop_down = hide_in_drop_down
+
+        if description == "":
+            self.description = self.key_name
+        else:
+            self.description = description
 
 
 class CustomQWidgetBase(QFrame):
@@ -52,6 +57,7 @@ class CustomQWidgetBase(QFrame):
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         super().closeEvent(a0)
         self.isClosed = True
+        self.callback_handler.closeOut()
 
     def popOut(self):
         """
@@ -163,8 +169,8 @@ class CustomQWidgetBase(QFrame):
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.isClicked = False
 
-    def addSourceKey(self, internal_id: str, value_type, default_key: str, default_value=None, hide_in_drop_down=False):
-        self.sourceDictionary[internal_id] = SourceKeyData(default_key, value_type, default_value, hide_in_drop_down)
+    def addSourceKey(self, internal_id: str, value_type, default_key: str, default_value=None, hide_in_drop_down=False, description=""):
+        self.sourceDictionary[internal_id] = SourceKeyData(default_key, value_type, default_value, hide_in_drop_down, description)
 
     def removeSourceKey(self, internal_key_id):
         del self.sourceDictionary[internal_key_id]
@@ -175,10 +181,16 @@ class CustomQWidgetBase(QFrame):
         value_type = self.sourceDictionary[internal_key_id].value_type
 
         return_value = get_value_from_dictionary(self.vehicleData, dictionary_key, default_value)
-        try:
-            return value_type(return_value)
-        except TypeError:
-            return default_value
+
+        if type(return_value) == value_type:
+            return return_value
+        elif return_value is None:
+            return None
+        else:
+            try:
+                return value_type(return_value)
+            except (TypeError, ValueError):
+                return default_value
 
     def getRecordedDictDataUsingSourceKey(self, internal_key_id):
         dictionary_key = self.sourceDictionary[internal_key_id].key_name
