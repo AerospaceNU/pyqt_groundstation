@@ -25,6 +25,8 @@ class TextBoxWidget(CustomQWidgetBase):
         layout.addWidget(self.twoColumnDisplay)
         self.setLayout(layout)
 
+        self.sourceConfig = {}
+
         if type(source_list) == list:
             for i in range(len(source_list)):
                 source = source_list[i]
@@ -35,7 +37,13 @@ class TextBoxWidget(CustomQWidgetBase):
             for i in range(len(keys_list)):
                 key = keys_list[i]
                 source = source_list[key]
-                self.addSourceKey("line {}".format(i), str, source, default_value="No Data", description=key)
+
+                if type(source) == str:
+                    self.addSourceKey("line {}".format(i), str, source, default_value="No Data", description=key)
+                elif type(source) == list:
+                    source_string = source[0]
+                    self.sourceConfig[source_string] = source[1:]
+                    self.addSourceKey("line {}".format(i), float, source_string, default_value="No Data", description=key)
 
         self.fontSize = font_size
 
@@ -65,10 +73,12 @@ class TextBoxWidget(CustomQWidgetBase):
             column_1.append(self.sourceDictionary[source_name].description)
 
             value = self.getDictValueUsingSourceKey(source_name)
+            key_name = self.sourceDictionary[source_name].key_name
 
-            try:
-                column_2.append(f"{float(value):.1f}")
-            except:
+            if key_name in self.sourceConfig and type(value) == float:
+                decimals = self.sourceConfig[key_name][0]
+                column_2.append(f"{float(value):.{decimals}f}")
+            else:
                 column_2.append(value)
 
         self.twoColumnDisplay.updateValues(column_1, column_2)
@@ -83,10 +93,12 @@ class CoreInformation(TextBoxWidget):
     def __init__(self, parent=None):
         keys = Constants()
 
-        source_list = {"Altitude": keys.altitude_key,
-                       "Vertical Speed": keys.vertical_speed_key,
-                       "Latitude": keys.latitude_key,
-                       "Longitude": keys.longitude_key,
+        source_list = {"Altitude": [keys.altitude_key, 1],
+                       "Vertical Speed": [keys.vertical_speed_key, 1],
+                       "State": keys.fcb_state_key,
+                       "Message age": keys.message_age_key,
+                       "Latitude": [keys.latitude_key, 7],
+                       "Longitude": [keys.longitude_key, 7],
                        }
 
         super().__init__(parent, source_list=source_list, title="Core Information", font_size=60)
