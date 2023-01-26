@@ -1,8 +1,8 @@
 import socket
 import time
 
-from src.Modules.MessageParsing.fcb_message_generation import createCLICommandPacket
 from src.Modules.ground_station_data_interface import GroundStationDataInterface
+from src.Modules.MessageParsing.fcb_message_generation import createCLICommandPacket
 
 HOST = "127.0.0.1"  # The server's hostname or IP address
 PORT = 8080  # The port used by the server

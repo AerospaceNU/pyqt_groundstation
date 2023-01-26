@@ -3,11 +3,11 @@ Text box widget
 """
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QWidget, QLabel, QGridLayout
+from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget
 
+from src.constants import Constants
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 from src.Widgets.QWidget_Parts.two_column_text_display import TwoColumnTextDisplay
-from src.constants import Constants
 
 
 class TextBoxWidget(CustomQWidgetBase):
@@ -93,12 +93,13 @@ class CoreInformation(TextBoxWidget):
     def __init__(self, parent=None):
         keys = Constants()
 
-        source_list = {"Altitude": [keys.altitude_key, 1],
-                       "Vertical Speed": [keys.vertical_speed_key, 1],
-                       "State": keys.fcb_state_key,
-                       "Message age": keys.message_age_key,
-                       "Latitude": [keys.latitude_key, 7],
-                       "Longitude": [keys.longitude_key, 7],
-                       }
+        source_list = {
+            "Altitude": [keys.altitude_key, 1],
+            "Vertical Speed": [keys.vertical_speed_key, 1],
+            "State": keys.fcb_state_key,
+            "Message age": keys.message_age_key,
+            "Latitude": [keys.latitude_key, 7],
+            "Longitude": [keys.longitude_key, 7],
+        }
 
         super().__init__(parent, source_list=source_list, title="Core Information", font_size=60)

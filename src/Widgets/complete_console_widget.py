@@ -7,7 +7,6 @@ from PyQt5.QtGui import QFont, QKeyEvent
 from PyQt5.QtWidgets import QGridLayout, QLabel, QLineEdit, QScrollArea
 
 from src.constants import Constants
-from src.data_helpers import get_value_from_dictionary
 from src.Widgets import custom_q_widget_base
 
 

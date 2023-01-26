@@ -25,6 +25,7 @@ from src.Widgets import (
     annunciator_panel,
     board_usb_offloader_widget,
     complete_console_widget,
+    configurable_text_box_widget,
     control_station_status,
     fire_k_widget,
     flight_display,
@@ -44,10 +45,10 @@ from src.Widgets import (
     text_box_drop_down_widget,
     vehicle_status_widget,
     video_widget,
-    configurable_text_box_widget,
 )
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 from src.Widgets.database_view import DatabaseView
+from src.Widgets.event_configuration import EventConfiguration
 from src.Widgets.logger_config_widget import LoggerConfigWidget
 from src.Widgets.MainTabs.diagnostic_tab import DiagnosticTab
 from src.Widgets.MainTabs.graphs_tab import GraphsTab
@@ -59,7 +60,6 @@ from src.Widgets.MainTabs.rocket_primary_tab import RocketPrimaryTab
 from src.Widgets.MainTabs.settings_tab import SettingsTab
 from src.Widgets.MainTabs.side_tab_holder import SideTabHolder
 from src.Widgets.offload_graph_widget import OffloadGraphWidget
-from src.Widgets.event_configuration import EventConfiguration
 
 if sys.platform == "linux":  # I don't even know anymore
     if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:

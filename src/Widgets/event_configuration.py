@@ -2,12 +2,15 @@
 Widget to show filght events over radio
 """
 
-from PyQt5 import QtCore
-from PyQt5.QtGui import QFont, QKeyEvent
-from PyQt5.QtWidgets import QGridLayout, QLabel, QPushButton, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import (
+    QGridLayout,
+    QLabel,
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+)
 
 from src.constants import Constants
-from src.data_helpers import get_value_from_dictionary
 from src.Widgets import custom_q_widget_base
 
 REQUEST_EVENT_COMMAND = "--config -h"

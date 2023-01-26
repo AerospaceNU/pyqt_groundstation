@@ -46,7 +46,7 @@ class CommsConsoleHelper(object):
             self.command_history_list.append("{0}: > {1}".format(time.strftime("%H:%M:%S"), text))
 
         # Limit length of command_history_list
-        self.command_history_list = self.command_history_list[-self.maxLength:]
+        self.command_history_list = self.command_history_list[-self.maxLength :]
 
     def addToLastEntry(self, text, from_remote=False):
         if len(self.command_history_list) > 0:

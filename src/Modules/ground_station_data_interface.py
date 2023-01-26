@@ -167,7 +167,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         # self.parseData(raw_bytes)
 
         for i in range(0, len(raw_bytes), fcb_message_parsing.PACKET_LENGTH):
-            self.parseData(raw_bytes[i: i + fcb_message_parsing.PACKET_LENGTH])
+            self.parseData(raw_bytes[i : i + fcb_message_parsing.PACKET_LENGTH])
         self.serial.flushInput()
 
         if self.log_to_file:
