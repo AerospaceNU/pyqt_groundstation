@@ -54,8 +54,9 @@ class MapWidget(CustomQWidgetBase):
         self.has_datum = False
 
         self.map_tile_manager = None
-
+        self.is_requesting_map = False
         self.last_image_request_time = time.time()
+        self.is_at_max_zoom = False
 
     def addCustomMenuItems(self, menu: QMenu, e):
         menu.addAction("Clear Map", self.clearMap)
@@ -118,19 +119,39 @@ class MapWidget(CustomQWidgetBase):
         if len(self.datum) == 0:  # Can't draw a map if we don't know our lat and lon
             return
 
-        if time.time() > self.last_image_request_time + 5 and self.map_tile_manager is not None:  # Do we need a new map?
+        # New logic to check if we need a new map:
+        # Get bounds in ENU of map and bg image
+        # If map is bigger than image, get new image (this triggers when we zoom out)
+        # If the background widget is showing less than 1/3 of the whole image, get a new one (this triggers when we zoom in)
+
+        needs_new_map = False
+
+        map_ll = self.map_draw_widget.drawLocationToPoint(0, self.map_draw_widget.height())
+        map_ur = self.map_draw_widget.drawLocationToPoint(self.map_draw_widget.width(), 0)
+        image_ll = self.map_background_widget.map_image_bottom_left
+        image_ur = self.map_background_widget.map_image_top_right
+
+        if map_ll[0] < image_ll[0] or map_ll[1] < image_ll[1] or map_ur[0] > image_ur[0] or map_ur[1] > image_ur[1]:
+            needs_new_map = True
+        elif self.map_background_widget.width_ratio > 3 and not self.is_at_max_zoom:
+            needs_new_map = True
+
+        time_since_last_request = time.time() - self.last_image_request_time
+        if time_since_last_request > 5 and self.is_requesting_map:
+            self.is_requesting_map = False
+            print("Map Image request took to long")
+
+        if needs_new_map and self.map_tile_manager is not None and not self.is_requesting_map:  # Do we need a new map?
             self.last_image_request_time = time.time()
 
-            lower_left_coordinates = self.map_draw_widget.drawLocationToPoint(0, self.map_draw_widget.height())
-            upper_right_coordinates = self.map_draw_widget.drawLocationToPoint(self.map_draw_widget.width(), 0)
-
-            lower_left_ned = [lower_left_coordinates[1], lower_left_coordinates[0], 0]
-            upper_right_ned = [upper_right_coordinates[1], upper_right_coordinates[0], 0]
+            lower_left_ned = [map_ll[1], map_ll[0], 0]
+            upper_right_ned = [map_ur[1], map_ur[0], 0]
 
             lower_left_lla = navpy.ned2lla(lower_left_ned, self.datum[0], self.datum[1], 0)
             upper_right_lla = navpy.ned2lla(upper_right_ned, self.datum[0], self.datum[1], 0)
 
             self.map_tile_manager.request_new_tile(lower_left_lla, upper_right_lla, self.width())
+            self.is_requesting_map = True
 
         if self.map_tile_manager is not None and self.map_tile_manager.hasNewMap():  # Check for and get new map if it exists
             map_tile = self.map_tile_manager.getLastTile()
@@ -138,14 +159,16 @@ class MapWidget(CustomQWidgetBase):
             lower_left_lla = map_tile.lower_left
             upper_right_lla = map_tile.upper_right
 
-            lower_left_coordinates = navpy.lla2ned(lower_left_lla[0], lower_left_lla[1], 0, self.datum[0], self.datum[1], 0)
-            upper_right_coordinates = navpy.lla2ned(upper_right_lla[0], upper_right_lla[1], 0, self.datum[0], self.datum[1], 0)
+            new_image_ll = navpy.lla2ned(lower_left_lla[0], lower_left_lla[1], 0, self.datum[0], self.datum[1], 0)
+            new_image_ur = navpy.lla2ned(upper_right_lla[0], upper_right_lla[1], 0, self.datum[0], self.datum[1], 0)
 
-            lower_left_enu = [lower_left_coordinates[1], lower_left_coordinates[0]]
-            upper_right_enu = [upper_right_coordinates[1], upper_right_coordinates[0]]
+            lower_left_enu = [new_image_ll[1], new_image_ll[0]]
+            upper_right_enu = [new_image_ur[1], new_image_ur[0]]
 
             self.map_background_widget.setMapBackground(map_tile.map_image, lower_left_enu, upper_right_enu)
             self.map_draw_widget.setOpaqueBackground(False)
+            self.is_requesting_map = False
+            self.is_at_max_zoom = map_tile.at_max_zoom
 
         map_window_lower_left = self.map_draw_widget.drawLocationToPoint(0, self.map_draw_widget.height())
         map_window_upper_right = self.map_draw_widget.drawLocationToPoint(self.map_draw_widget.width(), 0)
@@ -184,6 +207,8 @@ class MapImageBackground(QLabel):
         self.last_map_ur = [0, 0]
         self.last_window_bl = [0, 0]
         self.last_window_ur = [0, 0]
+
+        self.width_ratio = 0
 
         self.setStyleSheet("color: black")
 
@@ -257,6 +282,7 @@ class MapImageBackground(QLabel):
 
         subset_width_pixels = image_x_max - image_x_min
         width_ratio = self.width() / subset_width_pixels
+        self.width_ratio = width_ratio
 
         columns_to_add_left = 0
         columns_to_add_right = 0

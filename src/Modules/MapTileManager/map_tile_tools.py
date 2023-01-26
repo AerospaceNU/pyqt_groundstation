@@ -1,49 +1,56 @@
+import asyncio
 import time
-import urllib.request
 from os.path import exists
-from urllib.request import Request
 
+import aiohttp
 import cv2
 import numpy
 
 from src.Modules.MapTileManager.tile_convert import bbox_to_xyz, tile_edges
 
 
-def download_tile(x, y, z):
+async def download_tile(buf, x, y, z):
     # url = "https://a.tile.openstreetmap.org/{0}/{1}/{2}.png".format(z, x, y)
     url = "http://mt1.google.com/vt/lyrs=y&x={0}&y={1}&z={2}".format(x, y, z)
 
-    header_text = {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.3",
-        "Accept-Encoding": "none",
-        "Accept-Language": "en-US,en;q=0.8",
-        "Connection": "keep-alive",
-    }
+    # header_text = {
+    #     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11",
+    #     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    #     "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.3",
+    #     "Accept-Encoding": "none",
+    #     "Accept-Language": "en-US,en;q=0.8",
+    #     "Connection": "keep-alive",
+    # }
 
-    request = Request(url, headers=header_text)
+    # request = Request(url, headers=header_text)
+    # data = urllib.request.urlopen(request).read()
 
-    return urllib.request.urlopen(request).read()
+    semaphore = asyncio.BoundedSemaphore(50)  # I think this keeps too many from running at the same time
+
+    async with semaphore, aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            assert resp.status == 200
+            data = await resp.read()
+
+    buf.append(data)
 
 
-# def download_and_save_tile(x, y, z):
-#     data = download_tile(x, y, z)
-#
-#     f = open("{0}-{1}-{2}.png".format(z, x, y), "wb")
-#     f.write(data)
-#     f.close()
-
-
-def download_tile_as_cv2(x, y, z):
+async def download_task(tile_dict, tile_name, save_local_copy, x, y, z):
     if exists(get_file_path(x, y, z)):
-        cv2_img = cv2.imread(get_file_path(x, y, z), cv2.IMREAD_UNCHANGED)
+        tile = cv2.imread(get_file_path(x, y, z), cv2.IMREAD_UNCHANGED)
     else:
-        data = download_tile(x, y, z)
-        nparr = numpy.frombuffer(data, numpy.uint8)
-        cv2_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        data = []
+        await download_tile(data, x, y, z)
+        nparr = numpy.frombuffer(data[0], numpy.uint8)
+        tile = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-    return cv2_img
+    # print(tile_name)
+
+    if save_local_copy:
+        print("saving " + tile_name)
+        cv2.imwrite(get_file_path(x, y, z), tile)
+
+    tile_dict[tile_name] = tile
 
 
 def get_bounding_box_tiles(lower_left, upper_right, zoom):
@@ -63,28 +70,31 @@ def get_file_path(x, y, zoom):
     return "tile_cache/{}.png".format(get_tile_name(x, y, zoom))
 
 
-def get_all_tiles_in_box(bounding_box, zoom, exclude_list=None, save_local_copy=False):
-    if exclude_list is None or save_local_copy:
-        exclude_list = []
-
+async def addAsyncTasks(bounding_box, zoom, exclude_list, save_local_copy, out_dict):
     [x_min, x_max, y_min, y_max] = bounding_box
 
-    out_dict = {}
+    tasks = []
 
     for x in range(x_min, x_max + 1):
         for y in range(y_min, y_max + 1):
             tile_name = get_tile_name(x, y, zoom)
 
             if tile_name not in exclude_list:
-                tile = download_tile_as_cv2(x, y, zoom)
+                task = asyncio.create_task(download_task(out_dict, tile_name, save_local_copy, x, y, zoom))
+                tasks.append(task)
+                # await task
 
-                if save_local_copy:
-                    print("saving " + tile_name)
-                    cv2.imwrite(get_file_path(x, y, zoom), tile)
+    for task in tasks:
+        await task
 
-                out_dict[tile_name] = tile
 
-                time.sleep(0.01)  # Space out url requests a bit
+def get_all_tiles_in_box(bounding_box, zoom, exclude_list=None, save_local_copy=False):
+    if exclude_list is None or save_local_copy:
+        exclude_list = []
+
+    out_dict = {}
+
+    asyncio.run(addAsyncTasks(bounding_box, zoom, exclude_list, save_local_copy, out_dict))
 
     return out_dict
 
@@ -185,3 +195,11 @@ def get_zoom_level_from_pixels_per_meter(pixels_per_meter):
             return ZOOM_LEVELS.index(value)
 
     return 19  # Otherwise we return the highest zoom
+
+
+if __name__ == "__main__":
+    start_time = time.time()
+    tiles = get_all_tiles_in_box((158654, 158659, 193914, 193918), 19)
+    end_time = time.time()
+
+    print(f"Got {len(tiles)} tiles in {end_time - start_time} seconds")

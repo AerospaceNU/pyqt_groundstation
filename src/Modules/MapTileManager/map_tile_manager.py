@@ -17,10 +17,11 @@ from src.Modules.MapTileManager.map_tile_tools import (
 class MapTile(object):
     """Class that encapsulates the data for a map tile"""
 
-    def __init__(self, map_image, bottom_left, upper_right):
+    def __init__(self, map_image, bottom_left, upper_right, at_max_zoom):
         self.map_image = map_image
         self.lower_left = bottom_left
         self.upper_right = upper_right
+        self.at_max_zoom = at_max_zoom
 
 
 class MapTileManager(object):
@@ -43,7 +44,7 @@ class MapTileManager(object):
     def peekNewestTile(self):
         return self.last_rendered_tile
 
-    def getLastTile(self):
+    def getLastTile(self) -> MapTile:
         self.has_new_map = False
         return self.last_rendered_tile
 
@@ -89,7 +90,7 @@ class MapTileManager(object):
         map_image = stitch_all_tiles_in_box(tile_set, zoom, self.tile_cache)
         edges = get_edges_for_tile_set(tile_set, zoom)
 
-        self.last_rendered_tile = MapTile(map_image, edges[0], edges[1])
+        self.last_rendered_tile = MapTile(map_image, edges[0], edges[1], zoom == 19)
 
         self.has_new_map = True
         self.last_tile_set = tile_set
