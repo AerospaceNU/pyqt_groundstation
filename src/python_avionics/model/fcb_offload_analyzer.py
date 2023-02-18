@@ -40,7 +40,8 @@ class FcbOffloadAnalyzer:
         df = pd.read_csv(self._offload_data_filepath)
 
         # Ask for data to keep of launch and trim
-        start_time, end_time = self._select_time_limits_cb(df, "timestamp_s", "pos_z")
+        df_timestamp_col = "timestamp_s" if "timestamp_s" in df.columns else "timestamp_ms"
+        start_time, end_time = self._select_time_limits_cb(df, df_timestamp_col, "pos_z")
         return self.analyze_time_range(df, start_time, end_time, self._offload_data_filepath)
 
     @staticmethod

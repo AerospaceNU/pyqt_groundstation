@@ -435,12 +435,13 @@ class FcbCli:
             UnpackProperty("launched", "B"),
             UnpackProperty("gps_timestamp", "Q"),
             UnpackProperty("apogee_timestamp", "I"),
-            UnpackProperty("trigger_fire_status", "B"),
+            UnpackProperty("trigger_fire_status", "h"),
         ]
-        for trig_num in range(8):
-            ret.extend([UnpackProperty(f"mode_{trig_num}", "B"), UnpackProperty(f"port_{trig_num}", "B"), UnpackProperty(f"flags_{trig_num}", "H"), UnpackProperty(f"config_val_{trig_num}", "d")])
+        for trig_num in range(16):
+            ret.extend([UnpackProperty(f"mode_{trig_num}", "B"), UnpackProperty(f"port_{trig_num}", "B"), UnpackProperty(f"duration_{trig_num}", "f"), UnpackProperty(f"pulse_width_{trig_num}", "i")])
         ret.extend(
             [
+                UnpackProperty("serial_expressions", "B" * 599),
                 UnpackProperty("ground_elev_m", "d"),
                 UnpackProperty("ground_temp_c", "d"),
                 UnpackProperty("radio_channel", "i"),
@@ -570,7 +571,7 @@ class FcbCli:
                 UnpackProperty("gps_hdop", "f"),
                 UnpackProperty("battery_voltage", "d"),
                 UnpackProperty("pyro_cont", "B"),
-                UnpackProperty("pyro_status", "B"),
+                UnpackProperty("trigger_status", "H"),
                 UnpackProperty("heading", "d"),
                 UnpackProperty("vtg", "d"),
                 UnpackProperty("pos_x", "d"),
