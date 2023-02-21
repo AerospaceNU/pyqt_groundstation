@@ -205,7 +205,6 @@ class GraphWidget(CustomQWidgetBase):
         menu.addAction(self.graphWidget.getPlotItem().vb.scene().contextMenu[0])
 
         for key in self.sourceDictionary:  # Total hack to clear and recreate the legend
-
             remove_line_menu.addAction(self.sourceDictionary[key].key_name, lambda name=key: self.removeLineFromPlot(name))
 
     def addLineToPlot(self):

@@ -273,7 +273,6 @@ class PropControlWidget(custom_q_widget_base.CustomQWidgetBase):
 
 
 if __name__ == "__main__":
-
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
     application = QApplication([])  # PyQt Application object

@@ -31,13 +31,11 @@ LOGS_SUBDIR = f"logs/{START_TIME.strftime('%m-%d-%Y_%H-%M-%S')}"
 
 
 class DpfLogger:
-
     LOGGERS: List[logging.Logger] = []
     CUSTOM_HANDLERS: List[Callable[[logging.LogRecord], None]] = []
     formatter = logging.Formatter("%(asctime)s : %(levelname)s : %(name)s::%(funcName)s -> %(message)s")
 
     def __init__(self) -> None:
-
         if not os.path.exists("logs"):
             os.mkdir("logs")
 

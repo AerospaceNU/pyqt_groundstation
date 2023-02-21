@@ -73,7 +73,6 @@ class PropViewTab(TabCommon):
 
 
 if __name__ == "__main__":
-
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
     application = QApplication([])  # PyQt Application object
