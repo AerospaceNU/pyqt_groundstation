@@ -19,7 +19,7 @@ from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
 BACKGROUND_COLOR = (255, 144, 30)  # BGR for OpenCV
 
-EXTRA_POSITION_SOURCES = {"egg_finder": [Constants.egg_finder_latitude, Constants.egg_finder_longitude]}
+EXTRA_POSITION_SOURCES = {"egg_finder": [Constants.backup_gps_latitude, Constants.backup_gps_longitude]}
 
 
 class MapWidget(CustomQWidgetBase):

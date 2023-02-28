@@ -5,7 +5,7 @@ config.read("config.ini")
 
 
 def format_key(key: str):
-    return key.replace(" ", "_")
+    return key.replace(" ", "_").lower()
 
 
 class ConfigSaver:

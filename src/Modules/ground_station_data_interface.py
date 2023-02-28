@@ -26,17 +26,24 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
     Reads data from the ground station hardware, and parses it
     """
 
-    def __init__(self):
+    def __init__(self, is_connected_to_radio=True):
         super().__init__()
 
         self.nextCheckTime = time.time()
         self.serial_port = ""
         self.baud_rate = 9600
-        self.active_radio = RADIO_433
+
+        if is_connected_to_radio:
+            self.active_radio = self.config_saver.get("active_radio", RADIO_433, int)
+        else:
+            self.active_radio = 0
 
         self.active_radio_bands = {}
         for radio_id in RADIO_NAMES:
-            self.active_radio_bands[radio_id] = 0
+            if is_connected_to_radio:
+                self.active_radio_bands[radio_id] = self.config_saver.get(f"{RADIO_NAMES[radio_id]}_band", 0, int)
+            else:
+                self.active_radio_bands[radio_id] = 0
 
         self.outgoing_serial_queue = []
 
@@ -49,9 +56,10 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.radio_reconfigure_page = ReconfigurePage("Serial Ground Station Config")
         self.radio_reconfigure_page.addEnumOption("radio_types", "433 MHz", RADIO_433)
         self.radio_reconfigure_page.addEnumOption("radio_types", "915 MHz", RADIO_915)
-        self.radio_reconfigure_page.updateLine("Target Radio", "enum", "", "Which radio to use", "radio_types")
-        self.radio_reconfigure_page.updateLine("Radio Band", "int", description="Which radio band to use")
+        self.radio_reconfigure_page.updateLine("Target Radio", "enum", str(self.active_radio), "Which radio to use", "radio_types")
         self.radio_reconfigure_page.bindCallback("Target Radio", self.onRadioSwitch)
+
+        self.radio_reconfigure_page.updateLine("Radio Band", "int", self.active_radio_bands[self.active_radio], "Which radio band to use")
         self.radio_reconfigure_page.bindCallback("Radio Band", self.onBandSwitch)
 
         reconfigure_callbacks = self.radio_reconfigure_page.getCallbackFunctions(Constants.primary_reconfigure)
@@ -77,6 +85,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
             self.logger.info("Switching to band {}".format(data))
             self.active_radio_bands[self.active_radio] = data
             self.radio_reconfigure_page.updateLine("Radio Band", "int", data)
+            self.config_saver.save(f"{RADIO_NAMES[self.active_radio]}_band", data)
         except Exception as e:
             self.logger.error("Could not switch to band {0}: {1}".format(data, e))
             print(e)
@@ -91,6 +100,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
             self.active_radio = data
             self.logger.info("Switching to {} radio".format(RADIO_NAMES[data]))
             self.radio_reconfigure_page.updateLine("Radio Band", "int", int(self.active_radio_bands[data]))
+            self.config_saver.save("active_radio", data)
+            self.onBandSwitch(self.active_radio_bands[self.active_radio])
         else:
             self.logger.warning("Unknown radio id {}".format(data))
 
@@ -101,7 +112,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 self.serial = serial.Serial(self.serial_port, self.baud_rate, timeout=0.01)  # Set the serial port timeout really small, so we only get one message at a time
                 self.connected = True
                 self.onRadioSwitch(self.active_radio)
-                self.onBandSwitch(0)
+                self.onBandSwitch(self.active_radio_bands[self.active_radio])
                 self.connectedLoop()
                 self.nextCheckTime = time.time() + 1
                 self.serial.close()
@@ -127,9 +138,9 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                     self.has_data = False
                     self.good_fcb_data = False
                 time.sleep(0.01)
-            self.logger.info("Disconnected from ground station on port {}".format(self.serial_port), logging.ERROR)
+            self.logger.error("Disconnected from ground station on port {}".format(self.serial_port))
         except IOError:
-            self.logger.info("Lost connection to ground station on port {}".format(self.serial_port), logging.ERROR)
+            self.logger.error("Lost connection to ground station on port {}".format(self.serial_port))
             self.connected = False
 
     def parseData(self, raw_bytes):

@@ -11,11 +11,11 @@ class ReconfigurePage(object):
 
         self.callback_dictionary = {}
 
-    def addEnumOption(self, enum_id, description, human_readable_name):
+    def addEnumOption(self, enum_id: str, description: str, human_readable_name):
         if enum_id not in self.enum_options:
             self.enum_options[enum_id] = []
 
-        self.enum_options[enum_id].append([description, human_readable_name])
+        self.enum_options[enum_id].append([str(description), str(human_readable_name)])
 
     def updateLine(self, text, line_type, current_value="", description="", config=""):
         found_reconfigure_line = False
@@ -28,13 +28,7 @@ class ReconfigurePage(object):
 
             if len(line) > 0 and line[0] == text:
                 if len(self.reconfigure_lines) != 5:
-                    self.reconfigure_lines[i] = [
-                        text,
-                        line_type,
-                        current_value,
-                        description,
-                        config,
-                    ]
+                    self.reconfigure_lines[i] = [text, line_type, current_value, description, config]
                 else:
                     self.reconfigure_lines[i][0] = text
                     self.reconfigure_lines[i][1] = line_type
@@ -63,10 +57,7 @@ class ReconfigurePage(object):
         return self.page_name
 
     def getCallbackFunctions(self, database_dictionary_key):
-        return {
-            "{}_reset".format(database_dictionary_key): self.onReset,
-            "{}_set_new".format(database_dictionary_key): self.onValueChange,
-        }
+        return {"{}_reset".format(database_dictionary_key): self.onReset, "{}_set_new".format(database_dictionary_key): self.onValueChange}
 
     def onReset(self, data):
         pass

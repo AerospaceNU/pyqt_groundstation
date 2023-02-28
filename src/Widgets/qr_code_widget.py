@@ -64,8 +64,8 @@ class RocketLocationQrCode(CustomQWidgetBase):
             latitude = get_value_from_dictionary(vehicle_data, Constants.latitude_key, 0)
             longitude = get_value_from_dictionary(vehicle_data, Constants.longitude_key, 0)
         else:
-            latitude = get_value_from_dictionary(vehicle_data, Constants.egg_finder_latitude, 0)
-            longitude = get_value_from_dictionary(vehicle_data, Constants.egg_finder_longitude, 0)
+            latitude = get_value_from_dictionary(vehicle_data, Constants.backup_gps_latitude, 0)
+            longitude = get_value_from_dictionary(vehicle_data, Constants.backup_gps_longitude, 0)
 
         idx = self.mode_combo_box.currentIndex()
 

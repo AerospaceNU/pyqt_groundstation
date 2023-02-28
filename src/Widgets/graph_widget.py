@@ -93,18 +93,21 @@ class GraphWidget(CustomQWidgetBase):
                         self.data_range["min"] = min(self.data_range["min"], value)
                         self.data_range["max"] = max(self.data_range["max"], value)
                         self.graphWidget.setYRange(**self.data_range)
+
                     # <sarcasm> This logic makes perfect sense </sarcasm>
                     # The base goal is to make the last value in the array a nan when the data isn't updated so the graph x axis keeps updating
-                    # We need 4 cases because we don't want to overwrite any data, and we don't want NaNs anywhere other than the last spot
-                    if self.isDictValueUpdated(source) and math.isnan(self.data_dictionary[source][-1]):
+                    # We need 5 cases because we don't want to overwrite any data, and we don't want NaNs anywhere other than the last spot and a None check
+                    if value is None:  # We got invalid data
+                        self.time_dictionary[source][-1] = time.time() - self.start_time
+                    elif self.isDictValueUpdated(source) and math.isnan(self.data_dictionary[source][-1]):  # We got new data this time but not last time
                         self.data_dictionary[source][-1] = value
                         self.time_dictionary[source][-1] = time.time() - self.start_time
-                    elif self.isDictValueUpdated(source):
+                    elif self.isDictValueUpdated(source):  # We got new data this time and last time
                         self.data_dictionary[source].append(value)
                         self.time_dictionary[source].append(time.time() - self.start_time)
-                    elif math.isnan(self.data_dictionary[source][-1]):
+                    elif math.isnan(self.data_dictionary[source][-1]):  # We didn't get new data this time or last time
                         self.time_dictionary[source][-1] = time.time() - self.start_time
-                    else:
+                    else:  # We didn't get new data this time, but did last time
                         self.data_dictionary[source].append(float("nan"))
                         self.time_dictionary[source].append(time.time() - self.start_time)
 

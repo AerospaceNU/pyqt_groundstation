@@ -5,7 +5,7 @@ Console
 import logging
 
 from PyQt5 import QtGui
-from PyQt5.QtGui import QColor, QFont, QPainter
+from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import QWidget
 
 from src.Widgets import custom_q_widget_base
@@ -18,8 +18,6 @@ class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         self.data = [[]]
 
         self.maxLineWidth = 0
-
-        self.setFont(QFont("Monospace", 10))
 
     def updateConsole(self, data):
         self.data = data
@@ -49,7 +47,7 @@ class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
 
     def adjustSize(self) -> None:
         height = self.fontInfo().pixelSize() * len(self.data) + 10
-        width = int(max(self.fontInfo().pixelSize() * 0.7 * self.maxLineWidth, 1))
+        width = int(max(self.fontInfo().pixelSize() * 0.65 * self.maxLineWidth, 1))
         self.resize(width, height)
 
     def addCustomMenuItems(self, menu, e):
@@ -57,3 +55,6 @@ class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
 
     def clearConsole(self):
         self.requestCallback("clear_console", "")
+
+    def customUpdateAfterThemeSet(self):
+        self.setStyleSheet("font: 9pt Monospace")

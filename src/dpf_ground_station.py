@@ -185,6 +185,14 @@ class DPFGUI:
             "Prop Schematic": PropSchematicTab,
         }
 
+        self.importantWidgets = [
+            "Core Information",
+            "CLI Console",
+            "Reconfigure",
+            "Diagnostic Panel",
+            "Line Cutter Control",
+        ]
+
         # Set some object names for all the core stuff
         self.application.setObjectName("Application")
         self.mainWindow.setObjectName("Main_Window")
@@ -306,6 +314,11 @@ class DPFGUI:
 
         self.playback_source_menu = menu_bar.addMenu("Playback Options")
         self.playback_source_menu.aboutToShow.connect(self.playbackOptionsMenu)
+
+        # Menu for important widgets
+        important_widget_menu = menu_bar.addMenu("Flight widgets")
+        for item in self.importantWidgets:
+            important_widget_menu.addAction(item, lambda name=item: self.addNewWidgetInNewWindow(name))
 
     def setActiveSerialPort(self, port_name, device_name):
         """

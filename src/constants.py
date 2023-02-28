@@ -63,9 +63,9 @@ class Constants:
     ground_station_pressure_key = "gs_baro"
     ground_station_temperature_key = "gs_temp"
 
-    egg_finder_latitude = "egg_finder_latitude"
-    egg_finder_longitude = "egg_finder_longitude"
-    egg_finder_altitude = "egg_finder_altitude"
+    backup_gps_latitude = "egg_finder_latitude"
+    backup_gps_longitude = "egg_finder_longitude"
+    backup_gps_altitude = "egg_finder_altitude"
     egg_finder_age = "egg_finder_age"
 
     laptop_disk_usage_key = "laptop_disk"

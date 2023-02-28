@@ -14,7 +14,7 @@ class LocalSimulationFlightInterface(GroundStationDataInterface):
     """
 
     def __init__(self):
-        super().__init__()
+        super().__init__(is_connected_to_radio=False)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.cli_queue = []

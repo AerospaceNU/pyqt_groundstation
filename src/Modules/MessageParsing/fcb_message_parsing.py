@@ -45,7 +45,7 @@ def parse_pyro_continuity_byte(pyro_cont):
 
 def parse_pyro_fire_status(pyro_status):
     pyro_list = []
-    for i in range(8):
+    for i in range(16):
         pyro_list.append(bool((pyro_status >> i) & 1))
 
     return pyro_list
@@ -293,7 +293,7 @@ class AltitudeInfoMessage(BaseMessage):
 class PyroInfoMessage(BaseMessage):
     messageData = [
         [UINT_8_TYPE, Constants.pyro_continuity, parse_pyro_continuity_byte],
-        [UINT_8_TYPE, Constants.pyro_fire_status, parse_pyro_fire_status],
+        [UINT_16_TYPE, Constants.pyro_fire_status, parse_pyro_fire_status],
         [UINT_8_TYPE, Constants.flash_usage],
     ]
 
@@ -331,12 +331,7 @@ def parse_fcb_message(data):
     message_number = data[0]
 
     if len(data) < PACKET_LENGTH:
-        return [
-            False,
-            {},
-            "Packet too short: {0} of {1} bytes".format(len(data), PACKET_LENGTH),
-            1,
-        ]
+        return [False, {}, "Packet too short: {0} of {1} bytes".format(len(data), PACKET_LENGTH), 1]
     elif message_number in MESSAGE_CALLBACKS:
         # Get CRC, LQI, RSSI data from message (First 4)
         radio_data = data[-4:]
