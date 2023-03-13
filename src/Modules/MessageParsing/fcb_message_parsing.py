@@ -59,11 +59,13 @@ def get_fcb_state_from_state_num(state_num):
 
 
 UINT_8_TYPE = "B"
-INT_8_TYPE = "b"
-BOOL_TYPE = "?"
-
 UINT_16_TYPE = "H"
 UINT_32_TYPE = "I"
+
+INT_8_TYPE = "b"
+INT_16_TYPE = "h"
+
+BOOL_TYPE = "?"
 
 FLOAT_TYPE = "f"
 
@@ -144,6 +146,7 @@ class OrientationMessage(BaseMessage):
         [FLOAT_TYPE, Constants.magnetometer_x_key],
         [FLOAT_TYPE, Constants.magnetometer_y_key],
         [FLOAT_TYPE, Constants.magnetometer_z_key],
+        [INT_16_TYPE, Constants.angle_vertical_key, 0.1],
     ]
 
     def extraParseOptions(self, data, dictionary):

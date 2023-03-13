@@ -50,6 +50,8 @@ class Constants:
     magnetometer_y_key = "magnetic_field_y"
     magnetometer_z_key = "magnetic_field_z"
 
+    angle_vertical_key = "angle_vertical"
+
     barometer_pressure_key = "barometer_pressure"
     barometer_pressure_2_key = "barometer_2_pressure"
     press_ref_key = "press_ref"
