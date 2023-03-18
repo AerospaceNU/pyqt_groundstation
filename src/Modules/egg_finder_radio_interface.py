@@ -252,7 +252,8 @@ class EggFinderRadioInterface(ThreadedModuleCore):
         self.egg_messages["Pyro Fired"] = pyro_fired
 
     def updateEveryLoop(self):
-        self.diagnostics_helper.updatePanel("Egg Finder Data", self.egg_messages)
+        if self.primary_module:
+            self.diagnostics_helper.updatePanel("Egg Finder Data", self.egg_messages)
+            self.data_dictionary[Constants.raw_message_data_key] = self.diagnostics_helper.get_diagnostics_dict()
 
         self.data_dictionary[Constants.egg_finder_age] = round(time.time() - self.last_good_data_time, 3)
-        self.data_dictionary[Constants.raw_message_data_key] = self.diagnostics_helper.get_diagnostics_dict()
