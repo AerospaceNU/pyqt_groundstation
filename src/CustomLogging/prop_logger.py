@@ -6,14 +6,20 @@ class PropLogger:
     def __init__(self, subdir) -> None:
         self.file_idx = 0
         self.subdir = subdir
-        other_filename = subdir + "/PROP_OTHER_MSGS.txt"
-        self.other_writer = open(other_filename, "a")
+        self.file_opened = False
+
         self.csv_file_handle = None
 
-        self.other_writer.write("RUN START\n")
-        self.other_writer.flush()
-
         self.last_columns = ""
+
+    def open_file(self):
+        if not self.file_opened:
+            other_filename = self.subdir + "/PROP_OTHER_MSGS.txt"
+            self.other_writer = open(other_filename, "a")
+            self.other_writer.write("RUN START\n")
+            self.other_writer.flush()
+
+            self.file_opened = True
 
     def get_columns(self, msg_json):
         csv_fields = ["timeStamp", "currentState", "engineSequence", "teensyCount", "adcboardCount", "lastTeensyTime", "lastAdcboardTime"]
@@ -56,6 +62,8 @@ class PropLogger:
     # param msg_json is the dictionary of the json provided by the ecs
     # param other_file is the writer containing
     def handle_other(self, msg_json):
+        self.open_file()
+
         self.other_writer.write("NON-DATA : " + str(round(time.time())) + " : " + json.dumps(msg_json) + "\n")
         self.other_writer.flush()
 
@@ -67,6 +75,8 @@ class PropLogger:
             else:
                 self.handle_other(output_json)
         except Exception as e:
+            self.open_file()
+
             print("Data logging error:", e, "at time:", str(round(time.time())))
             self.other_writer.write("ERROR at time" + str(round(time.time())) + "\n")
             self.other_writer.write(str(e))

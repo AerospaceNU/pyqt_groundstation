@@ -138,23 +138,34 @@ class SerialLogger:
     def __init__(self, name) -> None:
         SerialLogger.LOGGERS[name] = self
         self.name = name
-        self.raw_data_file = open(f"{LOGS_SUBDIR}/{name}_raw.txt", "a+")
-        self.parsed_messages_file = open(f"{LOGS_SUBDIR}/{name}_parsed.txt", "a+")
+        self.log_opened = False
 
-        self.raw_data_file.write("\n\nRUN START {}\n\n".format(START_TIME.strftime("%Y-%m-%d %H:%M:%S")))
-        self.parsed_messages_file.write("\n\nRUN START {}\n\n".format(START_TIME.strftime("%Y-%m-%d %H:%M:%S")))
+    def open_file(self):
+        if not self.log_opened:
+            self.raw_data_file = open(f"{LOGS_SUBDIR}/{self.name}_raw.txt", "a+")
+            self.parsed_messages_file = open(f"{LOGS_SUBDIR}/{self.name}_parsed.txt", "a+")
+
+            self.raw_data_file.write("\n\nRUN START {}\n\n".format(START_TIME.strftime("%Y-%m-%d %H:%M:%S")))
+            self.parsed_messages_file.write("\n\nRUN START {}\n\n".format(START_TIME.strftime("%Y-%m-%d %H:%M:%S")))
+
+            self.log_opened = True
 
     def write_raw(self, bytes):
+        self.open_file()
+
         self.raw_data_file.write("{0}: {1}\n".format(time.strftime("%H:%M:%S"), str(bytes)))
         self.raw_data_file.flush()
 
     def write_parsed(self, message_type, parsed_message):
+        self.open_file()
+
         self.parsed_messages_file.write("{0}: {1} {2}\n".format(time.strftime("%H:%M:%S"), message_type, str(parsed_message)))
         self.parsed_messages_file.flush()
 
     def close(self):
-        self.raw_data_file.close()
-        self.parsed_messages_file.close()
+        if self.log_opened:
+            self.raw_data_file.close()
+            self.parsed_messages_file.close()
 
 
 def set_test_name(test):

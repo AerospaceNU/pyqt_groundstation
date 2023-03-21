@@ -83,10 +83,14 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
             data = int(data)
             self.outgoing_serial_queue.append(createRadioBandCommandMessage(0xFF, self.active_radio, data))
             self.logger.info("Switching to band {}".format(data))
+            self.logMessageToFile("Switching radio to band", str(data))
+            self.serial_logger.write_raw(f"Switching radio to band {data}")
             self.active_radio_bands[self.active_radio] = data
             self.radio_reconfigure_page.updateLine("Radio Band", "int", data)
             self.config_saver.save(f"{RADIO_NAMES[self.active_radio]}_band", data)
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             self.logger.error("Could not switch to band {0}: {1}".format(data, e))
             print(e)
 
@@ -99,6 +103,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         if data in RADIO_NAMES:
             self.active_radio = data
             self.logger.info("Switching to {} radio".format(RADIO_NAMES[data]))
+            self.logMessageToFile("Switching radio to ", RADIO_NAMES[data])
+            self.serial_logger.write_raw(f"Switching radio to {RADIO_NAMES[data]}")
             self.radio_reconfigure_page.updateLine("Radio Band", "int", int(self.active_radio_bands[data]))
             self.config_saver.save("active_radio", data)
             self.onBandSwitch(self.active_radio_bands[self.active_radio])
@@ -155,6 +161,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
 
             if not success:
                 self.logger.warning("Could not parse message: {0}".format(message_type))
+                self.logMessageToFile(message_type, "Could not parse message")
                 self.good_fcb_data = False
             elif not crc:
                 self.logger.warning("Bad CRC for {} message".format(message_type))
@@ -178,7 +185,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         # self.parseData(raw_bytes)
 
         for i in range(0, len(raw_bytes), fcb_message_parsing.PACKET_LENGTH):
-            self.parseData(raw_bytes[i : i + fcb_message_parsing.PACKET_LENGTH])
+            self.parseData(raw_bytes[i: i + fcb_message_parsing.PACKET_LENGTH])
         self.serial.flushInput()
 
         if self.log_to_file:

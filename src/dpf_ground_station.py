@@ -12,6 +12,7 @@ import time
 from typing import Dict, List, Type, Union
 
 from PyQt5.QtCore import QTimer
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QTabWidget
 from qt_material import apply_stylesheet, list_themes
 
@@ -129,6 +130,7 @@ class DPFGUI:
         # Set up main window
         self.mainWindow.show()
         self.mainWindow.setCentralWidget(self.tabHolderWidget)
+        self.mainWindow.setWindowIcon(QIcon(os.path.join(ROOT_DIRECTORY, "src", "Assets", "aeronu_small_logo.png")))
         self.mainWindow.setWindowTitle(self.title)
         self.mainWindow.resize(1920, 1080)
         self.mainWindow.closeEvent = self.mainWindowCloseEvent  # Not sketchy at all
