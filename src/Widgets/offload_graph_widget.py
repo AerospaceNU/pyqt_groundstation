@@ -65,7 +65,7 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
         self.downloadedTableWidget.setColumnCount(3)
         self.downloadedTableWidget.setColumnWidth(0, 160)
         self.downloadedTableWidget.setColumnWidth(1, 150)
-        self.downloadedTableWidget.setColumnWidth(1, 200)
+        self.downloadedTableWidget.setColumnWidth(2, 200)
         self.downloadedTableWidget.setHorizontalHeaderLabels(["Name", "Raw", "Post-processed"])
         self.downloadedTableWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.downloadedTableWidget.itemSelectionChanged.connect(self.updateButtons)
@@ -193,7 +193,7 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
         ret = []
         for file in set(map(lambda it: it.replace("-output-FCB.csv", "").replace("-output-FCB-post.csv", ""), flight_files)):
             has_raw = "Yes" if file + "-output-FCB.csv" in flight_files else "No"
-            has_post = "Yes" if file + "-output--FCB-post.csv" in flight_files else "No"
+            has_post = "Yes" if file + "-output-FCB-post.csv" in flight_files else "No"
             ret.append([file.replace("-output-FCB.csv", ""), has_raw, has_post])
 
         return ret
