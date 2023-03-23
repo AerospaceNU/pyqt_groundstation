@@ -90,6 +90,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
             self.config_saver.save(f"{RADIO_NAMES[self.active_radio]}_band", data)
         except Exception as e:
             import traceback
+
             traceback.print_exc()
             self.logger.error("Could not switch to band {0}: {1}".format(data, e))
             print(e)
@@ -185,7 +186,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         # self.parseData(raw_bytes)
 
         for i in range(0, len(raw_bytes), fcb_message_parsing.PACKET_LENGTH):
-            self.parseData(raw_bytes[i: i + fcb_message_parsing.PACKET_LENGTH])
+            self.parseData(raw_bytes[i : i + fcb_message_parsing.PACKET_LENGTH])
         self.serial.flushInput()
 
         if self.log_to_file:
