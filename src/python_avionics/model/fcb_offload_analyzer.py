@@ -54,7 +54,7 @@ class FcbOffloadAnalyzer:
 
         # Start processing on trimmed data. Multipliers come from resolutions converted to MKS units
         k_accel_mult = 0.0071784678
-        k_gyro_mult = 0.000305432618
+        k_gyro_mult = 0.001221730472
         k_mag_mult = 0.00058
         k_high_g_accel_multiplier = 0.02942
         df["imu1_accel_x_real"] = df["imu1_accel_x"] * k_accel_mult
