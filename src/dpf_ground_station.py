@@ -46,6 +46,7 @@ from src.Widgets import (
     text_box_drop_down_widget,
     vehicle_status_widget,
     video_widget,
+    settings_editor_widget,
 )
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 from src.Widgets.database_view import DatabaseView
@@ -172,6 +173,7 @@ class DPFGUI:
             "Fire Go/No Go": fire_k_widget.FireKWidget,
             "Flight Event Configuration": EventConfiguration,
             "Core Information": configurable_text_box_widget.CoreInformation,
+            "Settings Manager": settings_editor_widget.SettingsManager,
         }
 
         # List of tabs that can be dynamically created
@@ -219,6 +221,7 @@ class DPFGUI:
         # Set up settings tab
         settings_tab = SideTabHolder()
         settings_tab.addSubTab("Custom Settings", SettingsTab())
+        settings_tab.addSubTab("INI", settings_editor_widget.SettingsManager())
         settings_tab.addSubTab("Module Configuration", module_configuration.ModuleConfiguration())
         settings_tab.addSubTab("Database View", DatabaseView())  # Keep this one last
 

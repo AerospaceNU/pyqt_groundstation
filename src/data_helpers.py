@@ -15,7 +15,7 @@ def clamp(value, minValue, maxValue):
 
 def vector_length(x, y):
     """Returns length of vector [x, y]"""
-    return math.sqrt(x**2 + y**2)
+    return math.sqrt(x ** 2 + y ** 2)
 
 
 def quaternion_to_euler_angle(quaternion):
@@ -114,6 +114,10 @@ def check_type(value, data_type):
         return False
 
 
+def get_rgb_from_qcolor(q_color: QColor):
+    return [q_color.red(), q_color.green(), q_color.blue()]
+
+
 def get_rgb_from_string(textColor: str):
     """
     Function to get red, green, and blue as integer values from 0-255
@@ -148,6 +152,11 @@ def get_qcolor_from_string(input_string):
     """Returns a QColor object from the input string"""
     [red, green, blue] = get_rgb_from_string(input_string)
     return QColor.fromRgb(red, green, blue)
+
+
+def get_text_from_qcolor(q_color: QColor):
+    """Make Qt style string from a QColor object"""
+    return format_rgb_string(q_color.red(), q_color.green(), q_color.blue())
 
 
 def make_stylesheet_string(target, rgbString):

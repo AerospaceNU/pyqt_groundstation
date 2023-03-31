@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QComboBox, QGridLayout, QPushButton, QWidget
 from src.constants import Constants
 from src.data_helpers import get_value_from_list
 from src.Widgets import custom_q_widget_base
-from src.Widgets.QWidget_Parts import reconfigure_line
+from src.Widgets.QWidget_Parts import reconfigure_line_holder
 
 
 class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
@@ -16,18 +16,16 @@ class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
 
         self.dropDownWidget = QComboBox()
         self.resetButton = QPushButton()
+        self.reconfigureLineHolder = reconfigure_line_holder.ReconfigureLineHolder()
+        self.reconfigureLineHolder.addCallback(self.textEntryCallback)
+
         self.resetButton.setText("Reset")
         self.resetButton.clicked.connect(self.resetCallback)
 
-        header = QWidget()
-        header_layout = QGridLayout()
-        header_layout.addWidget(self.dropDownWidget, 0, 0)
-        header_layout.addWidget(self.resetButton, 0, 1)
-        header.setLayout(header_layout)
-        header.setContentsMargins(0, 0, 0, 0)
-
         layout = QGridLayout()
-        layout.addWidget(header)
+        layout.addWidget(self.dropDownWidget, 0, 0)
+        layout.addWidget(self.resetButton, 0, 1)
+        layout.addWidget(self.reconfigureLineHolder, 1, 0, 1, 2)
         self.setLayout(layout)
 
         self.source = Constants.primary_reconfigure
@@ -59,40 +57,23 @@ class ReconfigureWidget(custom_q_widget_base.CustomQWidgetBase):
             return
         reconfigure_items = data_struct[selected_target]
 
-        # If there's the wrong number of items, adjust the widget
-        reset_needed = self.resetNeeded
-        self.resetNeeded = False
-        while len(reconfigure_items) > len(self.reconfigureWidgetLabels):
-            line = reconfigure_line.ReconfigureLine()
-            line.setText(reconfigure_items[len(self.reconfigureWidgetLabels)][0])
-            line.setCallback(self.textEntryCallback)
+        if self.resetNeeded:
+            lines = []
 
-            self.layout().addWidget(line)
-            self.reconfigureWidgetLabels.append(line)
-            reset_needed = True
-        while len(reconfigure_items) < len(self.reconfigureWidgetLabels):
-            self.layout().removeWidget(self.reconfigureWidgetLabels[-1])
-            self.reconfigureWidgetLabels[-1].deleteLater()
-            del self.reconfigureWidgetLabels[-1]
-            reset_needed = True
+            for item in reconfigure_items:
+                name = item[0]
+                data_type = item[1]
+                value = get_value_from_list(item, 2, "")
+                description = get_value_from_list(item, 3, "")
+                enum_vals = get_value_from_list(item, 4, "")
 
-        # Set text and labels on widgets
-        for i in range(len(reconfigure_items)):
-            text = reconfigure_items[i][0]
-            type = reconfigure_items[i][1]
-            value = get_value_from_list(reconfigure_items[i], 2, "")
-            description = get_value_from_list(reconfigure_items[i], 3, "")
-            config = get_value_from_list(reconfigure_items[i], 4, "")
+                lines.append(reconfigure_line_holder.ReconfigureLineDescription(name=name, type=data_type, value=value, description_text=description, enum_options=enum_vals))
 
-            # Order matters here type then config then value
-            self.reconfigureWidgetLabels[i].setText(text)
-            self.reconfigureWidgetLabels[i].setType(type)
-            self.reconfigureWidgetLabels[i].setDescription(description)
-            self.reconfigureWidgetLabels[i].setConfig(config, force=reset_needed)
-            self.reconfigureWidgetLabels[i].setValue(value, force=reset_needed)
+            self.reconfigureLineHolder.setLineOptions(lines)
+            self.resetNeeded = False
+            self.adjustSize()
 
-        for line in self.reconfigureWidgetLabels:
-            line.update()
+        self.reconfigureLineHolder.update()
 
     def resetCallback(self):
         self.resetNeeded = True

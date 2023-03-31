@@ -15,12 +15,21 @@ class ConfigSaver:
     def getSections(self):
         return config.sections()
 
-    def save(self, key: str, data: str):
-        key = format_key(key)
-        if self.section not in config:
-            config[self.section] = {}
+    def getSectionData(self, section_name=None):
+        if section_name is None:
+            section_name = self.section
 
-        config[self.section][key] = str(data)
+        return dict(config[section_name])
+
+    def save(self, key: str, data: str, section=None):
+        if section is None:
+            section = self.section
+
+        key = format_key(key)
+        if section not in config:
+            config[section] = {}
+
+        config[section][key] = str(data)
 
         with open("config.ini", "w") as configfile:
             config.write(configfile)
