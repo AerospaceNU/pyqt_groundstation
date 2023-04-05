@@ -42,11 +42,11 @@ from src.Widgets import (
     pyro_display_widget,
     qr_code_widget,
     reconfigure_widget,
+    settings_editor_widget,
     simple_console_widget,
     text_box_drop_down_widget,
     vehicle_status_widget,
     video_widget,
-    settings_editor_widget,
 )
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 from src.Widgets.database_view import DatabaseView

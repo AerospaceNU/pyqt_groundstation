@@ -5,7 +5,7 @@ Holds multiple reconfigure lines and has logic to change number shown on the fly
 from dataclasses import dataclass
 from typing import List
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QVBoxLayout, QWidget
 
 from src.Widgets.QWidget_Parts import reconfigure_line
 
