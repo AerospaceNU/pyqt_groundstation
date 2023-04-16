@@ -27,7 +27,7 @@ class CustomHandler(logging.Handler):
 
 
 START_TIME = datetime.datetime.now()
-LOGS_SUBDIR = f"logs/{START_TIME.strftime('%m-%d-%Y_%H-%M-%S')}"
+LOGS_SUBDIR = f"logs/{START_TIME.strftime('%Y-%m-%d_%H-%M-%S')}"
 
 
 class DpfLogger:
