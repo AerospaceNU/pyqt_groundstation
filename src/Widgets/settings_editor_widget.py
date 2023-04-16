@@ -2,13 +2,12 @@
 Text box widget
 """
 
-from PyQt5.QtWidgets import QGridLayout, QWidget, QScrollArea
+from PyQt5.QtWidgets import QGridLayout, QScrollArea, QWidget
 
+from src.data_helpers import get_text_from_qcolor
 from src.Widgets import custom_q_widget_base
 from src.Widgets.QWidget_Parts.reconfigure_line_holder import ReconfigureLineDescription
 from src.Widgets.QWidget_Parts.settings_section import SettingsSection
-
-from src.data_helpers import get_text_from_qcolor
 
 
 class SettingsManager(custom_q_widget_base.CustomQWidgetBase):

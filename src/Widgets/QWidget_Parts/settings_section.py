@@ -1,5 +1,5 @@
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QWidget, QLabel
+from PyQt5.QtWidgets import QLabel, QWidget
 
 from src.Widgets.QWidget_Parts.reconfigure_line_holder import ReconfigureLineHolder
 
