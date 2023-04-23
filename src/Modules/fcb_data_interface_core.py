@@ -1,7 +1,7 @@
 import time
 
 from src.constants import Constants
-from src.Modules.data_interface_core import ThreadedModuleCore
+from src.Modules.module_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.annunciator_helper import AnnunciatorHelper
 from src.Modules.DataInterfaceTools.diagnostics_box_helper import DiagnosticsBoxHelper
 from src.Modules.DataInterfaceTools.gps_position_filter import GPSPositionFilter
@@ -41,7 +41,7 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
         self.last_data_time = 0
 
         self.annunciator = AnnunciatorHelper()
-        self.diagnostics_box_helper = DiagnosticsBoxHelper()
+        self.diagnostics_box_helper = DiagnosticsBoxHelper(self.module_name)
         self.vehicle_position_filter = GPSPositionFilter("FCB")
         self.ground_station_position_filter = GPSPositionFilter("Ground Station")
         self.fcb_state_filter = MedianFilter()
@@ -168,7 +168,7 @@ class FCBDataInterfaceCore(ThreadedModuleCore):
         self.data_dictionary[Constants.primary_annunciator] = self.annunciator.getList()
 
         self.data_dictionary[Constants.status_source] = self.annunciator.getOverallStatus()
-        self.data_dictionary[Constants.raw_message_data_key] = self.diagnostics_box_helper.get_diagnostics_dict()
+        self.data_dictionary.update(self.diagnostics_box_helper.getDatabaseDictComponents())
 
         self.data_dictionary[Constants.message_age_key] = round(time.time() - self.last_good_data_time, 3)
         self.data_dictionary[Constants.message_time_key] = time.time()

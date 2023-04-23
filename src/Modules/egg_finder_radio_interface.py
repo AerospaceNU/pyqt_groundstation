@@ -1,7 +1,7 @@
 import logging
 import time
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict, List, Union
 
 import pynmea2
 import serial
@@ -9,7 +9,7 @@ import serial.tools.list_ports
 
 from src.constants import Constants
 from src.CustomLogging.dpf_logger import SerialLogger
-from src.Modules.data_interface_core import ThreadedModuleCore
+from src.Modules.module_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.diagnostics_box_helper import DiagnosticsBoxHelper
 
 
@@ -20,7 +20,7 @@ class EggPacketDescription:
     database_key: str
     data_type: type = None
     multiplier: float = 1
-    callback_function: callable = None
+    callback_function: Union[callable, None] = None
 
 
 EGG_STATES = {
@@ -55,9 +55,9 @@ class EggFinderRadioInterface(ThreadedModuleCore):
         self.last_good_data_time = 0
 
         self.serial_devices["Egg Finder"] = self.changeActiveSerialPort
-        self.serial_logger = SerialLogger(self.__class__.__name__)
+        self.serial_logger = SerialLogger(self.module_name)
         self.primary_module = self.config_saver.get("primary_telemetry_source", "False", str).lower() == "true"  # Can't convert a bool directly to a string for some reason
-        self.diagnostics_helper = DiagnosticsBoxHelper()
+        self.diagnostics_helper = DiagnosticsBoxHelper(self.module_name)
 
         self.egg_packet_types: Dict[str:EggPacketDescription] = {}
         self.egg_messages = {}
@@ -252,8 +252,7 @@ class EggFinderRadioInterface(ThreadedModuleCore):
         self.egg_messages["Pyro Fired"] = pyro_fired
 
     def updateEveryLoop(self):
-        if self.primary_module:
-            self.diagnostics_helper.updatePanel("Egg Finder Data", self.egg_messages)
-            self.data_dictionary[Constants.raw_message_data_key] = self.diagnostics_helper.get_diagnostics_dict()
+        self.diagnostics_helper.updatePanel("Egg Finder Data", self.egg_messages)
+        self.data_dictionary.update(self.diagnostics_helper.getDatabaseDictComponents())
 
         self.data_dictionary[Constants.egg_finder_age] = round(time.time() - self.last_good_data_time, 3)

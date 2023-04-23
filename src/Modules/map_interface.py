@@ -3,7 +3,7 @@ Handles interfacing the map tile manager with the GUI data pipeline
 """
 
 from src.constants import Constants
-from src.Modules.data_interface_core import ThreadedModuleCore
+from src.Modules.module_core import ThreadedModuleCore
 from src.Modules.MapTileManager.map_tile_manager import MapTileManager
 
 

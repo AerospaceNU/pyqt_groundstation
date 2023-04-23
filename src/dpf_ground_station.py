@@ -20,7 +20,7 @@ from src.callback_handler import CallbackHandler
 from src.config import ConfigSaver
 from src.constants import Constants
 from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER
-from src.Modules.data_interface_core import ThreadedModuleCore
+from src.Modules.module_core import ThreadedModuleCore
 from src.usb_device_tools import get_port_list_with_fancy_names
 from src.Widgets import (
     annunciator_panel,
@@ -44,7 +44,7 @@ from src.Widgets import (
     reconfigure_widget,
     settings_editor_widget,
     simple_console_widget,
-    text_box_drop_down_widget,
+    diagnostics_widget,
     vehicle_status_widget,
     video_widget,
 )
@@ -152,7 +152,7 @@ class DPFGUI:
             "Reconfigure": reconfigure_widget.ReconfigureWidget,
             "Console": simple_console_widget.SimpleConsoleWidget,
             "CLI Console": complete_console_widget.CompleteConsoleWidget,
-            "Diagnostic Panel": text_box_drop_down_widget.TextBoxDropDownWidget,
+            "Diagnostic Panel": diagnostics_widget.DiagnosticsWidget,
             "Vehicle Status": vehicle_status_widget.VehicleStatusWidget,
             "Video Panel": video_widget.VideoWidget,
             "Graph Widget": graph_widget.GraphWidget,

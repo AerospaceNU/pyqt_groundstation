@@ -28,8 +28,11 @@ class DatabaseView(CustomQWidgetBase):
 
         string += "Callbacks: {0}\n\n".format(self.callback_handler.getAvailableCallbacks())
 
+        keys = list(vehicle_data.keys())
+        keys.sort()
+
         string += "Database keys:\n"
-        for item in vehicle_data:
+        for item in keys:
             string += "    {}: {}\n".format(str(item), vehicle_data[item])
 
         self.display_label.setText(string)

@@ -23,9 +23,15 @@ class ThreadedModuleCore(threading.Thread):
     This class also provides an interface for supplying pre-recorded time-series data to the GUI.
     """
 
-    def __init__(self):
+    def __init__(self, module_name=None):
         super().__init__()
-        self.logger = MAIN_GUI_LOGGER.get_logger(self.__class__.__name__)
+
+        if module_name is None:
+            self.module_name = self.__class__.__name__
+        else:
+            self.module_name = module_name
+
+        self.logger = MAIN_GUI_LOGGER.get_logger(self.module_name)
         self.data_dictionary = {}
         self.gui_full_data_dictionary = {}
         self.recorded_data_dictionary = {}  # {run_name: {run_dict}}
@@ -36,7 +42,7 @@ class ThreadedModuleCore(threading.Thread):
         self.primary_module = False  # Only one module with this set to true should run at a time
 
         self.callback_handler = CallbackHandler()
-        self.config_saver = ConfigSaver(self.__class__.__name__)
+        self.config_saver = ConfigSaver(self.module_name)
 
         self.last_console_message = ""
         self.last_log_time = 0

@@ -6,7 +6,7 @@ from src.Widgets import (
     qr_code_widget,
     reconfigure_widget,
     simple_console_widget,
-    text_box_drop_down_widget,
+    diagnostics_widget,
 )
 from src.Widgets.complete_console_widget import CompleteConsoleWidget
 from src.Widgets.MainTabs.main_tab_common import TabCommon
@@ -15,8 +15,8 @@ from src.Widgets.MainTabs.main_tab_common import TabCommon
 class DiagnosticTab(TabCommon):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.addWidget(text_box_drop_down_widget.TextBoxDropDownWidget(self))
-        self.addWidget(text_box_drop_down_widget.TextBoxDropDownWidget(self))
+        self.addWidget(diagnostics_widget.DiagnosticsWidget(self))
+        self.addWidget(diagnostics_widget.DiagnosticsWidget(self))
         self.addWidget(simple_console_widget.SimpleConsoleWidget(self))
         self.addWidget(reconfigure_widget.ReconfigureWidget(self))
         self.addWidget(pyro_display_widget.PyroWidget(self))

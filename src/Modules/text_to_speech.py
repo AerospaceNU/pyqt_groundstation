@@ -4,7 +4,7 @@ import pyttsx3
 
 from src.constants import Constants
 from src.data_helpers import get_value_from_dictionary
-from src.Modules.data_interface_core import ThreadedModuleCore
+from src.Modules.module_core import ThreadedModuleCore
 
 ASCENT_LOGGING_STATES = [
     Constants.fcb_state_names[Constants.POWERED_ASCENT_STATE_INDEX],

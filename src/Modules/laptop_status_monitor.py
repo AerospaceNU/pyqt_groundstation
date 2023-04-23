@@ -3,7 +3,7 @@ import time
 import psutil
 
 from src.constants import Constants
-from src.Modules.data_interface_core import ThreadedModuleCore
+from src.Modules.module_core import ThreadedModuleCore
 
 
 class LaptopStatusMonitor(ThreadedModuleCore):

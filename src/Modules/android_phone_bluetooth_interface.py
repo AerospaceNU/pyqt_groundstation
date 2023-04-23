@@ -12,7 +12,7 @@ import pynmea2
 
 from src.constants import Constants
 from src.data_helpers import get_value_from_dictionary, interpolate
-from src.Modules.data_interface_core import ThreadedModuleCore
+from src.Modules.module_core import ThreadedModuleCore
 
 EXTRA_POSITION_SOURCES = [[Constants.backup_gps_latitude, Constants.backup_gps_longitude, Constants.egg_finder_age]]
 

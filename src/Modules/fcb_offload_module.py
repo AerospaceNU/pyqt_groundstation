@@ -8,7 +8,7 @@ import pandas as pd
 
 from src.constants import Constants
 from src.data_helpers import quaternion_to_euler_angle
-from src.Modules.data_interface_core import ThreadedModuleCore
+from src.Modules.module_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.comms_console_helper import CommsConsoleHelper
 from src.Modules.MessageParsing.fcb_message_parsing import (
     lat_lon_decimal_minutes_to_decimal_degrees,

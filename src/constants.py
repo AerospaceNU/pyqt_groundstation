@@ -94,13 +94,13 @@ class Constants:
 
     primary_annunciator = "annunciator_1"
     primary_reconfigure = "primary_reconfigure"
-    raw_message_data_key = "raw_message_data"
     cli_interface_key = "cli_interface"
     cli_interface_usb_key = "cli_interface_usb"
     cli_string_key = "cli_string"
     cli_flights_list_key = "fcb_flights_list"
     new_cli_message_key = "new_cli_message"
     new_usb_cli_message_key = "new_usb_cli_message"
+    diagnostics_key = "diagnostics"
 
     invalid_fcb_state_name = "Invalid FCB State"
     fcb_state_names = [
@@ -116,13 +116,13 @@ class Constants:
         "UNKNOWN",
     ]
 
-    PREFLIGHT_STATE_INDEX = 7
-    POWERED_ASCENT_STATE_INDEX = 3
-    COAST_TO_APOGEE_INDEX = 3
-    DROGUE_DESCENT_INDEX = 5
-    MAIN_DESCENT_INDEX = 5
-    END_STATE_INDEX = 6
-    UNKNOWN_STATE_INDEX = 10
+    PREFLIGHT_STATE_INDEX = 6
+    POWERED_ASCENT_STATE_INDEX = 2
+    COAST_TO_APOGEE_INDEX = 2
+    DROGUE_DESCENT_INDEX = 3
+    MAIN_DESCENT_INDEX = 3
+    END_STATE_INDEX = 5
+    UNKNOWN_STATE_INDEX = 9
 
     MAX_PYROS = 6
 
@@ -185,3 +185,7 @@ class Constants:
     @staticmethod
     def makeLineCutterString(line_cutter_number, line_cutter_key):
         return "line_cutter_{0}_{1}".format(line_cutter_number, line_cutter_key)
+
+    @staticmethod
+    def makeDiagnosticsKey(source_name, page_name):
+        return f"{Constants.diagnostics_key}/{source_name}/{page_name}"

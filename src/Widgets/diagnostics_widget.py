@@ -9,7 +9,7 @@ from src.constants import Constants
 from src.Widgets import custom_q_widget_base
 
 
-class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
+class DiagnosticsWidget(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, parent: QWidget = None, auto_size=True, round_to_decimals=3):
         super().__init__(parent)
 
@@ -28,26 +28,35 @@ class TextBoxDropDownWidget(custom_q_widget_base.CustomQWidgetBase):
         self.autoSize = auto_size
         self.round_to_decimals = round_to_decimals
 
-        self.source = Constants.raw_message_data_key
+        self.source = Constants.diagnostics_key
 
         self.menuItems = []
         self.setMenuItems(["No data"])
 
     def updateData(self, vehicle_data, updated_data):
-        if self.source not in vehicle_data:
+        keys = list(vehicle_data.keys())
+        keys = [key for key in keys if key.startswith(self.source)]
+
+        if len(keys) <= 0:
             self.setMinimumSize(5, 5)
             return
-        data_struct = vehicle_data[self.source]
+
+        # Make dict of all the diagnostics panels so we have
+        page_name_dict = {}
+        for key in keys:
+            page_name = key.split("/")[-1]
+            page_name_dict[page_name] = key
+
+        self.setMenuItems(list(page_name_dict.keys()))
 
         selected_target = self.dropDownWidget.currentText()
-        menu_items = []
-        for item in data_struct:
-            menu_items.append(item)
-        self.setMenuItems(menu_items)
 
-        if selected_target not in data_struct:
+        if selected_target not in page_name_dict:
             return
-        data_to_print = data_struct[selected_target]
+        database_key = page_name_dict[selected_target]
+        if database_key not in vehicle_data:
+            return
+        data_to_print = vehicle_data[database_key]
 
         out_string = ""
         longest_line = 0

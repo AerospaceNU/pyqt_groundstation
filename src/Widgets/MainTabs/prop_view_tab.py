@@ -10,7 +10,7 @@ from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets.prop_control_widget import PropControlWidget
 from src.Widgets.prop_sequencer_widget import PropSequencerWidget
 from src.Widgets.simple_console_widget import SimpleConsoleWidget
-from src.Widgets.text_box_drop_down_widget import TextBoxDropDownWidget
+from src.Widgets.diagnostics_widget import DiagnosticsWidget
 
 
 class PropViewTab(TabCommon):
@@ -20,7 +20,7 @@ class PropViewTab(TabCommon):
         self.setLayout(layout)
 
         prop_control_widget = self.addWidget(PropControlWidget())
-        text_box_widget = self.addWidget(TextBoxDropDownWidget())  # (auto_size=False, round_to_decimals=3))
+        text_box_widget = self.addWidget(DiagnosticsWidget())  # (auto_size=False, round_to_decimals=3))
         console = self.addWidget(SimpleConsoleWidget())
         sequencer = self.addWidget(PropSequencerWidget())
 
