@@ -83,7 +83,7 @@ class GPSDriver(object):
 
         # TODO: Parse more message types
         if type(msg) == pynmea2.types.talker.GGA:  # GGA is a fix
-            if convertToFloat(msg.latitude, None) is not None:  # Check if we have a latitude field
+            if convertToFloat(msg.latitude, None) is not None:  # Check if we have a latitude field (currently used as a proxy for a fix)
                 self.lastDataTime = time.time()  # Not sure if we should only update this when we get a fix
 
                 self.altitude = convertToFloat(msg.altitude, 0)
@@ -93,7 +93,7 @@ class GPSDriver(object):
                 self.numSatellites = int(msg.num_sats)
                 self.fixQuality = msg.gps_qual
 
-            self.runOnFix()
+                self.runOnFix()
         elif type(msg) == pynmea2.types.talker.GSA:  # GSA is information about the satellites we can see
             visible_sats = [-1] * 12
             visible_sats[0] = int(checkValue(msg.sv_id01))
