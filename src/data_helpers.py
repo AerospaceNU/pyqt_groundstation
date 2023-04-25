@@ -3,9 +3,17 @@ Some functions to help with repetitive tasks
 """
 
 import math
-
 import numpy
+
+from dataclasses import dataclass
 from PyQt5.QtGui import QColor
+
+
+@dataclass
+class InfoColorPalette(object):
+    info_color: QColor
+    warn_color: QColor
+    error_color: QColor
 
 
 def clamp(value, minValue, maxValue):
@@ -15,7 +23,7 @@ def clamp(value, minValue, maxValue):
 
 def vector_length(x, y):
     """Returns length of vector [x, y]"""
-    return math.sqrt(x**2 + y**2)
+    return math.sqrt(x ** 2 + y ** 2)
 
 
 def quaternion_to_euler_angle(quaternion):
@@ -142,9 +150,16 @@ def format_rgb_string(red, green, blue):
     return "rgb({0}, {1}, {2})".format(red, green, blue)
 
 
-def get_well_formatted_rgb_string(inputString):
+def get_well_formatted_rgb_string(input_val):
     """Function that returns a string like "rgb(red,green,blue)" for use with QT stylesheets from a variety of input string types"""
-    [red, green, blue] = get_rgb_from_string(inputString)
+
+    if type(input_val) == str:
+        [red, green, blue] = get_rgb_from_string(input_val)
+    elif type(input_val) == QColor:
+        [red, green, blue] = get_rgb_from_qcolor(input_val)
+    else:
+        return
+
     return format_rgb_string(red, green, blue)
 
 
@@ -228,3 +243,22 @@ def round_to_string(value: float, characters: int):
             string = " " + string
 
     return string
+
+
+def get_info_color_palette_from_background(background_color: QColor) -> InfoColorPalette:
+    rgb = get_rgb_from_qcolor(background_color)
+
+    if sum(rgb) > 255:  # Can't see the yellow with a bright background
+        return InfoColorPalette(info_color=QColor(0, 150, 0),
+                                warn_color=QColor(255, 150, 0),
+                                error_color=QColor(255, 50, 50),
+                                )
+    else:
+        return InfoColorPalette(info_color=QColor(0, 150, 0),
+                                warn_color=QColor(255, 255, 0),
+                                error_color=QColor(255, 0, 0),
+                                )
+
+
+def get_warn_color_from_background(background_color: QColor) -> QColor:
+    return get_info_color_palette_from_background(background_color).warn_color

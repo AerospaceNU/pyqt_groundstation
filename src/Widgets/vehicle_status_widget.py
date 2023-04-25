@@ -111,13 +111,13 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         flash_usage = self.getDictValueUsingSourceKey("flash_usage")
 
         if fault_status == 2:
-            self.statusBox.setStyleSheet("color: red; font: {}pt Monospace".format(self.widgetSize))
+            self.statusBox.setStyleSheet(f"color: {self.errorColor}; font: {self.widgetSize}pt Monospace")
             self.statusBox.setText("Faulted")
         elif fault_status == 1:
-            self.statusBox.setStyleSheet("color: yellow; font: {}pt Monospace".format(self.widgetSize))
+            self.statusBox.setStyleSheet(f"color: {self.warnColor}; font: {self.widgetSize}pt Monospace")
             self.statusBox.setText("Warning")
         elif fault_status == 0:
-            self.statusBox.setStyleSheet("color: green; font: {}pt Monospace".format(self.widgetSize))
+            self.statusBox.setStyleSheet(f"color: {self.okColor}; font: {self.widgetSize}pt Monospace")
             self.statusBox.setText("OK")
         else:
             self.statusBox.setStyleSheet("color: blue; font: {}pt Monospace".format(self.widgetSize))

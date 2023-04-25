@@ -39,9 +39,9 @@ class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
                 if color == logging.INFO or color == logging.DEBUG:
                     painter.setPen(self.palette().text().color())
                 elif color == logging.WARNING:
-                    painter.setPen(QColor("yellow"))
+                    painter.setPen(self.getInfoColorPalette().warn_color)
                 elif color == logging.ERROR:
-                    painter.setPen(QColor("red"))
+                    painter.setPen(self.getInfoColorPalette().error_color)
                 else:
                     painter.setPen(QColor("blue"))
 

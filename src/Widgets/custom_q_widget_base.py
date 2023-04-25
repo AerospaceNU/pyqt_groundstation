@@ -4,6 +4,7 @@ Custom base QWidget
 Handles everything that is needed to be common between widgets
 """
 
+import os
 import logging
 
 from PyQt5 import QtGui
@@ -14,7 +15,7 @@ from PyQt5.QtWidgets import QFrame, QMenu, QWidget
 from src.callback_handler import CallbackHandler
 from src.config import ConfigSaver
 from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER
-from src.data_helpers import check_type, clamp, get_value_from_dictionary
+from src.data_helpers import check_type, clamp, get_value_from_dictionary, get_info_color_palette_from_background, InfoColorPalette, get_text_from_qcolor, get_well_formatted_rgb_string
 
 
 class SourceKeyData(object):
@@ -45,6 +46,12 @@ class CustomQWidgetBase(QFrame):
         self.isClicked = False
         self.draggable = True
         self.activeOffset = [0, 0]
+
+        self.textColor = ""
+        self.headerTextColor = ""
+        self.okColor = ""
+        self.warnColor = ""
+        self.errorColor = ""
 
         self.vehicleData = {}
         self.recordedData = {}
@@ -114,10 +121,20 @@ class CustomQWidgetBase(QFrame):
 
     def updateAfterThemeSet(self):
         """Allows custom appearances to be set across all widgets"""
+
+        self.textColor = get_text_from_qcolor(self.palette().text().color())
+        self.headerTextColor = os.getenv("QTMATERIAL_PRIMARYCOLOR")
+        self.okColor = get_well_formatted_rgb_string(self.getInfoColorPalette().info_color)
+        self.warnColor = get_well_formatted_rgb_string(self.getInfoColorPalette().warn_color)
+        self.errorColor = get_well_formatted_rgb_string(self.getInfoColorPalette().error_color)
+
         self.customUpdateAfterThemeSet()
 
         # if self.isInLayout:
         #     self.setStyleSheet("QWidget#" + self.objectName() + " {border: 0}")
+
+    def getInfoColorPalette(self) -> InfoColorPalette:
+        return get_info_color_palette_from_background(self.palette().base().color())
 
     def customUpdateAfterThemeSet(self):
         """Overwrite this for each widget"""
