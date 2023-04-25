@@ -32,7 +32,9 @@ class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
             line = self.data[i]
             if len(line) >= 2:
                 color = line[1]
-                self.maxLineWidth = max(self.maxLineWidth, len(line[0]))
+                text = str(line[0].strip())
+
+                self.maxLineWidth = max(self.maxLineWidth, len(text))
 
                 if color == logging.INFO or color == logging.DEBUG:
                     painter.setPen(self.palette().text().color())
@@ -43,7 +45,7 @@ class SimpleConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
                 else:
                     painter.setPen(QColor("blue"))
 
-                painter.drawText(5, font_height * (i + 1), line[0])
+                painter.drawText(5, font_height * (i + 1), text)
 
     def adjustSize(self) -> None:
         height = self.fontInfo().pixelSize() * len(self.data) + 10

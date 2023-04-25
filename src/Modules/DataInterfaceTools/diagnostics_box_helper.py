@@ -18,6 +18,9 @@ class DiagnosticsBoxHelper(object):
 
         self.diagnostics_dict[panel_name] = panel_struct
 
+    def setPanelStruct(self, panel_name, panel_data):
+        self.diagnostics_dict[panel_name] = panel_data
+
     def getDatabaseDictComponents(self):
         database_dict = {}
 

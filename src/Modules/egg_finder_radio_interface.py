@@ -11,6 +11,7 @@ from src.constants import Constants
 from src.CustomLogging.dpf_logger import SerialLogger
 from src.Modules.module_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.diagnostics_box_helper import DiagnosticsBoxHelper
+from src.Device_Drivers.nmea_gps_driver import GPSDriver
 
 
 @dataclass
@@ -61,6 +62,10 @@ class EggFinderRadioInterface(ThreadedModuleCore):
 
         self.egg_packet_types: Dict[str:EggPacketDescription] = {}
         self.egg_messages = {}
+
+        # Set up GPS driver object
+        self.nmeaGpsDriver = GPSDriver(require_nmea_checksum=False)
+        self.nmeaGpsDriver.setFixCallback(self.runOnFix)
 
         # Add new packets here
         self.addEggPacketType(EggPacketDescription("#", "Flight time", Constants.timestamp_ms_key, int))  # I think this is flight time, not run time
@@ -140,7 +145,7 @@ class EggFinderRadioInterface(ThreadedModuleCore):
     def parsePackets(self, packets: List[str]):
         packets = [packet.strip() for packet in packets]
 
-        STUPID_PACKETS = ["@@", "{  }"]  # For some reason we get these random, meaningless packets
+        STUPID_PACKETS = ["@@", "{  }", "{D }"]  # For some reason we get these random, meaningless packets
 
         for packet in packets:
             self.serial_logger.write_raw(packet)
@@ -194,29 +199,31 @@ class EggFinderRadioInterface(ThreadedModuleCore):
 
     def parseNMEAString(self, nmea_string):
         try:
-            if nmea_string.strip() != "":
-                msg = pynmea2.parse(nmea_string.strip())
-
-                # TODO add more messages than just GGA
-                if type(msg) == pynmea2.types.talker.GGA:
-                    self.logger.info(f"Egg finder NMEA GGA: {msg}")
-                    self.serial_logger.write_parsed("GPS Position Fix", f"{{latitude: {msg.latitude}, longitude: {msg.longitude}, altitude: {msg.altitude}}}")
-                    self.last_good_data_time = time.time()
-
-                    if self.primary_module:
-                        self.data_dictionary[Constants.latitude_key] = msg.latitude
-                        self.data_dictionary[Constants.longitude_key] = msg.longitude
-                        self.data_dictionary[Constants.gps_alt_key] = msg.altitude
-                    else:
-                        self.data_dictionary[Constants.backup_gps_latitude] = msg.latitude
-                        self.data_dictionary[Constants.backup_gps_longitude] = msg.longitude
-                        self.data_dictionary[Constants.backup_gps_altitude] = msg.altitude
-
-                    self.egg_messages["Latitude"] = msg.latitude
-                    self.egg_messages["Longitude"] = msg.longitude
-                    self.egg_messages["GPS altitude"] = msg.altitude
+            self.nmeaGpsDriver.newNMEAString(nmea_string)
         except Exception as e:
             self.logger.error(f"Could not parse eggfinder NMEA string {nmea_string}: {e}")
+
+    def runOnFix(self):
+        latitude = self.nmeaGpsDriver.getLatitude()
+        longitude = self.nmeaGpsDriver.getLongitude()
+        altitude = self.nmeaGpsDriver.getAltitude()
+
+        self.logger.info(f"Egg finder NMEA GGA")
+        self.serial_logger.write_parsed("GPS Position Fix", f"{{latitude: {latitude}, longitude: {longitude}, altitude: {altitude}}}")
+        self.last_good_data_time = time.time()
+
+        if self.primary_module:
+            self.data_dictionary[Constants.latitude_key] = latitude
+            self.data_dictionary[Constants.longitude_key] = longitude
+            self.data_dictionary[Constants.gps_alt_key] = altitude
+        else:
+            self.data_dictionary[Constants.backup_gps_latitude] = latitude
+            self.data_dictionary[Constants.backup_gps_longitude] = longitude
+            self.data_dictionary[Constants.backup_gps_altitude] = altitude
+
+        self.egg_messages["Latitude"] = latitude
+        self.egg_messages["Longitude"] = longitude
+        self.egg_messages["GPS altitude"] = altitude
 
     def parseEggState(self, packet_data):
         state_num = int(packet_data)
@@ -253,6 +260,7 @@ class EggFinderRadioInterface(ThreadedModuleCore):
 
     def updateEveryLoop(self):
         self.diagnostics_helper.updatePanel("Egg Finder Data", self.egg_messages)
+        self.diagnostics_helper.setPanelStruct("Egg Finder GPS", self.nmeaGpsDriver.generateDiagnosticsPage())
         self.data_dictionary.update(self.diagnostics_helper.getDatabaseDictComponents())
 
         self.data_dictionary[Constants.egg_finder_age] = round(time.time() - self.last_good_data_time, 3)
