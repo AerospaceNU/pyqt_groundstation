@@ -4,10 +4,12 @@ Offload Graph
 
 import os
 import shutil
+import sys
 from os import listdir
 from os.path import isfile, join
 
 import pandas as pd
+import PyQt5
 import pyqtgraph
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
@@ -215,11 +217,24 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
         return widget
 
     def onFileImport(self):
-        options = QFileDialog.Options()
-        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "", "All Files (*);;CSV Files (*.csv)", options=options)
-        if fileName:
-            # print(fileName)
+        # Apparently on Ubuntu 22, native dialogs just don't show up. But they
+        # do if you run only this widget in its own q application. for now,
+        # just use the non-native dialog
+        if sys.platform == "linux":
+            opts = QFileDialog.Options(QFileDialog.Option.DontUseNativeDialog)
+        else:
+            opts = QFileDialog.Options()
 
+        dial = QFileDialog(options=opts)
+        dial.setStyleSheet(self.styleSheet())
+        dial.setWindowTitle("Open file")
+        dial.setNameFilter("CSV Files (*.csv);;All Files (*)")
+        dial.setFileMode(QFileDialog.ExistingFile)
+        fileName = None
+        if dial.exec_() == QFileDialog.Accepted:
+            fileName = dial.selectedFiles()[0]
+
+        if fileName:
             if not os.path.exists("output"):
                 os.mkdir("output")
             shutil.copy2(fileName, "output/")
@@ -292,3 +307,23 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
 
     def customUpdateAfterThemeSet(self):
         self.altitudeGraph.setBackground(self.palette().color(self.backgroundRole()))
+
+
+if __name__ == "__main__":
+    from PyQt5.QtWidgets import QApplication, QMainWindow
+
+    application = QApplication([])  # PyQt Application object
+    mainWindow = QMainWindow()  # PyQt MainWindow widget
+
+    navball = OffloadGraphWidget()
+    navball.customUpdateAfterThemeSet()
+
+    mainWindow.setCentralWidget(navball)
+    mainWindow.setFixedWidth(1000)
+    mainWindow.show()
+
+    from qt_material import apply_stylesheet
+
+    apply_stylesheet(application, theme="themes/Old Dark Mode.xml")
+
+    application.exec_()
