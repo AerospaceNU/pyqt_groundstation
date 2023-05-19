@@ -1,3 +1,4 @@
+import copy
 import os
 import time
 from os import listdir
@@ -8,11 +9,11 @@ import pandas as pd
 
 from src.constants import Constants
 from src.data_helpers import quaternion_to_euler_angle
-from src.Modules.module_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.comms_console_helper import CommsConsoleHelper
 from src.Modules.MessageParsing.fcb_message_parsing import (
     lat_lon_decimal_minutes_to_decimal_degrees,
 )
+from src.Modules.module_core import ThreadedModuleCore
 from src.python_avionics.exceptions import SerialPortDisconnectedError
 from src.python_avionics.model.fcb_cli import FcbCli
 from src.python_avionics.model.serial_port import SerialPort
@@ -52,11 +53,11 @@ class FCBOffloadModule(ThreadedModuleCore):
             self.python_avionics_fcb_cli.serial_port.port.close()
 
     def updatePythonAvionicsSerialPort(self):
-        # if self.python_avionics_fcb_cli.serial_port is not None:
-        #     if not self.python_avionics_fcb_cli.serial_port.is_open():
-        #         return
-        # else:
-        #     return
+        if len(self.serial_port_name) < 1:
+            # blank name, try again later
+            self.nextCheckTime = time.time() + 1
+            self.serial_connection = False
+            return
 
         try:
             self.logger.info(
@@ -139,7 +140,7 @@ class FCBOffloadModule(ThreadedModuleCore):
                 }
                 self.data_dictionary.update(dictionary)
 
-            self.replay_idx = self.replay_idx + 2
+            self.replay_idx += 1
             time.sleep(0.015)
         else:
             time.sleep(0.1)
@@ -188,8 +189,11 @@ class FCBOffloadModule(ThreadedModuleCore):
             if runName not in self.recorded_data_dictionary:
                 self.recorded_data_dictionary[runName] = {}
 
-    def setSpecificRunSelected(self, run_name):
-        print(f"run {run_name} selected")
+    def getSpecificRun(self, run_name):
+        # get specific run is called before setSpecificRunSelected
+        # so return the actual data dict here, then make setSpecificRunSelected just save it
+
+        self.logger.debug(f"run {run_name} requested")
 
         # Nuke old dictionary
         for key in self.recorded_data_dictionary:
@@ -199,7 +203,13 @@ class FCBOffloadModule(ThreadedModuleCore):
         # Actually load the data file
         df = pd.read_csv(self.replay_name_to_path[run_name], index_col=0)
 
-        time_series = df["timestamp_s"]  # no longer /1000
+        if "timestamp_s" in df:
+            time_series = df["timestamp_s"]  # no longer /1000
+        elif "timestamp_ms" in df:
+            time_series = df["timestamp_ms"] / 1000
+        else:
+            self.logger.error(f"No time series in run {run_name}?")
+            return
         time_series = time_series - time_series.iloc[0]
 
         for key in df.keys():
@@ -212,6 +222,12 @@ class FCBOffloadModule(ThreadedModuleCore):
             self.recorded_data_dictionary[run_name]["offload_" + key] = [list(df[key]), list(time_series)]
         self.recorded_data_dictionary[run_name]["keys"] = df.keys()
 
+        return super().getSpecificRun(run_name)
+
+    def setSpecificRunSelected(self, run_name):
+        """
+        Reset this widget's internal state in order to translate a FCB log file into the GUI
+        """
         self.replay_dict = self.recorded_data_dictionary[run_name]
         self.replay_idx = 0
         self.replay_len = len(list(self.replay_dict.values())[0][0])
