@@ -3,15 +3,14 @@ import time
 from dataclasses import dataclass
 from typing import Dict, List, Union
 
-import pynmea2
 import serial
 import serial.tools.list_ports
 
 from src.constants import Constants
 from src.CustomLogging.dpf_logger import SerialLogger
-from src.Modules.module_core import ThreadedModuleCore
-from src.Modules.DataInterfaceTools.diagnostics_box_helper import DiagnosticsBoxHelper
 from src.Device_Drivers.nmea_gps_driver import GPSDriver
+from src.Modules.DataInterfaceTools.diagnostics_box_helper import DiagnosticsBoxHelper
+from src.Modules.module_core import ThreadedModuleCore
 
 
 @dataclass
@@ -208,7 +207,7 @@ class EggFinderRadioInterface(ThreadedModuleCore):
         longitude = self.nmeaGpsDriver.getLongitude()
         altitude = self.nmeaGpsDriver.getAltitude()
 
-        self.logger.info(f"Egg finder NMEA GGA")
+        self.logger.info("Egg finder NMEA GGA")
         self.serial_logger.write_parsed("GPS Position Fix", f"{{latitude: {latitude}, longitude: {longitude}, altitude: {altitude}}}")
         self.last_good_data_time = time.time()
 

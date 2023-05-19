@@ -5,9 +5,9 @@ Simple NMEA GPS Driver
 """
 
 import time
-import pynmea2
-
 from dataclasses import dataclass
+
+import pynmea2
 
 
 @dataclass
@@ -25,7 +25,7 @@ def checkValue(value):
     else:
         try:
             a = float(value)
-        except:
+        except Exception:
             a = -1
 
     return a
@@ -34,7 +34,7 @@ def checkValue(value):
 def convertToFloat(value: str, default_val):
     try:
         return float(value)
-    except:
+    except Exception:
         return default_val
 
 
@@ -59,9 +59,9 @@ class GPSDriver(object):
         self.onFixCallback = new_callback
 
     def newBytes(self, raw_bytes: bytes):
-        data = raw_bytes.decode('utf-8')
+        data = raw_bytes.decode("utf-8")
 
-        if len(data) > 1 and data[0] == '$':
+        if len(data) > 1 and data[0] == "$":
             self.newNMEAString(data)
 
     def newNMEAString(self, new_string: str):
@@ -76,7 +76,7 @@ class GPSDriver(object):
                 msg = pynmea2.parse(data)
             else:
                 msg = pynmea2.parse(data.split("*")[0], check=False)
-        except Exception as e:
+        except Exception:
             # print("Could not parse NMEA string: {}".format(data))
             # print(e)
             return
@@ -158,12 +158,13 @@ class GPSDriver(object):
         return self.altitude
 
     def generateDiagnosticsPage(self):
-        diagnostics_lines = [["Latitude", self.latitude],
-                             ["Longitude", self.longitude],
-                             ["Fix Quality", self.fixQuality],
-                             # ["Timed out", self.dataTimedOut],
-                             ["Satellites", self.numSatellites],
-                             ]
+        diagnostics_lines = [
+            ["Latitude", self.latitude],
+            ["Longitude", self.longitude],
+            ["Fix Quality", self.fixQuality],
+            # ["Timed out", self.dataTimedOut],
+            ["Satellites", self.numSatellites],
+        ]
 
         for sat in self.satellites.values():  # First show all the ones in use
             if sat.in_use:

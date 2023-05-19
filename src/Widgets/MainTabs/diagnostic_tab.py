@@ -2,11 +2,11 @@
 Blank tab with diagnostic boxes
 """
 from src.Widgets import (
+    diagnostics_widget,
     pyro_display_widget,
     qr_code_widget,
     reconfigure_widget,
     simple_console_widget,
-    diagnostics_widget,
 )
 from src.Widgets.complete_console_widget import CompleteConsoleWidget
 from src.Widgets.MainTabs.main_tab_common import TabCommon

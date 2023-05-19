@@ -9,8 +9,8 @@ import websockets
 from src.constants import Constants
 from src.CustomLogging.dpf_logger import PROP_LOGGER
 from src.data_helpers import get_value_from_dictionary
-from src.Modules.module_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.annunciator_helper import AnnunciatorHelper
+from src.Modules.module_core import ThreadedModuleCore
 
 
 class PropWebsocketInterface(ThreadedModuleCore):

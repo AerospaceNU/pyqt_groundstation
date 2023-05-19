@@ -9,7 +9,6 @@ from os import listdir
 from os.path import isfile, join
 
 import pandas as pd
-import PyQt5
 import pyqtgraph
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt

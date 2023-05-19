@@ -6,11 +6,11 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QGridLayout, QScrollArea, QSizePolicy, QWidget
 
 from src.Widgets.annunciator_panel import AnnunciatorPanel
+from src.Widgets.diagnostics_widget import DiagnosticsWidget
 from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets.prop_control_widget import PropControlWidget
 from src.Widgets.prop_sequencer_widget import PropSequencerWidget
 from src.Widgets.simple_console_widget import SimpleConsoleWidget
-from src.Widgets.diagnostics_widget import DiagnosticsWidget
 
 
 class PropViewTab(TabCommon):

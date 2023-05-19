@@ -6,8 +6,8 @@ import navpy
 
 from src.constants import Constants
 from src.data_helpers import euler_to_quaternion
-from src.Modules.module_core import ThreadedModuleCore
 from src.Modules.DataInterfaceTools.gps_position_filter import GPSPositionFilter
+from src.Modules.module_core import ThreadedModuleCore
 
 
 class RandomDataInterface(ThreadedModuleCore):

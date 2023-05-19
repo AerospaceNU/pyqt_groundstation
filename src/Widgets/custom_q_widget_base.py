@@ -4,8 +4,8 @@ Custom base QWidget
 Handles everything that is needed to be common between widgets
 """
 
-import os
 import logging
+import os
 
 from PyQt5 import QtGui
 from PyQt5.QtCore import QPoint, Qt
@@ -15,7 +15,15 @@ from PyQt5.QtWidgets import QFrame, QMenu, QWidget
 from src.callback_handler import CallbackHandler
 from src.config import ConfigSaver
 from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER
-from src.data_helpers import check_type, clamp, get_value_from_dictionary, get_info_color_palette_from_background, InfoColorPalette, get_text_from_qcolor, get_well_formatted_rgb_string
+from src.data_helpers import (
+    InfoColorPalette,
+    check_type,
+    clamp,
+    get_info_color_palette_from_background,
+    get_text_from_qcolor,
+    get_value_from_dictionary,
+    get_well_formatted_rgb_string,
+)
 
 
 class SourceKeyData(object):

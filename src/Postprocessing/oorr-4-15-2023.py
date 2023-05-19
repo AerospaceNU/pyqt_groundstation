@@ -1,6 +1,6 @@
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 lapseRate = -6.5e-3
 R_DRY_AIR = 287.053
@@ -8,11 +8,12 @@ G_ACCEL_EARTH = 9.80665
 
 csv = pd.read_csv("~/Downloads/2023-04-15-oorr-output-FCB-post.csv")
 # csv = pd.read_csv("~/Downloads/2023-04-15-beanboozler-output-FCB-post.csv")
-csv2=csv.copy()
+csv2 = csv.copy()
 csv2["timestamp_ms"] -= csv2["timestamp_ms"][0]
 csv2["timestamp_ms"] /= 1000
 csv2 = csv2[csv2["timestamp_ms"] < 55]
 csv2 = csv2[csv2["timestamp_ms"] > 25]
+
 
 def pressure_to_alt(pressureAtm, tempRefK, pressureRefAtm, agl: bool = True):
     ret = ((tempRefK) / lapseRate) * (pow(pressureAtm / pressureRefAtm, -R_DRY_AIR * lapseRate / G_ACCEL_EARTH) - 1)
@@ -26,6 +27,7 @@ PRESSURE_REF = 0.993872440167777
 pressure_array = csv2["baro_pres_avg"]
 baro_alt = pressure_to_alt(pressure_array, GROUND_TEMP, PRESSURE_REF)
 csv2["baro_alt_avg"] = baro_alt
+
 
 def rerun_kalman():
     x_hat = np.array([0, 0]).reshape((2, 1))
@@ -62,6 +64,7 @@ def rerun_kalman():
 
 # rerun_kalman()
 
+
 def plot_altitude_residual():
     # Drop the first baro alt
     baro_alt2 = baro_alt.iloc[1:]
@@ -77,11 +80,11 @@ def plot_altitude_residual():
     plt.legend()
     plt.subplot(312)
     # plt.plot(time, baro_alt2.to_numpy() - pos_z2.to_numpy(), label="Altitude residual, m")
-    plt.plot(csv2['timestamp_ms'], csv2["vel_z"], label="Z vel, m/s")
+    plt.plot(csv2["timestamp_ms"], csv2["vel_z"], label="Z vel, m/s")
     plt.legend()
     plt.subplot(313)
     # plt.plot(csv2["timestamp_ms"], csv2['acc_z'], label="Accel Z")
-    plt.plot(csv2["timestamp_ms"], csv2['trigger_status'], label="Big Trig")
+    plt.plot(csv2["timestamp_ms"], csv2["trigger_status"], label="Big Trig")
 
     # plt.figure()
     # # plt.plot(time, np.diff(csv2["timestamp_ms"]) * 1000, label="dt, ms")
@@ -90,5 +93,5 @@ def plot_altitude_residual():
     # plt.legend()
     plt.show()
 
-plot_altitude_residual()
 
+plot_altitude_residual()

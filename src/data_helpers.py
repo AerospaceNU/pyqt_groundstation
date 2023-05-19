@@ -3,9 +3,9 @@ Some functions to help with repetitive tasks
 """
 
 import math
-import numpy
-
 from dataclasses import dataclass
+
+import numpy
 from PyQt5.QtGui import QColor
 
 
@@ -23,7 +23,7 @@ def clamp(value, minValue, maxValue):
 
 def vector_length(x, y):
     """Returns length of vector [x, y]"""
-    return math.sqrt(x ** 2 + y ** 2)
+    return math.sqrt(x**2 + y**2)
 
 
 def quaternion_to_euler_angle(quaternion):
@@ -249,15 +249,17 @@ def get_info_color_palette_from_background(background_color: QColor) -> InfoColo
     rgb = get_rgb_from_qcolor(background_color)
 
     if sum(rgb) > 255:  # Can't see the yellow with a bright background
-        return InfoColorPalette(info_color=QColor(0, 150, 0),
-                                warn_color=QColor(255, 150, 0),
-                                error_color=QColor(255, 50, 50),
-                                )
+        return InfoColorPalette(
+            info_color=QColor(0, 150, 0),
+            warn_color=QColor(255, 150, 0),
+            error_color=QColor(255, 50, 50),
+        )
     else:
-        return InfoColorPalette(info_color=QColor(0, 150, 0),
-                                warn_color=QColor(255, 255, 0),
-                                error_color=QColor(255, 0, 0),
-                                )
+        return InfoColorPalette(
+            info_color=QColor(0, 150, 0),
+            warn_color=QColor(255, 255, 0),
+            error_color=QColor(255, 0, 0),
+        )
 
 
 def get_warn_color_from_background(background_color: QColor) -> QColor:
