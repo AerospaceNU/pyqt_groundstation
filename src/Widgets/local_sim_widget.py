@@ -5,6 +5,7 @@ Displays pyro continuity
 import os
 import platform
 import subprocess
+import sys
 
 import psutil
 import PyQt5.QtCore as QtCore
@@ -19,7 +20,7 @@ class LocalSimWidget(CustomQWidgetBase):
 
         self.xBuffer = 0
         self.yBuffer = 0
-        MIN_WIDTH = 200
+        MIN_WIDTH = 300
 
         self.title = "Local Simulation"
         self.pathNames = [
@@ -103,7 +104,15 @@ class LocalSimWidget(CustomQWidgetBase):
             self.savePath(i)
 
     def buttonPressHandler(self, idx: int, name: str):
-        file, check = QFileDialog.getOpenFileName(None, f"Select {name}", "", "All Files (*);;CSV Files (*.csv)")
+        # Apparently on Ubuntu 22, native dialogs just don't show up. But they
+        # do if you run only this widget in its own q application. for now,
+        # just use the non-native dialog
+        if sys.platform == "linux":
+            opts = QFileDialog.Options(QFileDialog.Option.DontUseNativeDialog)
+        else:
+            opts = QFileDialog.Options()
+
+        file, check = QFileDialog.getOpenFileName(None, f"Select {name}", "", "CSV Files (*.csv);;All Files (*)", options=opts)
         if check:
             idx = self.pathNames.index(name)
             self.paths[idx].setText(file)
