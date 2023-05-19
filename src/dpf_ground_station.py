@@ -28,6 +28,7 @@ from src.Widgets import (
     complete_console_widget,
     configurable_text_box_widget,
     control_station_status,
+    diagnostics_widget,
     fire_k_widget,
     flight_display,
     gl_display_widget,
@@ -44,7 +45,6 @@ from src.Widgets import (
     reconfigure_widget,
     settings_editor_widget,
     simple_console_widget,
-    diagnostics_widget,
     vehicle_status_widget,
     video_widget,
 )
@@ -542,7 +542,7 @@ class DPFGUI:
     def addVehicleTab(self, new_tab_object, vehicle_name: str):
         self.tabHolderWidget.addTab(new_tab_object, vehicle_name)
         self.tabHolderWidget.setCurrentIndex(self.tabHolderWidget.count() - 1)
-        self.tabHolderWidget.setCurrentIndex(1)  # Why do we default to 1???
+        self.tabHolderWidget.setCurrentIndex(1)  # Switch back to "primary"
 
         self.tabObjects.append(new_tab_object)
         self.tabNames.append(vehicle_name)
@@ -668,9 +668,10 @@ class DPFGUI:
             mod_en = self.moduleSettings.get(module) == "True"
             self.enableOrDisableModule(module, mod_en)
 
-        lastIdx = self.overallSettings.get("current_tab")
+        lastIdx = int(self.overallSettings.get("current_tab"))
         if not lastIdx:
-            lastIdx = 1
+            lastIdx = 1  # Default to primary
+        self.tabHolderWidget.setCurrentIndex(lastIdx)
 
         # Only attach change listener after everything's loaded
         self.tabHolderWidget.currentChanged.connect(lambda: self.overallSettings.save("current_tab", self.tabHolderWidget.currentIndex()))
