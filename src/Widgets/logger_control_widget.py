@@ -71,8 +71,9 @@ class LoggerControlWidget(custom_q_widget_base.CustomQWidgetBase):
 
         # Now buttons to set recorded data for a given log file
         button_hbox = QHBoxLayout()
-        fcb_button = QPushButton("Set FCB log data")
-        prop_button = QPushButton("Set Prop log data")
+        fcb_button = QPushButton("Set FCB Rx Data")
+        prop_button = QPushButton("Set Prop Log Data")
+        fcb_button.clicked.connect(self.set_fcb_data)
         prop_button.clicked.connect(self.set_prop_data)
         button_hbox.addWidget(fcb_button)
         button_hbox.addWidget(prop_button)
@@ -86,6 +87,13 @@ class LoggerControlWidget(custom_q_widget_base.CustomQWidgetBase):
         index = indexes[0]
         index = index.row()
         return index
+
+    def set_fcb_data(self):
+        # We know the currently selected row, so index into our dict
+        current_idx = self.getIndexFrom(self.offloadTableWidget)
+        flight_name = self.log_paths[current_idx]
+        # Use a callback to tell main GUI that we want to set recorded data
+        self.requestCallback(Constants.set_recorded_data_callback_id, [Constants.InterfaceNames.ground_station_recorded_data, flight_name])
 
     def set_prop_data(self):
         # We know the currently selected row, so index into our dict

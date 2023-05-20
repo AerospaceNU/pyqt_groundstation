@@ -7,7 +7,9 @@ from src.Postprocessing.recorded_data_reader import RecordedDataReader
 
 class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
     """
-    Reads recorded data from groundstation back into ground station
+    Reads recorded data from groundstation back into ground station by calling into fcb_data_interface_core
+
+    TODO: each log file can only ever have one run, we should refactor this to reflect that
     """
 
     def __init__(self):
@@ -43,6 +45,16 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
                 for key in self.reader.getRecordedDataKeys(run):
                     [data_series, time_series] = self.reader.getFullHistoryForKey(run, key)
                     self.recorded_data_dictionary[run][key] = [data_series, time_series]
+
+    def getSpecificRun(self, run_name):
+        self.file_name = f"logs/{run_name}/GroundStationDataInterface_parsed.txt"
+        # re-trigger indexing if required
+        self.runOnEnableAndDisable()
+
+        return super().getSpecificRun(run_name)
+
+    def setSpecificRunSelected(self, run_name):
+        pass
 
     def spin(self):
         self.good_fcb_data = True

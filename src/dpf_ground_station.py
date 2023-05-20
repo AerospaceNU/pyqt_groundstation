@@ -612,6 +612,7 @@ class DPFGUI:
         for interface in self.module_dictionary:
             # Look for module with the same name as was clicked
             if module_name == interface:
+                self.logger.debug(f"Interface {interface} setting replay data to {run_name}")
                 interface_object = self.module_dictionary[interface]
 
                 recorded_data_dict = interface_object.getSpecificRun(run_name)
@@ -668,7 +669,10 @@ class DPFGUI:
             mod_en = self.moduleSettings.get(module) == "True"
             self.enableOrDisableModule(module, mod_en)
 
-        lastIdx = int(self.overallSettings.get("current_tab"))
+        try:
+            lastIdx = int(self.overallSettings.get("current_tab"))
+        except Exception:
+            lastIdx = None
         if not lastIdx:
             lastIdx = 1  # Default to primary
         self.tabHolderWidget.setCurrentIndex(lastIdx)
