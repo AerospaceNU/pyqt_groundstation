@@ -3,6 +3,7 @@ Class to read recorded data
 """
 
 import datetime
+import os
 import time
 
 import navpy
@@ -13,9 +14,6 @@ from src.data_helpers import vector_length
 
 class RecordedDataReader(object):
     def __init__(self, file_name="parsed_messages.txt", load_slower=False, logging_callback=None, logging_interval=5):
-        file = open(file_name)
-        data = file.readlines()
-        # data = data[27500:]
 
         self.data_struct = []
         self.packet_types = []
@@ -29,6 +27,13 @@ class RecordedDataReader(object):
         data_date = datetime.datetime.fromtimestamp(0).date()
         run_number = 0
         last_logging_time = 0
+
+        if not os.path.exists(file_name):
+            # bad path, just return?
+            return
+
+        file = open(file_name)
+        data = file.readlines()
 
         i = 0
         startTime = time.time()
@@ -50,7 +55,7 @@ class RecordedDataReader(object):
                     packet_data["timestamp"] = timestamp_string
                     packet_data["run_number"] = run_number
                 except Exception as e:
-                    print(e)
+                    print(f"Exception for line [ {line} ]: {e}")
                     continue
 
                 # Calculate distance from start
