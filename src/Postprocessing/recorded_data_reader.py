@@ -14,7 +14,6 @@ from src.data_helpers import vector_length
 
 class RecordedDataReader(object):
     def __init__(self, file_name="parsed_messages.txt", load_slower=False, logging_callback=None, logging_interval=5):
-
         self.data_struct = []
         self.packet_types = []
         self.full_history_data_struct = {}  # {run_name: {run_dict}}
