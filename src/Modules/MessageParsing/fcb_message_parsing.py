@@ -19,18 +19,22 @@ def compass_heading_deg_to_enu_rad(heading):
     return -math.radians(heading - 90)
 
 
-def lat_lon_decimal_minutes_to_decimal_degrees(min):
+def lat_lon_decimal_minutes_to_decimal_degrees(lat_lon_value):
     """
     FCB data comes in as ddmm.mmmmmm
     This converts to dd.dddddddd
     """
 
-    if min == float("nan"):
+    # If its between -90 and 90, its probably actually the in dd.ddddd
+    if -90 < lat_lon_value < 90:
+        return lat_lon_value
+
+    if lat_lon_value == float("nan"):
         print("Found a NaN while parsing lat/lon data")
         return 0
 
-    abs_val = abs(min)
-    sign = numpy.sign(min)
+    abs_val = abs(lat_lon_value)
+    sign = numpy.sign(lat_lon_value)
     return (math.trunc(float(abs_val) / 100.0) + (float(abs_val) % 100.0) / 60.0) * sign
 
 
