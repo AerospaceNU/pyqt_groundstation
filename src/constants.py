@@ -58,6 +58,7 @@ class Constants:
     ground_elevation_key = "ground_elev"
     ground_temp_key = "ground_temp"
     main_cut_alt_key = "Main Alt (m)"
+    pitot_ducer_press_key = "pitot_ducer_press"
 
     ground_station_latitude_key = "gs_lat"
     ground_station_longitude_key = "gs_lon"

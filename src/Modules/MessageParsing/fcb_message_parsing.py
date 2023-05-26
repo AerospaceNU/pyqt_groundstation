@@ -294,6 +294,7 @@ class AltitudeInfoMessage(BaseMessage):
         [FLOAT_TYPE, Constants.press_ref_key],
         [FLOAT_TYPE, Constants.ground_elevation_key],
         [FLOAT_TYPE, Constants.ground_temp_key],
+        [FLOAT_TYPE, Constants.pitot_ducer_press_key],
     ]
 
 
