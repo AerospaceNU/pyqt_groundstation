@@ -15,7 +15,7 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
     def __init__(self):
         super().__init__()
 
-        self.file_name = ""  # "logs/01-21-2023_12-57-22/GroundStationDataInterface_parsed.txt"
+        self.file_name = "logs/2023-05-27_13-38-13/GroundStationDataInterface_parsed.txt"
 
     def startUp(self):
         pass
@@ -25,7 +25,7 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
             self.reader = RecordedDataReader(load_slower=True, logging_callback=self.logger.info, file_name=self.file_name)
             self.logger.info("Done indexing recorded data")
 
-            self.reader.setPacketIndex(0)
+            self.reader.setPacketIndex(21500)
 
             if not self.reader.parsedToFullHistory():
                 self.reader.parseIntoIndividualLists()
