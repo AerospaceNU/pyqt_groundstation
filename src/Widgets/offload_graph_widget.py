@@ -259,7 +259,10 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
         self.raw_file = csv
 
         # Hack since timestamp_s is in ms
-        csv["timestamp_s"] = csv["timestamp_s"] / 1000
+        if "timestamp_s" in csv:
+            csv["timestamp_s"] = csv["timestamp_s"] / 1000
+        else:
+            csv["timestamp_s"] = csv["timestamp_ms"] / 1000
 
         self.altitude_time_arr = list(csv["timestamp_s"])
         self.altitude_data_arr = list(csv["pos_z"])
