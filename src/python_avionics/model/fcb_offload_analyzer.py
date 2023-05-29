@@ -46,7 +46,8 @@ class FcbOffloadAnalyzer:
 
     @staticmethod
     def analyze_time_range(df: pd.DataFrame, start_time: float, end_time: float, offload_path: str) -> str:
-        df = df[(df["timestamp_s"] > start_time) & (df["timestamp_s"] < end_time)]
+        df_timestamp_col = "timestamp_s" if "timestamp_s" in df.columns else "timestamp_ms"
+        df = df[(df[df_timestamp_col] > start_time) & (df[df_timestamp_col] < end_time)]
 
         # Turn GPS into degrees and minutes from float
         df["gps_lat_mod"] = (np.floor(np.abs(df["gps_lat"]) / 100) + (np.abs(df["gps_lat"]) % 100 / 60)) * np.sign(df["gps_lat"])
@@ -216,9 +217,9 @@ def _graph_data(post_processed_file: str) -> None:
         lw=1,
         label="state_transitions",
     )
-    if "pyro_status" in df:
-        pyro_events = np.where(df.pyro_status[:-1].values != df.pyro_status[1:].values)[0]
-        vlines2 = [df[df_timestamp_col][index] for index in pyro_events]
+    if "trigger_status" in df:
+        trigger_events = np.where(df.trigger_status[:-1].values != df.trigger_status[1:].values)[0]
+        vlines2 = [df[df_timestamp_col][index] for index in trigger_events]
         ax6[0].vlines(
             x=vlines2,
             ymin=pos_min,
@@ -226,7 +227,7 @@ def _graph_data(post_processed_file: str) -> None:
             colors="red",
             ls="-",
             lw=1,
-            label="pyro_events",
+            label="trigger_events",
         )
         ax6[1].vlines(
             x=vlines2,
@@ -235,7 +236,7 @@ def _graph_data(post_processed_file: str) -> None:
             colors="red",
             ls="-",
             lw=1,
-            label="pyro_events",
+            label="trigger_events",
         )
 
     if "acc_z" in df:

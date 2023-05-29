@@ -437,6 +437,9 @@ class FcbCli:
             UnpackProperty("apogee_timestamp", "I"),
             UnpackProperty("trigger_fire_status", "h"),
         ]
+        """
+        # Metadata on the FCB currently doesn't store config because it's too large
+        # for the metadata pages allocated.
         for trig_num in range(16):
             ret.extend([UnpackProperty(f"mode_{trig_num}", "B"), UnpackProperty(f"port_{trig_num}", "B"), UnpackProperty(f"duration_{trig_num}", "f"), UnpackProperty(f"pulse_width_{trig_num}", "i")])
         ret.extend(
@@ -447,6 +450,7 @@ class FcbCli:
                 UnpackProperty("radio_channel", "i"),
             ]
         )
+        """
         return ret
 
     @property
@@ -588,6 +592,9 @@ class FcbCli:
                 UnpackProperty("q_z", "d"),
                 UnpackProperty("q_w", "d"),
                 UnpackProperty("state", "B"),
+                UnpackProperty("ducer_status", "B"),
+                UnpackProperty("ducer_temp", "f"),
+                UnpackProperty("ducer_pres", "f"),
             ],
             [  # Line Cutter Data
                 UnpackProperty("packetType", "B"),
