@@ -112,7 +112,7 @@ class FCBOffloadModule(ThreadedModuleCore):
                 alt = self.getOffloadKey("pos_z")
                 gpsalt = self.getOffloadKey("gps_alt")
 
-                vel = self.getOffloadKey("vel_x")
+                vel = self.getOffloadKey("vel_z")
 
                 quat = [
                     self.getOffloadKey("q_w"),
