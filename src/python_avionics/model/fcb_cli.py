@@ -53,7 +53,10 @@ class FcbCli:
         """
         rx_data = self.serial_port.read(size=len(self._ACK))
         if rx_data is None:
+            print("Ack got no data?")
             return False
+
+        print(f"Ack got {rx_data.decode('utf-8')}")
         return rx_data.decode("utf-8") == self._ACK
 
     def _has_complete(self, search_str: str) -> bool:
@@ -144,9 +147,6 @@ class FcbCli:
         if parsed_args.command == "sim":
             self.run_sim(flight_filepath=parsed_args.flight_file.strip('"'))
             return "Success"
-        if parsed_args.command == "shutdown":
-            self.run_shutdown()
-            return "Success"
         if parsed_args.command == "erase":
             self.run_erase()
             return "Success"
@@ -178,14 +178,39 @@ class FcbCli:
             raise FcbIncompleteError(fcb_command=self._HELP_COMMAND)
         return help_str.strip(self._COMPLETE)
 
+    def read_until_complete(self):
+        # Loop until timeout hits, returning early if the string ends with the complete string
+
+        startTime = time.time()
+        TIMEOUT = 2
+        ret_str = ""
+        while time.time() - startTime < TIMEOUT:
+            byte_in = self.serial_port.read(1)
+            if not byte_in:
+                return (None, False)
+            ret_str += byte_in.decode("utf-8")
+
+            if self._has_complete(search_str=ret_str):
+                return (ret_str, True)
+
+        return (None, False)
+
     def run_offload_help(self) -> str:
+        # Seems like we need a flush here to get rid of extra data hiding in the rx buffer
+        # without this we sometimes get leftover data from the last CLI command
+        self.serial_port.flush()
+
+        print("Sending offload string")
         self.serial_port.write(self._linebreak(self._OFFLOAD_HELP_COMMAND).encode("utf-8"))
+        print("Reading ack")
         if not self._read_ack():
             raise FcbNoAckError(fcb_command=self._OFFLOAD_HELP_COMMAND)
-        help_bytes = self.serial_port.read(size=10000)
-        help_str = "" if not help_bytes else help_bytes.decode("utf-8")
-        if not self._has_complete(search_str=help_str):
+
+        # Read in until the success string is found, or we time out
+        help_str, success = self.read_until_complete()
+        if not success:
             raise FcbIncompleteError(fcb_command=self._OFFLOAD_HELP_COMMAND)
+
         help_str = help_str.strip(self._COMPLETE)
         return help_str
 
@@ -196,6 +221,10 @@ class FcbCli:
         :param flight_name: Name of flight, used in saving output
         :param flight_num: Flight number as reported by FCB in run_offload_help
         """
+
+        # Seems like we need a flush here to get rid of extra data hiding in the rx buffer
+        # without this we sometimes get leftover data from the last CLI command
+        self.serial_port.flush()
 
         # Start offloading provided flight number
         self.serial_port.write(self._linebreak(self._OFFLOAD_FLIGHT_COMMAND.format(flight_num=flight_num)).encode("utf-8"))
@@ -275,6 +304,11 @@ class FcbCli:
         """
         Erases FCB flash
         """
+
+        # Seems like we need a flush here to get rid of extra data hiding in the rx buffer
+        # without this we sometimes get leftover data from the last CLI command
+        self.serial_port.flush()
+
         self.serial_port.write(self._linebreak(self._ERASE_FLASH_COMMAND).encode("utf-8"))
         if not self._read_ack():
             raise FcbNoAckError(fcb_command=self._ERASE_FLASH_COMMAND)
@@ -298,6 +332,10 @@ class FcbCli:
 
         # Read CSV to ensure flight filepath is valid
         df = pd.read_csv(flight_filepath, index_col=0)
+
+        # Seems like we need a flush here to get rid of extra data hiding in the rx buffer
+        # without this we sometimes get leftover data from the last CLI command
+        self.serial_port.flush()
 
         # Start sim
         self.serial_port.write(self._linebreak(self._SIM_COMMAND).encode("utf-8"))
@@ -399,6 +437,11 @@ class FcbCli:
 
         :return: Sense string
         """
+
+        # Seems like we need a flush here to get rid of extra data hiding in the rx buffer
+        # without this we sometimes get leftover data from the last CLI command
+        self.serial_port.flush()
+
         self.serial_port.write(self._linebreak(self._SENSE_COMMAND).encode("utf-8"))
         if not self._read_ack():
             raise FcbNoAckError(fcb_command=self._SENSE_COMMAND)
@@ -407,20 +450,6 @@ class FcbCli:
         if not self._has_complete(search_str=sense_str):
             raise FcbIncompleteError(fcb_command=self._SENSE_COMMAND)
         return sense_str.strip(self._COMPLETE)
-
-    def run_shutdown(self) -> None:
-        """
-        Prevent FCB from doing anything else.
-
-        FCB won't actually shut off, but it won't do or respond to anything.
-        """
-        self.serial_port.write(self._linebreak(self._SHUTDOWN_COMMAND).encode("utf-8"))
-        if not self._read_ack():
-            raise FcbNoAckError(fcb_command=self._SHUTDOWN_COMMAND)
-        rx_bytes = self.serial_port.read(size=10000)
-        rx_str = "" if not rx_bytes else rx_bytes.decode("utf-8")
-        if not self._has_complete(search_str=rx_str):
-            raise FcbIncompleteError(fcb_command=self._SHUTDOWN_COMMAND)
 
     @property
     def _metadata_struct(self) -> List[UnpackProperty]:

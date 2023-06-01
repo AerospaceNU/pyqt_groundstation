@@ -12,7 +12,7 @@ class SerialPort:
     """Manages a single serial port and access to it"""
 
     _DEFAULT_BAUD_RATE = 9600
-    _DEFAULT_PORT_TIMEOUT_S = 1
+    _DEFAULT_PORT_TIMEOUT_S = 2
 
     def __init__(self, name: str) -> None:
         """
@@ -50,6 +50,11 @@ class SerialPort:
         except Exception:
             raise SerialPortDisconnectedError(port_name=self.name)
         return data
+
+    def flush(self):
+        self.port.flush()
+        self.port.flushInput()
+        self.port.flushOutput()
 
 
 class SerialPortManager:

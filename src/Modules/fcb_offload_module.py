@@ -32,7 +32,7 @@ class FCBOffloadModule(ThreadedModuleCore):
 
         self.serial_devices["FCB USB Connection"] = self.changeActiveSerialPort
 
-        self.callback_handler.addCallback(Constants.cli_interface_usb_key, self.cliCommand)
+        self.callback_handler.addCallback(Constants.cli_interface_usb_command_key, self.cliCommand)
 
         self.cliConsole = CommsConsoleHelper(Constants.new_usb_cli_message_key)
 
@@ -54,7 +54,7 @@ class FCBOffloadModule(ThreadedModuleCore):
     def updatePythonAvionicsSerialPort(self):
         if len(self.serial_port_name) < 1:
             # blank name, try again later
-            self.nextCheckTime = time.time() + 1
+            self.nextCheckTime = time.time() + 2
             self.serial_connection = False
             return
 
@@ -71,7 +71,7 @@ class FCBOffloadModule(ThreadedModuleCore):
             )
             port_object.port.flushInput()
             port_object.port.flushOutput()
-        except Exception:
+        except Exception as e:
             self.logger.error("Unable to connect to FCB over USB at port {0}".format(self.serial_port_name))
             self.nextCheckTime = time.time() + 4
             self.serial_connection = False
@@ -93,6 +93,7 @@ class FCBOffloadModule(ThreadedModuleCore):
         if len(self.command_queue) > 0:
             command = self.command_queue.pop(0)
             self.cliConsole.manualAddEntry(command, False)
+            self.data_dictionary[Constants.cli_interface_usb_command_running] = True
             ret = self.runCLICommand(command)
 
             if ret is not None:
@@ -101,6 +102,11 @@ class FCBOffloadModule(ThreadedModuleCore):
 
                 self.cliConsole.autoAddEntry(ret, True)
 
+            # Report command done by broadcasting the result string, and also setting running back to false
+            self.callback_handler.requestCallback(Constants.cli_interface_usb_result_key, ret)
+            self.data_dictionary[Constants.cli_interface_usb_command_running] = False
+
+        # Hack recorded data directly into the GUI pretending like it's full rate telemetry
         if self.replay_dict is not None:
             if self.replay_idx >= self.replay_len:
                 self.replay_dict = None
@@ -145,7 +151,7 @@ class FCBOffloadModule(ThreadedModuleCore):
             time.sleep(0.1)
 
     def runsEveryLoop(self):
-        self.data_dictionary[Constants.cli_interface_usb_key] = self.cliConsole.getList()
+        self.data_dictionary[Constants.cli_interface_usb_command_key] = self.cliConsole.getList()
 
     def runCLICommand(self, command):
         """Function to tell python_avionics to run the cli command, and handle states where the serial port isn't open"""

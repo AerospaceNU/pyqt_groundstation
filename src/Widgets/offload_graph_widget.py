@@ -45,6 +45,10 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
 
         self.widgetList = []
 
+        # refresh the table every time the FCB finishes running a command
+        # I'm too lazy to refactor this to only run when a new flight finishes offloading (Matt)
+        self.callback_handler.addCallback(Constants.cli_interface_usb_result_key, self.onNewOffloadedFlight)
+
         # self.source = Constants.cli_interface_key
         self.titleBox = QLabel()
         self.title = "Offload and Graph"
@@ -117,6 +121,9 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
         self.raw_file = None
 
         self.setLayout(layout)
+
+    def onNewOffloadedFlight(self, _):
+        self.refreshTable()
 
     def onSliderChange(self, data):
         self.slider_min = data[0]

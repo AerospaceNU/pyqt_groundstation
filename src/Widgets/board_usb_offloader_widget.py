@@ -5,6 +5,7 @@ Text box widget
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import (
     QAbstractItemView,
+    QGridLayout,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -15,7 +16,9 @@ from PyQt5.QtWidgets import (
 )
 
 from src.constants import Constants
+from src.data_helpers import get_value_from_dictionary
 from src.Widgets import custom_q_widget_base
+from src.Widgets.QWidget_Parts.simple_bar_graph_widget import SimpleBarGraphWidget
 
 
 class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
@@ -24,8 +27,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
 
         layout = QVBoxLayout()
         self.vbox = layout
-
-        self.widgetList = []
+        self.command_in_progress = False
 
         # self.source = Constants.cli_interface_key
         self.titleBox = QLabel()
@@ -33,6 +35,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         self.titleBox.setText(self.title)
         self.titleBox.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
         layout.addWidget(self.titleBox)
+        # self.callback_handler.addCallback(Constants.cli_interface_usb_result_key, self.processFcbResultCallback)
 
         # Buttons we want to support:
         # Offload (a list of flight numbers, if they did/didn't launch, timestamp, you select one) then click the button
@@ -40,7 +43,7 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         # Erase flash (with a bar showing % full beside it)
 
         # --- OFFLOAD ---
-        self.add(QPushButton(text="Refresh data"), onClick=self.refreshData)
+        self.refreshButton = self.add(QPushButton(text="Refresh data"), onClick=self.refreshData)
 
         self.offloadTableWidget = QTableWidget()
         self.offloadTableWidget.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
@@ -63,7 +66,8 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         tempLayout.addWidget(self.offloadNameEntry)
         layout.addItem(tempLayout)
 
-        self.add(QPushButton(text="Download selected flight"), onClick=self.onOffloadSelect)
+        self.downloadButton = self.add(QPushButton(text="Download selected flight"), onClick=self.onOffloadSelect)
+        self.eraseButton = self.add(QPushButton(text="Erase FCB Memory"), onClick=self.erase)
 
         self.addSourceKey(
             "flights_list",
@@ -74,6 +78,13 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         )
 
         self.setLayout(layout)
+
+    def setCommandInProgress(self, inProgress: bool):
+        for w in [self.downloadButton, self.eraseButton, self.refreshButton]:
+            w.setDisabled(inProgress)
+
+    def erase(self):
+        self.runPythonAvionicsCommand("erase")
 
     def recreate_table(self, offload_help_string):
         flight_array = self.parseOffloadHelp(offload_help_string)
@@ -97,11 +108,12 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
     def add(self, widget, layout=None, onClick=None):
         if layout is None:
             layout = self.vbox
-        self.widgetList.append(widget)
         layout.addWidget(widget)
 
         if onClick:
             widget.clicked.connect(onClick)
+
+        return widget
 
     def refreshData(self):
         self.runPythonAvionicsCommand("offload --list")
@@ -128,9 +140,16 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
 
     def runPythonAvionicsCommand(self, command):
         """Run this function to call usb cli commands in the module"""
-        self.callback_handler.requestCallback(Constants.cli_interface_usb_key, command)
+        self.callback_handler.requestCallback(Constants.cli_interface_usb_command_key, command)
 
     def updateData(self, vehicle_data, updated_data):
+
+        super().updateData(vehicle_data, updated_data)
+
+        # Disable/enable buttons based on if a command is already running
+        in_prog = get_value_from_dictionary(vehicle_data, Constants.cli_interface_usb_command_running, False)
+        self.setCommandInProgress(in_prog)
+
         if self.isDictValueUpdated("flights_list"):
             flight_list_str = self.getDictValueUsingSourceKey("flights_list")
             self.recreate_table(flight_list_str)

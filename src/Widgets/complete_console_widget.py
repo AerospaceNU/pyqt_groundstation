@@ -123,7 +123,7 @@ class CLIUSBInterface(CompleteConsoleWidget):
         Overrides the other console to provide the USB interface
         I'm not sure this is a great way to do this, but it'll work for now
         """
-        super(CLIUSBInterface, self).__init__(parent=parent, tx_source=Constants.cli_interface_usb_key, rx_source=Constants.new_usb_cli_message_key)
+        super(CLIUSBInterface, self).__init__(parent=parent, tx_source=Constants.cli_interface_usb_command_key, rx_source=Constants.new_usb_cli_message_key)
 
         self.title = "FCB CLI USB Interface"
 

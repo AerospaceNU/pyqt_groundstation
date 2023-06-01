@@ -123,8 +123,8 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
                 self.connectedLoop()
                 self.nextCheckTime = time.time() + 1
                 self.serial.close()
-            except IOError:
-                self.logger.warning("Could not connect to ground station on port {}".format(self.serial_port))
+            except IOError as e:
+                self.logger.warning(f"Could not connect to ground station on port {self.serial_port}: {str(e)}")
                 self.nextCheckTime = time.time() + 5
 
         self.connected = False
@@ -187,7 +187,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
 
         for i in range(0, len(raw_bytes), fcb_message_parsing.PACKET_LENGTH):
             self.parseData(raw_bytes[i : i + fcb_message_parsing.PACKET_LENGTH])
-        self.serial.flushInput()
+        # self.serial.flushInput()
 
         if self.log_to_file:
             self.serial_logger.write_raw(raw_bytes)
