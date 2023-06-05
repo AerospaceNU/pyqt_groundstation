@@ -98,7 +98,7 @@ class CustomQWidgetBase(QFrame):
                 menu.addAction("Enable dragging", lambda draggable=True: self.setDraggable(draggable))
 
             menu.addSeparator()
-            menu.addAction("Delete", self.hide)
+            menu.addAction("Delete " + self.__class__.__name__, self.hide)
             menu.addSeparator()
 
         for source in self.sourceDictionary:
