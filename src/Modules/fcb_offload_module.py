@@ -20,8 +20,10 @@ from src.python_avionics.model.serial_port import SerialPort
 
 class FCBOffloadModule(ThreadedModuleCore):
     def __init__(self):
+        self.nextCheckTime = time.time()
+        self.primary_module = False
+
         super().__init__()
-        self.primary_module = True
 
         self.serial_port_name = ""
         self.serial_connection = False
@@ -41,8 +43,6 @@ class FCBOffloadModule(ThreadedModuleCore):
         self.replay_len = 0
         self.replay_name_to_path = {}
 
-        self.nextCheckTime = time.time()
-
     def changeActiveSerialPort(self, portName):
         self.serial_port_name = portName
         self.serial_connection = False
@@ -52,6 +52,10 @@ class FCBOffloadModule(ThreadedModuleCore):
             self.python_avionics_fcb_cli.serial_port.port.close()
 
     def updatePythonAvionicsSerialPort(self):
+        # Respect waiting time to not spam the console
+        if not self.nextCheckTime <= time.time():
+            return
+
         if len(self.serial_port_name) < 1:
             # blank name, try again later
             self.nextCheckTime = time.time() + 2

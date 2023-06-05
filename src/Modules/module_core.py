@@ -76,6 +76,7 @@ class ThreadedModuleCore(threading.Thread):
         """Logs to console if the message isn't the same as the last message"""
         if message != self.last_console_message:
             self.logger.log(level, message)
+            self.last_console_message = message
 
     def logToConsoleThrottle(self, message, level, interval):
         """Logs data to GUI Console once per interval"""

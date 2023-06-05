@@ -175,6 +175,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
 
             if not fcb_message_parsing.is_ground_station_message(message_type):
                 self.has_data = True
+
         except struct.error as e:
             self.logger.warning("Can't parse message (length: {1} bytes):\n{0}".format(e, len(raw_bytes)))
 

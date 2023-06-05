@@ -100,6 +100,7 @@ class Constants:
     cli_interface_usb_result_key = "cli_interface_usb_result"
     cli_interface_usb_command_running = "fcb_cli_command_running"
     cli_string_key = "cli_string"
+    usb_gps_string_key = "gps_string"
     cli_flights_list_key = "fcb_flights_list"
     new_cli_message_key = "new_cli_message"
     new_usb_cli_message_key = "new_usb_cli_message"

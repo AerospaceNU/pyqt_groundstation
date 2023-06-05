@@ -189,7 +189,10 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
             for j in range(3):
                 item = self.downloadedTableWidget.item(i, j)
                 if item is not None:
-                    item.setTextAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+                    if j == 0:  # title left aligned to get the dates to look nice -- everything else centered
+                        item.setTextAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+                    else:
+                        item.setTextAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
 
     @staticmethod
     def getFlights():
@@ -203,6 +206,12 @@ class OffloadGraphWidget(custom_q_widget_base.CustomQWidgetBase):
             has_raw = "Yes" if file + "-output-FCB.csv" in flight_files else "No"
             has_post = "Yes" if file + "-output-FCB-post.csv" in flight_files else "No"
             ret.append([file.replace("-output-FCB.csv", ""), has_raw, has_post])
+
+        class FlightNameComparator(tuple):
+            def __lt__(self, other):
+                return self[0].upper() < other[0].upper()
+
+        ret = sorted(ret, key=FlightNameComparator)
 
         return ret
 

@@ -2,6 +2,7 @@
 This file contains functions to parse all the messages coming over serial from the ground station
 """
 
+import abc
 import datetime
 import math
 import struct
@@ -225,8 +226,6 @@ class LineCutterVarsMessage(BaseMessage):
 
 
 class LineCutterMessage(BaseMessage):
-    """uint8 number state uint32 timestamp float avgAlt avgDeltaAlt uint8 batt bool cut_1 cut_2 uint16 photoresistor"""
-
     def parseMessage(self, data):
         """We generate the message format after parsing which line cutter this data is for."""
 
@@ -257,15 +256,22 @@ class LineCutterMessage(BaseMessage):
         return super().parseMessage(data)  # Then call the parent parseMessage function like normal
 
 
-# Super big hack! Global last cli id key. has to be global
-last_id = -1
+class CLIDataMessageBase(BaseMessage):
+    def __init__(self, key):
+        self.key = key
 
+    def extra_parse_cli_string(self, payload: str) -> str:
+        return payload
 
-class CLIDataMessage(BaseMessage):
-    """The payload is the string"""
+    @abc.abstractmethod
+    def is_duplicate(self, payload_id):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def set_last_id_parsed(self, payload_id):
+        raise NotImplementedError()
 
     def parseMessage(self, data):
-        global last_id
 
         length = data[0]
         id = data[1]
@@ -274,17 +280,75 @@ class CLIDataMessage(BaseMessage):
 
         try:
             string = trimmed_data.decode()
-            dictionary[Constants.cli_string_key] = string
+
+            # Don't parse duplicate keys, lmao
+            if self.is_duplicate(id):
+                return {}
+
+            # extra parsing for groundstation USB string
+            string = self.extra_parse_cli_string(string)
+            if string is not None:
+                dictionary[self.key] = string
+            self.set_last_id_parsed(id)
+
         except Exception as e:
             print(e)
 
-        # print(f"id {id} string {string}")
-        if id == last_id:
-            return {}
-
-        last_id = id
-
         return dictionary
+
+
+# GPS string transmitted over USB
+class GpsUsbDataMessage(CLIDataMessageBase):
+    # Super big hack! Global last cli id key. has to be global
+    # "Global" to this message type (different per subclass), anyway
+    last_id = -1
+
+    def is_duplicate(self, payload_id):
+        return payload_id == GpsUsbDataMessage.last_id
+
+    def set_last_id_parsed(self, payload_id):
+        GpsUsbDataMessage.last_id = payload_id
+
+    currentRunningString: str = ""
+    lastFullString: str = ""
+
+    def __init__(self):
+        super().__init__(Constants.usb_gps_string_key)
+
+    def extra_parse_cli_string(self, payload: str) -> str:
+        # If the current string ends with a newline, and we get a new line,
+        # then we must be at the start of a new line. Yeet the old line
+        if GpsUsbDataMessage.currentRunningString.endswith("\r") or GpsUsbDataMessage.currentRunningString.endswith("\n"):
+            GpsUsbDataMessage.currentRunningString = payload
+
+        # Very long string? tf? reset
+        elif len(GpsUsbDataMessage.currentRunningString) > 255:
+            GpsUsbDataMessage.currentRunningString = ""
+
+        # Doesn't end with a new line, just append
+        else:
+            GpsUsbDataMessage.currentRunningString += payload
+
+        # Swap buffers if we need to
+        if GpsUsbDataMessage.currentRunningString.endswith("\r") or GpsUsbDataMessage.currentRunningString.endswith("\n"):
+            GpsUsbDataMessage.lastFullString = GpsUsbDataMessage.currentRunningString
+
+        return GpsUsbDataMessage.lastFullString
+
+
+class CLIDataMessage(CLIDataMessageBase):
+    def __init__(self):
+        super().__init__(Constants.cli_string_key)
+
+    # Super big hack! Global last cli id key. has to be global
+    # "Global" to this message type (different per subclass), anyway
+    last_id = -1
+
+    def is_duplicate(self, payload_id):
+        return payload_id == CLIDataMessage.last_id
+
+    def set_last_id_parsed(self, payload_id):
+        CLIDataMessage.last_id = payload_id
 
 
 class AltitudeInfoMessage(BaseMessage):
@@ -307,7 +371,7 @@ class PyroInfoMessage(BaseMessage):
 
 
 # Dictionary {[message_number]: [[name], [callback]]}
-MESSAGE_CALLBACKS = {
+MESSAGE_CALLBACKS: "dict[int, tuple[str, BaseMessage]]" = {
     2: ["Orientation", OrientationMessage],
     3: ["Position Data", PositionDataMessage],
     4: ["Line Cutter Data ", LineCutterMessage],
@@ -315,6 +379,7 @@ MESSAGE_CALLBACKS = {
     6: ["Alt Info & Cfg", AltitudeInfoMessage],
     7: ["Pyro Info", PyroInfoMessage],
     8: ["Line Cutter Vars ", LineCutterVarsMessage],
+    9: ["GPS USB String", GpsUsbDataMessage],
 }
 
 
@@ -391,7 +456,7 @@ def parse_fcb_message(data):
 
         # Parse message
         try:
-            message_object = MESSAGE_CALLBACKS[message_number][1]()  # Make instance of message class
+            message_object: BaseMessage = MESSAGE_CALLBACKS[message_number][1]()  # Make instance of message class
             dictionary.update(message_object.parseMessage(raw_packet))  # Run the parse method
             success = True
 
@@ -416,4 +481,8 @@ def parse_fcb_message(data):
 
 
 def is_ground_station_message(message_type):
+    return message_type in GROUND_STATION_MESSAGE_TYPES
+
+
+def is_gps_usb_string(message_type):
     return message_type in GROUND_STATION_MESSAGE_TYPES
