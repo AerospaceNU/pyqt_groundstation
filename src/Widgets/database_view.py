@@ -23,17 +23,17 @@ class DatabaseView(CustomQWidgetBase):
         layout.addWidget(self.scroll_area)
         self.setLayout(layout)
 
-    def updateData(self, vehicle_data, updated_data):
+    def updateInFocus(self):
         string = ""
 
         string += "Callbacks: {0}\n\n".format(self.callback_handler.getAvailableCallbacks())
 
-        keys = list(vehicle_data.keys())
+        keys = list(self.vehicleData.keys())
         keys.sort()
 
         string += "Database keys:\n"
         for item in keys:
-            string += "    {}: {}\n".format(str(item), vehicle_data[item])
+            string += "    {}: {}\n".format(str(item), self.vehicleData[item])
 
         self.display_label.setText(string)
         self.display_label.adjustSize()

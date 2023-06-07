@@ -41,7 +41,7 @@ class DiagnosticsWidget(custom_q_widget_base.CustomQWidgetBase):
 
         self.selectionStartTime = time.time()
 
-    def updateData(self, vehicle_data, updated_data):
+    def updateInFocus(self):
         # Don't update if our dropdown has selected text
         if self.textBoxWidget.hasSelectedText():
             if self.selectionStartTime is None:
@@ -55,7 +55,7 @@ class DiagnosticsWidget(custom_q_widget_base.CustomQWidgetBase):
         else:
             self.selectionStartTime = None
 
-        keys = list(vehicle_data.keys())
+        keys = list(self.vehicleData.keys())
         keys = [key for key in keys if key.startswith(self.source)]
 
         if len(keys) <= 0:
@@ -75,9 +75,9 @@ class DiagnosticsWidget(custom_q_widget_base.CustomQWidgetBase):
         if selected_target not in page_name_dict:
             return
         database_key = page_name_dict[selected_target]
-        if database_key not in vehicle_data:
+        if database_key not in self.vehicleData:
             return
-        data_to_print = vehicle_data[database_key]
+        data_to_print = self.vehicleData[database_key]
 
         out_string = ""
         longest_line = 0

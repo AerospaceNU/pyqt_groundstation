@@ -37,11 +37,11 @@ class AnnunciatorPanel(CustomQWidgetBase):
 
         self.setLayout(layout)
 
-    def updateData(self, vehicle_data, updated_data):
-        if self.source not in vehicle_data:
+    def updateInFocus(self):
+        if self.source not in self.vehicleData:
             self.setMaximumWidth(100)
             return
-        data = vehicle_data[self.source]
+        data = self.vehicleData[self.source]
 
         for i in range(len(data)):
             if i >= len(self.annunciatorWidgets):
