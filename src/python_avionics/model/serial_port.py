@@ -51,7 +51,7 @@ class SerialPort:
             raise SerialPortDisconnectedError(port_name=self.name)
         return data
 
-    def flush(self):
+    def flush(self) -> None:
         self.port.flush()
         self.port.flushInput()
         self.port.flushOutput()

@@ -272,7 +272,6 @@ class CLIDataMessageBase(BaseMessage):
         raise NotImplementedError()
 
     def parseMessage(self, data):
-
         length = data[0]
         id = data[1]
         trimmed_data = data[2 : length + 2]

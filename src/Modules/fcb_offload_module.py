@@ -76,7 +76,7 @@ class FCBOffloadModule(ThreadedModuleCore):
             port_object.port.flushInput()
             port_object.port.flushOutput()
         except Exception as e:
-            self.logger.error("Unable to connect to FCB over USB at port {0}".format(self.serial_port_name))
+            self.logger.error("Unable to connect to FCB over USB at port {0}: {1}".format(self.serial_port_name, str(e)))
             self.nextCheckTime = time.time() + 4
             self.serial_connection = False
 

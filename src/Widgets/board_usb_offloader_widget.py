@@ -5,7 +5,6 @@ Text box widget
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import (
     QAbstractItemView,
-    QGridLayout,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -18,7 +17,6 @@ from PyQt5.QtWidgets import (
 from src.constants import Constants
 from src.data_helpers import get_value_from_dictionary
 from src.Widgets import custom_q_widget_base
-from src.Widgets.QWidget_Parts.simple_bar_graph_widget import SimpleBarGraphWidget
 
 
 class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
@@ -143,7 +141,6 @@ class BoardCliWrapper(custom_q_widget_base.CustomQWidgetBase):
         self.callback_handler.requestCallback(Constants.cli_interface_usb_command_key, command)
 
     def updateData(self, vehicle_data, updated_data):
-
         super().updateData(vehicle_data, updated_data)
 
         # Disable/enable buttons based on if a command is already running

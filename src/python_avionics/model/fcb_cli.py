@@ -6,6 +6,7 @@ import shlex
 import struct
 import sys
 import time
+import typing
 from argparse import ArgumentParser
 from collections import namedtuple
 from typing import Any, List
@@ -178,7 +179,7 @@ class FcbCli:
             raise FcbIncompleteError(fcb_command=self._HELP_COMMAND)
         return help_str.strip(self._COMPLETE)
 
-    def read_until_complete(self):
+    def read_until_complete(self) -> typing.Tuple[typing.Union[str, None], bool]:
         # Loop until timeout hits, returning early if the string ends with the complete string
 
         startTime = time.time()
@@ -208,7 +209,7 @@ class FcbCli:
 
         # Read in until the success string is found, or we time out
         help_str, success = self.read_until_complete()
-        if not success:
+        if not success or help_str is None:
             raise FcbIncompleteError(fcb_command=self._OFFLOAD_HELP_COMMAND)
 
         help_str = help_str.strip(self._COMPLETE)
