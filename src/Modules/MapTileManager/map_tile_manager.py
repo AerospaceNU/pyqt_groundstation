@@ -2,7 +2,9 @@
 Handles loading and processing of map tiles
 """
 
+import logging
 import navpy
+from src.CustomLogging.dpf_logger import MAIN_GUI_LOGGER
 
 from src.Modules.MapTileManager.map_tile_tools import (
     get_all_tiles_in_box,
@@ -37,6 +39,8 @@ class MapTileManager(object):
         self.last_rendered_tile = None
         self.last_zoom = 0
         self.has_new_map = False
+
+        self.logger: logging.Logger = MAIN_GUI_LOGGER.get_logger(__name__)
 
     def hasNewMap(self):
         return self.has_new_map
@@ -81,14 +85,23 @@ class MapTileManager(object):
             get_tiles_at_all_zoom_levels(new_lower_left, new_upper_right, save_local_copy=True)
             return
 
+        # Get bounding box for tiles to grab (in tile x/y coordinates)
         tile_set = get_bounding_box_tiles(new_lower_left, new_upper_right, zoom)
 
         if self.last_tile_set == tile_set:  # If we're getting the same data again, skip it
             return
-        self.tile_cache.update(get_all_tiles_in_box(tile_set, zoom, exclude_list=self.tile_cache.keys()))
 
+        self.logger.debug("Getting all tiles")
+        new_tiles = get_all_tiles_in_box(tile_set, zoom, self.tile_cache, exclude_list=self.tile_cache.keys(), 
+                                                    save_local_copy=True)
+        self.logger.debug(f"Saving {len(new_tiles)} tiles to cache")
+        self.tile_cache.update(new_tiles)
+
+        self.logger.debug("Stitching image")
         map_image = stitch_all_tiles_in_box(tile_set, zoom, self.tile_cache)
+        self.logger.debug("Getting edges")
         edges = get_edges_for_tile_set(tile_set, zoom)
+        self.logger.debug("Done")
 
         self.last_rendered_tile = MapTile(map_image, edges[0], edges[1], zoom == 19)
 

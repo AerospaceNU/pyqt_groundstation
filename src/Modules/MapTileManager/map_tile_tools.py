@@ -1,13 +1,18 @@
 import asyncio
+from math import floor
+from queue import Queue
 import time
 from os.path import exists
 
 import aiohttp
 import cv2
 import numpy
+import os
 
 from src.Modules.MapTileManager.tile_convert import bbox_to_xyz, tile_edges
 
+CACHE_FOLDER = "tile_cache"
+OFFLINE = False
 
 async def download_tile(buf, x, y, z):
     # url = "https://a.tile.openstreetmap.org/{0}/{1}/{2}.png".format(z, x, y)
@@ -34,23 +39,94 @@ async def download_tile(buf, x, y, z):
 
     buf.append(data)
 
+def get_tile_from_offline_cache(x,y,zoom, tile_cache, new_tiles_queue: Queue, recursion_depth=0):
+    subsampleIfInCache: bool = True
+    max_recursion=5   
 
-async def download_task(tile_dict, tile_name, save_local_copy, x, y, z):
-    if exists(get_file_path(x, y, z)):
-        tile = cv2.imread(get_file_path(x, y, z), cv2.IMREAD_UNCHANGED)
+    tile_name = get_tile_name(x, y, zoom)
+
+    # Simple case: tile exists in cache
+    if tile_name in tile_cache:
+        print("Cache hit")
+        return (tile_cache[tile_name], recursion_depth)
+
+    # Next simplest case: tile exists on disk, but not yet in the dict. Add it to the queue
+    if exists(get_file_path(x, y, zoom)):
+        imread_start = time.time()
+        ret = cv2.imread(get_file_path(x, y, zoom), cv2.IMREAD_UNCHANGED)
+        imread_end = time.time()
+        print(f"Loaded from disk in {(imread_end - imread_start) * 1e3} ms")
+        
+        # memoize the tile we loaded from disk for later. Non-multithreaded code will update the cache
+        new_tiles_queue.put((tile_name, ret))
+
+        return (ret, recursion_depth)
+
+    # Give up if we shouldn't try tomfoolery
+    if not subsampleIfInCache or recursion_depth > max_recursion:
+        # print(f"{x}:{y}:{zoom}: Reached max recursion!")
+        return (None, recursion_depth)
+
+    # Tile name of the next-zoom-level-up tile that contains the same info
+    parent_x = floor(x/2.0)
+    parent_y = floor(y/2.0)
+    parent_z = zoom - 1
+    parent_img, parent_depth = get_tile_from_offline_cache(parent_x, parent_y, parent_z, tile_cache, new_tiles_queue, recursion_depth+1)
+
+    if parent_img is None:
+        # print(f"{x}:{y}:{zoom}: Recursive search failed, passing up None!")
+        return (None, recursion_depth)
+
+    # print(f"{x}:{y}:{zoom}: superscaling!")
+
+    # we need to figure out which quadrant of the image we're in
+    is_left_half = abs(y/2 % 1) < 1e-3
+    is_top_half = abs(x/2 % 1) < 1e-3
+
+    if is_left_half:
+        x_min = 0
+    else:
+        x_min = 128
+
+    if is_top_half:
+        y_min = 0
+    else:
+        y_min = 128
+
+    # print(f"Supersampling from x {x_min} and y {y_min}")
+
+    IMAGE_SIZE = (256, 256)
+    img = cv2.resize(parent_img[x_min:x_min+128, y_min:y_min+128], IMAGE_SIZE, interpolation=cv2.INTER_NEAREST)
+
+    return (img, parent_depth)
+
+
+async def download_task(tile_dict, tile_name, save_local_copy, x, y, z, queue, current_cache: dict):
+    start_time = time.time()
+
+    if OFFLINE:
+        tile, recusion_depth = get_tile_from_offline_cache(x,y,z, current_cache, queue)
+        if tile is None:
+            return
+        tile_is_fake = (recusion_depth < 1)
+        tile_on_disk = tile_is_fake
     else:
         data = []
         await download_tile(data, x, y, z)
         nparr = numpy.frombuffer(data[0], numpy.uint8)
         tile = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        tile_is_fake = False
+        tile_on_disk = False
 
-    # print(tile_name)
 
-    if save_local_copy:
-        print("saving " + tile_name)
+    if save_local_copy and not tile_is_fake and not tile_on_disk:
+        # print("saving " + tile_name)
         cv2.imwrite(get_file_path(x, y, z), tile)
 
     tile_dict[tile_name] = tile
+
+    end_time = time.time()
+    # print(f"Download for {x} {y} {z} done in {(end_time - start_time) * 1e3} ms")
 
 
 def get_bounding_box_tiles(lower_left, upper_right, zoom):
@@ -67,40 +143,52 @@ def get_tile_name(x, y, zoom):
 
 
 def get_file_path(x, y, zoom):
-    return "tile_cache/{}.png".format(get_tile_name(x, y, zoom))
+    return "{}/{}.png".format(CACHE_FOLDER, get_tile_name(x, y, zoom))
 
 
-async def addAsyncTasks(bounding_box, zoom, exclude_list, save_local_copy, out_dict):
+async def addAsyncTasks(bounding_box, zoom, exclude_list, save_local_copy, out_dict, current_tile_cache):
     [x_min, x_max, y_min, y_max] = bounding_box
 
     tasks = []
+    queue = Queue(0)
 
     for x in range(x_min, x_max + 1):
         for y in range(y_min, y_max + 1):
             tile_name = get_tile_name(x, y, zoom)
 
             if tile_name not in exclude_list:
-                task = asyncio.create_task(download_task(out_dict, tile_name, save_local_copy, x, y, zoom))
+                task = asyncio.create_task(download_task(out_dict, tile_name, save_local_copy, x, y, zoom, queue, current_tile_cache))
                 tasks.append(task)
                 # await task
 
     for task in tasks:
         await task
 
+    while queue.qsize() > 0:
+        try:
+            (name, tile) = queue.get_nowait()
+            out_dict[name] = tile
+        except Exception as e:
+            print(e)
+            break
 
-def get_all_tiles_in_box(bounding_box, zoom, exclude_list=None, save_local_copy=False):
+
+def get_all_tiles_in_box(bounding_box, zoom, current_cache, exclude_list=None, save_local_copy=False):
     if exclude_list is None or save_local_copy:
         exclude_list = []
 
+    if save_local_copy and not os.path.exists(CACHE_FOLDER):
+        os.makedirs(CACHE_FOLDER)
+
     out_dict = {}
 
-    asyncio.run(addAsyncTasks(bounding_box, zoom, exclude_list, save_local_copy, out_dict))
+    asyncio.run(addAsyncTasks(bounding_box, zoom, exclude_list, save_local_copy, out_dict, current_cache))
 
     return out_dict
 
 
 def get_tiles_at_all_zoom_levels(lower_left_lla, upper_right_lla, save_local_copy=False):
-    time.sleep(0.1)
+    time.sleep(0.01)
 
     for i in range(10, 20):
         tile_set = get_bounding_box_tiles(lower_left_lla, upper_right_lla, i)
@@ -112,25 +200,29 @@ def stitch_all_tiles_in_box(bounding_box, zoom, tile_database):
 
     out_img = None
 
+    # We know ahead of time how big the image should be, so pre-allocate it instead of concating as we go
+    # in map land, x corrosponds to image columns and y to image rows
+    out_img = numpy.zeros((256*(y_max-y_min+1), 256*(x_max-x_min+1), 3), dtype=numpy.uint8)
+
     for x in range(x_min, x_max + 1):
-        column = None
         for y in range(y_min, y_max + 1):
             tile_name = get_tile_name(x, y, zoom)
-
             if tile_name in tile_database:
                 tile = tile_database[tile_name]
-            else:
-                tile = numpy.zeros((256, 256, 3), dtype=numpy.uint8)
 
-            if column is None:
-                column = tile
-            else:
-                column = numpy.concatenate((column, tile), axis=0)
+                # Location of the top-left corner of the tile in our map, in pixels
+                tile_start_col_px = (x-x_min)*256
+                tile_start_row_px = (y-y_min)*256
 
-        if out_img is None:
-            out_img = column
-        else:
-            out_img = numpy.concatenate((out_img, column), axis=1)
+                # Splice it into the image
+                try:
+                    out_img[tile_start_row_px:tile_start_row_px+256, tile_start_col_px:tile_start_col_px+256] = tile
+                except Exception as e:
+                    print(e)
+
+            else:
+                # tile isn't in our database. It's already black in the image, so we can just ignore
+                pass
 
     return out_img
 
@@ -198,8 +290,20 @@ def get_zoom_level_from_pixels_per_meter(pixels_per_meter):
 
 
 if __name__ == "__main__":
-    start_time = time.time()
-    tiles = get_all_tiles_in_box((158654, 158659, 193914, 193918), 19)
-    end_time = time.time()
+    zoom = 19
+    tile_cache = {}
+    tile_set = (int(23363*4), int(23363*4+10), int(50907*4), int(50907*4+10))
 
-    print(f"Got {len(tiles)} tiles in {end_time - start_time} seconds")
+    for _ in range(5):
+
+        start_time = time.time()
+        tile_cache.update(get_all_tiles_in_box(tile_set, zoom, exclude_list=tile_cache.keys(), save_local_copy=False))
+        end_time = time.time()
+
+        print(f"Got {len(tile_cache)} tiles in {(end_time - start_time) * 1e3} ms")
+        map_image = stitch_all_tiles_in_box(tile_set, zoom, tile_cache)
+
+        cv2.imshow("map", cv2.resize(map_image, (1080, 720)))
+        cv2.waitKey()
+        cv2.destroyAllWindows()
+

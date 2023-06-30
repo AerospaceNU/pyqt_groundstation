@@ -11,6 +11,14 @@
             "console": "integratedTerminal",
             "module": "src.main",
             "justMyCode": false
+        },
+        {
+            "name": "Map tile tool test",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "module": "src.Modules.MapTileManager.map_tile_tools",
+            "justMyCode": false
         }
     ]
 }
