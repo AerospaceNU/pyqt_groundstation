@@ -91,17 +91,17 @@ class MapTileManager(object):
         if self.last_tile_set == tile_set:  # If we're getting the same data again, skip it
             return
 
-        self.logger.debug("Getting all tiles")
+        # self.logger.debug("Getting all tiles")
         new_tiles = get_all_tiles_in_box(tile_set, zoom, self.tile_cache, exclude_list=self.tile_cache.keys(), 
-                                                    save_local_copy=True)
-        self.logger.debug(f"Saving {len(new_tiles)} tiles to cache")
+                                                    save_local_copy=False)
+        # self.logger.debug(f"Saving {len(new_tiles)} tiles to cache")
         self.tile_cache.update(new_tiles)
 
-        self.logger.debug("Stitching image")
+        # self.logger.debug("Stitching image")
         map_image = stitch_all_tiles_in_box(tile_set, zoom, self.tile_cache)
-        self.logger.debug("Getting edges")
+        # self.logger.debug("Getting edges")
         edges = get_edges_for_tile_set(tile_set, zoom)
-        self.logger.debug("Done")
+        # self.logger.debug("Done")
 
         self.last_rendered_tile = MapTile(map_image, edges[0], edges[1], zoom == 19)
 

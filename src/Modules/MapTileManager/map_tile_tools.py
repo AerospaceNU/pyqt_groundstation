@@ -104,13 +104,18 @@ def get_tile_from_offline_cache(x,y,zoom, tile_cache, new_tiles_queue: Queue, re
 async def download_task(tile_dict, tile_name, save_local_copy, x, y, z, queue, current_cache: dict):
     start_time = time.time()
 
-    if OFFLINE:
+    # If we're online but have the tile already saved, use it
+    if exists(get_file_path(x, y, z)) and not OFFLINE:
+        tile = cv2.imread(get_file_path(x, y, z), cv2.IMREAD_UNCHANGED)
+    elif OFFLINE:
+        # Use tile cache folder, and fake missing tiles using their cropped parents if we have to
         tile, recusion_depth = get_tile_from_offline_cache(x,y,z, current_cache, queue)
         if tile is None:
             return
         tile_is_fake = (recusion_depth < 1)
         tile_on_disk = tile_is_fake
     else:
+        # Normal download from the interwebz
         data = []
         await download_tile(data, x, y, z)
         nparr = numpy.frombuffer(data[0], numpy.uint8)
