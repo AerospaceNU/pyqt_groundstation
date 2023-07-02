@@ -436,7 +436,8 @@ class DPFGUI:
             if interface_object.hasRecordedData():
                 interface_runs = ["{0} | {1}".format(interface, run) for run in interface_object.getRunNames()]
                 self.playback_data_sources = list(set(self.playback_data_sources + interface_runs))
-                self.playback_data_sources.sort()
+
+                self.playback_data_sources.sort(reverse=True)
             self.updateDatabaseDictionary(interface_object.getDataDictionary())
 
             module_data[interface] = [interface_object.enabled, self.module_load_time_dictionary[interface], interface_object.hasRecordedData()]

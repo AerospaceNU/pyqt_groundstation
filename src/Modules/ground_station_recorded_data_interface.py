@@ -1,3 +1,4 @@
+import os
 import time
 
 from src.constants import Constants
@@ -15,17 +16,16 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
     def __init__(self):
         super().__init__()
 
-        self.file_name = "logs/2023-05-27_13-38-13/GroundStationDataInterface_parsed.txt"
+        self.file_name = ""
+        self.reader = None
 
     def startUp(self):
         pass
 
     def runOnEnableAndDisable(self):
-        if self.enabled:
+        if self.enabled and len(self.file_name) > 0:
             self.reader = RecordedDataReader(load_slower=True, logging_callback=self.logger.info, file_name=self.file_name)
             self.logger.info("Done indexing recorded data")
-
-            self.reader.setPacketIndex(21500)
 
             if not self.reader.parsedToFullHistory():
                 self.reader.parseIntoIndividualLists()
@@ -46,6 +46,23 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
                     [data_series, time_series] = self.reader.getFullHistoryForKey(run, key)
                     self.recorded_data_dictionary[run][key] = [data_series, time_series]
 
+    def hasRecordedData(self):
+        """
+        Tell the upstream GUI we always have recorded data to provide
+        """
+        return True
+
+    def getRunNames(self):
+        """
+        Runs every tick of the GUI (which seems unnecessarily fast)
+        """
+        runs = list(filter(lambda it: os.path.isdir(f"logs/{it}") and os.path.exists(f"logs/{it}/GroundStationDataInterface_parsed.txt"), os.listdir("logs")))
+        runs.sort(reverse=True)
+        return runs
+
+    def setSpecificRunSelected(self, run_name):
+        pass
+
     def getSpecificRun(self, run_name):
         self.file_name = f"logs/{run_name}/GroundStationDataInterface_parsed.txt"
         # re-trigger indexing if required
@@ -53,10 +70,13 @@ class GroundStationRecordedDataInterface(FCBDataInterfaceCore):
 
         return super().getSpecificRun(run_name)
 
-    def setSpecificRunSelected(self, run_name):
-        pass
-
     def spin(self):
+        if self.reader is None:
+            self.good_fcb_data = False
+            self.connected = False
+            self.has_data = False
+            return
+
         self.good_fcb_data = True
         self.connected = True
         self.has_data = True
