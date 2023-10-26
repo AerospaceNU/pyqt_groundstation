@@ -466,6 +466,9 @@ class FcbCli:
             UnpackProperty("gps_timestamp", "Q"),
             UnpackProperty("apogee_timestamp", "I"),
             UnpackProperty("trigger_fire_status", "h"),
+            UnpackProperty("gyro_offset_x", "f"),
+            UnpackProperty("gyro_offset_y", "f"),
+            UnpackProperty("gyro_offset_z", "f"),
         ]
         """
         # Metadata on the FCB currently doesn't store config because it's too large
