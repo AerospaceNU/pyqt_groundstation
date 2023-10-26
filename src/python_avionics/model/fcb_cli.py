@@ -625,9 +625,6 @@ class FcbCli:
                 UnpackProperty("q_z", "d"),
                 UnpackProperty("q_w", "d"),
                 UnpackProperty("state", "B"),
-                UnpackProperty("ducer_status", "B"),
-                UnpackProperty("ducer_temp", "f"),
-                UnpackProperty("ducer_pres", "f"),
             ],
             [  # Line Cutter Data
                 UnpackProperty("packetType", "B"),
