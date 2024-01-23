@@ -403,7 +403,12 @@ def parse_fcb_message(data):
     message_number = data[0]
 
     if len(data) < PACKET_LENGTH:
-        return [False, {}, "Packet too short: {0} of {1} bytes".format(len(data), PACKET_LENGTH), 1]
+        test = ""
+        try:
+            test = bytes(data).decode()
+        except:
+            pass
+        return [False, {}, "Packet too short: {0} of {1} bytes: [{2}]".format(len(data), PACKET_LENGTH, test), 1]
     elif message_number in MESSAGE_CALLBACKS:
         # Get CRC, LQI, RSSI data from message (First 4)
         radio_data = data[-4:]
