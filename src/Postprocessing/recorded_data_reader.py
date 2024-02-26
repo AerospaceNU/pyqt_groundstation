@@ -31,7 +31,7 @@ class RecordedDataReader(object):
             # bad path, just return?
             return
 
-        file = open(file_name)
+        file = open(file_name, errors='replace')
         data = file.readlines()
 
         i = 0
