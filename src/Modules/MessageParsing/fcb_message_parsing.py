@@ -6,6 +6,7 @@ import abc
 import datetime
 import math
 import struct
+import typing
 
 import numpy
 
@@ -39,7 +40,7 @@ def lat_lon_decimal_minutes_to_decimal_degrees(lat_lon_value):
     return (math.trunc(float(abs_val) / 100.0) + (float(abs_val) % 100.0) / 60.0) * sign
 
 
-def parse_pyro_continuity_byte(pyro_cont):
+def fiparse_pyro_continuity_byte(pyro_cont):
     pyro_list = []
     for i in range(Constants.MAX_PYROS):
         has_cont_b = (pyro_cont & (1 << i)) > 0
@@ -370,7 +371,7 @@ class PyroInfoMessage(BaseMessage):
 
 
 # Dictionary {[message_number]: [[name], [callback]]}
-MESSAGE_CALLBACKS: "dict[int, tuple[str, BaseMessage]]" = {
+MESSAGE_CALLBACKS: typing.Dict[int, typing.List[typing.Union[str, BaseMessage]]] = {
     2: ["Orientation", OrientationMessage],
     3: ["Position Data", PositionDataMessage],
     4: ["Line Cutter Data ", LineCutterMessage],
