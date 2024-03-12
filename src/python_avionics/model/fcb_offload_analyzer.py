@@ -1,4 +1,5 @@
 """Post-processes and analyzes data from FCB offload."""
+import math
 import os.path
 from argparse import ArgumentParser
 from typing import Callable, Tuple
@@ -54,42 +55,33 @@ class FcbOffloadAnalyzer:
         df["gps_long_mod"] = (np.floor(np.abs(df["gps_long"]) / 100) + (np.abs(df["gps_long"]) % 100 / 60)) * np.sign(df["gps_long"])
 
         # Start processing on trimmed data. Multipliers come from resolutions converted to MKS units
-        k_accel_mult = 0.0071784678
-        k_gyro_mult = 0.001221730472
-        k_mag_mult = 0.00058
-        k_high_g_accel_multiplier = 0.02942
+        k_accel_mult = 16 * 9.81 / 2048
+        k_gyro_mult = math.radians(2000) / 16.4
+        k_mag_mult = 1 / 6842
+        k_high_g_accel_multiplier = 9.81 / 20.5
         df["imu1_accel_x_real"] = df["imu1_accel_x"] * k_accel_mult
         df["imu1_accel_y_real"] = df["imu1_accel_y"] * k_accel_mult
         df["imu1_accel_z_real"] = df["imu1_accel_z"] * k_accel_mult
-        df["imu2_accel_x_real"] = df["imu2_accel_x"] * k_accel_mult
-        df["imu2_accel_y_real"] = df["imu2_accel_y"] * k_accel_mult
-        df["imu2_accel_z_real"] = df["imu2_accel_z"] * k_accel_mult
         df["imu1_gyro_x_real"] = df["imu1_gyro_x"] * k_gyro_mult
         df["imu1_gyro_y_real"] = df["imu1_gyro_y"] * k_gyro_mult
         df["imu1_gyro_z_real"] = df["imu1_gyro_z"] * k_gyro_mult
-        df["imu2_gyro_x_real"] = df["imu2_gyro_x"] * k_gyro_mult
-        df["imu2_gyro_y_real"] = df["imu2_gyro_y"] * k_gyro_mult
-        df["imu2_gyro_z_real"] = df["imu2_gyro_z"] * k_gyro_mult
-        df["imu1_mag_x_real"] = df["imu1_mag_x"] * k_mag_mult
-        df["imu1_mag_y_real"] = df["imu1_mag_y"] * k_mag_mult
-        df["imu1_mag_z_real"] = df["imu1_mag_z"] * k_mag_mult
-        df["imu2_mag_x_real"] = df["imu2_mag_x"] * k_mag_mult
-        df["imu2_mag_y_real"] = df["imu2_mag_y"] * k_mag_mult
-        df["imu2_mag_z_real"] = df["imu2_mag_z"] * k_mag_mult
-        df["imu_accel_x_avg"] = df[["imu1_accel_x_real", "imu2_accel_x_real"]].mean(axis=1)
-        df["imu_accel_y_avg"] = df[["imu1_accel_y_real", "imu2_accel_y_real"]].mean(axis=1)
-        df["imu_accel_z_avg"] = df[["imu1_accel_z_real", "imu2_accel_z_real"]].mean(axis=1)
-        df["imu_gyro_x_avg"] = df[["imu1_gyro_x_real", "imu2_gyro_x_real"]].mean(axis=1)
-        df["imu_gyro_y_avg"] = df[["imu1_gyro_y_real", "imu2_gyro_y_real"]].mean(axis=1)
-        df["imu_gyro_z_avg"] = df[["imu1_gyro_z_real", "imu2_gyro_z_real"]].mean(axis=1)
-        df["imu_mag_x_avg"] = df[["imu1_mag_x_real", "imu2_mag_x_real"]].mean(axis=1)
-        df["imu_mag_y_avg"] = df[["imu1_mag_y_real", "imu2_mag_y_real"]].mean(axis=1)
-        df["imu_mag_z_avg"] = df[["imu1_mag_z_real", "imu2_mag_z_real"]].mean(axis=1)
+        df["mag1_x_real"] = df["mag1_x"] * k_mag_mult
+        df["mag1_y_real"] = df["mag1_y"] * k_mag_mult
+        df["mag1_z_real"] = df["mag1_z"] * k_mag_mult
+        df["imu_accel_x_avg"] = df["imu1_accel_x_real"]
+        df["imu_accel_y_avg"] = df["imu1_accel_y_real"]
+        df["imu_accel_z_avg"] = df["imu1_accel_z_real"]
+        df["imu_gyro_x_avg"] = df["imu1_gyro_x_real"]
+        df["imu_gyro_y_avg"] = df["imu1_gyro_y_real"]
+        df["imu_gyro_z_avg"] = df["imu1_gyro_z_real"]
+        df["imu_mag_x_avg"] = df["mag1_x"]
+        df["imu_mag_y_avg"] = df["mag1_y"]
+        df["imu_mag_z_avg"] = df["mag1_z"]
         df["high_g_accel_x_real"] = df["high_g_accel_x"] * k_high_g_accel_multiplier
         df["high_g_accel_y_real"] = df["high_g_accel_y"] * k_high_g_accel_multiplier
         df["high_g_accel_z_real"] = df["high_g_accel_z"] * k_high_g_accel_multiplier
-        df["baro_pres_avg"] = df[["baro1_pres", "baro2_pres"]].mean(axis=1)
-        df["baro_temp_avg"] = df[["baro1_temp", "baro2_temp"]].mean(axis=1)
+        df["baro_pres_avg"] = df["baro1_pres"]
+        df["baro_temp_avg"] = df["baro1_temp"]
 
         # Save to a post-processed CSV
         output_filepath = f"{os.path.splitext(offload_path)[0]}-post.csv"

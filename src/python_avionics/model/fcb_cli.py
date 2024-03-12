@@ -284,7 +284,7 @@ class FcbCli:
         log_struct_strs: List[str] = ["" for _ in self.LOG_TYPES]
         log_struct_sizes: List[int] = [0 for _ in self.LOG_TYPES]
         for i, _ in enumerate(self.LOG_TYPES):
-            csv_writers[i].writerow([prop.name for prop in self._log_data_struct[i]])
+            csv_writers[i].writerow([prop.name for prop in fcb._log_data_struct[i]])
             log_struct_strs[i] = f"<{''.join([prop.unpack_str for prop in self._log_data_struct[i]])}"
             log_struct_sizes[i] = struct.Struct(log_struct_strs[i]).size
         log_struct_full_size = max(log_struct_sizes)
@@ -570,61 +570,61 @@ class FcbCli:
         :return: List of list of log data structs, one for each log type
         """
 
+        UINT_8_TYPE = "B"
+        UINT_16_TYPE = "H"
+        UINT_32_TYPE = "I"
+        INT_8_TYPE = "b"
+        INT_16_TYPE = "h"
+        INT_32_TYPE = "i"
+        BOOL_TYPE = "?"
+        FLOAT_TYPE = "f"
+        DOUBLE_TYPE = "d" 
+
         # FCB Data
         unpack_properties: List[List[UnpackProperty]] = [
             [  # FCB Data
-                UnpackProperty("packetType", "B"),
-                UnpackProperty("timestamp_ms", "I"),
-                UnpackProperty("imu1_accel_x", "h"),
-                UnpackProperty("imu1_accel_y", "h"),
-                UnpackProperty("imu1_accel_z", "h"),
-                UnpackProperty("imu1_gyro_x", "h"),
-                UnpackProperty("imu1_gyro_y", "h"),
-                UnpackProperty("imu1_gyro_z", "h"),
-                UnpackProperty("imu1_mag_x", "h"),
-                UnpackProperty("imu1_mag_y", "h"),
-                UnpackProperty("imu1_mag_z", "h"),
-                UnpackProperty("imu2_accel_x", "h"),
-                UnpackProperty("imu2_accel_y", "h"),
-                UnpackProperty("imu2_accel_z", "h"),
-                UnpackProperty("imu2_gyro_x", "h"),
-                UnpackProperty("imu2_gyro_y", "h"),
-                UnpackProperty("imu2_gyro_z", "h"),
-                UnpackProperty("imu2_mag_x", "h"),
-                UnpackProperty("imu2_mag_y", "h"),
-                UnpackProperty("imu2_mag_z", "h"),
-                UnpackProperty("high_g_accel_x", "h"),
-                UnpackProperty("high_g_accel_y", "h"),
-                UnpackProperty("high_g_accel_z", "h"),
-                UnpackProperty("baro1_temp", "d"),
-                UnpackProperty("baro1_pres", "d"),
-                UnpackProperty("baro2_temp", "d"),
-                UnpackProperty("baro2_pres", "d"),
-                UnpackProperty("gps_lat", "f"),
-                UnpackProperty("gps_long", "f"),
-                UnpackProperty("gps_alt", "f"),
-                UnpackProperty("gps_fix_quality", "B"),
-                UnpackProperty("gps_sats_tracked", "B"),
-                UnpackProperty("gps_hdop", "f"),
-                UnpackProperty("battery_voltage", "d"),
-                UnpackProperty("pyro_cont", "B"),
-                UnpackProperty("trigger_status", "H"),
-                UnpackProperty("heading", "d"),
-                UnpackProperty("vtg", "d"),
-                UnpackProperty("pos_x", "d"),
-                UnpackProperty("pos_y", "d"),
-                UnpackProperty("pos_z", "d"),
-                UnpackProperty("vel_x", "d"),
-                UnpackProperty("vel_y", "d"),
-                UnpackProperty("vel_z", "d"),
-                UnpackProperty("acc_x", "d"),
-                UnpackProperty("acc_y", "d"),
-                UnpackProperty("acc_z", "d"),
-                UnpackProperty("q_x", "d"),
-                UnpackProperty("q_y", "d"),
-                UnpackProperty("q_z", "d"),
-                UnpackProperty("q_w", "d"),
-                UnpackProperty("state", "B"),
+                UnpackProperty("packetType", UINT_8_TYPE),
+                UnpackProperty("timestamp_ms", UINT_32_TYPE),
+                UnpackProperty("imu1_accel_x", INT_16_TYPE),
+                UnpackProperty("imu1_accel_y", INT_16_TYPE),
+                UnpackProperty("imu1_accel_z", INT_16_TYPE),
+                UnpackProperty("imu1_gyro_x", INT_16_TYPE),
+                UnpackProperty("imu1_gyro_y", INT_16_TYPE),
+                UnpackProperty("imu1_gyro_z", INT_16_TYPE),
+                UnpackProperty("mag1_x", INT_16_TYPE),
+                UnpackProperty("mag1_y", INT_16_TYPE),
+                UnpackProperty("mag1_z", INT_16_TYPE),
+                UnpackProperty("high_g_accel_x", INT_16_TYPE),
+                UnpackProperty("high_g_accel_y", INT_16_TYPE),
+                UnpackProperty("high_g_accel_z", INT_16_TYPE),
+                UnpackProperty("baro1_temp", DOUBLE_TYPE),
+                UnpackProperty("baro1_pres", DOUBLE_TYPE),
+                UnpackProperty("gps_lat", FLOAT_TYPE),
+                UnpackProperty("gps_long", FLOAT_TYPE),
+                UnpackProperty("gps_alt", FLOAT_TYPE),
+                UnpackProperty("gps_fix_quality", UINT_8_TYPE),
+                UnpackProperty("gps_sats_tracked", UINT_8_TYPE),
+                UnpackProperty("gps_hdop", FLOAT_TYPE),
+                UnpackProperty("battery1_voltage", DOUBLE_TYPE),
+                UnpackProperty("battery2_voltage", DOUBLE_TYPE),
+                UnpackProperty("pyro_cot", UINT_8_TYPE),
+                UnpackProperty("trigger_status", UINT_16_TYPE),
+                UnpackProperty("heading", DOUBLE_TYPE),
+                UnpackProperty("vtg", DOUBLE_TYPE),
+                UnpackProperty("pos_x", DOUBLE_TYPE),
+                UnpackProperty("pos_y", DOUBLE_TYPE),
+                UnpackProperty("pos_z", DOUBLE_TYPE),
+                UnpackProperty("vel_x", DOUBLE_TYPE),
+                UnpackProperty("vel_y", DOUBLE_TYPE),
+                UnpackProperty("vel_z", DOUBLE_TYPE),
+                UnpackProperty("acc_x", DOUBLE_TYPE),
+                UnpackProperty("acc_y", DOUBLE_TYPE),
+                UnpackProperty("acc_z", DOUBLE_TYPE),
+                UnpackProperty("q_x", DOUBLE_TYPE),
+                UnpackProperty("q_y", DOUBLE_TYPE),
+                UnpackProperty("q_z", DOUBLE_TYPE),
+                UnpackProperty("q_w", DOUBLE_TYPE),
+                UnpackProperty("state", UINT_8_TYPE),
             ],
             [  # Line Cutter Data
                 UnpackProperty("packetType", "B"),
@@ -649,13 +649,44 @@ class FcbCli:
 
 
 if __name__ == "__main__":
-    # Get port from user via console
-    port_list = SerialPortManager.get_connected_ports()
-    port_dev = ConsoleView.request_console_port(port_list=port_list)
+    
+    fcb = FcbCli(None)
+    fcb.LOG_TYPES
 
-    # Set up FCB CLI and run commands from command line
-    fcb = FcbCli(
-        serial_port=SerialPortManager.get_port(name=port_dev),
-    )
-    passed_args = [f'"{arg}"' if " " in arg else arg for arg in sys.argv[1:]]
-    print(fcb.run_command(" ".join(passed_args)))
+    flight_name = "test-v2.2-2"
+
+    input_bin_file = open("output\\test-v2.2-2-output.bin", "rb")
+
+
+    # Read binary file metadata
+    # input_bin_file = open(output_bin_filepath, "rb")
+    metadata_struct_str = f"<{''.join([prop.unpack_str for prop in fcb._metadata_struct])}"
+    metadata_struct_size = struct.Struct(metadata_struct_str).size
+    packed_data = input_bin_file.read(metadata_struct_size)
+    unpacked_data = struct.unpack(metadata_struct_str, packed_data)
+    print(f"Metadata: {unpacked_data}")
+
+
+    output_csv_filepaths = [os.path.join("output", f"{flight_name}-output-{log_type}.csv") for log_type in fcb.LOG_TYPES]
+    output_csv_files = [open(filepath, "w", newline="") for filepath in output_csv_filepaths]
+    csv_writers = [csv.writer(csv_file) for csv_file in output_csv_files]
+
+    log_struct_strs: List[str] = ["" for _ in fcb.LOG_TYPES]
+    log_struct_sizes: List[int] = [0 for _ in fcb.LOG_TYPES]
+    for i, _ in enumerate(fcb.LOG_TYPES):
+        csv_writers[i].writerow([prop.name for prop in fcb._log_data_struct[i]])
+        log_struct_strs[i] = f"<{''.join([prop.unpack_str for prop in fcb._log_data_struct[i]])}"
+        log_struct_sizes[i] = struct.Struct(log_struct_strs[i]).size
+    log_struct_full_size = max(log_struct_sizes)
+    while True:
+        packed_data = input_bin_file.read(log_struct_full_size)
+        if len(packed_data) == 0:
+            break
+        try:
+            packet_type = int(packed_data[0])
+            unpacked_data = struct.unpack(log_struct_strs[packet_type], packed_data[0 : log_struct_sizes[packet_type]])
+        except (struct.error, IndexError):
+            continue
+        # Only keep things if timestamp isn't 0xFF
+        if unpacked_data[1] < (2 << 32) - 1:
+            csv_writers[packet_type].writerow(unpacked_data)
