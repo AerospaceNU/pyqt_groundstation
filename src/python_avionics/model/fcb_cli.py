@@ -46,14 +46,6 @@ class FcbCli:
         """
         self.serial_port = serial_port
 
-        log_struct_strs: List[str] = ["" for _ in self.LOG_TYPES]
-        log_struct_sizes: List[int] = [0 for _ in self.LOG_TYPES]
-        for i, _ in enumerate(self.LOG_TYPES):
-            log_struct_strs[i] = f"<{''.join([prop.unpack_str for prop in self._log_data_struct[i]])}"
-            log_struct_sizes[i] = struct.Struct(log_struct_strs[i]).size
-        log_struct_full_size = max(log_struct_sizes)
-        print(f"Max size: {log_struct_sizes}")
-
     def _read_ack(self) -> bool:
         """
         Read acknowledgement from FCB.
@@ -292,7 +284,7 @@ class FcbCli:
         log_struct_strs: List[str] = ["" for _ in self.LOG_TYPES]
         log_struct_sizes: List[int] = [0 for _ in self.LOG_TYPES]
         for i, _ in enumerate(self.LOG_TYPES):
-            csv_writers[i].writerow([prop.name for prop in self._log_data_struct[i]])
+            csv_writers[i].writerow([prop.name for prop in fcb._log_data_struct[i]])
             log_struct_strs[i] = f"<{''.join([prop.unpack_str for prop in self._log_data_struct[i]])}"
             log_struct_sizes[i] = struct.Struct(log_struct_strs[i]).size
         log_struct_full_size = max(log_struct_sizes)
@@ -657,13 +649,44 @@ class FcbCli:
 
 
 if __name__ == "__main__":
-    # Get port from user via console
-    port_list = SerialPortManager.get_connected_ports()
-    port_dev = ConsoleView.request_console_port(port_list=port_list)
+    
+    fcb = FcbCli(None)
+    fcb.LOG_TYPES
 
-    # Set up FCB CLI and run commands from command line
-    fcb = FcbCli(
-        serial_port=SerialPortManager.get_port(name=port_dev),
-    )
-    passed_args = [f'"{arg}"' if " " in arg else arg for arg in sys.argv[1:]]
-    print(fcb.run_command(" ".join(passed_args)))
+    flight_name = "test-v2.2-2"
+
+    input_bin_file = open("output\\test-v2.2-2-output.bin", "rb")
+
+
+    # Read binary file metadata
+    # input_bin_file = open(output_bin_filepath, "rb")
+    metadata_struct_str = f"<{''.join([prop.unpack_str for prop in fcb._metadata_struct])}"
+    metadata_struct_size = struct.Struct(metadata_struct_str).size
+    packed_data = input_bin_file.read(metadata_struct_size)
+    unpacked_data = struct.unpack(metadata_struct_str, packed_data)
+    print(f"Metadata: {unpacked_data}")
+
+
+    output_csv_filepaths = [os.path.join("output", f"{flight_name}-output-{log_type}.csv") for log_type in fcb.LOG_TYPES]
+    output_csv_files = [open(filepath, "w", newline="") for filepath in output_csv_filepaths]
+    csv_writers = [csv.writer(csv_file) for csv_file in output_csv_files]
+
+    log_struct_strs: List[str] = ["" for _ in fcb.LOG_TYPES]
+    log_struct_sizes: List[int] = [0 for _ in fcb.LOG_TYPES]
+    for i, _ in enumerate(fcb.LOG_TYPES):
+        csv_writers[i].writerow([prop.name for prop in fcb._log_data_struct[i]])
+        log_struct_strs[i] = f"<{''.join([prop.unpack_str for prop in fcb._log_data_struct[i]])}"
+        log_struct_sizes[i] = struct.Struct(log_struct_strs[i]).size
+    log_struct_full_size = max(log_struct_sizes)
+    while True:
+        packed_data = input_bin_file.read(log_struct_full_size)
+        if len(packed_data) == 0:
+            break
+        try:
+            packet_type = int(packed_data[0])
+            unpacked_data = struct.unpack(log_struct_strs[packet_type], packed_data[0 : log_struct_sizes[packet_type]])
+        except (struct.error, IndexError):
+            continue
+        # Only keep things if timestamp isn't 0xFF
+        if unpacked_data[1] < (2 << 32) - 1:
+            csv_writers[packet_type].writerow(unpacked_data)
