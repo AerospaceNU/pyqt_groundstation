@@ -46,6 +46,14 @@ class FcbCli:
         """
         self.serial_port = serial_port
 
+        log_struct_strs: List[str] = ["" for _ in self.LOG_TYPES]
+        log_struct_sizes: List[int] = [0 for _ in self.LOG_TYPES]
+        for i, _ in enumerate(self.LOG_TYPES):
+            log_struct_strs[i] = f"<{''.join([prop.unpack_str for prop in self._log_data_struct[i]])}"
+            log_struct_sizes[i] = struct.Struct(log_struct_strs[i]).size
+        log_struct_full_size = max(log_struct_sizes)
+        print(f"Max size: {log_struct_sizes}")
+
     def _read_ack(self) -> bool:
         """
         Read acknowledgement from FCB.
@@ -570,61 +578,61 @@ class FcbCli:
         :return: List of list of log data structs, one for each log type
         """
 
+        UINT_8_TYPE = "B"
+        UINT_16_TYPE = "H"
+        UINT_32_TYPE = "I"
+        INT_8_TYPE = "b"
+        INT_16_TYPE = "h"
+        INT_32_TYPE = "i"
+        BOOL_TYPE = "?"
+        FLOAT_TYPE = "f"
+        DOUBLE_TYPE = "d" 
+
         # FCB Data
         unpack_properties: List[List[UnpackProperty]] = [
             [  # FCB Data
-                UnpackProperty("packetType", "B"),
-                UnpackProperty("timestamp_ms", "I"),
-                UnpackProperty("imu1_accel_x", "h"),
-                UnpackProperty("imu1_accel_y", "h"),
-                UnpackProperty("imu1_accel_z", "h"),
-                UnpackProperty("imu1_gyro_x", "h"),
-                UnpackProperty("imu1_gyro_y", "h"),
-                UnpackProperty("imu1_gyro_z", "h"),
-                UnpackProperty("imu1_mag_x", "h"),
-                UnpackProperty("imu1_mag_y", "h"),
-                UnpackProperty("imu1_mag_z", "h"),
-                UnpackProperty("imu2_accel_x", "h"),
-                UnpackProperty("imu2_accel_y", "h"),
-                UnpackProperty("imu2_accel_z", "h"),
-                UnpackProperty("imu2_gyro_x", "h"),
-                UnpackProperty("imu2_gyro_y", "h"),
-                UnpackProperty("imu2_gyro_z", "h"),
-                UnpackProperty("imu2_mag_x", "h"),
-                UnpackProperty("imu2_mag_y", "h"),
-                UnpackProperty("imu2_mag_z", "h"),
-                UnpackProperty("high_g_accel_x", "h"),
-                UnpackProperty("high_g_accel_y", "h"),
-                UnpackProperty("high_g_accel_z", "h"),
-                UnpackProperty("baro1_temp", "d"),
-                UnpackProperty("baro1_pres", "d"),
-                UnpackProperty("baro2_temp", "d"),
-                UnpackProperty("baro2_pres", "d"),
-                UnpackProperty("gps_lat", "f"),
-                UnpackProperty("gps_long", "f"),
-                UnpackProperty("gps_alt", "f"),
-                UnpackProperty("gps_fix_quality", "B"),
-                UnpackProperty("gps_sats_tracked", "B"),
-                UnpackProperty("gps_hdop", "f"),
-                UnpackProperty("battery_voltage", "d"),
-                UnpackProperty("pyro_cont", "B"),
-                UnpackProperty("trigger_status", "H"),
-                UnpackProperty("heading", "d"),
-                UnpackProperty("vtg", "d"),
-                UnpackProperty("pos_x", "d"),
-                UnpackProperty("pos_y", "d"),
-                UnpackProperty("pos_z", "d"),
-                UnpackProperty("vel_x", "d"),
-                UnpackProperty("vel_y", "d"),
-                UnpackProperty("vel_z", "d"),
-                UnpackProperty("acc_x", "d"),
-                UnpackProperty("acc_y", "d"),
-                UnpackProperty("acc_z", "d"),
-                UnpackProperty("q_x", "d"),
-                UnpackProperty("q_y", "d"),
-                UnpackProperty("q_z", "d"),
-                UnpackProperty("q_w", "d"),
-                UnpackProperty("state", "B"),
+                UnpackProperty("packetType", UINT_8_TYPE),
+                UnpackProperty("timestamp_ms", UINT_32_TYPE),
+                UnpackProperty("imu1_accel_x", INT_16_TYPE),
+                UnpackProperty("imu1_accel_y", INT_16_TYPE),
+                UnpackProperty("imu1_accel_z", INT_16_TYPE),
+                UnpackProperty("imu1_gyro_x", INT_16_TYPE),
+                UnpackProperty("imu1_gyro_y", INT_16_TYPE),
+                UnpackProperty("imu1_gyro_z", INT_16_TYPE),
+                UnpackProperty("mag1_x", INT_16_TYPE),
+                UnpackProperty("mag1_y", INT_16_TYPE),
+                UnpackProperty("mag1_z", INT_16_TYPE),
+                UnpackProperty("high_g_accel_x", INT_16_TYPE),
+                UnpackProperty("high_g_accel_y", INT_16_TYPE),
+                UnpackProperty("high_g_accel_z", INT_16_TYPE),
+                UnpackProperty("baro1_temp", DOUBLE_TYPE),
+                UnpackProperty("baro1_pres", DOUBLE_TYPE),
+                UnpackProperty("gps_lat", FLOAT_TYPE),
+                UnpackProperty("gps_long", FLOAT_TYPE),
+                UnpackProperty("gps_alt", FLOAT_TYPE),
+                UnpackProperty("gps_fix_quality", UINT_8_TYPE),
+                UnpackProperty("gps_sats_tracked", UINT_8_TYPE),
+                UnpackProperty("gps_hdop", FLOAT_TYPE),
+                UnpackProperty("battery1_voltage", DOUBLE_TYPE),
+                UnpackProperty("battery2_voltage", DOUBLE_TYPE),
+                UnpackProperty("pyro_cot", UINT_8_TYPE),
+                UnpackProperty("trigger_status", UINT_16_TYPE),
+                UnpackProperty("heading", DOUBLE_TYPE),
+                UnpackProperty("vtg", DOUBLE_TYPE),
+                UnpackProperty("pos_x", DOUBLE_TYPE),
+                UnpackProperty("pos_y", DOUBLE_TYPE),
+                UnpackProperty("pos_z", DOUBLE_TYPE),
+                UnpackProperty("vel_x", DOUBLE_TYPE),
+                UnpackProperty("vel_y", DOUBLE_TYPE),
+                UnpackProperty("vel_z", DOUBLE_TYPE),
+                UnpackProperty("acc_x", DOUBLE_TYPE),
+                UnpackProperty("acc_y", DOUBLE_TYPE),
+                UnpackProperty("acc_z", DOUBLE_TYPE),
+                UnpackProperty("q_x", DOUBLE_TYPE),
+                UnpackProperty("q_y", DOUBLE_TYPE),
+                UnpackProperty("q_z", DOUBLE_TYPE),
+                UnpackProperty("q_w", DOUBLE_TYPE),
+                UnpackProperty("state", UINT_8_TYPE),
             ],
             [  # Line Cutter Data
                 UnpackProperty("packetType", "B"),
