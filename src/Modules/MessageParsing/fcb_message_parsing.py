@@ -40,7 +40,7 @@ def lat_lon_decimal_minutes_to_decimal_degrees(lat_lon_value):
     return (math.trunc(float(abs_val) / 100.0) + (float(abs_val) % 100.0) / 60.0) * sign
 
 
-def ooparse_pyro_continuity_byte(pyro_cont):
+def parse_pyro_continuity_byte(pyro_cont):
     pyro_list = []
     for i in range(Constants.MAX_PYROS):
         has_cont_b = (pyro_cont & (1 << i)) > 0
