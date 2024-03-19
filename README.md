@@ -67,6 +67,8 @@ You may need to give it the path to your Python executable, this can be found wi
 
 Under Ubuntu 22.04 (at least with the new Wayland), Qt is still pretty buggy. I had to install `sudo apt install libxcb-xinerama0` [source](https://stackoverflow.com/questions/68036484/qt6-qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-thou) and also run with `XDG_SESSION_TYPE=x11 python -m src.main`.
 
+In Ubuntu 22.04 in WSL2, Windows 10, I had to `sudo apt install libfontconfig1-dev libfreetype6-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-cursor-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxcb-util-dev libxcb-xinerama0-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev` to not get xcb issues [Qt Requirements Page](https://doc.qt.io/qt-6/linux-requirements.html).
+
 ### Run GUI
 
 1. Activate virtual environment using (Linux) `source .venv/bin/activate` or (Windows) `.\\venv\\bin\\activate.ps1` (or .bat if using command prompt instead of powershell). You should now see a (.venv) prefix to the command prompt, like this:
