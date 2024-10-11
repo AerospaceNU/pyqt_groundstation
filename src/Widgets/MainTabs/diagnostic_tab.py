@@ -3,6 +3,7 @@ Blank tab with diagnostic boxes
 """
 from src.Widgets import (
     diagnostics_widget,
+    motor_control,
     pyro_display_widget,
     qr_code_widget,
     reconfigure_widget,
@@ -22,6 +23,7 @@ class DiagnosticTab(TabCommon):
         self.addWidget(pyro_display_widget.PyroWidget(self))
         self.addWidget(qr_code_widget.RocketLocationQrCode(self)).move(0, 400)
         self.addWidget(CompleteConsoleWidget(self)).move(0, 200)
+        self.addWidget(motor_control.MotorControl(self)).move(300, 300)
 
         self.widgetList[1].move(400, 0)  # Move the widgets to better spots
         self.widgetList[2].move(1000, 0)  # This isn't really the best way to reference the object, but I don't care
