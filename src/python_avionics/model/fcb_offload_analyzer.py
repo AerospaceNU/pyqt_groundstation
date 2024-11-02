@@ -61,35 +61,26 @@ class FcbOffloadAnalyzer:
         df["imu1_accel_x_real"] = df["imu1_accel_x"] * k_accel_mult
         df["imu1_accel_y_real"] = df["imu1_accel_y"] * k_accel_mult
         df["imu1_accel_z_real"] = df["imu1_accel_z"] * k_accel_mult
-        df["imu2_accel_x_real"] = df["imu2_accel_x"] * k_accel_mult
-        df["imu2_accel_y_real"] = df["imu2_accel_y"] * k_accel_mult
-        df["imu2_accel_z_real"] = df["imu2_accel_z"] * k_accel_mult
         df["imu1_gyro_x_real"] = df["imu1_gyro_x"] * k_gyro_mult
         df["imu1_gyro_y_real"] = df["imu1_gyro_y"] * k_gyro_mult
         df["imu1_gyro_z_real"] = df["imu1_gyro_z"] * k_gyro_mult
-        df["imu2_gyro_x_real"] = df["imu2_gyro_x"] * k_gyro_mult
-        df["imu2_gyro_y_real"] = df["imu2_gyro_y"] * k_gyro_mult
-        df["imu2_gyro_z_real"] = df["imu2_gyro_z"] * k_gyro_mult
         df["imu1_mag_x_real"] = df["imu1_mag_x"] * k_mag_mult
         df["imu1_mag_y_real"] = df["imu1_mag_y"] * k_mag_mult
         df["imu1_mag_z_real"] = df["imu1_mag_z"] * k_mag_mult
-        df["imu2_mag_x_real"] = df["imu2_mag_x"] * k_mag_mult
-        df["imu2_mag_y_real"] = df["imu2_mag_y"] * k_mag_mult
-        df["imu2_mag_z_real"] = df["imu2_mag_z"] * k_mag_mult
-        df["imu_accel_x_avg"] = df[["imu1_accel_x_real", "imu2_accel_x_real"]].mean(axis=1)
-        df["imu_accel_y_avg"] = df[["imu1_accel_y_real", "imu2_accel_y_real"]].mean(axis=1)
-        df["imu_accel_z_avg"] = df[["imu1_accel_z_real", "imu2_accel_z_real"]].mean(axis=1)
-        df["imu_gyro_x_avg"] = df[["imu1_gyro_x_real", "imu2_gyro_x_real"]].mean(axis=1)
-        df["imu_gyro_y_avg"] = df[["imu1_gyro_y_real", "imu2_gyro_y_real"]].mean(axis=1)
-        df["imu_gyro_z_avg"] = df[["imu1_gyro_z_real", "imu2_gyro_z_real"]].mean(axis=1)
-        df["imu_mag_x_avg"] = df[["imu1_mag_x_real", "imu2_mag_x_real"]].mean(axis=1)
-        df["imu_mag_y_avg"] = df[["imu1_mag_y_real", "imu2_mag_y_real"]].mean(axis=1)
-        df["imu_mag_z_avg"] = df[["imu1_mag_z_real", "imu2_mag_z_real"]].mean(axis=1)
+        df["imu_accel_x_avg"] = df[["imu1_accel_x_real", "imu1_accel_x_real"]].mean(axis=1)
+        df["imu_accel_y_avg"] = df[["imu1_accel_y_real", "imu1_accel_y_real"]].mean(axis=1)
+        df["imu_accel_z_avg"] = df[["imu1_accel_z_real", "imu1_accel_z_real"]].mean(axis=1)
+        df["imu_gyro_x_avg"] = df[["imu1_gyro_x_real", "imu1_gyro_x_real"]].mean(axis=1)
+        df["imu_gyro_y_avg"] = df[["imu1_gyro_y_real", "imu1_gyro_y_real"]].mean(axis=1)
+        df["imu_gyro_z_avg"] = df[["imu1_gyro_z_real", "imu1_gyro_z_real"]].mean(axis=1)
+        df["imu_mag_x_avg"] = df[["imu1_mag_x_real", "imu1_mag_x_real"]].mean(axis=1)
+        df["imu_mag_y_avg"] = df[["imu1_mag_y_real", "imu1_mag_y_real"]].mean(axis=1)
+        df["imu_mag_z_avg"] = df[["imu1_mag_z_real", "imu1_mag_z_real"]].mean(axis=1)
         df["high_g_accel_x_real"] = df["high_g_accel_x"] * k_high_g_accel_multiplier
         df["high_g_accel_y_real"] = df["high_g_accel_y"] * k_high_g_accel_multiplier
         df["high_g_accel_z_real"] = df["high_g_accel_z"] * k_high_g_accel_multiplier
-        df["baro_pres_avg"] = df[["baro1_pres", "baro2_pres"]].mean(axis=1)
-        df["baro_temp_avg"] = df[["baro1_temp", "baro2_temp"]].mean(axis=1)
+        df["baro_pres_avg"] = df["baro1_pres"]
+        df["baro_temp_avg"] = df["baro1_temp"]
 
         # Save to a post-processed CSV
         output_filepath = f"{os.path.splitext(offload_path)[0]}-post.csv"
@@ -154,7 +145,6 @@ def _graph_data(post_processed_file: str) -> None:
     # Baro data
     fig3, ax3 = plt.subplots(1)
     df.plot(x=df_timestamp_col, y="baro1_pres", ax=ax3)
-    df.plot(x=df_timestamp_col, y="baro2_pres", ax=ax3)
     ax3.set_xlabel("")
     ax3.set_ylabel("bar")
     # df.plot(x=df_timestamp_col, y="baro_temp_avg", ax=ax3[1])
