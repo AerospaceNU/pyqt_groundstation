@@ -4,15 +4,15 @@
 Main file to run the GUI
 """
 
-from constants import Constants
-from dpf_ground_station import DPFGUI
-from Modules.android_phone_bluetooth_interface import AndroidPhoneBluetoothInterface
-from Modules.desktop_simulation_interface import LocalSimulationFlightInterface
-from Modules.egg_finder_radio_interface import EggFinderRadioInterface
-from Modules.fake_rocket_flight import FakeFlight
-from Modules.fcb_offload_module import FCBOffloadModule
-from Modules.ground_station_data_interface import GroundStationDataInterface
-from Modules.ground_station_recorded_data_interface import (
+from src.constants import Constants
+from src.dpf_ground_station import DPFGUI
+from src.Modules.android_phone_bluetooth_interface import AndroidPhoneBluetoothInterface
+from src.Modules.desktop_simulation_interface import LocalSimulationFlightInterface
+from src.Modules.egg_finder_radio_interface import EggFinderRadioInterface
+from src.Modules.fake_rocket_flight import FakeFlight
+from src.Modules.fcb_offload_module import FCBOffloadModule
+from src.Modules.ground_station_data_interface import GroundStationDataInterface
+from src.Modules.ground_station_recorded_data_interface import (
     GroundStationRecordedDataInterface,
 )
 from src.Modules.laptop_status_monitor import LaptopStatusMonitor
