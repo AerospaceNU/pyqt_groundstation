@@ -1,6 +1,7 @@
 """
 Blank tab with diagnostic boxes
 """
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QWidget, QGridLayout, QSizePolicy
 from src.Widgets import (
     diagnostics_widget,
     pyro_display_widget,
@@ -15,17 +16,34 @@ from src.Widgets.MainTabs.main_tab_common import TabCommon
 class DiagnosticTab(TabCommon):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.addWidget(diagnostics_widget.DiagnosticsWidget(self))
-        self.addWidget(diagnostics_widget.DiagnosticsWidget(self))
-        self.addWidget(simple_console_widget.SimpleConsoleWidget(self))
-        self.addWidget(reconfigure_widget.ReconfigureWidget(self))
-        self.addWidget(pyro_display_widget.PyroWidget(self))
-        self.addWidget(qr_code_widget.RocketLocationQrCode(self)).move(0, 400)
-        self.addWidget(CompleteConsoleWidget(self)).move(0, 200)
 
-        self.widgetList[1].move(400, 0)  # Move the widgets to better spots
-        self.widgetList[2].move(1000, 0)  # This isn't really the best way to reference the object, but I don't care
-        self.widgetList[3].move(1000, 700)
-        self.widgetList[4].move(1400, 700)
+        container_widget = QWidget(self)
+        main_layout = QVBoxLayout(container_widget)
 
+        not_payload_header = QLabel("Not Payload", self)
+        not_payload_header.setStyleSheet("font-size: 20px; font-weight: bold;")
+        main_layout.addWidget(not_payload_header)
+
+        not_payload_layout = QGridLayout()  
+
+        self.add_sectioned_widget(diagnostics_widget.DiagnosticsWidget(self), not_payload_layout, 0, 2)
+        self.add_sectioned_widget(diagnostics_widget.DiagnosticsWidget(self), not_payload_layout, 1,2)
+        self.add_sectioned_widget(simple_console_widget.SimpleConsoleWidget(self), not_payload_layout, 0, 1)
+        self.add_sectioned_widget(reconfigure_widget.ReconfigureWidget(self), not_payload_layout, 1, 1)
+        self.add_sectioned_widget(pyro_display_widget.PyroWidget(self), not_payload_layout, 0, 0)
+        self.add_sectioned_widget(qr_code_widget.RocketLocationQrCode(self), not_payload_layout, 1, 0)
+        self.add_sectioned_widget(CompleteConsoleWidget(self), not_payload_layout, 0, 0)
+
+        main_layout.addLayout(not_payload_layout)
+
+        payload_header = QLabel("Payload", self)
+        payload_header.setStyleSheet("font-size: 20px; font-weight: bold;")
+        main_layout.addWidget(payload_header)
+
+        payload_layout = QGridLayout()  
+
+        main_layout.addLayout(payload_layout)
+        self.setLayout(main_layout)
         self.canAddWidgets = True
+
+  

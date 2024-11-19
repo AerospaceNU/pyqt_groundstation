@@ -4,6 +4,7 @@ Code used in all vehicle tabs
 from typing import List
 
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
+from PyQt5.QtWidgets import QSizePolicy
 
 
 class TabCommon(CustomQWidgetBase):
@@ -58,6 +59,10 @@ class TabCommon(CustomQWidgetBase):
         self.widgetsCreated += 1
         return widget
 
+    def add_sectioned_widget(self, widget, layout, row, col):
+        widget.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)  
+        layout.addWidget(widget, row, col)
+        
     def updateAfterThemeSet(self):
         for widget in self.widgetList:
             widget.updateAfterThemeSet()
