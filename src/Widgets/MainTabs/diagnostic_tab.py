@@ -11,6 +11,8 @@ from src.Widgets import (
 )
 from src.Widgets.complete_console_widget import CompleteConsoleWidget
 from src.Widgets.MainTabs.main_tab_common import TabCommon
+from src.Widgets.payload_temperature_widget import PayloadTemperatureWidget
+from src.Widgets.payload_battery_widget import PayloadBatteryBarWidget  
 
 
 class DiagnosticTab(TabCommon):
@@ -41,9 +43,14 @@ class DiagnosticTab(TabCommon):
         main_layout.addWidget(payload_header)
 
         payload_layout = QGridLayout()  
-
+        self.payload_temp_widget = PayloadTemperatureWidget(self)
+        self.add_sectioned_widget(self.payload_temp_widget, payload_layout, 0, 0)
+        self.payload_battery_widget = PayloadBatteryBarWidget(self)
+        self.add_sectioned_widget(self.payload_battery_widget, payload_layout, 0, 4)
         main_layout.addLayout(payload_layout)
         self.setLayout(main_layout)
         self.canAddWidgets = True
 
-  
+    def update_temperature(self, temp):
+        if hasattr(self, 'temp_meter_widget'):
+            self.temp_meter_widget.update_temperature(temp)
