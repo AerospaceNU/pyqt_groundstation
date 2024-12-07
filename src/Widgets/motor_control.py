@@ -2,6 +2,7 @@
 Text box widget
 """
 from PyQt5 import QtCore
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QComboBox, QGridLayout, QLabel, QPushButton, QWidget, QSlider, QLineEdit 
 
 from src.constants import Constants
@@ -9,83 +10,64 @@ from src.data_helpers import get_value_from_dictionary
 from src.Widgets import custom_q_widget_base
 from src.Widgets.QWidget_Parts import sideways_bar_graph
 
+DEFAULT_LEN = 15
+
 
 class MotorControl(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None):
         super().__init__(parent_widget)
 
-        self.cutter_enabled = False
-        self.cutter_armed = False
-
-
-        self.slider_values = [0, 0]
-        self.motor_sliders = [QSlider() for _ in range(2)]
-        for i, slider in enumerate(self.motor_sliders):
-            slider.setOrientation(QtCore.Qt.Orientation.Vertical)
-            slider.setRange(-2000, 2000)
-            slider.setValue(0)
-        self.motor_sliders[0].valueChanged.connect(lambda value: self.setSliderPosition(0, value))
-        self.motor_sliders[1].valueChanged.connect(lambda value: self.setSliderPosition(1, value))
-        self.slider_labels = [QLabel() for _ in range(2)]
+        self.motor_run = False
         self.increment_box = QLineEdit()
-        self.increment = 50
-        self.increment_box.setText("50")
+        self.increment = 0.5
+        self.increment_box.setText("0.5")
         self.increment_box.textChanged.connect(self.setIncrement)
-        self.degrees_box = [QLineEdit() for _ in range(2)]
-        for i, lab in enumerate(self.slider_labels):
-            lab.setText(f"Motor {i}:")
-            self.degrees_box[i].setText("0")
-            self.degrees_box[i].setMaximumWidth(70)
-        
-        self.degrees_box[0].textChanged.connect(lambda text: self.setSliderPosition(0, text))
-        self.degrees_box[1].textChanged.connect(lambda text: self.setSliderPosition(1, text))
 
+        self.turn_setting = 0
+        self.motor1Position = DEFAULT_LEN
+        self.motor2Position = DEFAULT_LEN
 
         self.increment_label = QLabel()
         self.increment_label.setText("Set Increment:")
 
+        self.controls_box = QLineEdit()
+        self.controls_box.setText("")
+        self.controls_box.keyPressEvent = self.keyPressEvent
+
+
+        self.controls_label = QLabel()
+        self.controls_label.setText("Click in the below box to be able to use arrow keys")
+        self.motor1_position_label = QLabel()
+        self.motor1_position_label.setText(f"Motor 1: {self.motor1Position}")
+        self.motor2_position_label = QLabel()
+        self.motor2_position_label.setText(f"Motor 2: {self.motor2Position}")
+        self.turn_label = QLabel()
+        self.turn_label.setText(f"Overall turn setting: {self.turn_setting}")
+
         self.title_label = QLabel()
         self.title_label.setText("Dynamixel Motor Control")
-        self.set_1_button = QPushButton()
-        self.set_1_button.setText("Set Motor 1")
-        self.set_2_button = QPushButton()
-        self.set_2_button.setText("Set Motor 2")
+        self.enable_motors_button = QPushButton()
+        self.enable_motors_button.setText("ENABLE MOTORS")
 
-        self.up_1_button = QPushButton()
-        self.up_1_button.setText("Inc")
-        self.down_1_button = QPushButton()
-        self.down_1_button.setText("Dec")
-        self.up_2_button = QPushButton()
-        self.up_2_button.setText("Inc")
-        self.down_2_button = QPushButton()
-        self.down_2_button.setText("Dec")
-        self.up_1_button.clicked.connect(lambda _: self.incrementMotor(0))
-        self.up_2_button.clicked.connect(lambda _: self.incrementMotor(1))
-        self.down_1_button.clicked.connect(lambda _: self.decrementMotor(0))
-        self.down_2_button.clicked.connect(lambda _: self.decrementMotor(1))
-        self.set_1_button.clicked.connect(lambda _: self.buttonPressed(0))
-        self.set_2_button.clicked.connect(lambda _: self.buttonPressed(1))
+        self.enable_motors_button.clicked.connect(self.toggleMotorEnabled)
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.tick_enabled)  # Connect to the slot
+        self.timer.start(100)  # Interval in milliseconds
 
         layout = QGridLayout()
 
         data_view_layout = QGridLayout()
-        data_view_layout.addWidget(self.title_label, 1, 3)
-        data_view_layout.addWidget(self.motor_sliders[0], 2, 1)
-        data_view_layout.addWidget(self.slider_labels[0], 2, 2)
-        data_view_layout.addWidget(self.degrees_box[0], 3, 2)
-        data_view_layout.addWidget(self.motor_sliders[1], 2, 5)
-        data_view_layout.addWidget(self.slider_labels[1], 2, 4)
-        data_view_layout.addWidget(self.degrees_box[1], 3, 4)
-        
+        data_view_layout.addWidget(self.title_label, 1, 2)
+        data_view_layout.addWidget(self.motor1_position_label, 2, 1)
+        data_view_layout.addWidget(self.motor2_position_label, 2, 2)
+        data_view_layout.addWidget(self.turn_label, 2, 3)
+        data_view_layout.addWidget(self.increment_label, 3, 1)
+        data_view_layout.addWidget(self.increment_box, 3, 2)
+        data_view_layout.addWidget(self.controls_label, 4, 2)
+        data_view_layout.addWidget(self.controls_box, 5, 2)
+        data_view_layout.addWidget(self.enable_motors_button, 6, 2)
 
-        data_view_layout.addWidget(self.increment_label, 4, 3)
-        data_view_layout.addWidget(self.up_1_button, 5, 1)
-        data_view_layout.addWidget(self.down_1_button, 5, 2)
-        data_view_layout.addWidget(self.increment_box, 5, 3)
-        data_view_layout.addWidget(self.up_2_button, 5, 4)
-        data_view_layout.addWidget(self.down_2_button, 5, 5)
-        data_view_layout.addWidget(self.set_1_button, 6, 1)
-        data_view_layout.addWidget(self.set_2_button, 6, 3)
         layout.addLayout(data_view_layout, 1, 1)
 
 
@@ -117,6 +99,38 @@ class MotorControl(custom_q_widget_base.CustomQWidgetBase):
         # self.cut_2_button.clicked.connect(lambda: self.onCutButtonPressed(2))
         # self.arm_button.clicked.connect(self.onArmButtonPressed)
 
+    def toggleMotorEnabled(self):
+        if self.motor_run:
+            self.motor_run = False
+            self.enable_motors_button.setText("ENABLE MOTORS")
+        else:
+            self.motor_run = True
+            self.enable_motors_button.setText("DISABLE MOTORS")
+
+    def tick_enabled(self):
+        if not self.motor_run:
+            return
+        
+        self.motor1Position = max(0, min(DEFAULT_LEN, DEFAULT_LEN + self.turn_setting))
+        self.motor2Position = max(0, min(DEFAULT_LEN, DEFAULT_LEN - self.turn_setting))
+        self.callback_handler.requestCallback(Constants.motor_control_interface_key, (self.motor1Position, self.motor2Position))
+        self.update()
+        
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Right:
+            self.turn_setting += self.increment
+        elif event.key() == Qt.Key.Key_Left:
+            self.turn_setting -= self.increment
+        self.update()
+
+
+    def update(self):
+        self.motor1_position_label.setText(f"Motor 1: {self.motor1Position}")
+        self.motor2_position_label.setText(f"Motor 2: {self.motor2Position}")
+        self.turn_label.setText(f"Overall turn setting: {self.turn_setting}")
+        super().update()
+
     def decrementMotor(self, motor_index):
         self.setSliderPosition(motor_index, self.slider_values[motor_index]-self.increment)
 
@@ -127,7 +141,7 @@ class MotorControl(custom_q_widget_base.CustomQWidgetBase):
 
     def setIncrement(self, increment):
         try:
-            increment = int(increment)
+            increment = float(increment)
         except:
             return
         self.increment = increment
@@ -147,6 +161,5 @@ class MotorControl(custom_q_widget_base.CustomQWidgetBase):
         self.update()
 
     def buttonPressed(self, button_number):
-        cmd = f"--motorcontrol -m {button_number} -d {self.slider_values[button_number]}"
-        self.callback_handler.requestCallback(Constants.cli_interface_key, cmd)
+        self.callback_handler.requestCallback(Constants.motor_control_interface_key, [self.slider_values[0], self.slider_values[1]])
         self.update()

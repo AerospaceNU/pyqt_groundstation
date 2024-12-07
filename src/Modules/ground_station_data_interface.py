@@ -13,6 +13,7 @@ from src.Modules.fcb_data_interface_core import FCBDataInterfaceCore
 from src.Modules.MessageParsing import fcb_message_parsing
 from src.Modules.MessageParsing.fcb_message_generation import (
     createCLICommandMessage,
+    createMotorControlMessage,
     createRadioBandCommandMessage,
 )
 
@@ -52,6 +53,7 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
         self.serial_devices["Ground Station"] = self.changeActiveSerialPort
 
         self.callback_handler.addCallback(Constants.cli_interface_key, self.cliCommand)
+        self.callback_handler.addCallback(Constants.motor_control_interface_key, self.motorControlCommand)
 
         self.radio_reconfigure_page = ReconfigurePage("Serial Ground Station Config")
         self.radio_reconfigure_page.addEnumOption("radio_types", "433 MHz", RADIO_433)
@@ -77,6 +79,10 @@ class GroundStationDataInterface(FCBDataInterfaceCore):
     def cliCommand(self, data):
         self.cliConsole.manualAddEntry(data)
         self.outgoing_serial_queue.append(createCLICommandMessage(self.active_radio, data))
+
+    def motorControlCommand(self, motorpositions):
+        self.cliConsole.manualAddEntry(f"motorControl({motorpositions[0]}, {motorpositions[1]})")
+        self.outgoing_serial_queue.append(createMotorControlMessage(self.active_radio, motorpositions[0], motorpositions[1]))
 
     def onBandSwitch(self, data):
         try:

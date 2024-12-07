@@ -96,6 +96,7 @@ class Constants:
     primary_annunciator = "annunciator_1"
     primary_reconfigure = "primary_reconfigure"
     cli_interface_key = "cli_interface"
+    motor_control_interface_key = "motor_control_interface"
     cli_interface_usb_command_key = "cli_interface_usb"
     cli_interface_usb_result_key = "cli_interface_usb_result"
     cli_interface_usb_command_running = "fcb_cli_command_running"

@@ -14,8 +14,11 @@ def createRadioBandCommandMessage(destination, target_radio, channel):
 def createCLICommandMessage(destination, command: str):
     command = command.strip() + "\n"
     command_bytes = command.encode()
-    return struct.pack("<BH", destination, len(command_bytes)) + command_bytes
+    return struct.pack("<BBH", destination, 0, len(command_bytes)) + command_bytes
 
+def createMotorControlMessage(destination, motor1Position, motor2Position):
+    result = struct.pack("<BBHdd", destination, 1, 2, motor1Position, motor2Position)
+    return result
 
 def createRadioPacket(packet_type, payload: bytes):
     payload_len = len(payload)
