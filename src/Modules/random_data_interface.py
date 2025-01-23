@@ -9,7 +9,6 @@ from src.data_helpers import euler_to_quaternion
 from src.Modules.DataInterfaceTools.gps_position_filter import GPSPositionFilter
 from src.Modules.module_core import ThreadedModuleCore
 
-
 class RandomDataInterface(ThreadedModuleCore):
     """
     Generates random data for testing
@@ -51,7 +50,6 @@ class RandomDataInterface(ThreadedModuleCore):
         self.data_dictionary["slowSweep"] = 1 - float(self.j) / 180.0
         self.data_dictionary[Constants.orientation_quaternion_key] = euler_to_quaternion(self.data_dictionary["roll"], self.data_dictionary["pitch"], self.data_dictionary["yaw"])
 
-        # Generate lat-lon coords
         e = math.cos(math.radians(self.j)) * r * self.t
         n = math.sin(math.radians(self.j)) * r * self.t
         lla = navpy.ned2lla([n, e, 0], 42.3601, -71.0589, 0)
@@ -95,13 +93,25 @@ class RandomDataInterface(ThreadedModuleCore):
                 ["bbb", random.random()],
                 ["c", random.random()],
                 ["ddddddddd", random.random()],
-            ],
+            ]
         }
+        
+        payload_temp = random.uniform(0,50)
+        
         self.data_dictionary[Constants.raw_message_data_key] = diagnostics
+        
+        
+        self.data_dictionary[Constants.payload_key] = {}
+        self.data_dictionary[Constants.payload_key]['payload_temp'] = payload_temp
+        print(f"payload{self.data_dictionary[Constants.payload_key]}")
 
+    
+    
+    
         if self.i % 10 == 1:
             self.logger.info(str(random.random()))
 
         time.sleep(0.02)
 
         self.t = self.t + 0.3
+

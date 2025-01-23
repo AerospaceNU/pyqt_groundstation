@@ -27,6 +27,7 @@ class Constants:
     gps_sats_key = "gps_sats"
     bluetooth_connection_key = "ble_client"
     status_source = "status"
+    raw_message_data_key = 'raw_message_data'
 
     orientation_quaternion_key = "orientation_quaternion"  # W X Y Z
     orientation_rpy_key = "orientation_rpy"
@@ -106,6 +107,8 @@ class Constants:
     new_usb_cli_message_key = "new_usb_cli_message"
     new_offload_flight_saved_key = "new_offload_flight_saved"
     diagnostics_key = "diagnostics"
+    payload_key = "payload"
+    payload_temperature_key = "temperature"
 
     invalid_fcb_state_name = "Invalid FCB State"
     fcb_state_names = [
