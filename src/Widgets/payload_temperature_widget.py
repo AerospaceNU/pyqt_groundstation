@@ -26,10 +26,13 @@ class PayloadTemperatureWidget(CustomQWidgetBase):
         vbox = QVBoxLayout()
         vbox.addWidget(self.payload_temp_graph)
         self.setLayout(vbox)
+        self.setMaximumSize(100,200)
         # self.widgeztSize = 20
         self.title = "Payload Temp"
         self.addSourceKey("payload_temp", float, Constants.payload_temperature_key, default_value=0, hide_in_drop_down=True)
         self.addSourceKey("fcb_voltage", float, Constants.fcb_battery_voltage, -1, hide_in_drop_down=True)
+        self.adjustSize()
+       
     #     self.temperature_value = QLabel(f"{default_temperature}°C", self)
     #     self.temperature_header = QLabel("Payload Temperature", self)
         
