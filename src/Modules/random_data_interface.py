@@ -96,17 +96,11 @@ class RandomDataInterface(ThreadedModuleCore):
             ]
         }
         
-        payload_temp = random.uniform(0,50)
+        
         
         self.data_dictionary[Constants.raw_message_data_key] = diagnostics
-        
-        
-        self.data_dictionary[Constants.payload_key] = {}
-        self.data_dictionary[Constants.payload_key]['payload_temp'] = payload_temp
-        print(f"payload{self.data_dictionary[Constants.payload_key]}")
-
-    
-    
+        self.data_dictionary[Constants.payload_temperature_key] = (int(self.i /3))
+        self.data_dictionary[Constants.payload_battery_key] = (int(self.i/10))
     
         if self.i % 10 == 1:
             self.logger.info(str(random.random()))

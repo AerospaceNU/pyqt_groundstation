@@ -9,14 +9,15 @@ from src.Widgets import (
 from src.Widgets.complete_console_widget import CompleteConsoleWidget
 from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets.payload_temperature_widget import PayloadTemperatureWidget
-from src.Widgets.payload_battery_widget import PayloadBatteryBarWidget
+from src.Widgets.payload_battery_widget import PayloadBatteryWidget
 from src.Modules.random_data_interface import RandomDataInterface
 
 class DiagnosticTab(TabCommon):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         
-        self.Temperature = self.addWidget(PayloadTemperatureWidget())
+        self.addWidget(PayloadTemperatureWidget(self))
+        self.addWidget(PayloadBatteryWidget(self))
         self.addWidget(diagnostics_widget.DiagnosticsWidget(self))
         self.addWidget(diagnostics_widget.DiagnosticsWidget(self))
         self.addWidget(simple_console_widget.SimpleConsoleWidget(self))
@@ -26,7 +27,8 @@ class DiagnosticTab(TabCommon):
         self.addWidget(CompleteConsoleWidget(self)).move(0, 200)
         
         layout = QGridLayout()
-        layout.addWidget(self.Temperature, 2, 1, 4, 2)
+        # layout.addWidget(self.Payload_Temperature)
+        # layout.addWidget(self.Payload_Battery)
         layout.setRowStretch(1,0)
         layout.setColumnStretch(1,0)
         self.setLayout(layout)
