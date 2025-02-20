@@ -11,12 +11,14 @@ from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets.payload_temperature_widget import PayloadTemperatureWidget
 from src.Widgets.payload_battery_widget import PayloadBatteryWidget
 from src.Modules.random_data_interface import RandomDataInterface
+from src.Widgets.payload_apogee_reached_widget import PayloadApogeeReachedWidget
 
 class DiagnosticTab(TabCommon):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         
         self.addWidget(PayloadTemperatureWidget(self))
+        self.addWidget(PayloadApogeeReachedWidget(self))
         self.addWidget(PayloadBatteryWidget(self))
         self.addWidget(diagnostics_widget.DiagnosticsWidget(self))
         self.addWidget(diagnostics_widget.DiagnosticsWidget(self))

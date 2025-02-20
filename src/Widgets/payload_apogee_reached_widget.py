@@ -1,0 +1,29 @@
+from PyQt5.QtWidgets import QWidget, QVBoxLayout
+from PyQt5.QtCore import Qt
+from src.Widgets.custom_q_widget_base import CustomQWidgetBase
+from src.constants import Constants
+from src.Widgets.QWidget_Parts import simple_bar_graph_widget
+from PyQt5.QtWidgets import QGridLayout, QLabel
+
+class PayloadApogeeReachedWidget(CustomQWidgetBase):
+    def __init__(self, parent_widget: QWidget = None, source_list=None, default_temperature=0):
+        super().__init__(parent_widget)
+
+        self.apogee_label = QLabel("Apogee Reached: False", self)
+        self.apogee_label.setAlignment(Qt.AlignCenter)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.apogee_label)
+        self.setLayout(vbox)
+
+        self.title = "Apogee Status"
+        self.addSourceKey("payload_apogee_reached_key", bool, Constants.payload_apogee_reached_key, default_value=False, hide_in_drop_down=True)
+    
+    def updateData(self, vehicle_data, updated_data):
+        payload_apogee_reached = self.getDictValueUsingSourceKey("payload_apogee_reached_key")
+        self.apogee_label.setText(f"Apogee Reached: {payload_apogee_reached}")
+
+    def adjustSize(self) -> None:
+        self.resize(200, 200)
+        
+    

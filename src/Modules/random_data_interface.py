@@ -101,6 +101,7 @@ class RandomDataInterface(ThreadedModuleCore):
         self.data_dictionary[Constants.raw_message_data_key] = diagnostics
         self.data_dictionary[Constants.payload_temperature_key] = (int(self.i /3))
         self.data_dictionary[Constants.payload_battery_key] = (int(self.i/10))
+        self.data_dictionary[Constants.payload_apogee_reached_key] = random.choice([True, False])
     
         if self.i % 10 == 1:
             self.logger.info(str(random.random()))
