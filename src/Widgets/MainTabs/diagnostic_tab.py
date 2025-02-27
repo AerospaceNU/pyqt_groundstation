@@ -15,6 +15,7 @@ from src.Widgets.payload_landing_time import PayloadLandingTimeWidget
 from src.Widgets.payload_apogee_reached_widget import PayloadApogeeAltitudeWidget
 from src.Widgets.payload_maximum_velocity_reached_widget import PayloadMaximumVelocity
 from src.Widgets.payload_landing_time import PayloadLandingTimeWidget
+from src.Widgets.payload_landing_velocity_widget import PayloadLandingVelocity
 
 class DiagnosticTab(TabCommon):
     def __init__(self, parent=None):
@@ -22,6 +23,7 @@ class DiagnosticTab(TabCommon):
         
         self.addWidget(LandingSiteTemperatureWidget(self))
         self.addWidget(PayloadMaximumVelocity(self))
+        self.addWidget(PayloadLandingVelocity(self))
         self.addWidget(PayloadApogeeAltitudeWidget(self)).move(800, 400)
         self.addWidget(PayloadBatteryWidget(self)).move(750, 400)
         self.addWidget(diagnostics_widget.DiagnosticsWidget(self))
