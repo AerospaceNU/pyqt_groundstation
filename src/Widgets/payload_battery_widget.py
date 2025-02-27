@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
-from src.Modules.random_data_interface import RandomDataInterface
 from src.Modules.module_core import ThreadedModuleCore
 from src.constants import Constants
 import math
@@ -20,7 +19,7 @@ from src.Widgets.QWidget_Parts import simple_bar_graph_widget
 class PayloadBatteryWidget(CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None, source_list=None, default_temperature=0):
         super().__init__(parent_widget)
-        self.payload_battery_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="Payload Battery", minValue=0, maxValue=100)
+        self.payload_battery_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="Payload Battery", minValue=0, maxValue=20)
         vbox = QVBoxLayout()
         vbox.addWidget(self.payload_battery_graph)
         self.setLayout(vbox)

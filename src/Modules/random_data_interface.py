@@ -3,7 +3,7 @@ import random
 import time
 
 import navpy
-
+    
 from src.constants import Constants
 from src.data_helpers import euler_to_quaternion
 from src.Modules.DataInterfaceTools.gps_position_filter import GPSPositionFilter
@@ -99,9 +99,9 @@ class RandomDataInterface(ThreadedModuleCore):
         
         
         self.data_dictionary[Constants.raw_message_data_key] = diagnostics
-        self.data_dictionary[Constants.payload_temperature_key] = (int(self.i /3))
+        self.data_dictionary[Constants.payload_landing_site_temperature_key] = (int(self.i /3))
         self.data_dictionary[Constants.payload_battery_key] = (int(self.i/10))
-        self.data_dictionary[Constants.payload_apogee_reached_key] = random.choice([True, False])
+        # self.data_dictionary[Constants.payload_apogee_reached_key] = random.choice([True, False])
     
         if self.i % 10 == 1:
             self.logger.info(str(random.random()))
@@ -110,3 +110,6 @@ class RandomDataInterface(ThreadedModuleCore):
 
         self.t = self.t + 0.3
 
+
+## add module like how random data is used 
+## 

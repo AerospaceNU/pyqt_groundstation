@@ -8,18 +8,18 @@ from src.Widgets import (
 )
 from src.Widgets.complete_console_widget import CompleteConsoleWidget
 from src.Widgets.MainTabs.main_tab_common import TabCommon
-from src.Widgets.payload_temperature_widget import PayloadTemperatureWidget
+from src.Widgets.payload_landing_site_temp_widget import LandingSiteTemperatureWidget
 from src.Widgets.payload_battery_widget import PayloadBatteryWidget
 from src.Modules.random_data_interface import RandomDataInterface
-from src.Widgets.payload_apogee_reached_widget import PayloadApogeeReachedWidget
+from src.Widgets.payload_apogee_reached_widget import PayloadApogeeAltitudeWidget
 
 class DiagnosticTab(TabCommon):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         
-        self.addWidget(PayloadTemperatureWidget(self))
-        self.addWidget(PayloadApogeeReachedWidget(self))
-        self.addWidget(PayloadBatteryWidget(self))
+        self.addWidget(LandingSiteTemperatureWidget(self))
+        self.addWidget(PayloadApogeeAltitudeWidget(self)).move(400, 400)
+        self.addWidget(PayloadBatteryWidget(self)).move(350, 400)
         self.addWidget(diagnostics_widget.DiagnosticsWidget(self))
         self.addWidget(diagnostics_widget.DiagnosticsWidget(self))
         self.addWidget(simple_console_widget.SimpleConsoleWidget(self))
