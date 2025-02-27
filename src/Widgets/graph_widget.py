@@ -85,7 +85,6 @@ class GraphWidget(CustomQWidgetBase):
             if self.record_new_data:
                 for source in self.sourceDictionary:
                     value = self.getDictValueUsingSourceKey(source)
-
                     if source not in self.data_dictionary:
                         self.data_dictionary[source] = [float("nan")]
                         self.time_dictionary[source] = [float("nan")]

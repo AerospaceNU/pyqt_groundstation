@@ -9,7 +9,6 @@ from src.data_helpers import get_value_from_dictionary
 from src.Widgets import custom_q_widget_base
 from src.Widgets.QWidget_Parts import simple_bar_graph_widget
 
-
 class ControlStationStatus(custom_q_widget_base.CustomQWidgetBase):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)

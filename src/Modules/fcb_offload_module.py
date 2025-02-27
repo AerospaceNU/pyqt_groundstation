@@ -22,14 +22,11 @@ class FCBOffloadModule(ThreadedModuleCore):
     def __init__(self):
         self.nextCheckTime = time.time()
         self.primary_module = False
-
         super().__init__()
-
         self.serial_port_name = ""
         self.serial_connection = False
         self.python_avionics_fcb_cli = FcbCli(None)
         self.updatePythonAvionicsSerialPort()
-
         self.command_queue = []
 
         self.serial_devices["FCB USB Connection"] = self.changeActiveSerialPort
@@ -98,6 +95,8 @@ class FCBOffloadModule(ThreadedModuleCore):
             command = self.command_queue.pop(0)
             self.cliConsole.manualAddEntry(command, False)
             self.data_dictionary[Constants.cli_interface_usb_command_running] = True
+            
+
             ret = self.runCLICommand(command)
 
             if ret is not None:

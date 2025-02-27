@@ -18,6 +18,7 @@ class MapInterface(ThreadedModuleCore):
         self.tile_manager = MapTileManager()
 
         self.data_dictionary[Constants.map_tile_manager_key] = self.tile_manager
+        # print(f"here::: {self.data_dictionary[Constants.payload_key]}")
 
     def getDataDictionary(self):
         """Don't want it to copy every loop"""

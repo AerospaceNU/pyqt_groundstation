@@ -16,7 +16,7 @@ from src.Widgets import (
     video_widget,
 )
 from src.Widgets.MainTabs.main_tab_common import TabCommon
-from src.Widgets.payload_temperature_widget import PayloadTemperatureWidget
+# from src.Widgets.payload_temperature_widget import PayloadTemperatureWidget
 
 
 class RocketPrimaryTab(TabCommon):
@@ -29,7 +29,7 @@ class RocketPrimaryTab(TabCommon):
         self.Annunciator = self.addWidget(annunciator_panel.AnnunciatorPanel())
         self.ButtonPanel = self.addWidget(button_panel.ButtonPanel())
         self.Console = self.addWidget(simple_console_widget.SimpleConsoleWidget())
-        self.PayloadTemp = self.addWidget(PayloadTemperatureWidget())
+        # self.PayloadTemp = self.addWidget(PayloadTemperatureWidget())
         
 
         self.Map = self.addWidget(map_widget.MapWidget())
@@ -47,7 +47,7 @@ class RocketPrimaryTab(TabCommon):
         layout.addWidget(self.VideoPanel, 2, 1, 4, 2)  # Lower Left
         layout.addWidget(self.Map, 2, 1, 4, 2)
         # layout.addWidget(self.Annunciator, 4, 3, 1, 1)  # Lower right (but biased toward center)
-        layout.addWidget(self.PayloadTemp, 4, 3, 1, 1)  # Lower right (but biased toward center)
+        # layout.addWidget(self.PayloadTemp, 4, 3, 1, 1)  # Lower right (but biased toward center)
         layout.addWidget(self.ButtonPanel, 4, 4, 1, 1)
         layout.addWidget(self.Console, 5, 3, 1, 2)
 

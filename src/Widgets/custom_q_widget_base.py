@@ -40,7 +40,6 @@ class SourceKeyData(object):
         else:
             self.description = description
 
-
 class CustomQWidgetBase(QFrame):
     def __init__(self, widget: QWidget = None):
         super().__init__(widget)

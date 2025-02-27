@@ -55,20 +55,15 @@ class ArduinoDataInterface(ThreadedModuleCore):
                 payload_apogee_altitude = float(parts[4])
                 payload_max_velocity = float(parts[6])
                 payload_landing_velocity = float(parts[7])
+                payload_landing_time = float(parts[1])
+                
                 self.data_dictionary[Constants.payload_landing_site_temperature_key] = payload_landing_site_temp
+                self.data_dictionary[Constants.payload_landing_time_key] = payload_landing_time
                 self.data_dictionary[Constants.payload_battery_key] = payload_battery / 10
                 self.data_dictionary[Constants.payload_apogee_altitude_key] = payload_apogee_altitude
                 self.data_dictionary[Constants.payload_max_velocity_key] = payload_max_velocity
                 self.data_dictionary[Constants.payload_landing_velocity_key] = payload_landing_velocity
 
-                # print(f"aco")
-                # print(f"ALTITUDE: {floatparts[4]}")
-                # print(f"parts: {parts}")
-
-                # print("temp", self.data_dictionary[Constants.payload_landing_site_temperature_key])
-        
-                # print(parsed_data)
-                    
                 
             time.sleep(.02)  # Adjust polling rate as needed
 

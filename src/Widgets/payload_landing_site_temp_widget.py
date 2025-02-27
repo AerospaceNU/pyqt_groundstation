@@ -15,7 +15,6 @@ class LandingSiteTemperatureWidget(CustomQWidgetBase):
             title="Payload Landing Site Temperature (K)", minValue=0, maxValue=500, barColor="rgb(255, 0, 0)"
         )
         self.payload_temp_graph.setMinimumHeight(140)  
-
         # Layout setup
         vbox = QGridLayout(self)
         vbox.addWidget(self.payload_temp_graph)  

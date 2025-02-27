@@ -64,6 +64,7 @@ class TabCommon(CustomQWidgetBase):
         layout.addWidget(widget, row, col)
         
     def updateAfterThemeSet(self):
+
         for widget in self.widgetList:
             widget.updateAfterThemeSet()
 

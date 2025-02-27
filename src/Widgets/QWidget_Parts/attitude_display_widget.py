@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import QLabel, QWidget
 
 from src.Widgets.QWidget_Parts import basic_image_display
 
-
 class AttitudeDisplayWidget(QLabel):
     def __init__(self, parent_widget: QWidget = None):
         super().__init__(parent_widget)

@@ -20,8 +20,8 @@ class PayloadLandingVelocity(CustomQWidgetBase):
         self.addSourceKey("payload_landing_velocity", float, Constants.payload_landing_velocity_key, default_value=False, hide_in_drop_down=True)
     
     def updateData(self, vehicle_data, updated_data):
-        payload_max_velocity= self.getDictValueUsingSourceKey("payload_max_velocity")
-        self.landing_vel_label.setText(f"Payload Landing Velocity: {payload_max_velocity} m/s")
+        payload_landing_velocity= self.getDictValueUsingSourceKey("payload_landing_velocity")
+        self.landing_vel_label.setText(f"Payload Landing Velocity: {payload_landing_velocity} m/s")
 
     def adjustSize(self) -> None:
         self.resize(200, 200)

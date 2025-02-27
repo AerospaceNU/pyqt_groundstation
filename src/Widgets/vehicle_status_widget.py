@@ -105,6 +105,7 @@ class VehicleStatusWidget(custom_q_widget_base.CustomQWidgetBase):
         v_speed = self.getDictValueUsingSourceKey("v_speed")
         acceleration = self.getDictValueUsingSourceKey("acceleration")
         fcb_voltage = self.getDictValueUsingSourceKey("fcb_voltage")
+        # print(f"updated fbc voltage is {fcb_voltage}")
         prop_voltage = self.getDictValueUsingSourceKey("prop_voltage")
         lc1_voltage = self.getDictValueUsingSourceKey("lc1_voltage")
         lc2_voltage = self.getDictValueUsingSourceKey("lc2_voltage")
