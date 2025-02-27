@@ -12,14 +12,16 @@ from src.Widgets.payload_landing_site_temp_widget import LandingSiteTemperatureW
 from src.Widgets.payload_battery_widget import PayloadBatteryWidget
 from src.Modules.random_data_interface import RandomDataInterface
 from src.Widgets.payload_apogee_reached_widget import PayloadApogeeAltitudeWidget
+from src.Widgets.payload_maximum_velocity_reached_widget import PayloadMaximumVelocity
 
 class DiagnosticTab(TabCommon):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         
         self.addWidget(LandingSiteTemperatureWidget(self))
-        self.addWidget(PayloadApogeeAltitudeWidget(self)).move(400, 400)
-        self.addWidget(PayloadBatteryWidget(self)).move(350, 400)
+        self.addWidget(PayloadMaximumVelocity(self))
+        self.addWidget(PayloadApogeeAltitudeWidget(self)).move(800, 400)
+        self.addWidget(PayloadBatteryWidget(self)).move(750, 400)
         self.addWidget(diagnostics_widget.DiagnosticsWidget(self))
         self.addWidget(diagnostics_widget.DiagnosticsWidget(self))
         self.addWidget(simple_console_widget.SimpleConsoleWidget(self))
@@ -29,8 +31,6 @@ class DiagnosticTab(TabCommon):
         self.addWidget(CompleteConsoleWidget(self)).move(0, 200)
         
         layout = QGridLayout()
-        # layout.addWidget(self.Payload_Temperature)
-        # layout.addWidget(self.Payload_Battery)
         layout.setRowStretch(1,0)
         layout.setColumnStretch(1,0)
         self.setLayout(layout)

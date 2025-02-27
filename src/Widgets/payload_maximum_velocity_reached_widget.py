@@ -5,23 +5,23 @@ from src.constants import Constants
 from src.Widgets.QWidget_Parts import simple_bar_graph_widget
 from PyQt5.QtWidgets import QGridLayout, QLabel
 
-class PayloadApogeeAltitudeWidget(CustomQWidgetBase):
+class PayloadMaximumVelocity(CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None, source_list=None, default_temperature=0):
         super().__init__(parent_widget)
 
-        self.apogee_label = QLabel("Altitude", self)
-        self.apogee_label.setAlignment(Qt.AlignCenter)
+        self.max_vel_label = QLabel("Maximum Velocity", self)
+        self.max_vel_label.setAlignment(Qt.AlignCenter)
 
         vbox = QVBoxLayout()
-        vbox.addWidget(self.apogee_label)
+        vbox.addWidget(self.max_vel_label)
         self.setLayout(vbox)
 
-        self.title = "Apogee Status"
-        self.addSourceKey("payload_apogee_altitude", float, Constants.payload_apogee_altitude_key, default_value=False, hide_in_drop_down=True)
+        self.title = "Maximum Velocity"
+        self.addSourceKey("payload_max_velocity", float, Constants.payload_max_velocity_key, default_value=False, hide_in_drop_down=True)
     
     def updateData(self, vehicle_data, updated_data):
-        payload_apogee_altitude= self.getDictValueUsingSourceKey("payload_apogee_altitude")
-        self.apogee_label.setText(f"Altitude Reached: {payload_apogee_altitude} m")
+        payload_max_velocity= self.getDictValueUsingSourceKey("payload_max_velocity")
+        self.max_vel_label.setText(f"Max Velocity Reached: {payload_max_velocity} m/s")
 
     def adjustSize(self) -> None:
         self.resize(200, 200)
