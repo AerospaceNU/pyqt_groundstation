@@ -107,8 +107,11 @@ class Constants:
     new_usb_cli_message_key = "new_usb_cli_message"
     new_offload_flight_saved_key = "new_offload_flight_saved"
     diagnostics_key = "diagnostics"
-    payload_temperature_key = "payload_temperature"
+    payload_landing_site_temperature_key = "payload_landing_site_temperature"
+    payload_max_velocity_key = "payload_max_velocity"
+    payload_landing_velocity_key = "payload_landing_velocity"
     payload_battery_key = "payload_battery"
+    payload_apogee_altitude_key = "payload_apogee_altitude"
 
     invalid_fcb_state_name = "Invalid FCB State"
     fcb_state_names = [
