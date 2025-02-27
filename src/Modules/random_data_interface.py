@@ -1,6 +1,7 @@
 import math
 import random
 import time
+from datetime import datetime
 
 import navpy
 
@@ -105,8 +106,8 @@ class RandomDataInterface(ThreadedModuleCore):
         self.data_dictionary[Constants.payload_key]['payload_temp'] = payload_temp
         print(f"payload{self.data_dictionary[Constants.payload_key]}")
 
-    
-    
+        payload_time = datetime.now()
+        self.data_dictionary[Constants.payload_landing_time_key] = payload_time
     
         if self.i % 10 == 1:
             self.logger.info(str(random.random()))

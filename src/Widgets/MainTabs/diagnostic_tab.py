@@ -11,6 +11,7 @@ from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets.payload_temperature_widget import PayloadTemperatureWidget
 from src.Widgets.payload_battery_widget import PayloadBatteryBarWidget
 from src.Modules.random_data_interface import RandomDataInterface
+from src.Widgets.payload_landing_time import PayloadLandingTimeWidget
 
 class DiagnosticTab(TabCommon):
     def __init__(self, parent=None):
@@ -24,6 +25,7 @@ class DiagnosticTab(TabCommon):
         self.addWidget(pyro_display_widget.PyroWidget(self))
         self.addWidget(qr_code_widget.RocketLocationQrCode(self)).move(0, 400)
         self.addWidget(CompleteConsoleWidget(self)).move(0, 200)
+        self.addWidget(PayloadLandingTimeWidget(self)).move(600, 600)
         
         layout = QGridLayout()
         layout.addWidget(self.Temperature, 2, 1, 4, 2)
@@ -31,3 +33,5 @@ class DiagnosticTab(TabCommon):
         layout.setColumnStretch(1,0)
         self.setLayout(layout)
        
+
+       # constatnts,random data, arduino, diagnostics
