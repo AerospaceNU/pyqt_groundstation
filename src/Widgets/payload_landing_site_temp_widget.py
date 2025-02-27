@@ -12,7 +12,7 @@ class LandingSiteTemperatureWidget(CustomQWidgetBase):
         # self.draggable = True  
 
         self.payload_temp_graph = simple_bar_graph_widget.SimpleBarGraphWidget(
-            title="Landing Site Temperature (K)", minValue=0, maxValue=500, barColor="rgb(255, 0, 0)"
+            title="Payload Landing Site Temperature (K)", minValue=0, maxValue=500, barColor="rgb(255, 0, 0)"
         )
         self.payload_temp_graph.setMinimumHeight(140)  
 
@@ -23,7 +23,7 @@ class LandingSiteTemperatureWidget(CustomQWidgetBase):
         self.setLayout(vbox)
 
         # self.resize(100, 1000)  
-        self.title = "Landing Site Temperature"
+        self.title = "Payload Landing Site Temperature"
         self.addSourceKey("payload_landing_site_temperature", float, Constants.payload_landing_site_temperature_key, default_value=0, hide_in_drop_down=True)
 
     def updateData(self, vehicle_data, updated_data):

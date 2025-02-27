@@ -16,12 +16,12 @@ class PayloadApogeeAltitudeWidget(CustomQWidgetBase):
         vbox.addWidget(self.apogee_label)
         self.setLayout(vbox)
 
-        self.title = "Apogee Status"
+        self.title = "Payload Apogee Status"
         self.addSourceKey("payload_apogee_altitude", float, Constants.payload_apogee_altitude_key, default_value=False, hide_in_drop_down=True)
     
     def updateData(self, vehicle_data, updated_data):
         payload_apogee_altitude= self.getDictValueUsingSourceKey("payload_apogee_altitude")
-        self.apogee_label.setText(f"Altitude Reached: {payload_apogee_altitude} m")
+        self.apogee_label.setText(f"Payload Apogee Altitude Reached: {payload_apogee_altitude} m")
 
     def adjustSize(self) -> None:
         self.resize(200, 200)
