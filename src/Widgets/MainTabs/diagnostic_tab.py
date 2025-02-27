@@ -14,6 +14,7 @@ from src.Modules.random_data_interface import RandomDataInterface
 from src.Widgets.payload_landing_time import PayloadLandingTimeWidget
 from src.Widgets.payload_apogee_reached_widget import PayloadApogeeAltitudeWidget
 from src.Widgets.payload_maximum_velocity_reached_widget import PayloadMaximumVelocity
+from src.Widgets.payload_landing_time import PayloadLandingTimeWidget
 
 class DiagnosticTab(TabCommon):
     def __init__(self, parent=None):
