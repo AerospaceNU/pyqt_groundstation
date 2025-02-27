@@ -23,7 +23,7 @@ class PayloadLandingTimeWidget(CustomQWidgetBase):
 
         self.addSourceKey("payload_landing_time", float, Constants.payload_landing_time_key, default_value=0, hide_in_drop_down=True)
 
-    def updateData(self):
+    def updateData(self, vehicle_data, updated_data):
         landing_time = self.getDictValueUsingSourceKey("payload_landing_time")
         formatted_time = QTime(0,0).addSecs(int(landing_time)).toString("H:MM:SS")
         print("TIMEEEEE", {formatted_time})

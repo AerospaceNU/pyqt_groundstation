@@ -19,7 +19,7 @@ class PayloadMaximumVelocity(CustomQWidgetBase):
         self.title = "Payload Maximum Velocity"
         self.addSourceKey("payload_max_velocity", float, Constants.payload_max_velocity_key, default_value=False, hide_in_drop_down=True)
     
-    def updateData(self,):
+    def updateData(self, vehicle_data, updated_data):
         payload_max_velocity= self.getDictValueUsingSourceKey("payload_max_velocity")
         self.max_vel_label.setText(f"Payload Max Velocity Reached: {payload_max_velocity} m/s")
 
