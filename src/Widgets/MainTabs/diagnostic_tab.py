@@ -16,14 +16,15 @@ from src.Widgets.payload_apogee_reached_widget import PayloadApogeeAltitudeWidge
 from src.Widgets.payload_maximum_velocity_reached_widget import PayloadMaximumVelocity
 from src.Widgets.payload_landing_time import PayloadLandingTimeWidget
 from src.Widgets.payload_landing_velocity_widget import PayloadLandingVelocity
-
+# from src.Widgets.payload_crew_survivabilty_widget import PieChartWidget
+from src.Widgets.payload_crew_survivabilty_widget import CrewSurvivabilityWidget
 class DiagnosticTab(TabCommon):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         
-        self.addWidget(LandingSiteTemperatureWidget(self))
-        self.addWidget(PayloadMaximumVelocity(self))
-        self.addWidget(PayloadLandingVelocity(self))
+        self.addWidget(LandingSiteTemperatureWidget(self)).move(1000,400)
+        self.addWidget(PayloadMaximumVelocity(self)).move(900,400)
+        self.addWidget(PayloadLandingVelocity(self)).move(850,400)
         self.addWidget(PayloadApogeeAltitudeWidget(self)).move(800, 400)
         self.addWidget(PayloadBatteryWidget(self)).move(750, 400)
         self.addWidget(diagnostics_widget.DiagnosticsWidget(self))
@@ -33,6 +34,7 @@ class DiagnosticTab(TabCommon):
         self.addWidget(pyro_display_widget.PyroWidget(self))
         self.addWidget(qr_code_widget.RocketLocationQrCode(self)).move(0, 400)
         self.addWidget(CompleteConsoleWidget(self)).move(0, 200)
+        self.addWidget(CrewSurvivabilityWidget(self)).move(1100,400)
         self.addWidget(PayloadLandingTimeWidget(self)).move(600, 600)
         
         layout = QGridLayout()
@@ -40,5 +42,4 @@ class DiagnosticTab(TabCommon):
         layout.setColumnStretch(1,0)
         self.setLayout(layout)
        
-
        # constatnts,random data, arduino, diagnostics

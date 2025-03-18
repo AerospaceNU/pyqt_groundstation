@@ -1,7 +1,6 @@
 import math
 import random
 import time
-from datetime import datetime
 
 import navpy
     
@@ -97,7 +96,6 @@ class RandomDataInterface(ThreadedModuleCore):
             ]
         }
         
-        payload_time = datetime.now()
         
         self.data_dictionary[Constants.raw_message_data_key] = diagnostics
         self.data_dictionary[Constants.payload_landing_site_temperature_key] = (int(self.i /3))
@@ -105,12 +103,12 @@ class RandomDataInterface(ThreadedModuleCore):
         self.data_dictionary[Constants.payload_apogee_altitude_key] = random.randint(100, 300)
         self.data_dictionary[Constants.payload_max_velocity_key] = random.randint(100,400)
         self.data_dictionary[Constants.payload_landing_velocity_key] = random.randint(100,400)
-        self.data_dictionary[Constants.payload_landing_time_key] = payload_time
-
+        self.data_dictionary[Constants.payload_landing_time_key] = random.randint(0,1000)
+        self.data_dictionary[Constants.payload_crew_survivability_key] = random.randint(75,100)
         if self.i % 10 == 1:
             self.logger.info(str(random.random()))
 
-        time.sleep(0.02)
+        time.sleep(0.2)
 
         self.t = self.t + 0.3
 
