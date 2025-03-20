@@ -18,6 +18,9 @@ from src.Widgets.payload_landing_time import PayloadLandingTimeWidget
 from src.Widgets.payload_landing_velocity_widget import PayloadLandingVelocity
 # from src.Widgets.payload_crew_survivabilty_widget import PieChartWidget
 from src.Widgets.payload_crew_survivabilty_widget import CrewSurvivabilityWidget
+from src.Widgets.payload_data_transmission_button import PayloadDataTransmissionButton
+from src.Modules.arduino_random_data_interface import ArduinoDataInterface
+
 class DiagnosticTab(TabCommon):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -36,6 +39,7 @@ class DiagnosticTab(TabCommon):
         self.addWidget(CompleteConsoleWidget(self)).move(0, 200)
         self.addWidget(CrewSurvivabilityWidget(self)).move(1100,400)
         self.addWidget(PayloadLandingTimeWidget(self)).move(600, 600)
+        self.addWidget(PayloadDataTransmissionButton(self, None, ArduinoDataInterface)).move(900, 600)    
         
         layout = QGridLayout()
         layout.setRowStretch(1,0)

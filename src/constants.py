@@ -114,6 +114,7 @@ class Constants:
     payload_apogee_altitude_key = "payload_apogee_altitude"
     payload_landing_time_key = "payload_landing_time"
     payload_crew_survivability_key = "payload_crew_survivabilty"
+    payload_data_transmission_button_key = "payload_data_transmission_button"
 
     invalid_fcb_state_name = "Invalid FCB State"
     fcb_state_names = [

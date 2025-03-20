@@ -43,6 +43,10 @@ class ArduinoDataInterface(ThreadedModuleCore):
             self.raw_data = raw_data.split(";")
             # return self.parse_data(self.raw_data)
 
+    def write_arduino_data(self, data):
+        if self.serial_conn and self.serial_conn.is_open:
+            self.serial_conn.write(f"{data}\n".encode("utf-8"))
+
     def spin(self):
         """Continuously checks for new data and updates the dictionary."""
         while True:
@@ -66,6 +70,14 @@ class ArduinoDataInterface(ThreadedModuleCore):
                 self.data_dictionary[Constants.payload_landing_velocity_key] = payload_landing_velocity
                 self.data_dictionary[Constants.payload_crew_survivability_key] = payload_survivabilty
 
+                # print(f"aco")
+                # print(f"ALTITUDE: {floatparts[4]}")
+                # print(f"parts: {parts}")
+
+                # print("temp", self.data_dictionary[Constants.payload_landing_site_temperature_key])
+        
+                # print(parsed_data)
+                    
                 
             time.sleep(.02)  # Adjust polling rate as needed
 
