@@ -4,10 +4,10 @@ from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 from src.constants import Constants
 
 class PayloadUserInputWidget(CustomQWidgetBase):
-    def __init__(self, parent=None, default_message=""):
+    def __init__(self, parent=None, arduino_interface=None):
         super().__init__(parent)
+        self.arduino_interface = arduino_interface
         
-        # Create Title Label
         self.title_label = QLabel("User Input Message", self)
         self.title_label.setAlignment(Qt.AlignCenter)  # Use Qt.AlignCenter for alignment
         self.title_label.setStyleSheet("font-size: 16px; font-weight: bold;")
@@ -38,8 +38,10 @@ class PayloadUserInputWidget(CustomQWidgetBase):
 
     def submit_message(self):
         user_message = self.text_input.text()
-        self.update_data(user_message)
-        print(self.updated_data_dictionary['payload_input_message'])
+        print(user_message)
+        if self.arduino_interface:
+            if user_message:
+                self.arduino_interface.write_arduino_data(user_message)  # Data Transmission ON, send 'b'
         self.text_input.clear()  # Clear the text input after submission
 
     def update_data(self, message):

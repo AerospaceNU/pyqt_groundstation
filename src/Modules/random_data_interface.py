@@ -5,7 +5,7 @@ import time
 import navpy
     
 from src.constants import Constants
-from src.data_helpers import euler_to_quaternion
+from src.data_helpers import euler_to_quaternion, get_value_from_dictionary
 from src.Modules.DataInterfaceTools.gps_position_filter import GPSPositionFilter
 from src.Modules.module_core import ThreadedModuleCore
 
@@ -21,6 +21,8 @@ class RandomDataInterface(ThreadedModuleCore):
         self.i = 0
         self.j = 0
         self.t = 0
+        # self.data_dictionary[Constants.payload_user_input_message_key] = ""
+
 
         self.vehicle_position_filter = GPSPositionFilter("random data")
 
@@ -95,8 +97,7 @@ class RandomDataInterface(ThreadedModuleCore):
                 ["ddddddddd", random.random()],
             ]
         }
-        
-        
+
         self.data_dictionary[Constants.raw_message_data_key] = diagnostics
         self.data_dictionary[Constants.payload_landing_site_temperature_key] = (int(self.i /3))
         self.data_dictionary[Constants.payload_battery_key] = (int(self.i/10))
@@ -105,7 +106,10 @@ class RandomDataInterface(ThreadedModuleCore):
         self.data_dictionary[Constants.payload_landing_velocity_key] = random.randint(100,400)
         self.data_dictionary[Constants.payload_landing_time_key] = random.randint(0,1000)
         self.data_dictionary[Constants.payload_crew_survivability_key] = random.randint(75,100)
-        self.data_dictionary[Constants.payload_data_transmission_button_key] = 1
+        self.data_dictionary[Constants.payload_orientation_key] = random.randint(0,365)
+
+        
+      
         if self.i % 10 == 1:
             self.logger.info(str(random.random()))
 

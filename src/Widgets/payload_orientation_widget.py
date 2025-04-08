@@ -6,7 +6,7 @@ from src.Widgets.QWidget_Parts import simple_bar_graph_widget
 from PyQt5.QtWidgets import QGridLayout, QLabel
 
 class PayloadOrientationWidget(CustomQWidgetBase):
-    def __init__(self, parent_widget: QWidget = None, source_list=None, default_temperature=0):
+    def __init__(self, parent_widget: QWidget = None):
         super().__init__(parent_widget)
 
         self.orientation_label = QLabel("Orientation", self)
@@ -21,7 +21,7 @@ class PayloadOrientationWidget(CustomQWidgetBase):
     
     def updateData(self, vehicle_data, updated_data):
         payload_orientation = self.getDictValueUsingSourceKey("payload_orientation")
-        self.orientation_label.setText(f"Payload Orientation (°) (\n \n \n {payload_orientation} m")
+        self.orientation_label.setText(f"Payload Orientation (°)\n \n \n {payload_orientation} m")
 
     def adjustSize(self) -> None:
         self.resize(250, 200)    

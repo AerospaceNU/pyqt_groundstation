@@ -9,7 +9,7 @@ class PayloadDataTransmissionButton(CustomQWidgetBase):
         self.arduino_interface = arduino_interface
         # Create a toggle button
         self.button = QPushButton("Data Transmission ON", self)
-        self.button.setCheckable(True)  # Enable toggle functionality
+        self.button.setCheckable(True)  # Enable toggle functionality 
         self.button.toggled.connect(self.toggle_state)  # Connect signal to slot
 
         layout = QVBoxLayout()
@@ -20,27 +20,39 @@ class PayloadDataTransmissionButton(CustomQWidgetBase):
         # Store button state in source key
         self.addSourceKey(
             "payload_data_transmission_button", int, 
-            Constants.payload_read_write_button, 
-            default_value=1, hide_in_drop_down=True
+            Constants.payload_data_transmission_button_key, 
+            hide_in_drop_down=True
         )
 
+        self.is_checked = 1 # 1 for transmitting data
+        
     def toggle_state(self, checked):
         """Toggle button text and update stored value."""
-        new_state = 1 if checked else 0
-        self.button.setText("Data Transmission ON" if checked else "Data Transmission OFF")  # Correct button text
-
-        # Update the stored value
-        self.setSourceKeyValue("payload_data_transmission_button", new_state)
+        print("Calling toggl state")
+        self.is_checked = 1 if checked else 0
+        self.button.setText("Data Transmission is on!" if checked else "Data Transmission is off!")  # Correct button text
+        self.updated_data_dictionary["payload_data_transmission_button"] = self.is_checked
+        # print(f"self updated: {self.updated_data_dictionary['payload_data_transmission_button']}, should be {self.is_checked}")
+        # print("BEW STATEEEEE", {self.is_checked})
+        # self.updateData(vehicle_data=None, updated_data=None)
         if self.arduino_interface:
-            if new_state == 1:
+            if self.is_checked == 1:
                 self.arduino_interface.write_arduino_data("b")  # Data Transmission ON, send 'b'
             else:
                 self.arduino_interface.write_arduino_data("s")  # Data Transmission OFF, send 's'
 
+
+
     def updateData(self, vehicle_data, updated_data):
         """Update button state based on external data source."""
-        button_val = self.getDictValueUsingSourceKey("payload_data_transmission_button")
-        if button_val:
+        # print("update data getting called here!")
+        # button_val = self.getDictValueUsingSourceKey("payload_data_transmission_button")
+        # if self.is_checked != None:
+        #     print("button val is not none")
+        if self.is_checked:
+            # print("there is a button val")
             self.button.setChecked(True)
         else:
             self.button.setChecked(False)
+            # print("there is not a button val")
+

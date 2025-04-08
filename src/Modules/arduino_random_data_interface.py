@@ -9,7 +9,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from src.constants import Constants
 from src.Modules.module_core import ThreadedModuleCore
 
-
 class ArduinoDataInterface(ThreadedModuleCore):
     """
     Reads and processes incoming data from an Arduino via serial connection.
@@ -42,8 +41,9 @@ class ArduinoDataInterface(ThreadedModuleCore):
             # print(f"Raw data received: {raw_data}")  # Debugging output
             self.raw_data = raw_data.split(";")
             # return self.parse_data(self.raw_data)
-
+            
     def write_arduino_data(self, data):
+        print("called write and its writing! datA:", data)
         if self.serial_conn and self.serial_conn.is_open:
             self.serial_conn.write(f"{data}\n".encode("utf-8"))
 
@@ -51,7 +51,6 @@ class ArduinoDataInterface(ThreadedModuleCore):
         """Continuously checks for new data and updates the dictionary."""
         while True:
             self.read_arduino_data()
-            # time.sleep(1)
             if self.raw_data:
                 parts = self.raw_data
                 payload_landing_site_temp = float(parts[2])
@@ -61,7 +60,7 @@ class ArduinoDataInterface(ThreadedModuleCore):
                 payload_landing_velocity = float(parts[7])
                 payload_landing_time = float(parts[1])
                 payload_survivabilty = float(parts[9])
-                payload_ort = float(parts[5])
+                payload_orientation = float(parts[5])
                 self.data_dictionary[Constants.payload_landing_site_temperature_key] = payload_landing_site_temp
                 self.data_dictionary[Constants.payload_landing_time_key] = payload_landing_time
                 self.data_dictionary[Constants.payload_battery_key] = payload_battery / 10
@@ -69,16 +68,7 @@ class ArduinoDataInterface(ThreadedModuleCore):
                 self.data_dictionary[Constants.payload_max_velocity_key] = payload_max_velocity
                 self.data_dictionary[Constants.payload_landing_velocity_key] = payload_landing_velocity
                 self.data_dictionary[Constants.payload_crew_survivability_key] = payload_survivabilty
-
-                # print(f"aco")
-                # print(f"ALTITUDE: {floatparts[4]}")
-                # print(f"parts: {parts}")
-
-                # print("temp", self.data_dictionary[Constants.payload_landing_site_temperature_key])
-        
-                # print(parsed_data)
-                    
-                
+                self.data_dictionary[Constants.payload_orientation_key] = payload_orientation
             time.sleep(.02)  # Adjust polling rate as needed
 
 if __name__ == "__main__":
