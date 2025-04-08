@@ -47,20 +47,19 @@ class DiagnosticTab(TabCommon):
         self.addWidget(reconfigure_widget.ReconfigureWidget(self.scroll_widget)).move(0,1200) # the big one with a lot of dara
         self.addWidget(pyro_display_widget.PyroWidget(self.scroll_widget))
         self.addWidget(qr_code_widget.RocketLocationQrCode(self.scroll_widget)).move(0, 400)
-        
+        self.addWidget(CompleteConsoleWidget(self.scroll_widget)).move(0, 200)
+
 
         self.addWidget(PayloadDataTransmissionButton(self.scroll_widget, arduino_interface=ArduinoDataInterface())).move(700, 50)
-        self.addWidget(PayloadUserInputWidget(self.scroll_widget, arduino_interface=ArduinoDataInterface())).move(950,50)
-        self.addWidget(PayloadLandingTimeWidget(self.scroll_widget)).move(700, 300)
-        self.addWidget(PayloadApogeeAltitudeWidget(self.scroll_widget)).move(950, 250)
-        self.addWidget(PayloadBatteryWidget(self.scroll_widget)).move(1150, 300)
-
-        self.addWidget(LandingSiteTemperatureWidget(self.scroll_widget)).move(1000, 200)
-        self.addWidget(CompleteConsoleWidget(self.scroll_widget)).move(0, 200)
-        self.addWidget(CrewSurvivabilityWidget(self.scroll_widget)).move(1100, 400)
-        self.addWidget(PayloadMaximumVelocity(self.scroll_widget)).move(900, 400)
-        self.addWidget(PayloadLandingVelocity(self.scroll_widget)).move(850, 400)
-        self.addWidget(PayloadOrientationWidget(self.scroll_widget))
+        self.addWidget(PayloadUserInputWidget(self.scroll_widget, arduino_interface=ArduinoDataInterface())).move(980,50)
+        self.addWidget(PayloadLandingTimeWidget(self.scroll_widget)).move(700, 280)
+        self.addWidget(PayloadApogeeAltitudeWidget(self.scroll_widget)).move(950, 240)
+        self.addWidget(PayloadBatteryWidget(self.scroll_widget)).move(1220, 240)
+        self.addWidget(PayloadLandingVelocity(self.scroll_widget)).move(700, 500)
+        self.addWidget(LandingSiteTemperatureWidget(self.scroll_widget)).move(980, 500)
+        self.addWidget(PayloadMaximumVelocity(self.scroll_widget)).move(700, 750)
+        self.addWidget(PayloadOrientationWidget(self.scroll_widget)).move(1000,750)
+        self.addWidget(CrewSurvivabilityWidget(self.scroll_widget)).move(800, 1000)
 
         main_layout = QVBoxLayout(self)
         main_layout.addWidget(self.scroll_area)
