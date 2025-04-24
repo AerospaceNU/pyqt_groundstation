@@ -1,9 +1,11 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
 from PyQt5.QtChart import QChart, QChartView, QPieSeries
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from src.Widgets.custom_q_widget_base import CustomQWidgetBase
+from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
+
 from src.constants import Constants
+from src.Widgets.custom_q_widget_base import CustomQWidgetBase
+
 
 class DraggableHandle(QWidget):
     def __init__(self, parent=None):
@@ -30,16 +32,12 @@ class DraggableHandle(QWidget):
             self._dragging = False
             event.accept()
 
+
 class CrewSurvivabilityWidget(CustomQWidgetBase):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.addSourceKey(
-            "payload_crew_survivabilty",
-            float,
-            Constants.payload_crew_survivability_key,
-            hide_in_drop_down=True
-        )
+        self.addSourceKey("payload_crew_survivabilty", float, Constants.payload_crew_survivability_key, hide_in_drop_down=True)
 
         self.chart = QChart()
         self.series = QPieSeries()
@@ -58,7 +56,7 @@ class CrewSurvivabilityWidget(CustomQWidgetBase):
         legend.setAlignment(Qt.AlignBottom)
         legend.setMarkerShape(legend.MarkerShapeCircle)
         legend.setFont(QFont("Arial", 14))
-    
+
         # Layouts
         main_layout = QVBoxLayout()
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -78,7 +76,7 @@ class CrewSurvivabilityWidget(CustomQWidgetBase):
         self.setLayout(main_layout)
 
         # Appearance
-        self.setMinimumSize(375, 300)
+        self.setMinimumSize(455, 300)
         self.setStyleSheet("border: 1px solid #a0a0a0; border-radius: 4px;")
 
     def updateChart(self, survivability):
@@ -86,14 +84,14 @@ class CrewSurvivabilityWidget(CustomQWidgetBase):
         risk = 100 - survivability
 
         if len(self.series.slices()) == 0:
-            self.series.append(f'Survivability: {survivability:.1f}%', survivability)
-            self.series.append(f'Risk: {risk:.1f}%', risk)
+            self.series.append(f"Survivability: {survivability:.1f}%", survivability)
+            self.series.append(f"Risk: {risk:.1f}%", risk)
         else:
             slices = self.series.slices()
             slices[0].setValue(survivability)
-            slices[0].setLabel(f'Survivability: {survivability:.1f}%')
+            slices[0].setLabel(f"Survivability: {survivability:.1f}%")
             slices[1].setValue(risk)
-            slices[1].setLabel(f'Risk: {risk:.1f}%')
+            slices[1].setLabel(f"Risk: {risk:.1f}%")
 
     def updateData(self, vehicle_data, updated_data):
         survivability = self.getDictValueUsingSourceKey("payload_crew_survivabilty")

@@ -1,8 +1,9 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from PyQt5.QtCore import Qt
-from src.Widgets.custom_q_widget_base import CustomQWidgetBase
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
+
 from src.constants import Constants
-from PyQt5.QtWidgets import QLabel
+from src.Widgets.custom_q_widget_base import CustomQWidgetBase
+
 
 class PayloadOrientationWidget(CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None):
@@ -15,15 +16,13 @@ class PayloadOrientationWidget(CustomQWidgetBase):
         vbox.addWidget(self.orientation_label)
         self.setLayout(vbox)
 
-        self.title = "Payload Orientation (°)"
+        self.title = "Orientation (°)"
         self.addSourceKey("payload_orientation", float, Constants.payload_orientation_key, default_value=False, hide_in_drop_down=True)
-    
+
     def updateData(self, vehicle_data, updated_data):
         payload_orientation = self.getDictValueUsingSourceKey("payload_orientation")
-        self.orientation_label.setText(f"Payload Orientation \n \n \n {payload_orientation}°")
-        self.orientation_label.setStyleSheet("font-size: 16px; font-weight: bold;")
-
+        self.orientation_label.setText(f"Orientation \n \n \n {payload_orientation}°")
+        self.orientation_label.setStyleSheet("font-size: 20px; font-weight: bold;")
 
     def adjustSize(self) -> None:
-        self.resize(250, 200)    
-    
+        self.resize(250, 200)

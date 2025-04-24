@@ -1,8 +1,9 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from PyQt5.QtCore import Qt
-from src.Widgets.custom_q_widget_base import CustomQWidgetBase
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
+
 from src.constants import Constants
-from PyQt5.QtWidgets import QLabel
+from src.Widgets.custom_q_widget_base import CustomQWidgetBase
+
 
 class PayloadMaximumVelocity(CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None):
@@ -15,13 +16,13 @@ class PayloadMaximumVelocity(CustomQWidgetBase):
         vbox.addWidget(self.max_vel_label)
         self.setLayout(vbox)
 
-        self.title = "Payload Maximum Velocity"
+        self.title = "Maximum Velocity"
         self.addSourceKey("payload_max_velocity", float, Constants.payload_max_velocity_key, default_value=False, hide_in_drop_down=True)
-    
+
     def updateData(self, vehicle_data, updated_data):
-        payload_max_velocity= self.getDictValueUsingSourceKey("payload_max_velocity")
-        self.max_vel_label.setText(f"Payload Max Velocity Reached\n \n \n {payload_max_velocity} m/s")
-        self.max_vel_label.setStyleSheet("font-size: 16px; font-weight: bold;")
+        payload_max_velocity = self.getDictValueUsingSourceKey("payload_max_velocity")
+        self.max_vel_label.setText(f"Max Velocity\n Reached\n \n \n {payload_max_velocity} m/s")
+        self.max_vel_label.setStyleSheet("font-size: 20px; font-weight: bold;")
 
     def adjustSize(self) -> None:
         self.resize(250, 200)

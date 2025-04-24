@@ -1,22 +1,31 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLineEdit, QLabel, QPushButton
 from PyQt5.QtCore import Qt  # Import Qt from PyQt5.QtCore
-from src.Widgets.custom_q_widget_base import CustomQWidgetBase
+from PyQt5.QtWidgets import (
+    QApplication,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
+
 from src.constants import Constants
+from src.Widgets.custom_q_widget_base import CustomQWidgetBase
+
 
 class PayloadUserInputWidget(CustomQWidgetBase):
     def __init__(self, parent=None, arduino_interface=None):
         super().__init__(parent)
         self.arduino_interface = arduino_interface
-        
+
         self.title_label = QLabel("User Input Message", self)
         self.title_label.setAlignment(Qt.AlignCenter)  # Use Qt.AlignCenter for alignment
-        self.title_label.setStyleSheet("font-size: 16px; font-weight: bold;")
+        self.title_label.setStyleSheet("font-size: 20px; font-weight: bold;")
 
         # Create Text Input Field
         self.text_input = QLineEdit(self)
         self.text_input.setPlaceholderText("Enter your message here...")
         self.text_input.setStyleSheet("background-color: white; color: black; border: 2px solid blue;")
-        
+
         # Create Submit Button
         self.submit_button = QPushButton("Submit", self)
         self.submit_button.setEnabled(False)  # Disable the button initially
@@ -30,7 +39,7 @@ class PayloadUserInputWidget(CustomQWidgetBase):
         layout.addWidget(self.title_label)
         layout.addWidget(self.text_input)
         layout.addWidget(self.submit_button)
-        
+
         self.setLayout(layout)
         self.setMinimumSize(300, 150)
 
@@ -45,7 +54,7 @@ class PayloadUserInputWidget(CustomQWidgetBase):
         self.text_input.clear()  # Clear the text input after submission
 
     def update_data(self, message):
-        self.updated_data_dictionary['payload_input_message'] = message  # Store the message in the dictionary
+        self.updated_data_dictionary["payload_input_message"] = message  # Store the message in the dictionary
 
     def check_input(self):
         # Check if the input text is empty and enable/disable the button accordingly

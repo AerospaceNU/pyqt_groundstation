@@ -1,8 +1,9 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from PyQt5.QtCore import Qt
-from src.Widgets.custom_q_widget_base import CustomQWidgetBase
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
+
 from src.constants import Constants
-from PyQt5.QtWidgets import QLabel
+from src.Widgets.custom_q_widget_base import CustomQWidgetBase
+
 
 class PayloadLandingVelocity(CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None, source_list=None, default_temperature=0):
@@ -15,15 +16,13 @@ class PayloadLandingVelocity(CustomQWidgetBase):
         vbox.addWidget(self.landing_vel_label)
         self.setLayout(vbox)
 
-        self.title = "Payload Landing Velocity"
+        self.title = "Landing Velocity"
         self.addSourceKey("payload_landing_velocity", float, Constants.payload_landing_velocity_key, default_value=False, hide_in_drop_down=True)
-    
-    def updateData(self, vehicle_data, updated_data): 
-        payload_landing_velocity= self.getDictValueUsingSourceKey("payload_landing_velocity")
-        self.landing_vel_label.setText(f"Payload Landing Velocity\n \n \n {payload_landing_velocity} m/s")
-        self.landing_vel_label.setStyleSheet("font-size: 16px; font-weight: bold;")
+
+    def updateData(self, vehicle_data, updated_data):
+        payload_landing_velocity = self.getDictValueUsingSourceKey("payload_landing_velocity")
+        self.landing_vel_label.setText(f"Landing Velocity\n \n \n {payload_landing_velocity} m/s")
+        self.landing_vel_label.setStyleSheet("font-size: 20px; font-weight: bold;")
 
     def adjustSize(self) -> None:
         self.resize(250, 200)
-        
-    
