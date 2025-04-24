@@ -2,8 +2,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from PyQt5.QtCore import Qt
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 from src.constants import Constants
-from src.Widgets.QWidget_Parts import simple_bar_graph_widget
-from PyQt5.QtWidgets import QGridLayout, QLabel
+from PyQt5.QtWidgets import QLabel
 
 class PayloadOrientationWidget(CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None):
@@ -21,7 +20,9 @@ class PayloadOrientationWidget(CustomQWidgetBase):
     
     def updateData(self, vehicle_data, updated_data):
         payload_orientation = self.getDictValueUsingSourceKey("payload_orientation")
-        self.orientation_label.setText(f"Payload Orientation (°)\n \n \n {payload_orientation} m")
+        self.orientation_label.setText(f"Payload Orientation \n \n \n {payload_orientation}°")
+        self.orientation_label.setStyleSheet("font-size: 16px; font-weight: bold;")
+
 
     def adjustSize(self) -> None:
         self.resize(250, 200)    

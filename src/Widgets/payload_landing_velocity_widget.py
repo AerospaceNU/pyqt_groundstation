@@ -2,8 +2,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from PyQt5.QtCore import Qt
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 from src.constants import Constants
-from src.Widgets.QWidget_Parts import simple_bar_graph_widget
-from PyQt5.QtWidgets import QGridLayout, QLabel
+from PyQt5.QtWidgets import QLabel
 
 class PayloadLandingVelocity(CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None, source_list=None, default_temperature=0):
@@ -21,7 +20,8 @@ class PayloadLandingVelocity(CustomQWidgetBase):
     
     def updateData(self, vehicle_data, updated_data): 
         payload_landing_velocity= self.getDictValueUsingSourceKey("payload_landing_velocity")
-        self.landing_vel_label.setText(f"Payload Landing Velocity:\n \n \n {payload_landing_velocity} m/s")
+        self.landing_vel_label.setText(f"Payload Landing Velocity\n \n \n {payload_landing_velocity} m/s")
+        self.landing_vel_label.setStyleSheet("font-size: 16px; font-weight: bold;")
 
     def adjustSize(self) -> None:
         self.resize(250, 200)

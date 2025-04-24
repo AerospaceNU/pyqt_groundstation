@@ -3,7 +3,7 @@ import random
 import time
 
 import navpy
-    
+import numpy as np
 from src.constants import Constants
 from src.data_helpers import euler_to_quaternion, get_value_from_dictionary
 from src.Modules.DataInterfaceTools.gps_position_filter import GPSPositionFilter
@@ -22,8 +22,7 @@ class RandomDataInterface(ThreadedModuleCore):
         self.j = 0
         self.t = 0
         # self.data_dictionary[Constants.payload_user_input_message_key] = ""
-
-
+        
         self.vehicle_position_filter = GPSPositionFilter("random data")
 
     def spin(self):
@@ -99,24 +98,18 @@ class RandomDataInterface(ThreadedModuleCore):
         }
 
         self.data_dictionary[Constants.raw_message_data_key] = diagnostics
-        self.data_dictionary[Constants.payload_landing_site_temperature_key] = (int(self.i /3))
-        self.data_dictionary[Constants.payload_battery_key] = (int(self.i/10))
+        self.data_dictionary[Constants.payload_landing_site_temperature_key] = np.round((random.randint(274,412) - 273.15),2)
+        self.data_dictionary[Constants.payload_battery_key] = self.i/10
         self.data_dictionary[Constants.payload_apogee_altitude_key] = random.randint(100, 300)
         self.data_dictionary[Constants.payload_max_velocity_key] = random.randint(100,400)
         self.data_dictionary[Constants.payload_landing_velocity_key] = random.randint(100,400)
         self.data_dictionary[Constants.payload_landing_time_key] = random.randint(0,1000)
         self.data_dictionary[Constants.payload_crew_survivability_key] = random.randint(75,100)
         self.data_dictionary[Constants.payload_orientation_key] = random.randint(0,365)
-
-        
-      
+    
         if self.i % 10 == 1:
             self.logger.info(str(random.random()))
 
         time.sleep(0.2)
 
         self.t = self.t + 0.3
-
-
-## add module like how random data is used 
-## 

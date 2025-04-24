@@ -80,6 +80,7 @@ class RocketLocationQrCode(CustomQWidgetBase):
 
         self.setQrText(text)
         self.label2.setText(text)
+        self.label2.setStyleSheet("font-size: 16px; font-weight: bold;")
 
 
 if __name__ == "__main__":

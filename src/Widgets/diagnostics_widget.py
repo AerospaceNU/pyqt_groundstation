@@ -96,11 +96,9 @@ class DiagnosticsWidget(custom_q_widget_base.CustomQWidgetBase):
                 pass
 
             new_line = "{0}{2}{1}\n".format(line[0], value, spaces)
-
             out_string = out_string + new_line
 
         out_string = out_string[:-1]  # Remove last character
-
         self.textBoxWidget.setText(out_string)
 
         if self.autoSize:

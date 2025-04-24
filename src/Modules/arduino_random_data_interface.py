@@ -3,6 +3,7 @@ import time
 
 import sys
 import os
+import numpy as np
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
@@ -53,15 +54,15 @@ class ArduinoDataInterface(ThreadedModuleCore):
             self.read_arduino_data()
             if self.raw_data:
                 parts = self.raw_data
-                payload_landing_site_temp = float(parts[2])
-                payload_battery = float(parts[3])
-                payload_apogee_altitude = float(parts[4])
-                payload_max_velocity = float(parts[6])
-                payload_landing_velocity = float(parts[7])
+                payload_landing_site_temp = np.round((float(parts[2])),2)
+                payload_battery = np.round(float(parts[3]),2)
+                payload_apogee_altitude = np.round(float(parts[4]),2)
+                payload_max_velocity = np.round(float(parts[6]),2)
+                payload_landing_velocity = np.round(float(parts[7]),2)
                 payload_landing_time = float(parts[1])
-                payload_survivabilty = float(parts[9])
-                payload_orientation = float(parts[5])
-                self.data_dictionary[Constants.payload_landing_site_temperature_key] = payload_landing_site_temp
+                payload_survivabilty = np.round(float(parts[9]),2)
+                payload_orientation = np.round(float(parts[5]),2)
+                self.data_dictionary[Constants.payload_landing_site_temperature_key] = np.round(payload_landing_site_temp - 273.15,2)
                 self.data_dictionary[Constants.payload_landing_time_key] = payload_landing_time
                 self.data_dictionary[Constants.payload_battery_key] = payload_battery / 10
                 self.data_dictionary[Constants.payload_apogee_altitude_key] = payload_apogee_altitude
@@ -69,6 +70,7 @@ class ArduinoDataInterface(ThreadedModuleCore):
                 self.data_dictionary[Constants.payload_landing_velocity_key] = payload_landing_velocity
                 self.data_dictionary[Constants.payload_crew_survivability_key] = payload_survivabilty
                 self.data_dictionary[Constants.payload_orientation_key] = payload_orientation
+                
             time.sleep(.02)  # Adjust polling rate as needed
 
 if __name__ == "__main__":

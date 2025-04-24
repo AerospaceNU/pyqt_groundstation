@@ -2,8 +2,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from PyQt5.QtCore import Qt
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 from src.constants import Constants
-from src.Widgets.QWidget_Parts import simple_bar_graph_widget
-from PyQt5.QtWidgets import QGridLayout, QLabel
+from PyQt5.QtWidgets import QLabel
 
 class PayloadApogeeAltitudeWidget(CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None, source_list=None, default_temperature=0):
@@ -21,7 +20,8 @@ class PayloadApogeeAltitudeWidget(CustomQWidgetBase):
     
     def updateData(self, vehicle_data, updated_data):
         payload_apogee_altitude= self.getDictValueUsingSourceKey("payload_apogee_altitude")
-        self.apogee_label.setText(f"Payload Apogee Altitude Reached:\n \n \n {payload_apogee_altitude} m")
+        self.apogee_label.setText(f"Payload Apogee Altitude \n Reached\n \n \n {payload_apogee_altitude} m")
+        self.apogee_label.setStyleSheet("font-size: 16px; font-weight: bold;")
 
     def adjustSize(self) -> None:
         self.resize(250, 200)    

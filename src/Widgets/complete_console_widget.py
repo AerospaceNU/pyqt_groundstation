@@ -44,7 +44,12 @@ class CompleteConsoleWidget(custom_q_widget_base.CustomQWidgetBase):
         self.titleBox.setText(self.title)
         self.titleBox.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
         self.textBoxWidget.setFont(QFont("monospace", 10))
+        self.titleBox.setStyleSheet("font-size: 16px; font-weight: bold;")
         self.textBoxWidget.setWordWrap(True)
+        
+        self.titleWidget = QLabel()
+        self.titleWidget.setText(self.title)
+        self.titleWidget.setStyleSheet("font-size: 16px; font-weight: bold;")
 
         # self.scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 

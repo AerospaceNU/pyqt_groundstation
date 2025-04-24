@@ -22,6 +22,7 @@ class PyroWidget(CustomQWidgetBase):
         layout = QGridLayout()
         self.titleWidget = QLabel()
         self.titleWidget.setText(self.title)
+        self.titleWidget.setStyleSheet("font-size: 16px; font-weight: bold;")
         self.titleWidget.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
         layout.addWidget(self.titleWidget, 0, 0, 1, 6)
 
@@ -35,6 +36,7 @@ class PyroWidget(CustomQWidgetBase):
             titleLabel.setText(f"{column + 1}")
             layout.addWidget(titleLabel, 1, column)
             titleLabel.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+            titleLabel.setStyleSheet("font-size: 16px; font-weight: bold;")
             self.titleWidgets.append(titleLabel)
 
             self.annunciatorWidgets.append(QLabel())

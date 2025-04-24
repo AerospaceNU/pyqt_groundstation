@@ -2,11 +2,10 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from PyQt5.QtCore import Qt
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 from src.constants import Constants
-from src.Widgets.QWidget_Parts import simple_bar_graph_widget
-from PyQt5.QtWidgets import QGridLayout, QLabel
+from PyQt5.QtWidgets import QLabel
 
 class PayloadMaximumVelocity(CustomQWidgetBase):
-    def __init__(self, parent_widget: QWidget = None, source_list=None, default_temperature=0):
+    def __init__(self, parent_widget: QWidget = None):
         super().__init__(parent_widget)
 
         self.max_vel_label = QLabel("Maximum Velocity", self)
@@ -21,7 +20,8 @@ class PayloadMaximumVelocity(CustomQWidgetBase):
     
     def updateData(self, vehicle_data, updated_data):
         payload_max_velocity= self.getDictValueUsingSourceKey("payload_max_velocity")
-        self.max_vel_label.setText(f"Payload Max Velocity Reached:\n \n \n {payload_max_velocity} m/s")
+        self.max_vel_label.setText(f"Payload Max Velocity Reached\n \n \n {payload_max_velocity} m/s")
+        self.max_vel_label.setStyleSheet("font-size: 16px; font-weight: bold;")
 
     def adjustSize(self) -> None:
         self.resize(250, 200)
