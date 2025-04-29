@@ -36,9 +36,9 @@ class PayloadDataTransmissionButton(CustomQWidgetBase):
 
         if self.arduino_interface:
             if self.is_checked == 1:
-                self.arduino_interface.write_arduino_data("b")  # ON
+                self.arduino_interface.write_arduino_data("--start")  # ON
             else:
-                self.arduino_interface.write_arduino_data("s")  # OFF
+                self.arduino_interface.write_arduino_data("--end")  # OFF
 
     def updateData(self, vehicle_data, updated_data):
         """Update button state based on internal is_checked flag."""
