@@ -19,7 +19,7 @@ from src.Modules.laptop_status_monitor import LaptopStatusMonitor
 from src.Modules.map_interface import MapInterface
 from src.Modules.prop_websocket_interface import PropWebsocketInterface
 from src.Modules.random_data_interface import RandomDataInterface
-from src.Modules.arduino_random_data_interface import ArduinoDataInterface
+from src.Modules.arduino_data_interface import ArduinoDataInterface
 from src.Modules.text_to_speech import TextToSpeech
 
 if __name__ == "__main__":
