@@ -21,8 +21,8 @@ class PayloadOrientationWidget(CustomQWidgetBase):
 
     def updateData(self, vehicle_data, updated_data):
         payload_orientation = self.getDictValueUsingSourceKey("payload_orientation")
-        self.orientation_label.setText(f"Orientation \n \n \n {payload_orientation}°")
+        self.orientation_label.setText(f"Orientation \n \n {payload_orientation}°")
         self.orientation_label.setStyleSheet("font-size: 20px; font-weight: bold;")
 
     def adjustSize(self) -> None:
-        self.resize(250, 200)
+        self.resize(175, 150)

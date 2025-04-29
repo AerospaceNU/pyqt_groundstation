@@ -21,8 +21,8 @@ class PayloadLandingVelocity(CustomQWidgetBase):
 
     def updateData(self, vehicle_data, updated_data):
         payload_landing_velocity = self.getDictValueUsingSourceKey("payload_landing_velocity")
-        self.landing_vel_label.setText(f"Landing Velocity\n \n \n {payload_landing_velocity} m/s")
+        self.landing_vel_label.setText(f"Landing Velocity\n \n {payload_landing_velocity} m/s")
         self.landing_vel_label.setStyleSheet("font-size: 20px; font-weight: bold;")
 
     def adjustSize(self) -> None:
-        self.resize(250, 200)
+        self.resize(200, 150)

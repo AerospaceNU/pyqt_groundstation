@@ -21,8 +21,8 @@ class PayloadMaximumVelocity(CustomQWidgetBase):
 
     def updateData(self, vehicle_data, updated_data):
         payload_max_velocity = self.getDictValueUsingSourceKey("payload_max_velocity")
-        self.max_vel_label.setText(f"Max Velocity\n Reached\n \n \n {payload_max_velocity} m/s")
+        self.max_vel_label.setText(f"Max Velocity\n Reached\n \n {payload_max_velocity} m/s")
         self.max_vel_label.setStyleSheet("font-size: 20px; font-weight: bold;")
 
     def adjustSize(self) -> None:
-        self.resize(250, 200)
+        self.resize(200, 150)

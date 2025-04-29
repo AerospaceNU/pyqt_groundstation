@@ -14,7 +14,7 @@ class PayloadDataTransmissionButton(CustomQWidgetBase):
 
         # Create and configure the toggle button
         self.button = QPushButton("Data Transmission ON", self)
-        self.button.setFont(QFont("Arial", 20))
+        self.button.setFont(QFont("Arial", 25))
         self.button.setCheckable(True)
         self.button.setChecked(True)
         self.button.toggled.connect(self.toggle_state)
@@ -23,7 +23,7 @@ class PayloadDataTransmissionButton(CustomQWidgetBase):
         layout = QVBoxLayout()
         layout.addWidget(self.button)
         self.setLayout(layout)
-        self.setMinimumSize(200, 200)
+        self.setMinimumSize(100, 100)
 
         # Store button state in source key
         self.addSourceKey("payload_data_transmission_button", int, Constants.payload_data_transmission_button_key, hide_in_drop_down=True)

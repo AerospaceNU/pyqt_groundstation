@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from src.Modules.arduino_random_data_interface import ArduinoDataInterface
+from src.Modules.arduino_data_interface import ArduinoDataInterface
 from src.Modules.random_data_interface import RandomDataInterface
 from src.Widgets import (
     diagnostics_widget,
@@ -20,6 +20,7 @@ from src.Widgets import (
 )
 from src.Widgets.complete_console_widget import CompleteConsoleWidget
 from src.Widgets.MainTabs.main_tab_common import TabCommon
+from src.Widgets.payload_acceleration_widget import PayloadAccelerationWidget
 from src.Widgets.payload_apogee_reached_widget import PayloadApogeeAltitudeWidget
 from src.Widgets.payload_battery_widget import PayloadBatteryWidget
 from src.Widgets.payload_crew_survivabilty_widget import CrewSurvivabilityWidget
@@ -29,6 +30,7 @@ from src.Widgets.payload_landing_time import PayloadLandingTimeWidget
 from src.Widgets.payload_landing_velocity_widget import PayloadLandingVelocity
 from src.Widgets.payload_maximum_velocity_reached_widget import PayloadMaximumVelocity
 from src.Widgets.payload_orientation_widget import PayloadOrientationWidget
+from src.Widgets.payload_run_time_widget import PayloadRunTimeWidget
 from src.Widgets.payload_send_message_box import PayloadUserInputWidget
 
 
@@ -43,7 +45,7 @@ class DiagnosticTab(TabCommon):
         header_layout = QHBoxLayout()
 
         # Create FCB header and align it to the left
-        fcb_header = QLabel("\n                                     FCB                                                                                              PAYLOAD")
+        fcb_header = QLabel("                                     FCB                                                                                              PAYLOAD")
         fcb_header.setStyleSheet("font-weight: bold; font-size: 30px;")
 
         # Add FCB header to the layout with stretch factor 1 (left)
@@ -64,22 +66,24 @@ class DiagnosticTab(TabCommon):
         layout.setRowStretch(1, 0)
         layout.setColumnStretch(1, 0)
 
-        self.addWidget(pyro_display_widget.PyroWidget(self.scroll_widget)).move(50, 50)
-        self.addWidget(qr_code_widget.RocketLocationQrCode(self.scroll_widget)).move(50, 200)
-        self.addWidget(CompleteConsoleWidget(self.scroll_widget)).move(520, 200)  # go back
-        self.addWidget(reconfigure_widget.ReconfigureWidget(self.scroll_widget)).move(520, 400)
-        self.addWidget(diagnostics_widget.DiagnosticsWidget(self.scroll_widget)).move(520, 620)
-        self.addWidget(simple_console_widget.SimpleConsoleWidget(self.scroll_widget)).move(50, 750)
-        self.addWidget(PayloadDataTransmissionButton(self.scroll_widget, arduino_interface=ArduinoDataInterface())).move(1000, 50)
-        self.addWidget(PayloadUserInputWidget(self.scroll_widget, arduino_interface=ArduinoDataInterface())).move(1340, 50)
-        self.addWidget(PayloadLandingTimeWidget(self.scroll_widget)).move(1000, 280)
-        self.addWidget(PayloadApogeeAltitudeWidget(self.scroll_widget)).move(1300, 240)
-        self.addWidget(PayloadBatteryWidget(self.scroll_widget)).move(1620, 240)  # between 90 and 130, V*10
-        self.addWidget(PayloadLandingVelocity(self.scroll_widget)).move(1000, 500)
-        self.addWidget(LandingSiteTemperatureWidget(self.scroll_widget)).move(1280, 470)  # convert kelvin to celsius  #RANGE??????
-        self.addWidget(PayloadMaximumVelocity(self.scroll_widget)).move(1000, 750)
-        self.addWidget(PayloadOrientationWidget(self.scroll_widget)).move(1300, 780)
-        self.addWidget(CrewSurvivabilityWidget(self.scroll_widget)).move(1100, 1000)
+        self.addWidget(qr_code_widget.RocketLocationQrCode(self.scroll_widget)).move(50, 50)
+        self.addWidget(pyro_display_widget.PyroWidget(self.scroll_widget)).move(50, 625)
+        self.addWidget(CompleteConsoleWidget(self.scroll_widget)).move(520, 50)  # go back
+        self.addWidget(reconfigure_widget.ReconfigureWidget(self.scroll_widget)).move(520, 215)
+        self.addWidget(diagnostics_widget.DiagnosticsWidget(self.scroll_widget)).move(520, 400)
+        self.addWidget(simple_console_widget.SimpleConsoleWidget(self.scroll_widget)).move(50, 950)
+        self.addWidget(PayloadDataTransmissionButton(self.scroll_widget, arduino_interface=ArduinoDataInterface())).move(875, 50)
+        self.addWidget(PayloadUserInputWidget(self.scroll_widget, arduino_interface=ArduinoDataInterface())).move(875, 175)
+        self.addWidget(PayloadBatteryWidget(self.scroll_widget)).move(1200, 125)  # between 90 and 130, V*10
+        self.addWidget(PayloadRunTimeWidget(self.scroll_widget)).move(1350, 125)
+        self.addWidget(PayloadLandingTimeWidget(self.scroll_widget)).move(1600, 125)
+        self.addWidget(PayloadMaximumVelocity(self.scroll_widget)).move(875, 350)
+        self.addWidget(PayloadLandingVelocity(self.scroll_widget)).move(1090, 350)
+        self.addWidget(PayloadAccelerationWidget(self.scroll_widget)).move(1305, 350)
+        self.addWidget(PayloadApogeeAltitudeWidget(self.scroll_widget)).move(1490, 350)
+        self.addWidget(PayloadOrientationWidget(self.scroll_widget)).move(1675, 350)
+        self.addWidget(LandingSiteTemperatureWidget(self.scroll_widget)).move(875, 550)  # convert kelvin to celsius  #RANGE??????
+        self.addWidget(CrewSurvivabilityWidget(self.scroll_widget)).move(1400, 550)
 
         # Add the scroll area to the main layout
         main_layout.addWidget(self.scroll_area)

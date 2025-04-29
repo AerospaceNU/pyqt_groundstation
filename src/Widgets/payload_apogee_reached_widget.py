@@ -21,8 +21,8 @@ class PayloadApogeeAltitudeWidget(CustomQWidgetBase):
 
     def updateData(self, vehicle_data, updated_data):
         payload_apogee_altitude = self.getDictValueUsingSourceKey("payload_apogee_altitude")
-        self.apogee_label.setText(f"Apogee \n \n \n {payload_apogee_altitude} m")
+        self.apogee_label.setText(f"Apogee \n \n {payload_apogee_altitude} m")
         self.apogee_label.setStyleSheet("font-size: 20px; font-weight: bold;")
 
     def adjustSize(self) -> None:
-        self.resize(250, 200)
+        self.resize(175, 150)

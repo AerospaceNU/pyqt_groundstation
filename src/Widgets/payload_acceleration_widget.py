@@ -21,8 +21,8 @@ class PayloadAccelerationWidget(CustomQWidgetBase):
 
     def updateData(self, vehicle_data, updated_data):
         payload_acceleration = self.getDictValueUsingSourceKey("payload_acceleration")
-        self.apogee_label.setText(f"Acceleration \n \n \n {payload_acceleration} g force")
+        self.apogee_label.setText(f"Acceleration \n \n {payload_acceleration} g force")
         self.apogee_label.setStyleSheet("font-size: 20px; font-weight: bold;")
 
     def adjustSize(self) -> None:
-        self.resize(250, 200)
+        self.resize(175, 150)
