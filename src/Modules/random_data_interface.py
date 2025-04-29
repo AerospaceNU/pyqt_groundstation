@@ -98,7 +98,7 @@ class RandomDataInterface(ThreadedModuleCore):
         }
 
         self.data_dictionary[Constants.raw_message_data_key] = diagnostics
-        self.data_dictionary[Constants.payload_landing_site_temperature_key] = np.round((random.randint(274,412) - 273.15),2)
+        self.data_dictionary[Constants.payload_landing_site_temperature_key] = np.round((random.randint(5,274) - 273.15),2)
         self.data_dictionary[Constants.payload_battery_key] = self.i/10
         self.data_dictionary[Constants.payload_apogee_altitude_key] = random.randint(100, 300)
         self.data_dictionary[Constants.payload_max_velocity_key] = random.randint(100,400)
@@ -106,7 +106,7 @@ class RandomDataInterface(ThreadedModuleCore):
         self.data_dictionary[Constants.payload_landing_time_key] = random.randint(0,1000)
         self.data_dictionary[Constants.payload_crew_survivability_key] = random.randint(75,100)
         self.data_dictionary[Constants.payload_orientation_key] = random.randint(0,365)
-        self.data_dictionary[Constants.payload_landing_time_key] = random.randint(0,1000)
+        self.data_dictionary[Constants.payload_run_time_key] = random.randint(0,1000)
         self.data_dictionary[Constants.payload_acceleration_key] = random.randint(0,100)
     
         if self.i % 10 == 1:
