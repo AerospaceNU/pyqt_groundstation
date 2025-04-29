@@ -54,22 +54,27 @@ class ArduinoDataInterface(ThreadedModuleCore):
             self.read_arduino_data()
             if self.raw_data:
                 parts = self.raw_data
-                payload_landing_site_temp = np.round((float(parts[2])),2)
-                payload_battery = np.round(float(parts[3]),2)
-                payload_apogee_altitude = np.round(float(parts[4]),2)
-                payload_max_velocity = np.round(float(parts[6]),2)
-                payload_landing_velocity = np.round(float(parts[7]),2)
-                payload_landing_time = float(parts[1])
-                payload_survivabilty = np.round(float(parts[9]),2)
-                payload_orientation = np.round(float(parts[5]),2)
-                self.data_dictionary[Constants.payload_landing_site_temperature_key] = np.round(payload_landing_site_temp - 273.15,2)
+                payload_run_time = parts[1]
+                payload_landing_time = parts[2]
+                payload_landing_site_temp = parts[3]
+                payload_battery = parts[4]
+                payload_apogee_altitude = parts[5]
+                payload_orientation = parts[6]
+                payload_max_velocity = parts[7]
+                payload_landing_velocity = parts[8]
+                payload_acceleration = parts[9]
+                payload_survivabilty = parts[10]
+                
+                self.data_dictionary[Constants.payload_run_time_key] = payload_run_time
                 self.data_dictionary[Constants.payload_landing_time_key] = payload_landing_time
+                self.data_dictionary[Constants.payload_landing_site_temperature_key] = payload_landing_site_temp - 273.15
                 self.data_dictionary[Constants.payload_battery_key] = payload_battery / 10
                 self.data_dictionary[Constants.payload_apogee_altitude_key] = payload_apogee_altitude
+                self.data_dictionary[Constants.payload_orientation_key] = payload_orientation
                 self.data_dictionary[Constants.payload_max_velocity_key] = payload_max_velocity
                 self.data_dictionary[Constants.payload_landing_velocity_key] = payload_landing_velocity
+                self.data_dictionary[Constants.payload_acceleration_key] = payload_acceleration
                 self.data_dictionary[Constants.payload_crew_survivability_key] = payload_survivabilty
-                self.data_dictionary[Constants.payload_orientation_key] = payload_orientation
                 
             time.sleep(.02)  # Adjust polling rate as needed
 

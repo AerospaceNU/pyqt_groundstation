@@ -106,6 +106,8 @@ class RandomDataInterface(ThreadedModuleCore):
         self.data_dictionary[Constants.payload_landing_time_key] = random.randint(0,1000)
         self.data_dictionary[Constants.payload_crew_survivability_key] = random.randint(75,100)
         self.data_dictionary[Constants.payload_orientation_key] = random.randint(0,365)
+        self.data_dictionary[Constants.payload_landing_time_key] = random.randint(0,1000)
+        self.data_dictionary[Constants.payload_acceleration_key] = random.randint(0,100)
     
         if self.i % 10 == 1:
             self.logger.info(str(random.random()))
