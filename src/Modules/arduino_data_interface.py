@@ -15,7 +15,7 @@ class ArduinoDataInterface(ThreadedModuleCore):
     Reads and processes incoming data from an Arduino via serial connection.
     """
     
-    def __init__(self, serial_port="/dev/cu.usbmodem101", baud_rate=9600):
+    def __init__(self, is_connected, serial_port="/dev/cu.usbmodem21201", baud_rate=9600):
         super().__init__()
         self.primary_module = True
         self.serial_port = serial_port
@@ -23,7 +23,8 @@ class ArduinoDataInterface(ThreadedModuleCore):
         self.serial_conn = None
         self.last_data_time = 0
         self.raw_data = ''
-        self.connect_to_arduino()
+        if not is_connected:
+            self.connect_to_arduino()
     
     def connect_to_arduino(self):
         """Establishes a connection to the Arduino."""
@@ -78,6 +79,7 @@ class ArduinoDataInterface(ThreadedModuleCore):
                 
             time.sleep(.02)  # Adjust polling rate as needed
 
-if __name__ == "__main__":
-    arduino_interface = ArduinoDataInterface()
-    arduino_interface.spin()
+# if __name__ == "__main__":
+#     print("ard happen")
+#     arduino_interface = ArduinoDataInterface(is_connected=False)
+#     arduino_interface.spin()
