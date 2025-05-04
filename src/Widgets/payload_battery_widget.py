@@ -8,7 +8,7 @@ from src.Widgets.QWidget_Parts import simple_bar_graph_widget
 class PayloadBatteryWidget(CustomQWidgetBase):
     def __init__(self, parent_widget: QWidget = None, source_list=None, default_temperature=0):
         super().__init__(parent_widget)
-        self.payload_battery_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="Battery dV", minValue=0, maxValue=20)
+        self.payload_battery_graph = simple_bar_graph_widget.SimpleBarGraphWidget(title="Battery V", minValue=0, maxValue=20)
 
         vbox = QVBoxLayout()
         vbox.addWidget(self.payload_battery_graph)

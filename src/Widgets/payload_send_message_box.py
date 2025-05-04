@@ -11,11 +11,12 @@ from PyQt5.QtWidgets import (
 from src.constants import Constants
 from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
+# from src.callback_handler import CallbackHandler
+
 
 class PayloadUserInputWidget(CustomQWidgetBase):
-    def __init__(self, parent=None, arduino_interface=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.arduino_interface = arduino_interface
 
         self.title_label = QLabel("User Input Message", self)
         self.title_label.setAlignment(Qt.AlignCenter)  # Use Qt.AlignCenter for alignment
@@ -48,9 +49,8 @@ class PayloadUserInputWidget(CustomQWidgetBase):
     def submit_message(self):
         user_message = self.text_input.text()
         print(user_message)
-        if self.arduino_interface:
-            if user_message:
-                self.arduino_interface.write_arduino_data(user_message)  # Data Transmission ON, send 'b'
+        if user_message:
+            self.callback_handler.requestCallback("write_arduino", user_message)
         self.text_input.clear()  # Clear the text input after submission
 
     def update_data(self, message):

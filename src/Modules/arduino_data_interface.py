@@ -1,31 +1,35 @@
-import serial
+import os
+import sys
 import time
 
-import sys
-import os
 import numpy as np
+import serial
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from src.constants import Constants
 from src.Modules.module_core import ThreadedModuleCore
 
+
 class ArduinoDataInterface(ThreadedModuleCore):
     """
     Reads and processes incoming data from an Arduino via serial connection.
     """
-    
-    def __init__(self, is_connected, serial_port="/dev/cu.usbmodem21201", baud_rate=9600):
+
+    def __init__(self, serial_port="COM6", baud_rate=9600):
         super().__init__()
+        self.callback_handler.addCallback("write_arduino", self.write_arduino_data)
         self.primary_module = True
         self.serial_port = serial_port
         self.baud_rate = baud_rate
         self.serial_conn = None
         self.last_data_time = 0
-        self.raw_data = ''
-        if not is_connected:
-            self.connect_to_arduino()
-    
+        self.raw_data = ""
+        self.arduino_log_str = ""
+        print(f"KEYYYYS {list(self.data_dictionary.keys())}")
+
+        self.connect_to_arduino()
+
     def connect_to_arduino(self):
         """Establishes a connection to the Arduino."""
         try:
@@ -34,18 +38,20 @@ class ArduinoDataInterface(ThreadedModuleCore):
         except serial.SerialException as e:
             print(f"Failed to connect to Arduino: {e}")  # Debugging output
             self.serial_conn = None
-    
+
     def read_arduino_data(self):
         """Reads a line of data from the Arduino and parses it."""
         if self.serial_conn and self.serial_conn.in_waiting > 0:
             raw_data = self.serial_conn.readline().decode("utf-8").strip()
             self.last_data_time = time.time()
             # print(f"Raw data received: {raw_data}")  # Debugging output
+            # if "payload_logs" in self.data_dictionary and raw_data:
+            self.arduino_log_str += raw_data + "\n"
+            self.data_dictionary["payload_logs"] = self.arduino_log_str
             self.raw_data = raw_data.split(";")
             # return self.parse_data(self.raw_data)
-            
+
     def write_arduino_data(self, data):
-        print("called write and its writing! datA:", data)
         if self.serial_conn and self.serial_conn.is_open:
             self.serial_conn.write(f"{data}\n".encode("utf-8"))
 
@@ -53,22 +59,22 @@ class ArduinoDataInterface(ThreadedModuleCore):
         """Continuously checks for new data and updates the dictionary."""
         while True:
             self.read_arduino_data()
-            if self.raw_data:
+            if len(self.raw_data) == 12:
                 parts = self.raw_data
-                payload_run_time = parts[1]
-                payload_landing_time = parts[2]
-                payload_landing_site_temp = parts[3]
-                payload_battery = parts[4]
-                payload_apogee_altitude = parts[5]
-                payload_orientation = parts[6]
-                payload_max_velocity = parts[7]
-                payload_landing_velocity = parts[8]
-                payload_acceleration = parts[9]
-                payload_survivabilty = parts[10]
-                
+                payload_run_time = int(parts[1])
+                payload_landing_time = int(parts[2])
+                payload_landing_site_temp = int(parts[3])
+                payload_battery = int(parts[4])
+                payload_apogee_altitude = int(parts[5])
+                payload_orientation = int(parts[6])
+                payload_max_velocity = int(parts[7])
+                payload_landing_velocity = int(parts[8])
+                payload_acceleration = int(parts[9])
+                payload_survivabilty = int(parts[10])
+
                 self.data_dictionary[Constants.payload_run_time_key] = payload_run_time
                 self.data_dictionary[Constants.payload_landing_time_key] = payload_landing_time
-                self.data_dictionary[Constants.payload_landing_site_temperature_key] = payload_landing_site_temp - 273.15
+                self.data_dictionary[Constants.payload_landing_site_temperature_key] = round(payload_landing_site_temp - 273.15, 2)
                 self.data_dictionary[Constants.payload_battery_key] = payload_battery / 10
                 self.data_dictionary[Constants.payload_apogee_altitude_key] = payload_apogee_altitude
                 self.data_dictionary[Constants.payload_orientation_key] = payload_orientation
@@ -76,10 +82,5 @@ class ArduinoDataInterface(ThreadedModuleCore):
                 self.data_dictionary[Constants.payload_landing_velocity_key] = payload_landing_velocity
                 self.data_dictionary[Constants.payload_acceleration_key] = payload_acceleration
                 self.data_dictionary[Constants.payload_crew_survivability_key] = payload_survivabilty
-                
-            time.sleep(.02)  # Adjust polling rate as needed
 
-# if __name__ == "__main__":
-#     print("ard happen")
-#     arduino_interface = ArduinoDataInterface(is_connected=False)
-#     arduino_interface.spin()
+            time.sleep(0.02)  # Adjust polling rate as needed

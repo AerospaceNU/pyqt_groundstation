@@ -80,9 +80,9 @@ class LandingSiteTemperatureWidget(CustomQWidgetBase):
 
         # Create X-axis for temperature values
         self.axis_x = QValueAxis()
-        self.axis_x.setRange(-270, 30)
+        self.axis_x.setRange(-20, 100)
         self.axis_x.setTickCount(6)
-        self.axis_x.setTickInterval(50)
+        self.axis_x.setTickInterval(20)
         self.chart.addAxis(self.axis_x, Qt.AlignBottom)
         self.series.attachAxis(self.axis_x)
 

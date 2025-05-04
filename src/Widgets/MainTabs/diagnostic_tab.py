@@ -18,6 +18,7 @@ from src.Widgets import (
     reconfigure_widget,
     simple_console_widget,
 )
+from src.Widgets.arduino_logs_widget import ArduinoLogsWidget
 from src.Widgets.complete_console_widget import CompleteConsoleWidget
 from src.Widgets.MainTabs.main_tab_common import TabCommon
 from src.Widgets.payload_acceleration_widget import PayloadAccelerationWidget
@@ -37,8 +38,6 @@ from src.Widgets.payload_send_message_box import PayloadUserInputWidget
 class DiagnosticTab(TabCommon):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        print("diag happen ")
-        adi = ArduinoDataInterface(is_connected=False)
 
         # Main layout for the tab
         main_layout = QVBoxLayout(self)
@@ -74,8 +73,8 @@ class DiagnosticTab(TabCommon):
         self.addWidget(reconfigure_widget.ReconfigureWidget(self.scroll_widget)).move(520, 215)
         self.addWidget(diagnostics_widget.DiagnosticsWidget(self.scroll_widget)).move(520, 400)
         self.addWidget(simple_console_widget.SimpleConsoleWidget(self.scroll_widget)).move(50, 950)
-        self.addWidget(PayloadDataTransmissionButton(self.scroll_widget, arduino_interface=adi)).move(875, 50)
-        self.addWidget(PayloadUserInputWidget(self.scroll_widget, arduino_interface=adi)).move(875, 175)
+        self.addWidget(PayloadDataTransmissionButton(self.scroll_widget)).move(875, 50)
+        self.addWidget(PayloadUserInputWidget(self.scroll_widget)).move(875, 175)
         self.addWidget(PayloadBatteryWidget(self.scroll_widget)).move(1200, 125)  # between 90 and 130, V*10
         self.addWidget(PayloadRunTimeWidget(self.scroll_widget)).move(1350, 125)
         self.addWidget(PayloadLandingTimeWidget(self.scroll_widget)).move(1600, 125)
@@ -86,6 +85,7 @@ class DiagnosticTab(TabCommon):
         self.addWidget(PayloadOrientationWidget(self.scroll_widget)).move(1675, 350)
         self.addWidget(LandingSiteTemperatureWidget(self.scroll_widget)).move(875, 550)  # convert kelvin to celsius  #RANGE??????
         self.addWidget(CrewSurvivabilityWidget(self.scroll_widget)).move(1400, 550)
+        self.addWidget(ArduinoLogsWidget(self.scroll_widget)).move(0, 50)
 
         # Add the scroll area to the main layout
         main_layout.addWidget(self.scroll_area)

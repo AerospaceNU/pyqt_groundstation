@@ -7,6 +7,7 @@ Main file to run the GUI
 from src.constants import Constants
 from src.dpf_ground_station import DPFGUI
 from src.Modules.android_phone_bluetooth_interface import AndroidPhoneBluetoothInterface
+from src.Modules.arduino_data_interface import ArduinoDataInterface
 from src.Modules.desktop_simulation_interface import LocalSimulationFlightInterface
 from src.Modules.egg_finder_radio_interface import EggFinderRadioInterface
 from src.Modules.fake_rocket_flight import FakeFlight
@@ -19,7 +20,6 @@ from src.Modules.laptop_status_monitor import LaptopStatusMonitor
 from src.Modules.map_interface import MapInterface
 from src.Modules.prop_websocket_interface import PropWebsocketInterface
 from src.Modules.random_data_interface import RandomDataInterface
-from src.Modules.arduino_data_interface import ArduinoDataInterface
 from src.Modules.text_to_speech import TextToSpeech
 
 if __name__ == "__main__":
@@ -44,10 +44,8 @@ if __name__ == "__main__":
     GUI.addModule("Fake Flight", FakeFlight, enabled=False)
     GUI.addModule("Random Data for Debugging", RandomDataInterface, enabled=False, hide_toggle=False)
     GUI.addModule("Serialized Arduino Data for Debugging", ArduinoDataInterface, enabled=False, hide_toggle=False)
-
     GUI.addModule("Map Interface", MapInterface, enabled=True, hide_toggle=True)
     GUI.addModule(Constants.InterfaceNames.prop_websocket, PropWebsocketInterface, enabled=False, hide_toggle=False)
     GUI.loadSettings()
     GUI.run()
     print("Good Bye")
-    

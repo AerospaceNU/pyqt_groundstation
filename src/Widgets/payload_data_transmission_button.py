@@ -6,10 +6,9 @@ from src.Widgets.custom_q_widget_base import CustomQWidgetBase
 
 
 class PayloadDataTransmissionButton(CustomQWidgetBase):
-    def __init__(self, parent=None, arduino_interface=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.arduino_interface = arduino_interface
         self.is_checked = 1  # 1 for transmitting data
 
         # Create and configure the toggle button
@@ -34,11 +33,10 @@ class PayloadDataTransmissionButton(CustomQWidgetBase):
         self.button.setText("Data Transmission is on!" if checked else "Data Transmission is off!")
         self.updated_data_dictionary["payload_data_transmission_button"] = self.is_checked
 
-        if self.arduino_interface:
-            if self.is_checked == 1:
-                self.arduino_interface.write_arduino_data("--start")  # ON
-            else:
-                self.arduino_interface.write_arduino_data("--end")  # OFF
+        if self.is_checked == 1:
+            self.callback_handler.requestCallback("write_arduino", "--transmit")
+        else:
+            self.callback_handler.requestCallback("write_arduino", "--stop")
 
     def updateData(self, vehicle_data, updated_data):
         """Update button state based on internal is_checked flag."""
