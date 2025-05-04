@@ -29,7 +29,8 @@ class ArduinoLogsWidget(CustomQWidgetBase):
         # print("payload log in arduino logs is", payload_log)
         if payload_log != self.last_log:
             self.last_log = payload_log
-            print("not!!!")
+            print("last log:", self.last_log)
+            print("current log:", payload_log)
             self.arduino_log_label.setText(payload_log)
             self.arduino_log_label.setStyleSheet("font-size: 20px; font-weight: bold;")
             self.arduino_log_label.moveCursor(QTextCursor.End)

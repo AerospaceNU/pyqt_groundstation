@@ -26,7 +26,6 @@ class ArduinoDataInterface(ThreadedModuleCore):
         self.last_data_time = 0
         self.raw_data = ""
         self.arduino_log_str = ""
-        print(f"KEYYYYS {list(self.data_dictionary.keys())}")
 
         self.connect_to_arduino()
 
@@ -44,12 +43,9 @@ class ArduinoDataInterface(ThreadedModuleCore):
         if self.serial_conn and self.serial_conn.in_waiting > 0:
             raw_data = self.serial_conn.readline().decode("utf-8").strip()
             self.last_data_time = time.time()
-            # print(f"Raw data received: {raw_data}")  # Debugging output
-            # if "payload_logs" in self.data_dictionary and raw_data:
             self.arduino_log_str += raw_data + "\n"
             self.data_dictionary["payload_logs"] = self.arduino_log_str
             self.raw_data = raw_data.split(";")
-            # return self.parse_data(self.raw_data)
 
     def write_arduino_data(self, data):
         if self.serial_conn and self.serial_conn.is_open:

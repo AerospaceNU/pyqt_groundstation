@@ -10,6 +10,7 @@ class PayloadDataTransmissionButton(CustomQWidgetBase):
         super().__init__(parent)
 
         self.is_checked = 1  # 1 for transmitting data
+        self.callback_handler.addCallback("toggle_state", self.toggle_state)
 
         # Create and configure the toggle button
         self.button = QPushButton("Data Transmission ON", self)

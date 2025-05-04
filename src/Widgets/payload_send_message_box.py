@@ -48,8 +48,11 @@ class PayloadUserInputWidget(CustomQWidgetBase):
 
     def submit_message(self):
         user_message = self.text_input.text()
-        print(user_message)
-        if user_message:
+        if user_message == "--transmit":
+            self.callback_handler.requestCallback("toggle_state", 1)
+        elif user_message == "--stop":
+            self.callback_handler.requestCallback("toggle_state", 0)
+        elif user_message:
             self.callback_handler.requestCallback("write_arduino", user_message)
         self.text_input.clear()  # Clear the text input after submission
 
